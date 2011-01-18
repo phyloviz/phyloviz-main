@@ -1,4 +1,4 @@
-package net.phyloviz.core.wizard;
+package net.phyloviz.core.util;
 
 import java.util.HashSet;
 import javax.swing.table.AbstractTableModel;

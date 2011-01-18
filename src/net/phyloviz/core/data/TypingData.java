@@ -4,7 +4,7 @@
 
 package net.phyloviz.core.data;
 
-import net.phyloviz.core.wizard.DataModel;
+import net.phyloviz.core.util.DataModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
