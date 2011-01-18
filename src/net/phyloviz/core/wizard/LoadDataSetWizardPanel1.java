@@ -6,6 +6,7 @@ import net.phyloviz.core.util.TypingFactory;
 import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.util.HelpCtx;
+import org.openide.util.ImageUtilities;
 
 public class LoadDataSetWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 
@@ -75,6 +76,7 @@ public class LoadDataSetWizardPanel1 implements WizardDescriptor.ValidatingPanel
 	// by the user.
 	@Override
 	public void readSettings(Object settings) {
+		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/DataSetImage.png", true));
 	}
 
 	@Override

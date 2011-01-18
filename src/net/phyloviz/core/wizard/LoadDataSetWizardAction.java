@@ -1,5 +1,6 @@
 package net.phyloviz.core.wizard;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
@@ -20,7 +21,9 @@ public final class LoadDataSetWizardAction implements ActionListener {
 		// {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
 		wizardDescriptor.setTitle("Load a Dataset");
+		wizardDescriptor.putProperty("WizardPanel_contentBackgroundColor", Color.WHITE);
 		//wizardDescriptor.putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/wizard.gif", true));
+		wizardDescriptor.putProperty("WizardPanel_imageAligment", "center");
 		Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
 		dialog.setVisible(true);
 		dialog.toFront();

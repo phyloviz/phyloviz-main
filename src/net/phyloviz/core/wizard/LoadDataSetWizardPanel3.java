@@ -15,6 +15,7 @@ import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.HelpCtx;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 
 public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel {
@@ -67,6 +68,7 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 	// by the user.
 	@Override
 	public void readSettings(Object settings) {
+		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/PopulationImage.png", true));
 		td = (TypingData<AbstractType>) ((WizardDescriptor) settings).getProperty("typing_data");
 		dataSetName = (String) ((WizardDescriptor) settings).getProperty("name");
 	}
