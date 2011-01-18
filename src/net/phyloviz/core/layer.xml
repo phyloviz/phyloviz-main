@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="File">
+            <file name="net-phyloviz-core-wizard-LoadDataSetWizardAction.instance">
+                <attr name="delegate" newvalue="net.phyloviz.core.wizard.LoadDataSetWizardAction"/>
+                <!-- attr name="iconBase" stringvalue="org/demo/wizard/icon.png"/ -->
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="noIconInMenu" stringvalue="true"/>
+		<attr name="displayName" bundlevalue="net.phyloviz.core.Bundle#CTL_LoadDataSetAction"/>
+            </file>
+        </folder>
+        <folder name="Window">
+            <file name="net-phyloviz-core-explorer-DataSetExplorerAction.instance">
+                <attr name="component" methodvalue="net.phyloviz.core.explorer.DataSetExplorerTopComponent.findInstance"/>
+                <attr name="displayName" bundlevalue="net.phyloviz.core.explorer.Bundle#CTL_DataSetExplorerAction"/>
+                <attr name="instanceCreate" methodvalue="org.openide.windows.TopComponent.openAction"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="File">
+            <file name="net-phyloviz-core-wizard-LoadDataSetWizardAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/File/net-phyloviz-core-wizard-LoadDataSetWizardAction.instance"/>
+                <attr name="position" intvalue="0"/>
+            </file>
+        </folder>
+        <file name="GoTo_hidden"/>
+        <folder name="Window">
+            <file name="DataSetExplorerAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/Window/net-phyloviz-core-explorer-DataSetExplorerAction.instance"/>
+            </file>
+        </folder>
+    </folder>
+    <file name="Toolbars_hidden"/>
+    <folder name="Windows2">
+        <folder name="Components">
+            <file name="DataSetExplorerTopComponent.settings" url="DataSetExplorerTopComponentSettings.xml"/>
+        </folder>
+        <folder name="Modes">
+            <folder name="explorer">
+                <file name="DataSetExplorerTopComponent.wstcref" url="DataSetExplorerTopComponentWstcref.xml"/>
+            </folder>
+        </folder>
+    </folder>
+</filesystem>
