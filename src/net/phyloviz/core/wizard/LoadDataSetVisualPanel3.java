@@ -1,6 +1,7 @@
 package net.phyloviz.core.wizard;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -62,6 +63,7 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
                 jComboBox1 = new javax.swing.JComboBox();
                 jPanel6 = new javax.swing.JPanel();
                 jButton1 = new javax.swing.JButton();
+                jButton2 = new javax.swing.JButton();
 
                 setLayout(new java.awt.BorderLayout());
 
@@ -100,6 +102,14 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
                 });
                 jPanel6.add(jButton1);
 
+                org.openide.awt.Mnemonics.setLocalizedText(jButton2, org.openide.util.NbBundle.getMessage(LoadDataSetVisualPanel3.class, "LoadDataSetVisualPanel3.jButton2.text")); // NOI18N
+                jButton2.addActionListener(new java.awt.event.ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent evt) {
+                                jButton2ActionPerformed(evt);
+                        }
+                });
+                jPanel6.add(jButton2);
+
                 jPanel3.add(jPanel6, java.awt.BorderLayout.EAST);
 
                 add(jPanel3, java.awt.BorderLayout.PAGE_START);
@@ -109,8 +119,8 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
 		if (fc == null) {
 			fc = new JFileChooser();
 		}
-		fc.showDialog(this, "Open");
-		if (fc.getSelectedFile() != null) {
+		int r = fc.showDialog(this, "Open");
+		if (r == JFileChooser.APPROVE_OPTION && fc.getSelectedFile() != null) {
 			jTextField1.setText(fc.getSelectedFile().getAbsolutePath());
 
 			String[] result = null;
@@ -126,8 +136,24 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
 		}
 }//GEN-LAST:event_jButton1ActionPerformed
 
+	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+		String[] result = null;
+			try {
+				// Get headers...
+				 result = new BufferedReader(new FileReader(new File(jTextField1.getText()))).readLine().split("\t", -1);
+
+			} catch (FileNotFoundException ex) {
+				// If there is any problem with the file, we will check it later.
+			} catch (IOException ex) {
+				// If there is any problem with the file, we will check it later.
+			}
+			updateKeyList(result);
+	}//GEN-LAST:event_jButton2ActionPerformed
+
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton jButton1;
+        private javax.swing.JButton jButton2;
         private javax.swing.JComboBox jComboBox1;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel2;

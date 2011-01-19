@@ -30,6 +30,7 @@
         <folder name="Window">
             <file name="DataSetExplorerAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/net-phyloviz-core-explorer-DataSetExplorerAction.instance"/>
+                <attr name="position" intvalue="0"/>
             </file>
         </folder>
     </folder>

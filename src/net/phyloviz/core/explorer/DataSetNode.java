@@ -2,12 +2,14 @@ package net.phyloviz.core.explorer;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.util.Enumeration;
 import javax.swing.Action;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
 import org.openide.actions.DeleteAction;
 import org.openide.actions.PropertiesAction;
 import org.openide.nodes.AbstractNode;
+import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.actions.SystemAction;
@@ -38,6 +40,11 @@ public class DataSetNode extends AbstractNode {
 	@Override
 	public void destroy() throws IOException {
 		Lookup.getDefault().lookup(DataSetTracker.class).remove(this.getLookup().lookup(DataSet.class));
+
+		Enumeration<Node> e = this.getChildren().nodes();
+		while (e.hasMoreElements())
+			e.nextElement().destroy();
+
 		super.destroy();
 	}
 

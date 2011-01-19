@@ -11,8 +11,14 @@ import javax.swing.table.AbstractTableModel;
 import net.phyloviz.core.explorer.PopulationNode;
 import net.phyloviz.core.util.NodeFactory;
 import org.openide.nodes.AbstractNode;
+import org.openide.util.Lookup;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
-public class Population implements DataModel, NodeFactory {
+public class Population implements DataModel, Lookup.Provider, NodeFactory {
+
+	private InstanceContent ic;
+	private AbstractLookup lookup;
 
 	private ArrayList<String> headers;
 	private ArrayList<HashSet<String>> domains;
@@ -23,6 +29,10 @@ public class Population implements DataModel, NodeFactory {
 	private TableModel model;
 
 	public Population() {
+
+		ic = new InstanceContent();
+		lookup = new AbstractLookup(ic);
+
 		headers = new ArrayList<String>();
 		domains = new ArrayList<HashSet<String>>();
 		h2idx = new HashMap<String, Integer>();
@@ -91,6 +101,20 @@ public class Population implements DataModel, NodeFactory {
 	public String toString() {
 		return "Isolate Data";
 	}
+
+	@Override
+	public Lookup getLookup() {
+		return lookup;
+	}
+
+	public void add(Object o) {
+		ic.add(o);
+	}
+
+	public void remove(Object o) {
+		ic.remove(o);
+	}
+
 
 	public class PopulationIterator implements Iterator<Isolate> {
 

@@ -18,8 +18,14 @@ import javax.swing.table.AbstractTableModel;
 import net.phyloviz.core.explorer.TypingDataNode;
 import net.phyloviz.core.util.NodeFactory;
 import org.openide.nodes.AbstractNode;
+import org.openide.util.Lookup;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
-public class TypingData<T extends AbstractType> implements DataModel, NodeFactory {
+public class TypingData<T extends AbstractType> implements DataModel, Lookup.Provider, NodeFactory {
+
+	private InstanceContent ic;
+	private AbstractLookup lookup;
 
 	private String description;
 	private String[] headers;
@@ -114,6 +120,19 @@ public class TypingData<T extends AbstractType> implements DataModel, NodeFactor
 	@Override
 	public AbstractNode getNode() {
 		return new TypingDataNode(this);
+	}
+
+	@Override
+	public Lookup getLookup() {
+		return lookup;
+	}
+
+	public void add(Object o) {
+		ic.add(o);
+	}
+
+	public void remove(Object o) {
+		ic.remove(o);
 	}
 
 	public class DataIterator implements Iterator<T> {
@@ -220,7 +239,7 @@ public class TypingData<T extends AbstractType> implements DataModel, NodeFactor
 			if (columnIndex == 0)
 				return collection.get(rowIndex).getID();
 			else
-				return collection.get(rowIndex).getValue(columnIndex);
+				return collection.get(rowIndex).getValue(columnIndex - 1);
 		}
 	}
 }
