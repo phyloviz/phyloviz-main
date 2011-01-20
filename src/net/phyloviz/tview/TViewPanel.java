@@ -40,7 +40,6 @@ public class TViewPanel extends TopComponent {
 	private Palette pal;
 	private TreeMap<String, Integer> fullCats;
 	private TreeMap<String, Color> colorMap;
-	//private DefaultPieDataset data;
 	//private TreeMap<String, List<Group>> stMap;
 	private boolean atLeastOnePlot;
 
@@ -104,133 +103,6 @@ public class TViewPanel extends TopComponent {
 			}
 		});
 
-//		viewButton = new JButton("Plot selection!");
-//		viewButton.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				treeButton.setEnabled(false);
-//				tableButton.setEnabled(false);
-//
-//				GraphView view = (GraphView) Phyloviz.getWindow().get("Display");
-//				TreeSet<String>[] filter1;
-//				TreeSet<String>[] filter2;
-//				TreeSet<String>[] filter;
-//				filter1 = table.viewing();
-//				filter2 = tree.viewing();
-//				if (tableortree) {
-//					filter = filter1;
-//				} else {
-//					filter = filter2;
-//				}
-//				if (filter == null) {
-//					treeButton.setEnabled(true);
-//					tableButton.setEnabled(true);
-//					return;
-//				}
-//
-//				OldPopulation pop = Phyloviz.getPop();
-//				// Now that we have the values to be shown for each column...
-//				IFilter f = new CompositeFilter(filter, pop.getHeaders());
-//
-//				// Filtering each ST...
-//				stMap = new TreeMap<String, List<Group>>();
-//				fullCats = new TreeMap<String, Integer>();
-//				TreeMap<String, Double> tp = new TreeMap<String, Double>();
-//				Iterator<SequenceType> stIter = pop.getSTs().iterator();
-//				while (stIter.hasNext()) {
-//					SequenceType st = stIter.next();
-//					Group g = new Group("");
-//					g.addAll(st.getIndividuals());
-//					List<Group> l = new LinkedList<Group>();
-//					l.add(g);
-//					l = f.filtering(l);
-//
-//					Iterator<Group> gIter = l.iterator();
-//					while (gIter.hasNext()) {
-//						Group grp = gIter.next();
-//
-//						Integer x = fullCats.get(grp.getName());
-//						if (x != null) {
-//							x += grp.size();
-//						} else {
-//							x = grp.size();
-//						}
-//
-//						fullCats.put(grp.getName(), x);
-//					}
-//
-//					stMap.put(st.getSID(), l);
-//				}
-//
-//
-//				// Update full chart...
-//				data = new DefaultPieDataset();
-//				colorMap = new TreeMap<String, Color>();
-//
-//				pal = new Palette(fullCats.size());
-//
-//
-//				int total = 0, i = 0;
-//				Iterator<String> labels = fullCats.keySet().iterator();
-//				while (labels.hasNext()) {
-//					String label = labels.next();
-//					int partial = fullCats.get(label);
-//					data.setValue(label, ((double) partial) / pop.getSize());
-//					tp.put(label, ((double) partial) / pop.getSize());
-//					total += partial;
-//
-//					colorMap.put(label, pal.getColors()[i++]);
-//				}
-//
-//				if (pop.getSize() - total > 0) {
-//					data.setValue("'others'", ((double) pop.getSize() - total) / pop.getSize());
-//					tp.put("others", ((double) pop.getSize() - total) / pop.getSize());
-//				}
-//
-//				// aqui começa...
-//
-//				if (view != null) {
-//					view.setDefaultRenderer(new ChartRenderer(stMap, colorMap));
-//					view.setStMap(stMap);
-//				}
-//
-//				if (Phyloviz.getDataPanel() != null) {
-//					ChartLegend newChart = new ChartLegend(fullCats, pop.getSize(), colorMap);
-//
-//					ChartLegendPanel chl = new ChartLegendPanel(newChart);
-//
-//					Phyloviz.getWindow().replace("Chart", chl);
-//				}
-//				// Phyloviz.getWindow().replace("Chart", newChart);
-//
-//				/* JFreeChart chart = ChartFactory.createPieChart(null, data, true, true, false);
-//				PiePlot plot = (PiePlot) chart.getPlot();
-//
-//				PieRenderer renderer = new PieRenderer(pal.getColors());
-//				renderer.setColor(plot, data);
-//				plot.setLabelGenerator(null);
-//				plot.setBackgroundPaint(Color.WHITE);
-//				plot.setOutlineVisible(false);
-//
-//				Phyloviz.getWindow().replace("Chart", new ChartPanel(chart));*/
-//
-//				//até aqui....
-//
-//				// Draw pies...
-//
-//				treeButton.setEnabled(true);
-//				tableButton.setEnabled(true);
-//				treeButton.setOpaque(true);
-//				tableButton.setOpaque(true);
-//				if (!atLeastOnePlot && view != null) {
-//					Phyloviz.getWindow().getMyMenuBar().getcategoryColorMenu().setEnabled(true);
-//				}
-//			}
-//		});
-//
-//		viewButton.setPreferredSize(new Dimension(120, 10));
-
 		treeButton = new JRadioButton("tree");
 		tableButton = new JRadioButton("table");
 
@@ -238,7 +110,6 @@ public class TViewPanel extends TopComponent {
 		ItemListener radio2 = new RadioListener2();
 		treeButton.addItemListener(radio1);
 		tableButton.addItemListener(radio2);
-
 
 		Box box = new Box(BoxLayout.X_AXIS);
 		group = new ButtonGroup();
@@ -259,14 +130,6 @@ public class TViewPanel extends TopComponent {
 		add(sp, BorderLayout.CENTER);
 		add(box, BorderLayout.NORTH);
 	}
-
-//	public TreeMap<String, List<Group>> getStMap() {
-//		return stMap;
-//	}
-
-//	public DefaultPieDataset getData() {
-//		return data;
-//	}
 
 	public Palette getPalette() {
 		return pal;
@@ -289,17 +152,9 @@ public class TViewPanel extends TopComponent {
 				tableortree = false;
 				sp.setViewportView(tree);
 				tree.selecting(table.getFilterSet(), true);
-			} else {
 			}
 		}
 	}
-
-//	public void reset(OldPopulation pop) {
-//		this.pop = pop;
-//		table.initModel(pop);
-//
-//		tree.initModel(pop);
-//	}
 
 	private class RadioListener2 implements ItemListener {
 
