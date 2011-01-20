@@ -150,6 +150,9 @@ public class TreePanel extends CheckboxTree {
 	}
 
 	public DefaultMutableTreeNode find(String name) {
+
+		// TODO: fix this... we must search by column!
+
 		if (root == null) {
 			return null;
 		}
