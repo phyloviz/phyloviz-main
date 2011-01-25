@@ -9,6 +9,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class GOeBurstProvider implements AlgorithmProvider {
 
 	private static final String customName = "goeBURST";
+	private NodeAction action;
 
 	@Override
 	public String toString() {
@@ -21,6 +22,8 @@ public class GOeBurstProvider implements AlgorithmProvider {
 
 	@Override
 	public NodeAction getAction() {
-		return new ExecAction();
+		if (action == null)
+			action = new ExecAction();
+		return action;
 	}
 }

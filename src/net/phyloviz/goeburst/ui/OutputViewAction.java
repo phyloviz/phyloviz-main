@@ -29,7 +29,7 @@ public class OutputViewAction extends NodeAction {
 
 	@Override
 	public String getName() {
-		return "View";
+		return "View Log";
 	}
 
 	@Override
