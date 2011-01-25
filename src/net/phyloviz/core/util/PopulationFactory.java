@@ -16,7 +16,7 @@ public class PopulationFactory {
 
 		// Store headers.
 		for (int i = 0; i < tokens.length; i++)
-			pop.addColumn(tokens[i]);
+			pop.addColumn(tokens[i], null);
 
 		while (in.ready()) {
 			tokens = in.readLine().split("\t", -1);

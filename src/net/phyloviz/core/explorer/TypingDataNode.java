@@ -1,6 +1,7 @@
 package net.phyloviz.core.explorer;
 
 import java.awt.Image;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.swing.Action;
 import net.phyloviz.core.data.TypingData;
@@ -42,7 +43,9 @@ public class TypingDataNode extends AbstractNode {
 	@Override
 	public Action[] getActions(boolean context) {
 
-		Collection<? extends Action> a4p = Utilities.actionsForPath("/Actions/PHYLOViZ/DataModel");
+		Collection<Action> a4p = new ArrayList<Action>();
+		a4p.addAll(Utilities.actionsForPath("/Actions/PHYLOViZ/DataModel"));
+		a4p.addAll(Utilities.actionsForPath("/Actions/PHYLOViZ/Algorithm"));
 
 		Action[] actions = a4p.toArray(new Action[a4p.size() + 1]);
 		actions[a4p.size()] = SystemAction.get(PropertiesAction.class);
