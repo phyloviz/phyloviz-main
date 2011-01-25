@@ -7,7 +7,8 @@ public class SequenceType extends AbstractType implements Comparable<SequenceTyp
 	private String[] alleles;
 	private int freq;
 
-	public SequenceType(String[] profile) {
+	public SequenceType(int uid, String[] profile) {
+		this.uid = uid;
 		this.id = profile[0];
 		this.freq = 1;
 		this.alleles = new String[profile.length - 1];
@@ -24,23 +25,18 @@ public class SequenceType extends AbstractType implements Comparable<SequenceTyp
 		return alleles.length;
 	}
 
+	@Override
 	public int getFreq() {
 		return freq;
 	}
 
-	public void incFreq() {
-		freq ++;
+	@Override
+	public void setFreq(int freq) {
+		this.freq = freq;
 	}
 
-	// Returns the number of locus variants.
-	public int diff(SequenceType st) {
-		int diffs = 0;
-
-		for (int i = 0; i < alleles.length; i++)
-			if (alleles[i].compareTo(st.alleles[i])!=0)
-				diffs ++;
-
-		return diffs;
+	public void incFreq() {
+		freq ++;
 	}
 
 	@Override
