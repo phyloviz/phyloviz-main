@@ -4,8 +4,6 @@ import net.phyloviz.goeburst.run.GOeBurstRunner;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
-import org.openide.windows.Mode;
-import org.openide.windows.WindowManager;
 
 public class ExecAction extends NodeAction {
 
