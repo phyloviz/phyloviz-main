@@ -153,11 +153,12 @@ public class TablePanel extends JTable {
 			sorter.setRowFilter(null);
 		} else {
 			try {
-				Integer[] a = new Integer[0];
-				Integer[] array = clicable.toArray(a);
-				int[] arrayInt = new int[array.length];
-				System.arraycopy(array, 0, arrayInt, 0, array.length);
-				sorter.setRowFilter(RowFilter.regexFilter(text, arrayInt));
+				int i = 0;
+				int[] array = new int[clicable.size()];
+				Iterator<Integer> ii = clicable.iterator();
+				while (ii.hasNext())
+					array[i] = ii.next().intValue();
+				sorter.setRowFilter(RowFilter.regexFilter(text, array));
 			} catch (PatternSyntaxException pse) {
         			StatusDisplayer.getDefault().setStatusText("Error: Bad regex pattern: " + text);
 			}
