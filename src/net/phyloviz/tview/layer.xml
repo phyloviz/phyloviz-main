@@ -6,6 +6,7 @@
 			<folder name="DataModel">
 				<file name="net-phyloviz-tview-DataModelViewAction.instance">
 					<attr name="instanceClass" stringvalue="net.phyloviz.tview.DataModelViewAction"/>
+					<attr name="position" intvalue="0"/>
 				</file>
 			</folder>
 		</folder>
