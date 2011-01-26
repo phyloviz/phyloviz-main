@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeMap;
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;
@@ -24,7 +24,7 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 	}
 
 	@Override
-	public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends AbstractType> td) {
+	public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends AbstractProfile> td) {
 		
 		ArrayList<Edge> edges = getEdges(td);
 		Collection<GOeBurstClusterWithStats> clustering = getGroups(td, edges);
@@ -41,20 +41,20 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 		return clustering;
 	}
 	
-	public int getSTxLV(AbstractType st, int lv) {
+	public int getSTxLV(AbstractProfile st, int lv) {
 		if (lv > GOeBurstClusterWithStats.MAXLV || lv < 0)
 			level = GOeBurstClusterWithStats.MAXLV;
 			
 		return stLVs.get(st.getUID()).lv[lv];
 	}
 
-	private ArrayList<Edge> getEdges(TypingData<? extends AbstractType> td) {
+	private ArrayList<Edge> getEdges(TypingData<? extends AbstractProfile> td) {
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		maxStId = 0;
 		
-		Iterator<? extends AbstractType> uIter = td.iterator();
+		Iterator<? extends AbstractProfile> uIter = td.iterator();
 		while (uIter.hasNext()) {
-			AbstractType u = uIter.next();
+			AbstractProfile u = uIter.next();
 			GOeBurstClusterWithStats.STLV uLV = stLVs.get(u.getUID());
 			
 			if (uLV == null) {
@@ -64,9 +64,9 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 			
 			maxStId = Math.max(maxStId, u.getUID());
 			
-			Iterator<? extends AbstractType> vIter = td.iterator();
+			Iterator<? extends AbstractProfile> vIter = td.iterator();
 			while (vIter.hasNext()) {
-				AbstractType v = vIter.next();
+				AbstractProfile v = vIter.next();
 				
 				int diff = HammingDistance.compute(u, v);
 				
@@ -83,7 +83,7 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 		return edges;
 	}
 	
-	private Collection<GOeBurstClusterWithStats> getGroups(TypingData<? extends AbstractType> td, Collection<Edge> edges) {
+	private Collection<GOeBurstClusterWithStats> getGroups(TypingData<? extends AbstractProfile> td, Collection<Edge> edges) {
 		DisjointSet s = new DisjointSet(maxStId);
 		
 		Iterator<Edge> eIter = edges.iterator();
@@ -108,9 +108,9 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 		}
 		
 		// Add singletons.
-		Iterator<? extends AbstractType> stIter = td.iterator();
+		Iterator<? extends AbstractProfile> stIter = td.iterator();
 		while (stIter.hasNext()) {
-			AbstractType st = stIter.next();
+			AbstractProfile st = stIter.next();
 			
 			int pi = s.findSet(st.getUID());
 			if (groups.get(pi) == null) {

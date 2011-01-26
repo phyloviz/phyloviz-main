@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.goeburst.algorithm.DisjointSet;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 import net.phyloviz.goeburst.algorithm.HammingDistance;
@@ -19,7 +19,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	private EdgeTieStats stat;
 	private ArrayList<Edge> SLVedges;
 	private GOeBurstWithStats mInstance;
-	protected AbstractType fakeRoot;
+	protected AbstractProfile fakeRoot;
 
 	public GOeBurstClusterWithStats(GOeBurstWithStats algInstance) {
 		super();
@@ -43,11 +43,11 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		return id;
 	}
 
-	public AbstractType getFakeRoot() {
+	public AbstractProfile getFakeRoot() {
 		return fakeRoot;
 	}
 
-	public int getXLV(AbstractType st, int level) {
+	public int getXLV(AbstractProfile st, int level) {
 		return getXLV(st.getUID(), level);
 	}
 
@@ -68,12 +68,12 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	public Collection<AbstractType> getSLVs(AbstractType st) {
+	public Collection<AbstractProfile> getSLVs(AbstractProfile st) {
 		return slvList.get(st.getUID());
 	}
 
 	@Override
-	public Collection<AbstractType> getDLVs(AbstractType st) {
+	public Collection<AbstractProfile> getDLVs(AbstractProfile st) {
 		return dlvList.get(st.getUID());
 	}
 
@@ -93,7 +93,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	public Collection<AbstractType> getSTs() {
+	public Collection<AbstractProfile> getSTs() {
 		return nodes;
 	}
 
@@ -144,7 +144,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	public void updateVisibleEdges(AbstractType root) {
+	public void updateVisibleEdges(AbstractProfile root) {
 		STLV data = lvMap.get(root.getUID());
 		int[] orig = new int[MAXLV + 1];
 
@@ -175,15 +175,15 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	protected void updateLVs(AbstractType u) {
+	protected void updateLVs(AbstractProfile u) {
 
 		GOeBurstClusterWithStats.STLV uLV = lvMap.get(u.getUID());
-		LinkedList<AbstractType> uSLVs = slvList.get(u.getUID());
-		LinkedList<AbstractType> uDLVs = dlvList.get(u.getUID());
+		LinkedList<AbstractProfile> uSLVs = slvList.get(u.getUID());
+		LinkedList<AbstractProfile> uDLVs = dlvList.get(u.getUID());
 
-		Iterator<AbstractType> vIter = getSTs().iterator();
+		Iterator<AbstractProfile> vIter = getSTs().iterator();
 		while (vIter.hasNext()) {
-			AbstractType v = vIter.next();
+			AbstractProfile v = vIter.next();
 
 			if (u.equals(v)) {
 				continue;
@@ -226,7 +226,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		}
 	}
 
-	public boolean isFounder(AbstractType st) {
+	public boolean isFounder(AbstractProfile st) {
 		int i;
 		for (i = 0; i < MAXLV && this.getXLV(st, i) == maxLVs.lv[i]; i++);
 		return i >= MAXLV;
@@ -353,7 +353,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		}
 	}
 
-	public String getInfo(AbstractType st) {
+	public String getInfo(AbstractProfile st) {
 		String s = "";
 
 		s += "# SLVs = " + getXLV(st.getUID(), 0) + " ( " + mInstance.getSTxLV(st, 0) + " )";

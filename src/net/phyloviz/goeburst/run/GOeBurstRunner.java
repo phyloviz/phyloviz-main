@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import javax.swing.SwingUtilities;
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
@@ -42,7 +42,7 @@ public class GOeBurstRunner implements Runnable {
 		op.appendWithDate("goeBURST started\ngoeBURST algorithm: computing groups...\n\n");
 		op.flush();
 		
-		TypingData<? extends AbstractType> td = n.getLookup().lookup(TypingData.class);
+		TypingData<? extends AbstractProfile> td = n.getLookup().lookup(TypingData.class);
 
 		GOeBurstWithStats algorithm = new GOeBurstWithStats(level);
 		Collection<GOeBurstClusterWithStats> groups = algorithm.getClustering(td);
@@ -57,7 +57,7 @@ public class GOeBurstRunner implements Runnable {
 			while (igo.hasNext()) {
 				GOeBurstCluster cluster = igo.next();
 				String id = "" + cluster.getID();
-				Iterator<AbstractType> itr = cluster.getSTs().iterator();
+				Iterator<AbstractProfile> itr = cluster.getSTs().iterator();
 				while (itr.hasNext()) {
 					st2cl.put(itr.next().getID(), id);
 				}
@@ -87,9 +87,9 @@ public class GOeBurstRunner implements Runnable {
 
 			op.append("CC " + g.getID() + " has " + g.size() + " STs:\n");
 
-			Iterator<AbstractType> is = g.getSTs().iterator();
+			Iterator<AbstractProfile> is = g.getSTs().iterator();
 			while (is.hasNext()) {
-				AbstractType st = is.next();
+				AbstractProfile st = is.next();
 
 				op.append("ST " + st.getID() + " (" + st.getFreq() + ") "
 					+ g.getXLV(st, 0) + " " + g.getXLV(st, 1) + " " + g.getXLV(st, 2) + " " + g.getXLV(st, 3) + " ("

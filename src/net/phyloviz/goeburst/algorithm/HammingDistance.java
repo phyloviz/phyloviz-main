@@ -1,10 +1,10 @@
 package net.phyloviz.goeburst.algorithm;
 
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 
 public class HammingDistance {
 
-	public static int compute(AbstractType x, AbstractType y) {
+	public static int compute(AbstractProfile x, AbstractProfile y) {
 		int diffs = 0;
 
 		for (int i = 0; i < x.profileLength(); i++)
