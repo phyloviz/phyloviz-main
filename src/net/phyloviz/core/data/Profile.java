@@ -9,6 +9,9 @@ package net.phyloviz.core.data;
  * 
  */
 public interface Profile{
+
+    public int getUID();
+
     /**
      * Returns a <tt>String</tt>  that represents the identifier of this typing
      * profile.
@@ -44,5 +47,9 @@ public interface Profile{
      *             <code>profileLenght()</code>.
      */
     public String getValue(int idx);
-    
+
+    public int getFreq();
+
+    public void setFreq(int freq);
+
 }
