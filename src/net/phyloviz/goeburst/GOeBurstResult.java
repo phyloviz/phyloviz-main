@@ -17,6 +17,7 @@ public class GOeBurstResult implements NodeFactory {
 		this.clustering = clustering;
 		this.op = op;
 		this.level = level;
+
 	}
 
 	public OutputPanel getPanel() {
@@ -36,4 +37,8 @@ public class GOeBurstResult implements NodeFactory {
 		return new GOeBurstNode(this);
 	}
 
+	@Override
+	public String toString() {
+		return "goeBURST (Level " + level + ")";
+	}
 }

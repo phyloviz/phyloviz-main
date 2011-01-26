@@ -15,10 +15,12 @@ public class ExecAction extends NodeAction {
 
 	@Override
 	protected void performAction(Node[] nodes) {
+		int level = 1;
+
 		OutputPanel op = new OutputPanel();
-		Runnable job = new GOeBurstRunner(nodes[0], op, 1);
-		
-		op.setName("Output - " + job.toString());
+		Runnable job = new GOeBurstRunner(nodes[0], op, level);
+
+		op.setName(nodes[0].getParentNode().getDisplayName() + ": goeBURST Output");
 		op.open();
 		op.requestActive();
 

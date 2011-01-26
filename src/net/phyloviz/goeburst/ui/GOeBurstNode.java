@@ -19,15 +19,15 @@ public class GOeBurstNode extends AbstractNode {
 	        setDisplayName(g.toString());
 	}
 
-	//@Override
-	//public Image getIcon (int type) {
-	//	return ImageUtilities.loadImage("net/phyloviz/core/PopulationIcon.png");
-	//}
+	@Override
+	public Image getIcon (int type) {
+		return ImageUtilities.loadImage("net/phyloviz/goeburst/GOeBurstIcon.png");
+	}
 
-	//@Override
-	//public Image getOpenedIcon (int type) {
-	//	return getIcon(type);
-	//}
+	@Override
+	public Image getOpenedIcon (int type) {
+		return getIcon(type);
+	}
 
 	@Override
 	public boolean canDestroy() {
