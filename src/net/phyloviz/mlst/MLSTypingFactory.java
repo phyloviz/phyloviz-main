@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
 import org.openide.util.lookup.ServiceProvider;
@@ -21,7 +21,7 @@ public class MLSTypingFactory implements TypingFactory {
 	}
 
 	@Override
-	public TypingData<? extends AbstractType> loadData(Reader r)  throws IOException {
+	public TypingData<? extends AbstractProfile> loadData(Reader r)  throws IOException {
 
 		BufferedReader in = new BufferedReader(r);
 

@@ -1,8 +1,8 @@
 package net.phyloviz.mlst;
 
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 
-public class SequenceType extends AbstractType implements Comparable<SequenceType> {
+public class SequenceType extends AbstractProfile implements Comparable<SequenceType> {
 
 	private String[] alleles;
 	private int freq;
