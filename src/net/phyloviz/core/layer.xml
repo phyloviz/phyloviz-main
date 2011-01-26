@@ -5,10 +5,16 @@
         <folder name="File">
             <file name="net-phyloviz-core-wizard-LoadDataSetWizardAction.instance">
                 <attr name="delegate" newvalue="net.phyloviz.core.wizard.LoadDataSetWizardAction"/>
-                <!-- attr name="iconBase" stringvalue="org/demo/wizard/icon.png"/ -->
+                <attr name="iconBase" stringvalue="net/phyloviz/core/DataSetIcon.png"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
-                <attr name="noIconInMenu" stringvalue="true"/>
+                <attr name="noIconInMenu" stringvalue="false"/>
 		<attr name="displayName" bundlevalue="net.phyloviz.core.Bundle#CTL_LoadDataSetAction"/>
+            </file>
+        </folder>
+        <folder name="View">
+            <file name="net-phyloviz-core-display-DisplayOptionsAction.instance">
+                <attr name="instanceClass" stringvalue="net.phyloviz.core.display.DisplayOptionsAction"/>
+                <attr name="noIconInMenu" boolvalue="false"/>
             </file>
         </folder>
         <folder name="Window">
@@ -27,6 +33,12 @@
             </file>
         </folder>
         <file name="GoTo_hidden"/>
+        <folder name="View">
+            <file name="net-phyloviz-core-display-DisplayOptionsAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/View/net-phyloviz-core-display-DisplayOptionsAction.instance"/>
+                <attr name="position" intvalue="200"/>
+            </file>
+        </folder>
         <folder name="Window">
             <file name="DataSetExplorerAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/net-phyloviz-core-explorer-DataSetExplorerAction.instance"/>

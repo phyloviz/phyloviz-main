@@ -103,8 +103,8 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
-                <package>net.phyloviz.core</package>
                 <package>net.phyloviz.core.data</package>
+                <package>net.phyloviz.core.display</package>
                 <package>net.phyloviz.core.util</package>
             </public-packages>
         </data>
