@@ -66,6 +66,7 @@
             </module-dependencies>
             <public-packages>
                 <package>net.phyloviz.tview</package>
+                <package>net.phyloviz.tview.filter</package>
             </public-packages>
             <class-path-extension>
                 <runtime-relative-path>ext/lablib-checkboxtree-3.1.jar</runtime-relative-path>
