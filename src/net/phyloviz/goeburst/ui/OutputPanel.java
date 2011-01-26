@@ -1,17 +1,21 @@
 package net.phyloviz.goeburst.ui;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Date;
-import javax.swing.SwingUtilities;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 public class OutputPanel extends TopComponent {
 
+	private BufferedWriter bf;
+
 	/** Creates new form OutputPanel */
 	public OutputPanel() {
 		initComponents();
-		this.setName("goeBURST Output");
+		bf = new BufferedWriter(new LocalWriter());
 	}
 
 	@Override
@@ -22,36 +26,24 @@ public class OutputPanel extends TopComponent {
 	}
 
 	public void append(String text) {
-		jTextArea1.append(text);
+		try {
+			bf.write(text);
+		} catch (IOException ex) {
+			// No exception to be caught, see LocalWriter.
+		}
+	}
+
+	public void flush() {
+		try {
+			bf.flush();
+		} catch (IOException ex) {
+			// No exception to be caught, see LocalWriter.
+		}
+		jTextArea1.setCaretPosition(jTextArea1.getDocument().getLength());
 	}
 
 	public void appendWithDate(String text) {
-		jTextArea1.append("[" + new Date() + "]  " + text);
-	}
-
-	public void remoteAppend(String text) {
-		SwingUtilities.invokeLater(new LocalRunner(this, text));
-	}
-
-	public void remoteAppendWithDate(String text) {
-		SwingUtilities.invokeLater(new LocalRunner(this, "[" + new Date() + "]  " + text));
-	}
-
-	private class LocalRunner implements Runnable {
-
-		private OutputPanel tp;
-		private String text;
-
-		public LocalRunner(OutputPanel tp, String text) {
-			this.tp = tp;
-			this.text = text;
-		}
-
-		@Override
-		public void run() {
-			tp.append(text);
-		}
-
+		append("[" + new Date() + "]  " + text);
 	}
 
 	@Override
@@ -89,4 +81,22 @@ public class OutputPanel extends TopComponent {
         private javax.swing.JScrollPane jScrollPane1;
         private javax.swing.JTextArea jTextArea1;
         // End of variables declaration//GEN-END:variables
+
+	private class LocalWriter extends Writer {
+
+		@Override
+		public void write(char[] cbuf, int off, int len) {
+			jTextArea1.append(new String(cbuf, off, len));
+		}
+
+		@Override
+		public void flush() {
+			// No flush is required.
+		}
+
+		@Override
+		public void close() {
+			// No closeable.
+		}
+	}
 }

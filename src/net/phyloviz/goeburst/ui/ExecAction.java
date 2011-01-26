@@ -1,7 +1,13 @@
 package net.phyloviz.goeburst.ui;
 
+import java.beans.PropertyChangeEvent;
+import javax.swing.SwingUtilities;
 import net.phyloviz.goeburst.run.GOeBurstRunner;
 import org.openide.nodes.Node;
+import org.openide.nodes.NodeEvent;
+import org.openide.nodes.NodeListener;
+import org.openide.nodes.NodeMemberEvent;
+import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 
@@ -19,6 +25,8 @@ public class ExecAction extends NodeAction {
 		Thread thread = new Thread(job);
 		thread.setDaemon(true);
 		thread.start();
+
+		nodes[0].addNodeListener(new LocalNodeListener(op));
 	}
 
 	@Override
@@ -40,4 +48,41 @@ public class ExecAction extends NodeAction {
 	public HelpCtx getHelpCtx() {
 		return null;
 	}
+
+	private class LocalNodeListener implements NodeListener {
+
+		private OutputPanel tvp;
+
+		LocalNodeListener(OutputPanel tvp) {
+			this.tvp = tvp;
+		}
+
+		@Override
+		public void childrenAdded(NodeMemberEvent nme) {
+		}
+
+		@Override
+		public void childrenRemoved(NodeMemberEvent nme) {
+		}
+
+		@Override
+		public void childrenReordered(NodeReorderEvent nre) {
+		}
+
+		@Override
+		public void nodeDestroyed(NodeEvent ne) {
+
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					tvp.close();
+				}
+			});
+		}
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+		}
+	}
+
 }

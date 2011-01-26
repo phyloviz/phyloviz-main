@@ -39,8 +39,9 @@ public class GOeBurstRunner implements Runnable {
 	@Override
 	public void run() {
 
-		op.remoteAppendWithDate("goeBURST started\ngoeBURST algorithm: computing groups...\n");
-
+		op.appendWithDate("goeBURST started\ngoeBURST algorithm: computing groups...\n\n");
+		op.flush();
+		
 		TypingData<? extends AbstractType> td = n.getLookup().lookup(TypingData.class);
 
 		GOeBurstWithStats algorithm = new GOeBurstWithStats(level);
@@ -48,7 +49,8 @@ public class GOeBurstRunner implements Runnable {
 
 		// Integrate with isolate data, if it exists.
 		if (pop != null) {
-			op.remoteAppendWithDate("goeBURST algorithm: integrating data...\n");
+			op.appendWithDate("goeBURST algorithm: integrating data...\n\n");
+			op.flush();
 
 			st2cl = new HashMap<String, String>();
 			Iterator<? extends GOeBurstCluster> igo = groups.iterator();
@@ -78,17 +80,18 @@ public class GOeBurstRunner implements Runnable {
 		}
 
 		Iterator<GOeBurstClusterWithStats> ig = groups.iterator();
-		op.remoteAppend("#CC = " + groups.size() + "\n\n");
+		op.append("#CC = " + groups.size() + "\n\n");
+		op.flush();
 		while (ig.hasNext()) {
 			GOeBurstClusterWithStats g = ig.next();
 
-			op.remoteAppend("CC " + g.getID() + " has " + g.size() + " STs:\n");
+			op.append("CC " + g.getID() + " has " + g.size() + " STs:\n");
 
 			Iterator<AbstractType> is = g.getSTs().iterator();
 			while (is.hasNext()) {
 				AbstractType st = is.next();
 
-				op.remoteAppend("ST " + st.getID() + " (" + st.getFreq() + ") "
+				op.append("ST " + st.getID() + " (" + st.getFreq() + ") "
 					+ g.getXLV(st, 0) + " " + g.getXLV(st, 1) + " " + g.getXLV(st, 2) + " " + g.getXLV(st, 3) + " ("
 					+ algorithm.getSTxLV(st, 0) + " " + algorithm.getSTxLV(st, 1) + " " + algorithm.getSTxLV(st, 2) + " " + algorithm.getSTxLV(st, 3)
 					+ ")" + (g.isFounder(st) ? " *" : "  ") + "\n");
@@ -97,26 +100,28 @@ public class GOeBurstRunner implements Runnable {
 
 			ArrayList<Edge> elst = g.getEdges();
 			if (g.size() >= 2) {
-				op.remoteAppend("\nCC " + g.getID() + " has " + (g.size() - 1) + "/" + elst.size() + " selected edges:\n");
+				op.append("\nCC " + g.getID() + " has " + (g.size() - 1) + "/" + elst.size() + " selected edges:\n");
 			} else {
-				op.remoteAppend("\nCC " + g.getID() + " has " + (g.size() - 1) + "/" + elst.size() + " selected edges\n");
+				op.append("\nCC " + g.getID() + " has " + (g.size() - 1) + "/" + elst.size() + " selected edges\n");
 			}
 			Iterator<Edge> ie = elst.iterator();
 			while (ie.hasNext()) {
 				Edge e = ie.next();
 				if (e.visible()) {
-					op.remoteAppend(e.getU().getID() + " - " + e.getV().getID() + "\n");
+					op.append(e.getU().getID() + " - " + e.getV().getID() + "\n");
 				}
 			}
-			op.remoteAppend("\n");
+			op.append("\n");
 		}
 
-		op.remoteAppendWithDate("goeBURST algorithm: computing statistics...\n");
+		op.appendWithDate("goeBURST algorithm: computing statistics...\n");
+		op.flush();
 		Iterator<GOeBurstClusterWithStats> iter = groups.iterator();
 		while (iter.hasNext()) {
 			iter.next().computeStatistics();
 		}
-		op.remoteAppendWithDate("goeBURST algorithm: done.\n");
+		op.appendWithDate("goeBURST algorithm: done.\n");
+		op.flush();
 
 		ds.add(new GOeBurstResult(groups, op));
 	}
