@@ -42,7 +42,7 @@ public class GOeBurstRunner implements Runnable {
 		op.appendWithDate("goeBURST started\ngoeBURST algorithm: computing groups...\n\n");
 		op.flush();
 		
-		TypingData<? extends AbstractProfile> td = n.getLookup().lookup(TypingData.class);
+		TypingData<? extends AbstractProfile> td = (TypingData<? extends AbstractProfile>) n.getLookup().lookup(TypingData.class);
 
 		GOeBurstWithStats algorithm = new GOeBurstWithStats(level);
 		Collection<GOeBurstClusterWithStats> groups = algorithm.getClustering(td);
