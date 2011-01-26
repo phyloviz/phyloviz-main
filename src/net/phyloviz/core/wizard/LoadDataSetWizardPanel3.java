@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.event.ChangeListener;
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
 import net.phyloviz.core.data.Population;
@@ -27,7 +27,7 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 	private Component component;
 	private String dataSetName;
 
-	private TypingData<? extends AbstractType> td;
+	private TypingData<? extends AbstractProfile> td;
 	private Population pop;
 	private DataSet ds;
 
@@ -69,7 +69,7 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 	@Override
 	public void readSettings(Object settings) {
 		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/PopulationImage.png", true));
-		td = (TypingData<AbstractType>) ((WizardDescriptor) settings).getProperty("typing_data");
+		td = (TypingData<AbstractProfile>) ((WizardDescriptor) settings).getProperty("typing_data");
 		dataSetName = (String) ((WizardDescriptor) settings).getProperty("name");
 	}
 

@@ -22,7 +22,7 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
-public class TypingData<T extends AbstractType> implements DataModel, Lookup.Provider, NodeFactory {
+public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.Provider, NodeFactory {
 
 	private InstanceContent ic;
 	private AbstractLookup lookup;

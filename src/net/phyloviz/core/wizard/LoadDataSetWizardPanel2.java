@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.event.ChangeListener;
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
 import org.openide.WizardDescriptor;
@@ -21,7 +21,7 @@ public class LoadDataSetWizardPanel2 implements WizardDescriptor.ValidatingPanel
 	 */
 	private Component component;
 	private TypingFactory tf;
-	private TypingData<? extends AbstractType> td;
+	private TypingData<? extends AbstractProfile> td;
 
 	// Get the visual component for the panel. In this template, the component
 	// is kept separate. This can be more efficient: if the wizard is created
