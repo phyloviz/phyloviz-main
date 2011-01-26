@@ -42,7 +42,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
-import net.phyloviz.core.data.AbstractType;
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.goeburst.algorithm.HammingDistance;
 import net.phyloviz.tview.filter.Group;
@@ -96,7 +96,7 @@ public class GraphView extends JPanel {
 	private Table nodeTable;
 	private Table edgeTable;
 
-	private TreeMap<AbstractType, Integer> st2rowid;
+	private TreeMap<AbstractProfile, Integer> st2rowid;
 	private TreeMap<Edge, Integer> edge2rowid;
 	Graph graph;
 	
@@ -155,7 +155,7 @@ public class GraphView extends JPanel {
 		    new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
 			@Override
 			    public Font getFont(VisualItem item) {
-				    AbstractType st = (AbstractType) item.getSourceTuple().get("st_ref");
+				    AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
 				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (5 * Math.log(st.getFreq()))));
 			    }
 		    };
@@ -223,7 +223,7 @@ public class GraphView extends JPanel {
 		nodeSchema.addColumn("founder", int.class);
 		nodeSchema.addColumn("hdlv", int.class);
 		nodeSchema.addColumn("dg", int.class);
-		nodeSchema.addColumn("st_ref", AbstractType.class);
+		nodeSchema.addColumn("st_ref", AbstractProfile.class);
 
 		Schema edgeSchema = new Schema();
 		edgeSchema.addColumn(SRC, int.class);
@@ -239,16 +239,16 @@ public class GraphView extends JPanel {
 		edgeTable = edgeSchema.instantiate();
 
 		TreeMap<String,Integer> nodeMap = new TreeMap<String,Integer>();
-		st2rowid = new TreeMap<AbstractType,Integer>();
+		st2rowid = new TreeMap<AbstractProfile,Integer>();
 		edge2rowid = new TreeMap<Edge,Integer>();
 
 		Iterator<GOeBurstClusterWithStats> gIter = groups.iterator();
 		while (gIter.hasNext()) {
 			GOeBurstClusterWithStats g = gIter.next();
 			
-			Iterator<AbstractType> stIter = g.getSTs().iterator();
+			Iterator<AbstractProfile> stIter = g.getSTs().iterator();
 			while (stIter.hasNext()) {
-				AbstractType st = stIter.next();
+				AbstractProfile st = stIter.next();
 				int rowNb = nodeTable.addRow();
 				st2rowid.put(st, rowNb);
 				nodeMap.put(st.getID(), rowNb);
@@ -720,10 +720,10 @@ public class GraphView extends JPanel {
 	private class BurstNeighborHighlightControl extends NeighborHighlightControl {
 		@Override
 		protected void setNeighborHighlight(NodeItem n, boolean state) {
-			AbstractType st = (AbstractType) n.getSourceTuple().get("st_ref");
+			AbstractProfile st = (AbstractProfile) n.getSourceTuple().get("st_ref");
 			GOeBurstClusterWithStats g = (GOeBurstClusterWithStats) groupList.getModel().getElementAt(n.getSourceTuple().getInt("group"));
 			
-			Iterator<AbstractType> iter = g.getSLVs(st).iterator();
+			Iterator<AbstractProfile> iter = g.getSLVs(st).iterator();
 		        while (iter.hasNext() ) {
 		        	NodeItem nitem = 
 	        			(NodeItem) view.getVisualItem("graph.nodes", n.getTable().getTuple(st2rowid.get(iter.next())));
@@ -783,7 +783,7 @@ public class GraphView extends JPanel {
 						+ "\n");
 			}
 			if (item instanceof NodeItem) {
-				AbstractType st = (AbstractType) ((NodeItem) item).getSourceTuple().get("st_ref");
+				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
 				textArea.append(st +
 						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
 				
@@ -842,7 +842,7 @@ public class GraphView extends JPanel {
 				((JCheckBoxMenuItem) event.getSource()).setSelected(true);
 				if (g.getFakeRoot() != null)
 					nodeTable.setInt(st2rowid.get(g.getFakeRoot()), "founder", g.isFounder(g.getFakeRoot()) ? 1 : 0);
-				g.updateVisibleEdges((AbstractType) item.get("st_ref"));
+				g.updateVisibleEdges((AbstractProfile) item.get("st_ref"));
 				nodeTable.setInt(st2rowid.get(g.getFakeRoot()), "founder", 2);
 			}
 			
