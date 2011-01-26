@@ -11,10 +11,12 @@ public class GOeBurstResult implements NodeFactory {
 
 	private Collection<GOeBurstClusterWithStats> clustering;
 	private OutputPanel op;
+	private int level;
 
-	public GOeBurstResult(Collection<GOeBurstClusterWithStats> clustering, OutputPanel op) {
+	public GOeBurstResult(Collection<GOeBurstClusterWithStats> clustering, int level, OutputPanel op) {
 		this.clustering = clustering;
 		this.op = op;
+		this.level = level;
 	}
 
 	public OutputPanel getPanel() {
@@ -23,6 +25,10 @@ public class GOeBurstResult implements NodeFactory {
 
 	public Collection<GOeBurstClusterWithStats> getClustering() {
 		return clustering;
+	}
+
+	public int getLevel() {
+		return level;
 	}
 
 	@Override

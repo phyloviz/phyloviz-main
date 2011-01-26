@@ -63,7 +63,11 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>net.phyloviz.goeburst</package>
+                <package>net.phyloviz.goeburst.algorithm</package>
+                <package>net.phyloviz.goeburst.cluster</package>
+            </public-packages>
         </data>
     </configuration>
 </project>

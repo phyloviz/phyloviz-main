@@ -123,6 +123,6 @@ public class GOeBurstRunner implements Runnable {
 		op.appendWithDate("goeBURST algorithm: done.\n");
 		op.flush();
 
-		ds.add(new GOeBurstResult(groups, op));
+		ds.add(new GOeBurstResult(groups, level, op));
 	}
 }
