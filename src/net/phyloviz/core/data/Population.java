@@ -39,17 +39,26 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		collection = new ArrayList<Isolate>();
 	}
 
-	public boolean addColumn(String header) {
+	public boolean addColumn(String header, ColumnFiller cf) {
 		if (h2idx.containsKey(header))
 			return false;
 
 		h2idx.put(header, headers.size());
 		headers.add(header);
-		domains.add(new HashSet<String>());
+		HashSet<String> dom = new HashSet<String>();
+		domains.add(dom);
 
 		Iterator<Isolate> i = collection.iterator();
-		while (i.hasNext())
-			i.next().add(null);
+		if (cf != null)
+			while (i.hasNext()) {
+				Isolate iso = i.next();
+				String val = cf.getValue(iso);
+				dom.add(val);
+				iso.add(val);
+			}
+		else
+			while (i.hasNext())
+				i.next().add(null);
 
 		return true;
 	}
@@ -115,6 +124,9 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		ic.remove(o);
 	}
 
+	public interface ColumnFiller {
+		public String getValue(Isolate i);
+	}
 
 	public class PopulationIterator implements Iterator<Isolate> {
 
