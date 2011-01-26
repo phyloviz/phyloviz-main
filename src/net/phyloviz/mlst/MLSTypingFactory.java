@@ -24,6 +24,7 @@ public class MLSTypingFactory implements TypingFactory {
 	public TypingData<? extends AbstractProfile> loadData(Reader r)  throws IOException {
 
 		BufferedReader in = new BufferedReader(r);
+		int uid = 0;
 
 		TypingData<SequenceType> td = null;
 
@@ -39,7 +40,7 @@ public class MLSTypingFactory implements TypingFactory {
 			String[] STvec = new String[lineFields.length];
 			System.arraycopy(lineFields, 0, STvec, 0, lineFields.length);
 
-			SequenceType profile = new SequenceType(STvec);
+			SequenceType profile = new SequenceType(uid++, STvec);
 
 			if (! td.addData(profile)) {
 				SequenceType oldProfile = td.getEqual(profile);
