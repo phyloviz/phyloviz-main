@@ -3,7 +3,6 @@ package net.phyloviz.core.display;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
 import java.util.Iterator;
-import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import org.openide.util.lookup.ServiceProvider;
@@ -17,19 +16,14 @@ public class DisplayMenuProvider extends JMenu {
 		setEnabled(false);
 	}
 
-	public void updateMenu(Collection<Action> ac) {
+	public void updateMenu(Collection<JMenuItem> mc) {
 
 		this.removeAll();
 
-		if (ac != null) {
-			Iterator<Action> ia = ac.iterator();
-			while (ia.hasNext()) {
-				JMenuItem mi = new JMenuItem();
-				Action a = ia.next();
-				mi.setText(a.toString());
-				mi.addActionListener(a);
-				this.add(mi);
-			}
+		if (mc != null) {
+			Iterator<JMenuItem> mi = mc.iterator();
+			while (mi.hasNext())
+				this.add(mi.next());
 		}
 
 		if (this.getItemCount() == 0)
