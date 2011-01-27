@@ -1,6 +1,13 @@
 package net.phyloviz.gtview.ui;
 
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import net.phyloviz.core.display.DisplayMenuProvider;
+import net.phyloviz.core.display.DisplayOptionsAction;
 import net.phyloviz.goeburst.GOeBurstResult;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
@@ -14,6 +21,37 @@ public class GTPanel extends TopComponent {
 
 		this.add(new GraphView(gr));
 	}
+
+	@Override
+	public void componentActivated() {
+		super.componentActivated();
+		DisplayMenuProvider dmp = Lookup.getDefault().lookup(DisplayMenuProvider.class);
+
+		ArrayList<Action> al = new ArrayList<Action>();
+		al.add(new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Nothing...
+			}
+
+			@Override
+			public String toString() {
+				return "Testing...";
+			}
+
+		});
+		dmp.updateMenu(al);
+	}
+
+	@Override
+	protected void componentDeactivated() {
+		super.componentDeactivated();
+		DisplayMenuProvider dmp = Lookup.getDefault().lookup(DisplayMenuProvider.class);
+		dmp.updateMenu(null);
+	}
+
+
 
 	@Override
 	public int getPersistenceType() {
