@@ -1,8 +1,9 @@
-package net.phyloviz.gtview.ui;
+package net.phyloviz.gtview.action;
 
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
 import net.phyloviz.goeburst.GOeBurstResult;
+import net.phyloviz.gtview.ui.GTPanel;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;

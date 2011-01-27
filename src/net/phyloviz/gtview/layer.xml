@@ -4,8 +4,8 @@
 	<folder name="Actions">
 		<folder name="PHYLOViZ">
 			<folder name="GOeBurst">
-				<file name="net-phyloviz-gtview-ui-ViewAction.instance">
-					<attr name="instanceClass" stringvalue="net.phyloviz.gtview.ui.ViewAction"/>
+				<file name="net-phyloviz-gtview-action-ViewAction.instance">
+					<attr name="instanceClass" stringvalue="net.phyloviz.gtview.action.ViewAction"/>
 					<attr name="position" intvalue="0"/>
 				</file>
 			</folder>

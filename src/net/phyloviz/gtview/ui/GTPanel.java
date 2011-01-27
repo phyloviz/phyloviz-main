@@ -1,46 +1,46 @@
 package net.phyloviz.gtview.ui;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.JMenuItem;
 import net.phyloviz.core.display.DisplayMenuProvider;
-import net.phyloviz.core.display.DisplayOptionsAction;
 import net.phyloviz.goeburst.GOeBurstResult;
+import net.phyloviz.gtview.action.EdgeViewControlAction;
+import net.phyloviz.gtview.action.GroupControlAction;
+import net.phyloviz.gtview.action.InfoControlAction;
+import net.phyloviz.gtview.action.LinearSizeControlAction;
+import net.phyloviz.gtview.action.ViewControlAction;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
 public class GTPanel extends TopComponent {
 
+	private GraphView gv;
+	private ArrayList<JMenuItem> al;
+
 	/** Creates new form GTPanel */
 	public GTPanel(String name, GOeBurstResult gr) {
 		super(Lookups.singleton(gr));
 		initComponents();
 		this.setName(name);
-
-		this.add(new GraphView(gr));
+		gv = new GraphView(gr);
+		this.add(gv);
 	}
 
 	@Override
 	public void componentActivated() {
 		super.componentActivated();
+
+		if (al == null) {
+			al = new ArrayList<JMenuItem>();
+			al.add(new GroupControlAction(gv).getMenuItem());
+			al.add(new InfoControlAction(gv).getMenuItem());
+			al.add(new EdgeViewControlAction(gv).getMenuItem());
+			al.add(new LinearSizeControlAction(gv).getMenuItem());
+			al.add(new ViewControlAction(gv).getMenuItem());
+		}
+
 		DisplayMenuProvider dmp = Lookup.getDefault().lookup(DisplayMenuProvider.class);
-
-		ArrayList<Action> al = new ArrayList<Action>();
-		al.add(new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Nothing...
-			}
-
-			@Override
-			public String toString() {
-				return "Testing...";
-			}
-
-		});
 		dmp.updateMenu(al);
 	}
 
@@ -74,6 +74,8 @@ public class GTPanel extends TopComponent {
 
                 setLayout(new java.awt.BorderLayout());
         }// </editor-fold>//GEN-END:initComponents
+
+
         // Variables declaration - do not modify//GEN-BEGIN:variables
         // End of variables declaration//GEN-END:variables
 }

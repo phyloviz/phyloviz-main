@@ -582,7 +582,8 @@ public class GraphView extends JPanel {
         public ForceDirectedLayout getForceLayout(){
             return fdl;
         }
-	
+
+	// We make sure that we return always the same panel.
 	public JForcePanel getForcePanel() {
 		return new JForcePanel(fdl.getForceSimulator());
 	}
@@ -609,10 +610,10 @@ public class GraphView extends JPanel {
             }
         }
 
-        public Vector<Pair> getForces() {
+        public ArrayList<Pair> getForces() {
              ForceSimulator fs =fdl.getForceSimulator();
               Force[] farray=fs.getForces();
-              Vector<Pair> array=new Vector<Pair>();
+              ArrayList<Pair> array=new ArrayList<Pair>();
               for(int i=0;i<farray.length;i++){
 
                  int ni= farray[i].getParameterCount();
