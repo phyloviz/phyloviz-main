@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.gtview.ui.GTPanel;
+import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
@@ -26,11 +27,10 @@ public class ViewAction extends NodeAction {
 				return;
 			}
 		}
+
 		//Nope, need a new viewer
+        	StatusDisplayer.getDefault().setStatusText("Starting display...");
 		GTPanel tvp = new GTPanel(nodes[0].getParentNode().getDisplayName() + ": " + nodes[0].getDisplayName(), gr);
-		//Mode mode = WindowManager.getDefault().findMode("rightSlidingSide");
-		//if (mode != null)
-		//	mode.dockInto(tvp);
 		tvp.open();
 		tvp.requestActive();
 

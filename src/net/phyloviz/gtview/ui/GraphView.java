@@ -164,7 +164,7 @@ public class GraphView extends JPanel {
 			@Override
 			    public Font getFont(VisualItem item) {
 				    AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
-				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (5 * Math.log(st.getFreq()))));
+				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (5 * Math.log(st.getFreq() + 1))));
 			    }
 		    };
 

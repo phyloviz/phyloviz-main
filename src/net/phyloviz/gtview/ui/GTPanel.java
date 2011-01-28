@@ -18,6 +18,7 @@ public class GTPanel extends TopComponent {
 		this.setName(name);
 		gv = new GraphView(gr);
 		this.add(gv);
+		gv.startAnimation();
 	}
 
 	@Override
