@@ -13,7 +13,6 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -24,11 +23,12 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import net.phyloviz.gtview.ui.GraphView;
 import net.phyloviz.gtview.ui.GraphView.Pair;
+import org.openide.util.ImageUtilities;
 import org.openide.windows.TopComponent;
 import prefuse.util.force.Force;
 import prefuse.util.force.ForceSimulator;
 
-public class ViewControlAction extends AbstractAction {
+public class ViewControlAction implements ActionListener {
 
 	private GraphView gv;
 	private JDialog forceDialog;
@@ -43,8 +43,10 @@ public class ViewControlAction extends AbstractAction {
 
 			@Override
 			public void ancestorRemoved(AncestorEvent event) {
-				forceDialog.setVisible(false);
-				forceDialog.dispose();
+				if (forceDialog != null) {
+					forceDialog.setVisible(false);
+					forceDialog.dispose();
+				}
 			}
 
 			@Override
@@ -56,20 +58,25 @@ public class ViewControlAction extends AbstractAction {
 	public JMenuItem getMenuItem() {
 		JMenuItem mi = new JMenuItem("Control");
 		mi.setToolTipText("Rendering engine control");
-		mi.setMnemonic(KeyEvent.VK_T);
-		mi.setAction(this);
+		mi.setMnemonic(KeyEvent.VK_C);
+		mi.addActionListener(this);
 		return mi;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		enableViewControl();
+		if (forceDialog != null && forceDialog.isShowing())
+			forceDialog.requestFocus();
+		else
+			enableViewControl();
 	}
 
 	public void enableViewControl() {
 
 		forceDialog = new JDialog();
-		forceDialog.setName("Force control");
+		forceDialog.setName("Force Control");
+		forceDialog.setTitle("Force Control");
+		forceDialog.setIconImage(ImageUtilities.loadImage("net/phyloviz/core/DataSetIcon.png"));
 		forceDialog.add(gv.getForcePanel(), BorderLayout.CENTER);
 		JPanel p = new JPanel();
 		JButton bSave = new JButton("Save");

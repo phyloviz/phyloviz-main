@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
@@ -45,6 +46,11 @@ import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.goeburst.algorithm.HammingDistance;
+import net.phyloviz.gtview.action.EdgeViewControlAction;
+import net.phyloviz.gtview.action.GroupControlAction;
+import net.phyloviz.gtview.action.InfoControlAction;
+import net.phyloviz.gtview.action.LinearSizeControlAction;
+import net.phyloviz.gtview.action.ViewControlAction;
 import net.phyloviz.tview.filter.Group;
 import prefuse.Display;
 import prefuse.Visualization;
@@ -119,6 +125,7 @@ public class GraphView extends JPanel {
 	private JScrollPane infoPanel;
 	private boolean infoPanelStatus;
 	private JTextArea textArea;
+	private JPopupMenu popupMenu;
 
 	private LabelRenderer lr;
 	private DefaultRendererFactory rf;
@@ -409,9 +416,27 @@ public class GraphView extends JPanel {
 			}
 		});
 
+		popupMenu = new JPopupMenu();
+		popupMenu.add(new GroupControlAction(this).getMenuItem());
+		popupMenu.add(new InfoControlAction(this).getMenuItem());
+		popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
+		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
+		popupMenu.add(new ViewControlAction(this).getMenuItem());
+
+		JButton optionsButton = new JButton("Options");
+		optionsButton.setMargin( new Insets(1, 1, 1, 1));
+		optionsButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+                		popupMenu.show(e.getComponent(), e.getX(), e.getY());
+            		}
+		});
+
 		// Bottom box.
 		Box box = new Box(BoxLayout.X_AXIS);
 		box.add(Box.createHorizontalStrut(3));
+		box.add(optionsButton);
+		box.add(Box.createHorizontalStrut(8));
 		box.add(playButton);
 		box.add(Box.createHorizontalStrut(1));
 		box.add(pauseButton);
