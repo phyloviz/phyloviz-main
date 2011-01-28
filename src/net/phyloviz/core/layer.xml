@@ -11,12 +11,6 @@
 		<attr name="displayName" bundlevalue="net.phyloviz.core.Bundle#CTL_LoadDataSetAction"/>
             </file>
         </folder>
-        <folder name="View">
-            <file name="net-phyloviz-core-display-DisplayOptionsAction.instance">
-                <attr name="instanceClass" stringvalue="net.phyloviz.core.display.DisplayOptionsAction"/>
-                <attr name="noIconInMenu" boolvalue="false"/>
-            </file>
-        </folder>
         <folder name="Window">
             <file name="net-phyloviz-core-explorer-DataSetExplorerAction.instance">
                 <attr name="component" methodvalue="net.phyloviz.core.explorer.DataSetExplorerTopComponent.findInstance"/>
@@ -33,12 +27,6 @@
             </file>
         </folder>
         <file name="GoTo_hidden"/>
-        <folder name="View">
-            <file name="net-phyloviz-core-display-DisplayOptionsAction.shadow">
-                <attr name="originalFile" stringvalue="Actions/View/net-phyloviz-core-display-DisplayOptionsAction.instance"/>
-                <attr name="position" intvalue="200"/>
-            </file>
-        </folder>
         <folder name="Window">
             <file name="DataSetExplorerAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/net-phyloviz-core-explorer-DataSetExplorerAction.instance"/>
