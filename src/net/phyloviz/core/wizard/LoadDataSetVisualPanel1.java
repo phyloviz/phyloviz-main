@@ -15,8 +15,8 @@ public final class LoadDataSetVisualPanel1 extends JPanel {
 	public LoadDataSetVisualPanel1() {
 
 		typeListModel = new DefaultComboBoxModel();
-		Collection<TypingFactory> result = (Collection<TypingFactory>) Lookup.getDefault().lookupAll(TypingFactory.class);
-		Iterator<TypingFactory> ir = result.iterator();
+		Collection<? extends TypingFactory> result = Lookup.getDefault().lookupAll(TypingFactory.class);
+		Iterator<? extends TypingFactory> ir = result.iterator();
 		while (ir.hasNext()) {
 			typeListModel.addElement(ir.next());
 		}

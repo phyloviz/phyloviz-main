@@ -9,6 +9,7 @@ import java.text.MessageFormat;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
+import org.openide.WizardDescriptor.Panel;
 import org.openide.util.HelpCtx;
 
 public final class LoadDataSetWizardAction implements ActionListener {
@@ -17,7 +18,7 @@ public final class LoadDataSetWizardAction implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels());
+		WizardDescriptor wizardDescriptor = new WizardDescriptor((Panel<WizardDescriptor>[]) getPanels());
 		// {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
 		wizardDescriptor.setTitle("Load a Dataset");

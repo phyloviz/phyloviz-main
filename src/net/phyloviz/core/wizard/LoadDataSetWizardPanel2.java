@@ -10,6 +10,7 @@ import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
 import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
+import org.openide.awt.StatusDisplayer;
 import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 
@@ -67,12 +68,14 @@ public class LoadDataSetWizardPanel2 implements WizardDescriptor.ValidatingPanel
 	@Override
 	public void storeSettings(Object settings) {
 		((WizardDescriptor) settings).putProperty("td_filename", ((LoadDataSetVisualPanel2) getComponent()).getFilename());
+		((WizardDescriptor) settings).putProperty("typing_factory", tf);
 		((WizardDescriptor) settings).putProperty("typing_data", td);
 	}
 
 	@Override
 	public void validate() throws WizardValidationException {
 		try {
+        		StatusDisplayer.getDefault().setStatusText("Loading typing data...");
 			td = tf.loadData(new FileReader(((LoadDataSetVisualPanel2) getComponent()).getFilename()));
 			td.setDescription(tf.toString());
 

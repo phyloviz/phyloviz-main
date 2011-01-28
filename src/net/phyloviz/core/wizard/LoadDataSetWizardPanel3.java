@@ -11,6 +11,7 @@ import net.phyloviz.core.data.DataSetTracker;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.PopulationFactory;
+import net.phyloviz.core.util.TypingFactory;
 import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.awt.StatusDisplayer;
@@ -28,6 +29,7 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 	private String dataSetName;
 
 	private TypingData<? extends AbstractProfile> td;
+	private TypingFactory tf;
 	private Population pop;
 	private DataSet ds;
 
@@ -70,6 +72,7 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 	public void readSettings(Object settings) {
 		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/PopulationImage.png", true));
 		td = (TypingData<AbstractProfile>) ((WizardDescriptor) settings).getProperty("typing_data");
+		tf = (TypingFactory) ((WizardDescriptor) settings).getProperty("typing_factory");
 		dataSetName = (String) ((WizardDescriptor) settings).getProperty("name");
 	}
 
@@ -80,6 +83,7 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 	@Override
 	public void validate() throws WizardValidationException {
 		try {
+        		StatusDisplayer.getDefault().setStatusText("Loading isolate data...");
 			pop = new PopulationFactory().loadPopulation(new FileReader(((LoadDataSetVisualPanel3) getComponent()).getFilename()));
 		} catch (FileNotFoundException ex) {
 			throw new WizardValidationException(null, "File not found: " + ex.getMessage(), null);
@@ -90,9 +94,15 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 		}
 
 		ds = new DataSet(dataSetName);
+		int key = ((LoadDataSetVisualPanel3) getComponent()).getKeyIndex();
+
+        	StatusDisplayer.getDefault().setStatusText("Integrating data...");
+		td = tf.integrateData(td, pop, key);
+
 		ds.add(td);
 		ds.add(pop);
-		ds.setPopKey(((LoadDataSetVisualPanel3) getComponent()).getKeyIndex());
+		ds.setPopKey(key);
+
 		Lookup.getDefault().lookup(DataSetTracker.class).add(ds);
         	StatusDisplayer.getDefault().setStatusText("Dataset loaded.");
 	}
