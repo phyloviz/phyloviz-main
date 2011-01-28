@@ -47,6 +47,7 @@ import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.goeburst.algorithm.HammingDistance;
 import net.phyloviz.gtview.action.EdgeViewControlAction;
+import net.phyloviz.gtview.action.ExportAction;
 import net.phyloviz.gtview.action.GroupControlAction;
 import net.phyloviz.gtview.action.InfoControlAction;
 import net.phyloviz.gtview.action.LinearSizeControlAction;
@@ -209,7 +210,6 @@ public class GraphView extends JPanel {
 		display.addControlListener(new ZoomToFitControl());
 		display.addControlListener((Control) new ItemInfoControl());
                 
-
 		display.addMouseMotionListener(new MouseMotionAdapter() {
 
 			@Override
@@ -422,6 +422,7 @@ public class GraphView extends JPanel {
 		popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
+		popupMenu.add(new ExportAction(this).getMenuItem());
 
 		JButton optionsButton = new JButton("Options");
 		optionsButton.setMargin( new Insets(1, 1, 1, 1));
