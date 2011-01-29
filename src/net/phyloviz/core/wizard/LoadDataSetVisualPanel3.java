@@ -64,6 +64,8 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
                 jPanel6 = new javax.swing.JPanel();
                 jButton1 = new javax.swing.JButton();
                 jButton2 = new javax.swing.JButton();
+                jPanel1 = new javax.swing.JPanel();
+                jLabel3 = new javax.swing.JLabel();
 
                 setLayout(new java.awt.BorderLayout());
 
@@ -112,6 +114,14 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
 
                 jPanel3.add(jPanel6, java.awt.BorderLayout.EAST);
 
+                jPanel1.setLayout(new java.awt.BorderLayout());
+
+                org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(LoadDataSetVisualPanel3.class, "LoadDataSetVisualPanel3.jLabel3.text")); // NOI18N
+                jLabel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
+                jPanel1.add(jLabel3, java.awt.BorderLayout.CENTER);
+
+                jPanel3.add(jPanel1, java.awt.BorderLayout.SOUTH);
+
                 add(jPanel3, java.awt.BorderLayout.PAGE_START);
         }// </editor-fold>//GEN-END:initComponents
 
@@ -157,6 +167,8 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
         private javax.swing.JComboBox jComboBox1;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JLabel jLabel2;
+        private javax.swing.JLabel jLabel3;
+        private javax.swing.JPanel jPanel1;
         private javax.swing.JPanel jPanel3;
         private javax.swing.JPanel jPanel4;
         private javax.swing.JPanel jPanel5;

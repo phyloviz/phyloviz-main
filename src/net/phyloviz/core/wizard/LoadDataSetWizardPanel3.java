@@ -82,26 +82,33 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 
 	@Override
 	public void validate() throws WizardValidationException {
-		try {
-        		StatusDisplayer.getDefault().setStatusText("Loading isolate data...");
-			pop = new PopulationFactory().loadPopulation(new FileReader(((LoadDataSetVisualPanel3) getComponent()).getFilename()));
-		} catch (FileNotFoundException ex) {
-			throw new WizardValidationException(null, "File not found: " + ex.getMessage(), null);
-		} catch (IOException ex) {
-			throw new WizardValidationException(null, "Error loading file: " + ex.getMessage(), null);
-		} catch (Exception ex) {
-			throw new WizardValidationException(null, "Fatal error: " + ex.getMessage(), null);
-		}
 
 		ds = new DataSet(dataSetName);
-		int key = ((LoadDataSetVisualPanel3) getComponent()).getKeyIndex();
 
-        	StatusDisplayer.getDefault().setStatusText("Integrating data...");
-		td = tf.integrateData(td, pop, key);
+		String fileName = ((LoadDataSetVisualPanel3) getComponent()).getFilename();
+
+		if (fileName != null && (! fileName.equals(""))) {
+			try {
+        			StatusDisplayer.getDefault().setStatusText("Loading isolate data...");
+				pop = new PopulationFactory().loadPopulation(new FileReader(fileName));
+			} catch (FileNotFoundException ex) {
+				throw new WizardValidationException(null, "File not found: " + ex.getMessage(), null);
+			} catch (IOException ex) {
+				throw new WizardValidationException(null, "Error loading file: " + ex.getMessage(), null);
+			} catch (Exception ex) {
+				throw new WizardValidationException(null, "Fatal error: " + ex.getMessage(), null);
+			}
+
+			int key = ((LoadDataSetVisualPanel3) getComponent()).getKeyIndex();
+
+			ds.add(pop);
+	        	StatusDisplayer.getDefault().setStatusText("Integrating data...");
+			td = tf.integrateData(td, pop, key);
+			ds.setPopKey(key);
+
+		}
 
 		ds.add(td);
-		ds.add(pop);
-		ds.setPopKey(key);
 
 		Lookup.getDefault().lookup(DataSetTracker.class).add(ds);
         	StatusDisplayer.getDefault().setStatusText("Dataset loaded.");
