@@ -1,12 +1,28 @@
-/**
+/*
+ * @(#)AbstractProfile.java 27/01/11
  *
+ * Copyright 2011 Phyloviz. All rights reserved.
+ * Use is subject to license terms.
  */
-
 package net.phyloviz.core.data;
+/**
+  * This class provides a skeletal implementation of the <tt>Profile</tt>
+  * interface, to minimize the effort required to implement this interface.
+  *
+  * @since   PHILOViZ 1.0
+  * @author A. P. Francisco
+  */
 
 public abstract class AbstractProfile implements Profile {
 
+    /**
+     * The internal value  of the identifier this typing profile.
+     */
 	protected int uid;
+
+    /**
+     * The identifier of this typing profile.
+     */
 	protected String id;
 
 	@Override
