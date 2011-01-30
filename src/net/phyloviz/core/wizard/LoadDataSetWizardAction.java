@@ -16,6 +16,7 @@ public final class LoadDataSetWizardAction implements ActionListener {
 
 	private WizardDescriptor.Panel[] panels;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		WizardDescriptor wizardDescriptor = new WizardDescriptor((Panel<WizardDescriptor>[]) getPanels());

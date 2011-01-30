@@ -4,7 +4,6 @@
 
 package net.phyloviz.core.data;
 
-import net.phyloviz.core.util.DataModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +36,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 	private TableModel model;
 
+	@SuppressWarnings("unchecked")
 	public TypingData(int nColumns) {
 		headers = new String[nColumns];
 		domains = new HashSet[nColumns];
@@ -97,6 +97,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		Collections.sort(collection, c);
 	}
 
+	@Override
 	public DataIterator iterator() {
 		return new DataIterator();
 	}
@@ -133,6 +134,19 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 	public void remove(Object o) {
 		ic.remove(o);
+	}
+
+	@Override
+	public int getKey() {
+		return 0;
+	}
+
+	@Override
+	public String getDomainLabel(int idx) {
+		if (idx < 0 || idx >= headers.length)
+			return null;
+
+		return headers[idx];
 	}
 
 	public class DataIterator implements Iterator<T> {
@@ -214,10 +228,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 		@Override
 		public String getColumnName(int idx) {
-			if (idx < 0 || idx >= headers.length)
-				return null;
-
-			return headers[idx];
+			return getDomainLabel(idx);
 		}
 
 		@Override
@@ -233,13 +244,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 			if (rowIndex < 0 || rowIndex >= collection.size())
 				return null;
 
-			if (columnIndex < 0 || columnIndex >= headers.length)
-				return null;
-
-			if (columnIndex == 0)
-				return collection.get(rowIndex).getID();
-			else
-				return collection.get(rowIndex).getValue(columnIndex - 1);
+			return collection.get(rowIndex).get(columnIndex);
 		}
 	}
 }

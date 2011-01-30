@@ -6,8 +6,6 @@
  */
 package net.phyloviz.core.data;
 
-
-import net.phyloviz.core.util.DataModel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,261 +30,273 @@ import org.openide.util.lookup.InstanceContent;
  */
 public class Population implements DataModel, Lookup.Provider, NodeFactory {
 
-    private InstanceContent ic;
-    private AbstractLookup lookup;
-    /**
-     * The set of the anciliary data names.
-     */
-    private ArrayList<String> headers;
-    /**
-     * The list of sets of anciliary data values.
-     * Each position of this list contains the corresponding set of anciliary
-     * data values to a specific anciliary data name.
-     */
-    private ArrayList<HashSet<String>> domains;
-    /**
-     *  The map that to each anciliary data name maps
-     *  an internal index.
-     */
-    private HashMap<String, Integer> h2idx;
-    private ArrayList<Isolate> collection;
-    private TableModel model;
+	private InstanceContent ic;
+	private AbstractLookup lookup;
+	/**
+	 * The set of the ancillary data names.
+	 */
+	private ArrayList<String> headers;
+	/**
+	 * The list of sets of ancillary data values.
+	 * Each position of this list contains the corresponding set of ancillary
+	 * data values to a specific ancillary data name.
+	 */
+	private ArrayList<HashSet<String>> domains;
+	/**
+	 *  The map that to each ancillary data name maps
+	 *  an internal index.
+	 */
+	private HashMap<String, Integer> h2idx;
+	private ArrayList<Isolate> collection;
+	private TableModel model;
+	private int key;
 
-    /**
-     * Constructs an empty population.
-     */
-    public Population() {
-        ic = new InstanceContent();
-        lookup = new AbstractLookup(ic);
-        headers = new ArrayList<String>();
-        domains = new ArrayList<HashSet<String>>();
-        h2idx = new HashMap<String, Integer>();
-        collection = new ArrayList<Isolate>();
-    }
+	/**
+	 * Constructs an empty population.
+	 */
+	public Population() {
+		ic = new InstanceContent();
+		lookup = new AbstractLookup(ic);
+		headers = new ArrayList<String>();
+		domains = new ArrayList<HashSet<String>>();
+		h2idx = new HashMap<String, Integer>();
+		collection = new ArrayList<Isolate>();
+	}
 
-    /**
-     * Adds an isolate to this population with <code>values<code/> as its
-     * anciliary data if they are the same as for the isolates that
-     * belong to this population.
-     *
-     * @param values the anciliary data values of an isolate.
-     * @return <code> true </code> if they are the same as for the isolates
-     * that belong to this population.
-     *
-     */
-    public boolean addIsolate(String[] values) {
+	/**
+	 * Adds an isolate to this population with <code>values<code/> as its
+	 * ancillary data if they are the same as for the isolates that
+	 * belong to this population.
+	 *
+	 * @param values the ancillary data values of an isolate.
+	 * @return <code> true </code> if they are the same as for the isolates
+	 * that belong to this population.
+	 *
+	 */
+	public boolean addIsolate(String[] values) {
 
-        // Do we have values for all fields?
-        if (values.length != headers.size()) {
-            return false;
-        }
+		// Do we have values for all fields?
+		if (values.length != headers.size()) {
+			return false;
+		}
 
-        Isolate isolate = new Isolate();
+		Isolate isolate = new Isolate();
 
-        for (int i = 0; i < values.length; i++) {
-            isolate.add(values[i]);
-            domains.get(i).add(values[i]);
-        }
+		for (int i = 0; i < values.length; i++) {
+			isolate.add(values[i]);
+			domains.get(i).add(values[i]);
+		}
 
-        collection.add(isolate);
+		collection.add(isolate);
 
-        return true;
-    }
+		return true;
+	}
 
-    /**
-     * Returns the number of isolates in this population.
-     *
-     * @return the number of isolates of this population
-     */
-    public int size() {
-        return collection.size();
-    }
+	/**
+	 * Returns the number of isolates in this population.
+	 *
+	 * @return the number of isolates of this population
+	 */
+	public int size() {
+		return collection.size();
+	}
 
-    /**
-     *
-     * @param c
-     */
-    public void sort(Comparator<Isolate> c) {
-        Collections.sort(collection, c);
-    }
+	/**
+	 *
+	 * @param c
+	 */
+	public void sort(Comparator<Isolate> c) {
+		Collections.sort(collection, c);
+	}
 
-    public PopulationIterator iterator() {
-        return new PopulationIterator();
-    }
+	@Override
+	public PopulationIterator iterator() {
+		return new PopulationIterator();
+	}
 
-    @Override
-    public String toString() {
-        return "Isolate Data";
-    }
+	@Override
+	public String toString() {
+		return "Isolate Data";
+	}
 
-    // LookUp Methods
-    @Override
-    public Lookup getLookup() {
-        return lookup;
-    }
+	// LookUp Methods
+	@Override
+	public Lookup getLookup() {
+		return lookup;
+	}
 
-    public void add(Object o) {
-        ic.add(o);
-    }
+	public void add(Object o) {
+		ic.add(o);
+	}
 
-    public void remove(Object o) {
-        ic.remove(o);
-    }
+	public void remove(Object o) {
+		ic.remove(o);
+	}
 
-    @Override
-    public AbstractNode getNode() {
-        return new PopulationNode(this);
-    }
+	@Override
+	public AbstractNode getNode() {
+		return new PopulationNode(this);
+	}
 
-    public class PopulationIterator implements Iterator<Isolate> {
+	@Override
+	public int getKey() {
+		return key;
+	}
 
-        private Iterator<Isolate> i;
-        private Isolate last;
-        private int idx;
+	public void setKey(int key) {
+		this.key = key;
+	}
 
-        public PopulationIterator() {
-            i = collection.iterator();
-            last = null;
-            idx = 0;
-        }
+	@Override
+	public String getDomainLabel(int idx) {
+		if (idx < 0 || idx >= headers.size()) {
+			return null;
+		}
 
-        @Override
-        public boolean hasNext() {
-            return i.hasNext();
-        }
+		return headers.get(idx);
+	}
 
-        @Override
-        public Isolate next() {
-            last = i.next();
-            idx++;
-            return last;
-        }
+	public class PopulationIterator implements Iterator<Isolate> {
 
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported!");
-        }
+		private Iterator<Isolate> i;
+		private Isolate last;
+		private int idx;
 
-        public String get(int idx) {
-            if (last == null) {
-                return null;
-            }
+		public PopulationIterator() {
+			i = collection.iterator();
+			last = null;
+			idx = 0;
+		}
 
-            return last.get(idx);
-        }
+		@Override
+		public boolean hasNext() {
+			return i.hasNext();
+		}
 
-        public void set(int idx, String value) {
-            if (last != null) {
-                domains.get(idx).add(value);
-                last.set(idx, value);
-            }
-        }
+		@Override
+		public Isolate next() {
+			last = i.next();
+			idx++;
+			return last;
+		}
 
-        public String get(String column) {
-            return get(h2idx.get(column));
-        }
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Not supported!");
+		}
 
-        public void set(String column, String value) {
-            set(h2idx.get(column), value);
-        }
+		public String get(int idx) {
+			if (last == null) {
+				return null;
+			}
 
-        public int index() {
-            return idx;
-        }
-    }
+			return last.get(idx);
+		}
 
-    //Data Model Methods
-    public boolean addColumn(String header, ColumnFiller cf) {
-        if (h2idx.containsKey(header)) {
-            return false;
-        }
+		public void set(int idx, String value) {
+			if (last != null) {
+				domains.get(idx).add(value);
+				last.set(idx, value);
+			}
+		}
 
-        h2idx.put(header, headers.size());
-        headers.add(header);
-        HashSet<String> dom = new HashSet<String>();
-        domains.add(dom);
+		public String get(String column) {
+			return get(h2idx.get(column));
+		}
 
-        Iterator<Isolate> i = collection.iterator();
-        if (cf != null) {
-            while (i.hasNext()) {
-                Isolate iso = i.next();
-                String val = cf.getValue(iso);
-                dom.add(val);
-                iso.add(val);
-            }
-        } else {
-            while (i.hasNext()) {
-                i.next().add(null);
-            }
-        }
+		public void set(String column, String value) {
+			set(h2idx.get(column), value);
+		}
 
-        return true;
-    }
+		public int index() {
+			return idx;
+		}
+	}
 
-    @Override
-    public HashSet<String> getDomain(int idx) {
-        if (idx < 0 || idx > domains.size()) {
-            return null;
-        }
+	//Data Model Methods
+	public boolean addColumn(String header, ColumnFiller cf) {
+		if (h2idx.containsKey(header)) {
+			return false;
+		}
 
-        return domains.get(idx);
-    }
+		h2idx.put(header, headers.size());
+		headers.add(header);
+		HashSet<String> dom = new HashSet<String>();
+		domains.add(dom);
 
-    public interface ColumnFiller {
+		Iterator<Isolate> i = collection.iterator();
+		if (cf != null) {
+			while (i.hasNext()) {
+				Isolate iso = i.next();
+				String val = cf.getValue(iso);
+				dom.add(val);
+				iso.add(val);
+			}
+		} else {
+			while (i.hasNext()) {
+				i.next().add(null);
+			}
+		}
 
-        public String getValue(Isolate i);
-    }
+		return true;
+	}
 
-    @Override
-    public TableModel tableModel() {
-        if (model == null) {
-            model = new TableModel();
-        }
+	@Override
+	public HashSet<String> getDomain(int idx) {
+		if (idx < 0 || idx > domains.size()) {
+			return null;
+		}
 
-        return model;
-    }
+		return domains.get(idx);
+	}
 
-    public class TableModel extends AbstractTableModel {
+	public interface ColumnFiller {
 
-        @Override
-        public int getRowCount() {
-            return collection.size();
-        }
+		public String getValue(Isolate i);
+	}
 
-        @Override
-        public int getColumnCount() {
-            return headers.size();
-        }
+	@Override
+	public TableModel tableModel() {
+		if (model == null) {
+			model = new TableModel();
+		}
 
-        @Override
-        public String getColumnName(int idx) {
-            if (idx < 0 || idx >= headers.size()) {
-                return null;
-            }
+		return model;
+	}
 
-            return headers.get(idx);
-        }
+	public class TableModel extends AbstractTableModel {
 
-        @Override
-        public int findColumn(String name) {
-            if (h2idx.containsKey(name)) {
-                return h2idx.get(name);
-            }
+		@Override
+		public int getRowCount() {
+			return collection.size();
+		}
 
-            return -1;
-        }
+		@Override
+		public int getColumnCount() {
+			return headers.size();
+		}
 
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            if (rowIndex < 0 || rowIndex >= collection.size()) {
-                return null;
-            }
+		@Override
+		public String getColumnName(int idx) {
+			return getDomainLabel(idx);
+		}
 
-            if (columnIndex < 0 || columnIndex >= headers.size()) {
-                return null;
-            }
+		@Override
+		public int findColumn(String name) {
+			if (h2idx.containsKey(name)) {
+				return h2idx.get(name);
+			}
 
-            return collection.get(rowIndex).get(columnIndex);
-        }
-    }
+			return -1;
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			if (rowIndex < 0 || rowIndex >= collection.size()) {
+				return null;
+			}
+
+			return collection.get(rowIndex).get(columnIndex);
+		}
+	}
 }

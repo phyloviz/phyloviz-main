@@ -27,6 +27,9 @@ public class DataSet implements Lookup.Provider, NodeFactory {
 	}
 
 	public void setPopKey(int key) {
+		Population pop = lookup.lookup(Population.class);
+		if (pop != null)
+			pop.setKey(key);
 		popKey = key;
 	}
 

@@ -68,6 +68,7 @@ public class LoadDataSetWizardPanel3 implements WizardDescriptor.ValidatingPanel
 	// settings object will be the WizardDescriptor, so you can use
 	// WizardDescriptor.getProperty & putProperty to store information entered
 	// by the user.
+	@SuppressWarnings("unchecked")
 	@Override
 	public void readSettings(Object settings) {
 		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/PopulationImage.png", true));
