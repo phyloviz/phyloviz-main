@@ -2,7 +2,7 @@ package net.phyloviz.tview;
 
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
-import net.phyloviz.core.util.DataModel;
+import net.phyloviz.core.data.DataModel;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;

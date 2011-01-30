@@ -18,7 +18,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import net.phyloviz.core.util.DataModel;
+import net.phyloviz.core.data.DataModel;
 
 public class TreePanel extends CheckboxTree {
 
@@ -27,6 +27,7 @@ public class TreePanel extends CheckboxTree {
 	private TreeSet<String>[] filterSet;
 	private DefaultMutableTreeNode root;
 
+	@SuppressWarnings("unchecked")
 	public TreePanel(DataModel model) {
 		super();
 
@@ -86,6 +87,7 @@ public class TreePanel extends CheckboxTree {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void selecting(TreeSet<String>[] otherView, boolean toReplace) {
 
 		MenuSelectionManager.defaultManager().clearSelectedPath();

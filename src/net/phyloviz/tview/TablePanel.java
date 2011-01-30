@@ -20,7 +20,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import net.phyloviz.core.util.DataModel;
+import net.phyloviz.core.data.DataModel;
 
 import org.openide.awt.StatusDisplayer;
 
@@ -32,6 +32,7 @@ public class TablePanel extends JTable {
 	RowFilter<Integer, Integer> row = null;
 	private TreeSet<String>[] filterSet;
 
+	@SuppressWarnings("unchecked")
 	public TablePanel(DataModel dm) {
 		super();
 		setModel(dm.tableModel());

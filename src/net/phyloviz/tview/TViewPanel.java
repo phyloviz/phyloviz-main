@@ -17,7 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import net.phyloviz.core.util.DataModel;
+import net.phyloviz.core.data.DataModel;
 import net.phyloviz.tview.util.Palette;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
