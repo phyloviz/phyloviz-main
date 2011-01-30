@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-OpenIDE-Module: net.phyloviz.algo
+OpenIDE-Module: net.phyloviz.algo/1
+OpenIDE-Module-Implementation-Version: 0
 OpenIDE-Module-Layer: net/phyloviz/algo/layer.xml
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/algo/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
 

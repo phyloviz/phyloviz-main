@@ -21,8 +21,8 @@ public class AlgoMenuAction extends AbstractAction implements Presenter.Popup {
 	public JMenuItem getPopupPresenter() {
 		JMenu result = new JMenu("Compute");
 
-		Collection<AlgorithmProvider> lookres = (Collection<AlgorithmProvider>) Lookup.getDefault().lookupAll(AlgorithmProvider.class);
-		Iterator<AlgorithmProvider> ir = lookres.iterator();
+		Collection<? extends AlgorithmProvider> lookres = Lookup.getDefault().lookupAll(AlgorithmProvider.class);
+		Iterator<? extends AlgorithmProvider> ir = lookres.iterator();
 		while (ir.hasNext()) {
 			JMenuItem mi = new JMenuItem();
 			AlgorithmProvider ap = ir.next();
