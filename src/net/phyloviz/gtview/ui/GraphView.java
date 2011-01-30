@@ -52,7 +52,6 @@ import net.phyloviz.gtview.action.GroupControlAction;
 import net.phyloviz.gtview.action.InfoControlAction;
 import net.phyloviz.gtview.action.LinearSizeControlAction;
 import net.phyloviz.gtview.action.ViewControlAction;
-import net.phyloviz.tview.filter.Group;
 import prefuse.Display;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
@@ -136,7 +135,7 @@ public class GraphView extends JPanel {
 	private boolean linear;
 
 	// Data analysis info...
-	private TreeMap<String, List<Group>> stMap;
+	//private TreeMap<String, List<Group>> stMap;
 
 	public GraphView(GOeBurstResult er) {
 		super(new BorderLayout());
@@ -546,9 +545,9 @@ public class GraphView extends JPanel {
 		view.run("draw");
 	}
 	
-	public void setStMap(TreeMap<String, List<Group>> map) {
-		stMap = map;
-	}
+	//public void setStMap(TreeMap<String, List<Group>> map) {
+	//	stMap = map;
+	//}
 	
 	public void appendTextToInfoPanel(String text) {
 		textArea.append(text);
@@ -815,20 +814,20 @@ public class GraphView extends JPanel {
 						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
 				
 				textArea.append("Chart details:\n");
-				if (stMap != null) {
-					int total = 0;
-					DecimalFormat df = new DecimalFormat("#.##");
-					Iterator<Group> groups = stMap.get(st.getID()).iterator();
-					while (groups.hasNext()) {
-						Group group = groups.next();
-						double percent = (((double) group.size() * 100) / st.getFreq());
-						textArea.append(" +" + group.getName() + " " + df.format(percent) + "%\n");
-						total += group.size();
-					}
-					double percent = (((double) (st.getFreq() - total) * 100) / st.getFreq());
-					if (percent > 0)
-						textArea.append(" + 'others' " + df.format(percent) + "%\n");
-				}
+//				if (stMap != null) {
+//					int total = 0;
+//					DecimalFormat df = new DecimalFormat("#.##");
+//					Iterator<Group> groups = stMap.getValue(st.getID()).iterator();
+//					while (groups.hasNext()) {
+//						Group group = groups.next();
+//						double percent = (((double) group.size() * 100) / st.getFreq());
+//						textArea.append(" +" + group.getName() + " " + df.format(percent) + "%\n");
+//						total += group.size();
+//					}
+//					double percent = (((double) (st.getFreq() - total) * 100) / st.getFreq());
+//					if (percent > 0)
+//						textArea.append(" + 'others' " + df.format(percent) + "%\n");
+//				}
 				
 				textArea.append("\n");
 
