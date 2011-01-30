@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-OpenIDE-Module: net.phyloviz.mlst
+OpenIDE-Module: net.phyloviz.mlst/1
+OpenIDE-Module-Implementation-Version: 0
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/mlst/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.0
 
