@@ -1,11 +1,14 @@
 package net.phyloviz.category;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import net.phyloviz.category.color.Palette;
@@ -29,22 +32,47 @@ public class CategoryProvider {
 	public CategoryProvider(DataModel dm) {
 		this.dm = dm;
 		this.on = false;
+		fullCats = new TreeMap<String, Integer>();
+		colorMap = new TreeMap<String, Color>();
 	}
 
 	public boolean isOn() {
 		return on;
 	}
 
-	public Map<String, Integer> getCategories() {
-		return fullCats;
+	public List<Entry<String, Integer>> getCategories() {
+		List<Entry<String, Integer>> entries = new ArrayList(fullCats.entrySet());
+
+		Collections.sort(entries, new Comparator<Entry<String, Integer>>() {
+
+			@Override
+			public int compare(Entry<String, Integer> c1, Entry<String, Integer> c2) {
+				return c2.getValue() - c1.getValue();
+			}
+		});
+
+		return entries;
 	}
 
 	public List<Category> getCategories(String id) {
+
+		Collections.sort(idMap.get(id), new Comparator<Category>() {
+
+			@Override
+			public int compare(Category c1, Category c2) {
+				return c2.size() - c1.size();
+			}
+		});
+
 		return idMap.get(id);
 	}
 
 	public Color getCategoryColor(String catName) {
 		return colorMap.get(catName);
+	}
+
+	public void putCategoryColor(String catName, Color c) {
+		colorMap.put(catName, c);
 	}
 
 	public Palette getPalette() {
