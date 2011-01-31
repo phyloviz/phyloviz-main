@@ -9,6 +9,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -17,46 +18,46 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.DataModel;
-import net.phyloviz.tview.util.Palette;
+import net.phyloviz.core.data.DataSet;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
 public class TViewPanel extends TopComponent {
 
-	private DataModel dm;
+	private final DataSet ds;
+	private final CategoryProvider cp;
 	private TablePanel table;
 	private TreePanel tree;
 	private JScrollPane sp;
 	private final JTextField filterText;
 	private JButton selectButton;
 	private JButton resetButton;
-	//private JButton viewButton;
+	private JButton viewButton;
 	private JRadioButton treeButton;
 	private JRadioButton tableButton;
 	private boolean tableortree;
 	private boolean firstTime;
 	private ButtonGroup group;
-	private Palette pal;
 	private TreeMap<String, Integer> fullCats;
 	private TreeMap<String, Color> colorMap;
-	//private TreeMap<String, List<Group>> stMap;
-	private boolean atLeastOnePlot;
 
 	/** Creates new form TViewPanel */
-	public TViewPanel(String name, DataModel dm) {
+	public TViewPanel(String name, DataModel dm, DataSet _ds) {
 		super(Lookups.singleton(dm));
 		initComponents();
 		this.setName(name);
-		
-		this.dm = dm;
-	
+		this.ds = _ds;
+
+		cp = new CategoryProvider(dm);
+		ds.add(cp);
+
 		//the finders
 		table = new TablePanel(dm);
 		tree = new TreePanel(dm);
 		firstTime = true;
 		tableortree = true;
-		this.atLeastOnePlot = false;
 		sp = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		sp.setBackground(Color.BLACK);
 		filterText = new JTextField("");
@@ -81,6 +82,33 @@ public class TViewPanel extends TopComponent {
 				filterText.setText("");
 				table.reseting();
 				tree.reseting();
+				cp.setSelection(null);
+			}
+		});
+
+		viewButton = new JButton("View");
+		viewButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				treeButton.setEnabled(false);
+				tableButton.setEnabled(false);
+
+				TreeSet<String>[] filter1;
+				TreeSet<String>[] filter2;
+				TreeSet<String>[] filter;
+				filter1 = table.viewing();
+				filter2 = tree.viewing();
+				if (tableortree) {
+					filter = filter1;
+				} else {
+					filter = filter2;
+				}
+
+				cp.setSelection(filter);
+
+				treeButton.setEnabled(true);
+				tableButton.setEnabled(true);
 			}
 		});
 
@@ -125,14 +153,10 @@ public class TViewPanel extends TopComponent {
 		box.add(filterText);
 		box.add(Box.createHorizontalGlue());
 		box.add(selectButton);
-		//box.add(viewButton);
+		box.add(viewButton);
 		box.add(resetButton);
 		add(sp, BorderLayout.CENTER);
 		add(box, BorderLayout.NORTH);
-	}
-
-	public Palette getPalette() {
-		return pal;
 	}
 
 	public TreeMap<String, Integer> getFullCategories() {
@@ -171,6 +195,12 @@ public class TViewPanel extends TopComponent {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void componentClosed() {
+		super.componentClosed();
+		ds.remove(cp);
 	}
 
 	@Override

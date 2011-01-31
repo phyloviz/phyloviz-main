@@ -1,8 +1,14 @@
 package net.phyloviz.tview;
 
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
+import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.DataModel;
+import net.phyloviz.core.data.DataSet;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
@@ -29,10 +35,8 @@ public class DataModelViewAction extends NodeAction {
 			}
 		}
 		//Nope, need a new viewer
-		TViewPanel tvp = new TViewPanel(nodes[0].getParentNode().getDisplayName() + ": " + nodes[0].getDisplayName(), dm);
-		//Mode mode = WindowManager.getDefault().findMode("rightSlidingSide");
-		//if (mode != null)
-		//	mode.dockInto(tvp);
+		DataSet ds = nodes[0].getParentNode().getLookup().lookup(DataSet.class);
+		TViewPanel tvp = new TViewPanel(nodes[0].getParentNode().getDisplayName() + ": " + nodes[0].getDisplayName(), dm, ds);
 		tvp.open();
 		tvp.requestActive();
 
