@@ -46,7 +46,7 @@ import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.goeburst.GOeBurstResult;
-import net.phyloviz.goeburst.algorithm.HammingDistance;
+import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.gtview.action.EdgeViewControlAction;
 import net.phyloviz.gtview.action.ExportAction;
 import net.phyloviz.gtview.action.GroupControlAction;
@@ -108,7 +108,7 @@ public class GraphView extends JPanel {
 	private TreeMap<Edge, Integer> edge2rowid;
 	Graph graph;
 	
-	//private TreeMap<Integer, Color> colors;
+	private GOeBurstResult er;
 
 	private Visualization view;
 	private Display display;
@@ -144,7 +144,7 @@ public class GraphView extends JPanel {
 		this.setBackground(Color.WHITE);
 		this.setOpaque(true);
 
-		//colors = new TreeMap<Integer, Color>();
+		this.er = er;
 
 		// Create an empty visualization.
 		view = new Visualization();
@@ -285,7 +285,7 @@ public class GraphView extends JPanel {
 							nodeTable.getInt(nodeMap.get(e.getU().getID()), "dg") + 1);
 					nodeTable.setInt(nodeMap.get(e.getV().getID()), "dg",
 							nodeTable.getInt(nodeMap.get(e.getV().getID()), "dg") + 1);
-					edgeTable.setInt(rowNb, "viz", HammingDistance.compute(e.getU(), e.getV()));
+					edgeTable.setInt(rowNb, "viz", er.getDistance().compute(e.getU(), e.getV()));
 				}
 
 				edgeTable.setInt(rowNb, "group", g.getID());
@@ -721,7 +721,7 @@ public class GraphView extends JPanel {
 			Edge edge = (Edge) item.getSourceTuple().get("edge_ref");
 
 			if (item.getSourceTuple().getInt("viz") > 1)
-				return ColorLib.gray(170 + (item.getSourceTuple().getInt("viz") - 1)*35);
+				return ColorLib.gray(170 + (item.getSourceTuple().getInt("viz") - 1)*(85/GOeBurstCluster.MAXLV));
 			
 			// old color: ColorLib.gray(200);
 			GOeBurstClusterWithStats g = (GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getSourceTuple().getInt("group"));
@@ -905,7 +905,7 @@ public class GraphView extends JPanel {
 					
 					edgeTable.setInt(rowID, "group", g.getID());
 					edgeTable.set(rowID, "edge_ref", e);
-					edgeTable.setInt(rowID, "viz", HammingDistance.compute(e.getU(), e.getV()));
+					edgeTable.setInt(rowID, "viz", er.getDistance().compute(e.getU(), e.getV()));
 					
 					int stRow = st2rowid.get(e.getU());
 					nodeTable.setInt(stRow, "dg", nodeTable.getInt(stRow, "dg") + 1);
