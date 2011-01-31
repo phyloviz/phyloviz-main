@@ -36,6 +36,9 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 	private TableModel model;
 
+	private boolean weightOk;
+	private int weight;
+
 	@SuppressWarnings("unchecked")
 	public TypingData(int nColumns) {
 		headers = new String[nColumns];
@@ -46,6 +49,8 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 		collection = new ArrayList<T>();
 		unique = new TreeSet<T>();
+
+		weightOk = false;
 	}
 
 	public TypingData(String[] ha) {
@@ -81,6 +86,8 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 			domains[i+1].add(profile.getValue(i));
 
 		collection.add(profile);
+
+		weightOk = false;
 
 		return true;
 	}
@@ -153,6 +160,19 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	@Override
 	public Collection<? extends DataItem> getItems() {
 		return new ArrayList<T>(collection);
+	}
+
+	@Override
+	public synchronized int weight() {
+
+		if (! weightOk ) {
+			weight = 0;
+			Iterator<T> i = collection.iterator();
+			while (i.hasNext())
+				weight += i.next().weight();
+		}
+
+		return weight;
 	}
 
 	public class DataIterator implements Iterator<T> {

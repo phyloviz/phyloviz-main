@@ -163,6 +163,11 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		return new ArrayList<Isolate>(collection);
 	}
 
+	@Override
+	public int weight() {
+		return size();
+	}
+
 	public class PopulationIterator implements Iterator<Isolate> {
 
 		private Iterator<Isolate> i;

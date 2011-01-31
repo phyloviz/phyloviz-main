@@ -26,4 +26,6 @@ public interface DataModel {
 	public Iterator<? extends DataItem> iterator();
 
 	public int size();
+
+	public int weight();
 }
