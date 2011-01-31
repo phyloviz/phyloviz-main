@@ -24,10 +24,10 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 	}
 
 	@Override
-	public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends AbstractProfile> td) {
+	public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
 		
-		ArrayList<Edge> edges = getEdges(td);
-		Collection<GOeBurstClusterWithStats> clustering = getGroups(td, edges);
+		ArrayList<Edge> edges = getEdges(td, ad);
+		Collection<GOeBurstClusterWithStats> clustering = getGroups(td, edges, ad);
 		
 		// Update LVs for STs in each group and set group id.
 		Iterator<GOeBurstClusterWithStats> gIter = clustering.iterator();
@@ -48,7 +48,7 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 		return stLVs.get(st.getUID()).lv[lv];
 	}
 
-	private ArrayList<Edge> getEdges(TypingData<? extends AbstractProfile> td) {
+	private ArrayList<Edge> getEdges(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		maxStId = 0;
 		
@@ -68,7 +68,7 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 			while (vIter.hasNext()) {
 				AbstractProfile v = vIter.next();
 				
-				int diff = HammingDistance.compute(u, v);
+				int diff = ad.compute(u, v);
 				
 				if (u != v && diff <= GOeBurstClusterWithStats.MAXLV)
 					uLV.lv[diff - 1] ++;
@@ -76,14 +76,14 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 					uLV.lv[GOeBurstClusterWithStats.MAXLV] ++;
 
 				if (u.getUID() < v.getUID() && diff <= level)
-					edges.add(new Edge(u,v));
+					edges.add(new Edge(u, v, ad));
 			}
 		}
 		
 		return edges;
 	}
 	
-	private Collection<GOeBurstClusterWithStats> getGroups(TypingData<? extends AbstractProfile> td, Collection<Edge> edges) {
+	private Collection<GOeBurstClusterWithStats> getGroups(TypingData<? extends AbstractProfile> td, Collection<Edge> edges, AbstractDistance ad) {
 		DisjointSet s = new DisjointSet(maxStId);
 		
 		Iterator<Edge> eIter = edges.iterator();
@@ -100,7 +100,7 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 			int pi = s.findSet(e.getU().getUID());
 			GOeBurstClusterWithStats g = groups.get(pi);
 			if ( g == null) {
-				g = new GOeBurstClusterWithStats(this);
+				g = new GOeBurstClusterWithStats(this, ad);
 				groups.put(pi, g);
 			}
 			
@@ -114,7 +114,7 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 			
 			int pi = s.findSet(st.getUID());
 			if (groups.get(pi) == null) {
-				GOeBurstClusterWithStats g = new GOeBurstClusterWithStats(this);
+				GOeBurstClusterWithStats g = new GOeBurstClusterWithStats(this, ad);
 				g.add(st);
 				groups.put(pi, g);
 			}

@@ -1,14 +1,15 @@
 package net.phyloviz.goeburst.cluster;
 
 import net.phyloviz.core.data.AbstractProfile;
-import net.phyloviz.goeburst.algorithm.HammingDistance;
+import net.phyloviz.goeburst.algorithm.AbstractDistance;
 
 public class Edge implements Comparable<Edge> {
 	private AbstractProfile u;
 	private AbstractProfile v;
+	private AbstractDistance ad;
 	private boolean vis;
 
-	public Edge(AbstractProfile u, AbstractProfile v) {
+	public Edge(AbstractProfile u, AbstractProfile v, AbstractDistance ad) {
 		
 		if (u.getUID() > v.getUID()) {
 			AbstractProfile x = u;
@@ -18,6 +19,7 @@ public class Edge implements Comparable<Edge> {
 		
 		this.u = u;
 		this.v = v;
+		this.ad = ad;
 		
 		this.vis = false;
 	}
@@ -53,7 +55,7 @@ public class Edge implements Comparable<Edge> {
 	@Override
 	public String toString() {
 		char lv = '?';
-		switch (HammingDistance.compute(getU(), getV())) {
+		switch (ad.compute(getU(), getV())) {
 		case 1:
 			lv = 's';
 			break;

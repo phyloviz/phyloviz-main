@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.goeburst.algorithm.AbstractDistance;
 import net.phyloviz.goeburst.algorithm.DisjointSet;
-import net.phyloviz.goeburst.algorithm.HammingDistance;
 
 public class GOeBurstCluster extends Cluster {
 
-	public static int MAXLV = 3;
+	public static int MAXLV = 5;
 
 	public static class STLV {
 
@@ -23,12 +23,14 @@ public class GOeBurstCluster extends Cluster {
 	protected TreeMap<Integer, STLV> lvMap;
 	protected TreeMap<Integer, LinkedList<AbstractProfile>> slvList;
 	protected TreeMap<Integer, LinkedList<AbstractProfile>> dlvList;
+	protected AbstractDistance ad;
 
-	public GOeBurstCluster() {
+	public GOeBurstCluster(AbstractDistance ad) {
 		super();
 		lvMap = new TreeMap<Integer, STLV>();
 		slvList = new TreeMap<Integer, LinkedList<AbstractProfile>>();
 		dlvList = new TreeMap<Integer, LinkedList<AbstractProfile>>();
+		this.ad = ad;
 	}
 
 	public Collection<AbstractProfile> getSLVs(AbstractProfile st) {
@@ -113,7 +115,7 @@ public class GOeBurstCluster extends Cluster {
 
 			GOeBurstCluster.STLV vLV = lvMap.get(v.getUID());
 
-			int diff = HammingDistance.compute(u, v);
+			int diff = ad.compute(u, v);
 
 			if (diff == 1) {
 				uSLVs.add(v);
@@ -142,7 +144,7 @@ public class GOeBurstCluster extends Cluster {
 			int ret = 0;
 			int k = 0;
 
-			ret = HammingDistance.compute(f.getU(), f.getV()) - HammingDistance.compute(e.getU(), e.getV());
+			ret = ad.compute(f.getU(), f.getV()) - ad.compute(e.getU(), e.getV());
 			if (ret != 0) {
 				return ret;
 			}

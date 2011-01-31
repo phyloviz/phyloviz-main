@@ -11,6 +11,7 @@ import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.GOeBurstResult;
+import net.phyloviz.goeburst.algorithm.AbstractDistance;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;
@@ -24,14 +25,16 @@ public class GOeBurstRunner implements Runnable {
 	private DataSet ds;
 	private Population pop;
 	private OutputPanel op;
+	private AbstractDistance ad;
 	private HashMap<String, String> st2cl;
 	private int level;
 	static int times = 0;
 
-	public GOeBurstRunner(Node n, OutputPanel op, int level) {
+	public GOeBurstRunner(Node n, OutputPanel op, int level, AbstractDistance ad) {
 		this.n = n;
 		this.op = op;
 		this.level = level;
+		this.ad = ad;
 		ds = n.getParentNode().getLookup().lookup(DataSet.class);
 		pop = ds.getLookup().lookup(Population.class);
 	}
@@ -45,7 +48,7 @@ public class GOeBurstRunner implements Runnable {
 		TypingData<? extends AbstractProfile> td = (TypingData<? extends AbstractProfile>) n.getLookup().lookup(TypingData.class);
 
 		GOeBurstWithStats algorithm = new GOeBurstWithStats(level);
-		Collection<GOeBurstClusterWithStats> groups = algorithm.getClustering(td);
+		Collection<GOeBurstClusterWithStats> groups = algorithm.getClustering(td, ad);
 
 		// Integrate with isolate data, if it exists.
 		if (pop != null) {
@@ -123,6 +126,6 @@ public class GOeBurstRunner implements Runnable {
 		op.appendWithDate("goeBURST algorithm: done.\n");
 		op.flush();
 
-		ds.add(new GOeBurstResult(groups, level, op));
+		ds.add(new GOeBurstResult(groups, ad, level, op));
 	}
 }

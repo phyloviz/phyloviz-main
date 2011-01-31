@@ -8,9 +8,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.goeburst.algorithm.AbstractDistance;
 import net.phyloviz.goeburst.algorithm.DisjointSet;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
-import net.phyloviz.goeburst.algorithm.HammingDistance;
 
 public class GOeBurstClusterWithStats extends GOeBurstCluster {
 
@@ -21,8 +21,8 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	private GOeBurstWithStats mInstance;
 	protected AbstractProfile fakeRoot;
 
-	public GOeBurstClusterWithStats(GOeBurstWithStats algInstance) {
-		super();
+	public GOeBurstClusterWithStats(GOeBurstWithStats algInstance, AbstractDistance ad) {
+		super(ad);
 		mInstance = algInstance;
 		maxLVs = new STLV();
 		eInfoMap = new TreeMap<Edge, EdgeInfo>();
@@ -82,7 +82,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		add(e.getU());
 		add(e.getV());
 		edges.add(e);
-		if (HammingDistance.compute(e.getU(), e.getV()) == 1) {
+		if (ad.compute(e.getU(), e.getV()) == 1) {
 			SLVedges.add(e);
 		}
 	}
@@ -191,7 +191,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 
 			GOeBurstClusterWithStats.STLV vLV = lvMap.get(v.getUID());
 
-			int diff = HammingDistance.compute(u, v);
+			int diff = ad.compute(u, v);
 
 			if (diff == 1) {
 				uSLVs.add(v);
@@ -239,7 +239,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 			int ret = 0;
 			int k = 0;
 
-			ret = HammingDistance.compute(f.getU(), f.getV()) - HammingDistance.compute(e.getU(), e.getV());
+			ret = ad.compute(f.getU(), f.getV()) - ad.compute(e.getU(), e.getV());
 			if (ret != 0) {
 				return ret;
 			}
@@ -343,7 +343,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		while (iter.hasNext()) {
 			Edge e = iter.next();
 
-			stat.ne[HammingDistance.compute(e.getU(), e.getV()) - 1]++;
+			stat.ne[ad.compute(e.getU(), e.getV()) - 1]++;
 
 			if (!e.visible()) {
 				continue;
@@ -458,7 +458,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 
 	public String getInfo(Edge e) {
 
-		if (HammingDistance.compute(e.getU(), e.getV()) != 1) {
+		if (ad.compute(e.getU(), e.getV()) != 1) {
 			return "";
 		}
 
@@ -487,7 +487,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		while (niter.hasNext()) {
 			Edge f = niter.next();
 
-			if (!f.visible() && HammingDistance.compute(f.getU(), f.getV()) == HammingDistance.compute(e.getU(), e.getV())
+			if (!f.visible() && ad.compute(f.getU(), f.getV()) == ad.compute(e.getU(), e.getV())
 				&& cut.findSet(f.getU().getUID()) != cut.findSet(f.getV().getUID())) {
 				info.info += " + " + f.getU().getUID() + " -- " + f.getV().getUID() + " ";
 
@@ -510,7 +510,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 			}
 		}
 
-		stat.fne[HammingDistance.compute(e.getU(), e.getV()) - 1]++;
+		stat.fne[ad.compute(e.getU(), e.getV()) - 1]++;
 
 		if (nt == 0) {
 			info.info += "0 ties\n";

@@ -26,10 +26,10 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 	}
 
 	@Override
-	public Collection<GOeBurstCluster> getClustering(TypingData<? extends AbstractProfile> td) {
+	public Collection<GOeBurstCluster> getClustering(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
 		
-		ArrayList<Edge> edges = getEdges(td);
-		Collection<GOeBurstCluster> clustering = getGroups(td, edges);
+		ArrayList<Edge> edges = getEdges(td, ad);
+		Collection<GOeBurstCluster> clustering = getGroups(td, edges, ad);
 		
 		// Update LVs for STs in each group and set group id.
 		Iterator<GOeBurstCluster> gIter = clustering.iterator();
@@ -43,7 +43,7 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 		return clustering;
 	}
 
-	private ArrayList<Edge> getEdges(TypingData<? extends AbstractProfile> td) {
+	private ArrayList<Edge> getEdges(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 		maxStId = 0;
 		
@@ -57,15 +57,15 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 			while (vIter.hasNext()) {
 				AbstractProfile v = vIter.next();
 
-				if (u.getUID() < v.getUID() && HammingDistance.compute(u, v) <= level)
-					edges.add(new Edge(u,v));
+				if (u.getUID() < v.getUID() && ad.compute(u, v) <= level)
+					edges.add(new Edge(u, v, ad));
 			}
 		}
 		
 		return edges;
 	}
 	
-	private Collection<GOeBurstCluster> getGroups(TypingData<? extends AbstractProfile> td, Collection<Edge> edges) {
+	private Collection<GOeBurstCluster> getGroups(TypingData<? extends AbstractProfile> td, Collection<Edge> edges, AbstractDistance ad) {
 		DisjointSet s = new DisjointSet(maxStId);
 		
 		Iterator<Edge> eIter = edges.iterator();
@@ -82,7 +82,7 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 			int pi = s.findSet(e.getU().getUID());
 			GOeBurstCluster g = groups.get(pi);
 			if ( g == null) {
-				g = new GOeBurstCluster();
+				g = new GOeBurstCluster(ad);
 				groups.put(pi, g);
 			}
 			
@@ -96,7 +96,7 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 			
 			int pi = s.findSet(st.getUID());
 			if (groups.get(pi) == null) {
-				GOeBurstCluster g = new GOeBurstCluster();
+				GOeBurstCluster g = new GOeBurstCluster(ad);
 				g.add(st);
 				groups.put(pi, g);
 			}

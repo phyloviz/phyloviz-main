@@ -1,7 +1,7 @@
 package net.phyloviz.goeburst;
 
 import net.phyloviz.algo.AlgorithmProvider;
-import net.phyloviz.goeburst.ui.ExecAction;
+import net.phyloviz.goeburst.ui.GOeBurstWizardAction;
 import org.openide.util.actions.NodeAction;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -23,7 +23,7 @@ public class GOeBurstProvider implements AlgorithmProvider {
 	@Override
 	public NodeAction getAction() {
 		if (action == null)
-			action = new ExecAction();
+			action = new GOeBurstWizardAction();
 		return action;
 	}
 }
