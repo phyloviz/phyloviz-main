@@ -2,13 +2,13 @@ package net.phyloviz.tview;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -19,6 +19,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.category.ui.ChartLegendPanel;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.DataSet;
 import org.openide.util.lookup.Lookups;
@@ -28,6 +29,7 @@ public class TViewPanel extends TopComponent {
 
 	private final DataSet ds;
 	private final CategoryProvider cp;
+	private final ChartLegendPanel clp;
 	private TablePanel table;
 	private TreePanel tree;
 	private JScrollPane sp;
@@ -40,8 +42,6 @@ public class TViewPanel extends TopComponent {
 	private boolean tableortree;
 	private boolean firstTime;
 	private ButtonGroup group;
-	private TreeMap<String, Integer> fullCats;
-	private TreeMap<String, Color> colorMap;
 
 	/** Creates new form TViewPanel */
 	public TViewPanel(String name, DataModel dm, DataSet _ds) {
@@ -52,6 +52,9 @@ public class TViewPanel extends TopComponent {
 
 		cp = new CategoryProvider(dm);
 		ds.add(cp);
+
+		clp = new ChartLegendPanel(new Dimension(128, 128), cp, dm.weight());
+		clp.setName(name + " (Selection view)");
 
 		//the finders
 		table = new TablePanel(dm);
@@ -83,6 +86,7 @@ public class TViewPanel extends TopComponent {
 				table.reseting();
 				tree.reseting();
 				cp.setSelection(null);
+				clp.repaint();
 			}
 		});
 
@@ -106,6 +110,7 @@ public class TViewPanel extends TopComponent {
 				}
 
 				cp.setSelection(filter);
+				clp.repaint();
 
 				treeButton.setEnabled(true);
 				tableButton.setEnabled(true);
@@ -159,14 +164,6 @@ public class TViewPanel extends TopComponent {
 		add(box, BorderLayout.NORTH);
 	}
 
-	public TreeMap<String, Integer> getFullCategories() {
-		return fullCats;
-	}
-
-	public TreeMap<String, Color> getColorMap() {
-		return colorMap;
-	}
-
 	private class RadioListener1 implements ItemListener {
 
 		@Override
@@ -198,9 +195,18 @@ public class TViewPanel extends TopComponent {
 	}
 
 	@Override
+	protected void componentOpened() {
+		super.componentOpened();
+		clp.open();
+	}
+
+
+
+	@Override
 	protected void componentClosed() {
 		super.componentClosed();
 		ds.remove(cp);
+		clp.close();
 	}
 
 	@Override
