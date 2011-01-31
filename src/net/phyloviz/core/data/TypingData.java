@@ -53,6 +53,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		System.arraycopy(ha, 0, headers, 0, ha.length);
 	}
 
+	@Override
 	public int size() {
 		return collection.size();
 	}
@@ -149,6 +150,11 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		return headers[idx];
 	}
 
+	@Override
+	public Collection<? extends DataItem> getItems() {
+		return new ArrayList<T>(collection);
+	}
+
 	public class DataIterator implements Iterator<T> {
 
 		private Iterator<T> i;
@@ -218,7 +224,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 		@Override
 		public int getRowCount() {
-			return collection.size();
+			return size();
 		}
 
 		@Override

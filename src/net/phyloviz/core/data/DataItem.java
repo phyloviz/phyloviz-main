@@ -44,4 +44,12 @@ public interface DataItem {
 	 * @return the number of elements in this collection.
 	 */
 	public int length();
+
+	/**
+	 * Returns the weight of this data item, for instance its relevance or
+	 * frequency on a given dataset.
+	 *
+	 * @return the weight for this item.
+	 */
+public int weight();
 }

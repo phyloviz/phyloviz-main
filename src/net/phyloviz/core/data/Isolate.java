@@ -114,4 +114,9 @@ public class Isolate implements DataItem {
 	public int length() {
 		return values.size();
 	}
+
+	@Override
+	public int weight() {
+		return 1;
+	}
 }

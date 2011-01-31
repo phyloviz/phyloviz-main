@@ -52,4 +52,9 @@ public abstract class AbstractProfile implements Profile {
 	public int length() {
 		return profileLength() + 1;
 	}
+
+	@Override
+	public int weight() {
+		return getFreq();
+	}
 }

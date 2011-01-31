@@ -7,6 +7,7 @@
 package net.phyloviz.core.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -97,6 +98,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	 *
 	 * @return the number of isolates of this population
 	 */
+	@Override
 	public int size() {
 		return collection.size();
 	}
@@ -154,6 +156,11 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		}
 
 		return headers.get(idx);
+	}
+
+	@Override
+	public Collection<? extends DataItem> getItems() {
+		return new ArrayList<Isolate>(collection);
 	}
 
 	public class PopulationIterator implements Iterator<Isolate> {
@@ -268,7 +275,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 
 		@Override
 		public int getRowCount() {
-			return collection.size();
+			return size();
 		}
 
 		@Override

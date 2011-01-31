@@ -1,5 +1,6 @@
 package net.phyloviz.core.data;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import javax.swing.table.AbstractTableModel;
@@ -20,5 +21,9 @@ public interface DataModel {
 	 */
 	public int getKey();
 
+	public Collection<? extends DataItem> getItems();
+
 	public Iterator<? extends DataItem> iterator();
+
+	public int size();
 }
