@@ -2,6 +2,7 @@ package net.phyloviz.gtview.action;
 
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
+import net.phyloviz.core.data.DataSet;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.gtview.ui.GTPanel;
 import org.openide.awt.StatusDisplayer;
@@ -28,9 +29,11 @@ public class ViewAction extends NodeAction {
 			}
 		}
 
+		DataSet ds = nodes[0].getParentNode().getLookup().lookup(DataSet.class);
+
 		//Nope, need a new viewer
         	StatusDisplayer.getDefault().setStatusText("Starting display...");
-		GTPanel tvp = new GTPanel(nodes[0].getParentNode().getDisplayName() + ": " + nodes[0].getDisplayName(), gr);
+		GTPanel tvp = new GTPanel(nodes[0].getParentNode().getDisplayName() + ": " + nodes[0].getDisplayName(), gr, ds);
 		tvp.open();
 		tvp.requestActive();
 

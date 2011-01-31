@@ -12,13 +12,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
-import java.io.File;
+//import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
+//import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.Vector;
 import javax.swing.BorderFactory;
@@ -41,6 +40,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.category.filter.Category;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.core.data.AbstractProfile;
@@ -49,6 +50,7 @@ import net.phyloviz.goeburst.algorithm.HammingDistance;
 import net.phyloviz.gtview.action.EdgeViewControlAction;
 import net.phyloviz.gtview.action.ExportAction;
 import net.phyloviz.gtview.action.GroupControlAction;
+import net.phyloviz.gtview.action.HighQualityAction;
 import net.phyloviz.gtview.action.InfoControlAction;
 import net.phyloviz.gtview.action.LinearSizeControlAction;
 import net.phyloviz.gtview.action.ViewControlAction;
@@ -106,7 +108,7 @@ public class GraphView extends JPanel {
 	private TreeMap<Edge, Integer> edge2rowid;
 	Graph graph;
 	
-	private TreeMap<Integer, Color> colors;
+	//private TreeMap<Integer, Color> colors;
 
 	private Visualization view;
 	private Display display;
@@ -135,14 +137,14 @@ public class GraphView extends JPanel {
 	private boolean linear;
 
 	// Data analysis info...
-	//private TreeMap<String, List<Group>> stMap;
+	private CategoryProvider cp;
 
 	public GraphView(GOeBurstResult er) {
 		super(new BorderLayout());
 		this.setBackground(Color.WHITE);
 		this.setOpaque(true);
 
-		colors = new TreeMap<Integer, Color>();
+		//colors = new TreeMap<Integer, Color>();
 
 		// Create an empty visualization.
 		view = new Visualization();
@@ -163,7 +165,7 @@ public class GraphView extends JPanel {
 			@Override
 			    public Font getFont(VisualItem item) {
 				    AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
-				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (5 * Math.log(st.getFreq() + 1))));
+				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (5 * Math.log(st.getFreq()))));
 			    }
 		    };
 
@@ -196,7 +198,7 @@ public class GraphView extends JPanel {
 		display = new Display(view);
 		display.setForeground(Color.GRAY);
 		display.setBackground(Color.WHITE);
-		//display.setHighQuality(true);
+		display.setHighQuality(false);
 		add(display, BorderLayout.CENTER);
 
 		// Display controls.
@@ -420,6 +422,7 @@ public class GraphView extends JPanel {
 		popupMenu.add(new InfoControlAction(this).getMenuItem());
 		popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
+		popupMenu.add(new HighQualityAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
 		popupMenu.add(new ExportAction(this).getMenuItem());
 
@@ -530,6 +533,10 @@ public class GraphView extends JPanel {
 		}
 	}
 
+	public void setHighQuality(boolean status) {
+		display.setHighQuality(status);
+	}
+
 	public void setAllEdges(boolean status) {
 		if (status)
 			viz = "viz > 0";
@@ -545,9 +552,9 @@ public class GraphView extends JPanel {
 		view.run("draw");
 	}
 	
-	//public void setStMap(TreeMap<String, List<Group>> map) {
-	//	stMap = map;
-	//}
+	public void setCategoryProvider(CategoryProvider cp) {
+		this.cp = cp;
+	}
 	
 	public void appendTextToInfoPanel(String text) {
 		textArea.append(text);
@@ -570,19 +577,19 @@ public class GraphView extends JPanel {
 		fdl.setMaxTimeStep(step);
 	}
 	
-	public void addSelection(File file, Color color) {
-		try {
-			Scanner in = new Scanner(file);
-			while (in.hasNextInt())
-				colors.put(in.nextInt(), color);
-		} catch (Exception e) {
-			System.out.println("Error:" + e.getStackTrace());
-		}
-	}
+//	public void addSelection(File file, Color color) {
+//		try {
+//			Scanner in = new Scanner(file);
+//			while (in.hasNextInt())
+//				colors.put(in.nextInt(), color);
+//		} catch (Exception e) {
+//			System.out.println("Error:" + e.getStackTrace());
+//		}
+//	}
 
-	public void resetSelection() {
-		colors.clear();
-	}
+//	public void resetSelection() {
+//		colors.clear();
+//	}
 	
 	public void resetDefaultRenderer() {
 		view.cancel("layout");
@@ -684,9 +691,9 @@ public class GraphView extends JPanel {
 			else if (itemTuple.getInt("hdlv") == 1)
 				return ColorLib.rgb(255,255,125);
 			else {
-				Color color = colors.get(itemTuple.getString("st_id"));
-				if (color != null)
-					return color.getRGB();
+				//Color color = colors.get(itemTuple.getString("st_id"));
+				//if (color != null)
+				//	return color.getRGB();
 				
 				if (itemTuple.getInt("founder") == 1)
 					return ColorLib.rgb(200, 255, 55);
@@ -814,20 +821,23 @@ public class GraphView extends JPanel {
 						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
 				
 				textArea.append("Chart details:\n");
-//				if (stMap != null) {
-//					int total = 0;
-//					DecimalFormat df = new DecimalFormat("#.##");
-//					Iterator<Group> groups = stMap.getValue(st.getID()).iterator();
-//					while (groups.hasNext()) {
-//						Group group = groups.next();
-//						double percent = (((double) group.size() * 100) / st.getFreq());
-//						textArea.append(" +" + group.getName() + " " + df.format(percent) + "%\n");
-//						total += group.size();
-//					}
-//					double percent = (((double) (st.getFreq() - total) * 100) / st.getFreq());
-//					if (percent > 0)
-//						textArea.append(" + 'others' " + df.format(percent) + "%\n");
-//				}
+				if (cp != null) {
+					int total = 0;
+					DecimalFormat df = new DecimalFormat("#.##");
+					Collection<Category> groupsList = cp.getCategories(st.getID());
+					if (groupsList != null) {
+						Iterator<Category> groups = groupsList.iterator();
+						while (groups.hasNext()) {
+							Category group = groups.next();
+							double percent = (((double) group.weight() * 100) / st.getFreq());
+							textArea.append(" +" + group.getName() + " " + df.format(percent) + "%\n");
+							total += group.weight();
+						}
+					}
+					double percent = (((double) (st.getFreq() - total) * 100) / st.getFreq());
+					if (percent > 0)
+						textArea.append(" + 'others' " + df.format(percent) + "%\n");
+				}
 				
 				textArea.append("\n");
 
