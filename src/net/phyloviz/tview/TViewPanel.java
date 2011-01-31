@@ -111,6 +111,8 @@ public class TViewPanel extends TopComponent {
 
 				cp.setSelection(filter);
 				clp.repaint();
+				clp.open();
+				clp.requestActive();
 
 				treeButton.setEnabled(true);
 				tableButton.setEnabled(true);
