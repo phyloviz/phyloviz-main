@@ -1,5 +1,6 @@
 package net.phyloviz.category.ui;
 
+
 import java.text.DecimalFormat;
 
 public class TooltipInfo {
@@ -11,10 +12,12 @@ public class TooltipInfo {
 	public TooltipInfo(Float p, String n) {
 		this.percentage = p;
 		this.name = n;
+
 	}
 
-	public float getPercentage() {
-		return Float.valueOf(twoForm.format(percentage * 100));
+	public String getPercentage() {
+                float f=percentage * 100;
+                return twoForm.format(f);
 	}
 
 	public String getName() {

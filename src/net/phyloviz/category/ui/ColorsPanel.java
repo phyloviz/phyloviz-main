@@ -60,7 +60,7 @@ public class ColorsPanel extends JPanel {
 			Entry<String, Integer> entry = it.next();
 			String label = entry.getKey();
 			Color c = cp.getCategoryColor(label);
-			float perc = tooltipMap.get(c).getPercentage();
+			String perc = tooltipMap.get(c).getPercentage();
 			labels[k] = new ColorComponent(label, " (" + perc + "% )", c);
 			labels[k].addMouseListener(mouse);
 			labels[k].setAlignmentX(Component.LEFT_ALIGNMENT);
