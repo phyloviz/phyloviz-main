@@ -55,15 +55,17 @@ public class CategoryProvider {
 
 	public List<Category> getCategories(String id) {
 
-		Collections.sort(idMap.get(id), new Comparator<Category>() {
+		List<Category> lst = idMap.get(id);
+		if (lst != null)
+			Collections.sort(idMap.get(id), new Comparator<Category>() {
 
-			@Override
-			public int compare(Category c1, Category c2) {
-				return c2.size() - c1.size();
-			}
-		});
+				@Override
+				public int compare(Category c1, Category c2) {
+					return c2.size() - c1.size();
+				}
+			});
 
-		return idMap.get(id);
+		return lst;
 	}
 
 	public Color getCategoryColor(String catName) {
