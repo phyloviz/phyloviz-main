@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import org.openide.util.NbPreferences;
 
 public final class LoadDataSetVisualPanel3 extends JPanel {
 
@@ -126,12 +127,15 @@ public final class LoadDataSetVisualPanel3 extends JPanel {
         }// </editor-fold>//GEN-END:initComponents
 
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-		if (fc == null) {
+		if (fc == null)
 			fc = new JFileChooser();
-		}
+		String dir = NbPreferences.forModule(LoadDataSetWizardAction.class).get("LAST_DIR", "");
+		if (dir != null)
+			fc.setCurrentDirectory(new File(dir));
 		int r = fc.showDialog(this, "Open");
 		if (r == JFileChooser.APPROVE_OPTION && fc.getSelectedFile() != null) {
 			jTextField1.setText(fc.getSelectedFile().getAbsolutePath());
+			NbPreferences.forModule(LoadDataSetWizardAction.class).put("LAST_DIR", fc.getCurrentDirectory().getPath());
 
 			String[] result = null;
 			try {

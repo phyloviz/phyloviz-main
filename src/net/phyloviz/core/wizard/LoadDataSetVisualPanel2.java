@@ -4,8 +4,10 @@
  */
 package net.phyloviz.core.wizard;
 
+import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import org.openide.util.NbPreferences;
 
 public final class LoadDataSetVisualPanel2 extends JPanel {
 
@@ -77,9 +79,14 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 		if (fc == null)
 			fc = new JFileChooser();
-		fc.showDialog(this, "Open");
-		if (fc.getSelectedFile() != null)
+		String dir = NbPreferences.forModule(LoadDataSetWizardAction.class).get("LAST_DIR", "");
+		if (dir != null)
+			fc.setCurrentDirectory(new File(dir));
+		int r = fc.showDialog(this, "Open");
+		if (r == JFileChooser.APPROVE_OPTION && fc.getSelectedFile() != null) {
 			jTextField1.setText(fc.getSelectedFile().getAbsolutePath());
+			NbPreferences.forModule(LoadDataSetWizardAction.class).put("LAST_DIR", fc.getCurrentDirectory().getPath());
+		}
 	}//GEN-LAST:event_jButton1ActionPerformed
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
