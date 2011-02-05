@@ -27,6 +27,9 @@
             </file>
         </folder>
         <file name="GoTo_hidden"/>
+        <folder name="View">
+            <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
+        </folder>
         <folder name="Window">
             <file name="DataSetExplorerAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/Window/net-phyloviz-core-explorer-DataSetExplorerAction.instance"/>
