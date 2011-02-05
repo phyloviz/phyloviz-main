@@ -274,8 +274,8 @@ public class GraphView extends JPanel {
 			while (edgeIter.hasNext()) {
 				Edge e = edgeIter.next();
 		
-				//if (! e.visible())
-				//	continue;
+				if (! e.visible())
+					continue;
 				
 				int rowNb = edgeTable.addRow();
 				edge2rowid.put(e, rowNb);
@@ -287,8 +287,8 @@ public class GraphView extends JPanel {
 					nodeTable.setInt(nodeMap.get(e.getV().getID()), "dg",
 							nodeTable.getInt(nodeMap.get(e.getV().getID()), "dg") + 1);
 					edgeTable.setInt(rowNb, "viz", er.getDistance().compute(e.getU(), e.getV()));
-				} else {
-					edgeTable.setInt(rowNb, "viz", -1);
+				//} else {
+				//	edgeTable.setInt(rowNb, "viz", -1);
 				}
 
 				edgeTable.setInt(rowNb, "group", g.getID());
@@ -424,7 +424,7 @@ public class GraphView extends JPanel {
 		popupMenu.add(new GroupControlAction(this).getMenuItem());
 		popupMenu.add(new InfoControlAction(this).getMenuItem());
 		popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
-		popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
+		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
