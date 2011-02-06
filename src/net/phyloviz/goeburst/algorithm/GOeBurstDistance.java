@@ -5,7 +5,7 @@ import net.phyloviz.core.data.TypingData;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = AbstractDistance.class)
-public class HammingDistance implements AbstractDistance {
+public class GOeBurstDistance implements AbstractDistance {
 
 	@Override
 	public int compute(Profile x, Profile y) {

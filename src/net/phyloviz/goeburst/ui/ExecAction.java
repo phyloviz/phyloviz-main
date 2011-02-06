@@ -2,7 +2,7 @@ package net.phyloviz.goeburst.ui;
 
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
-import net.phyloviz.goeburst.algorithm.HammingDistance;
+import net.phyloviz.goeburst.algorithm.GOeBurstDistance;
 import net.phyloviz.goeburst.run.GOeBurstRunner;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
@@ -19,7 +19,7 @@ public class ExecAction extends NodeAction {
 		int level = 1;
 
 		OutputPanel op = new OutputPanel();
-		Runnable job = new GOeBurstRunner(nodes[0], op, level, new HammingDistance());
+		Runnable job = new GOeBurstRunner(nodes[0], op, level, new GOeBurstDistance());
 
 		op.setName(nodes[0].getParentNode().getDisplayName() + ": goeBURST Output");
 		op.open();
