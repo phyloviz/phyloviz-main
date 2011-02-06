@@ -20,7 +20,6 @@ public class GOeBurstResult implements NodeFactory {
 		this.op = op;
 		this.level = level;
 		this.ad = ad;
-
 	}
 
 	public OutputPanel getPanel() {

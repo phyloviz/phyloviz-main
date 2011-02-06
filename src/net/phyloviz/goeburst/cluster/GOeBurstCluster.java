@@ -12,7 +12,7 @@ import net.phyloviz.goeburst.algorithm.DisjointSet;
 
 public class GOeBurstCluster extends Cluster {
 
-	public static int MAXLV = 5;
+	public static int MAXLV = 3;
 
 	public static class STLV {
 

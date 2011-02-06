@@ -1,6 +1,9 @@
 package net.phyloviz.goeburst.ui;
 
+import java.util.Hashtable;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 
 public final class GOeBurstVisualPanel2 extends JPanel {
 
@@ -10,15 +13,19 @@ public final class GOeBurstVisualPanel2 extends JPanel {
 		initComponents();
 
 		jSlider1.setMajorTickSpacing(1);
-		jSlider1.setPaintTicks(true);
-		jSlider1.setPaintLabels(true);
+		jSlider1.setMinorTickSpacing(1);
 		jSlider1.setFont(this.getFont());
-	}
-
-	public void setParameters(int min, int max, int cur) {
-		jSlider1.setValue(cur);
-		jSlider1.setMinimum(min);
-		jSlider1.setMaximum(max);
+		jSlider1.setMinimum(1);
+		jSlider1.setMaximum(Math.max(GOeBurstCluster.MAXLV, 3));
+		jSlider1.setValue(1);
+		Hashtable labelTable = new Hashtable();
+		labelTable.put(Integer.valueOf(1), new JLabel("SLV"));
+		labelTable.put(Integer.valueOf(2), new JLabel("DLV"));
+		labelTable.put(Integer.valueOf(3), new JLabel("TLV"));
+		jSlider1.setLabelTable(labelTable);
+		jSlider1.setPaintLabels(true);
+		jSlider1.setSnapToTicks(true);
+		jSlider1.setPaintTicks(true);
 	}
 
 	@Override
