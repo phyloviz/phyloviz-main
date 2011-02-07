@@ -7,6 +7,15 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
+                    <code-name-base>net.phyloviz.core</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>1</release-version>
+                        <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>org.openide.nodes</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
@@ -33,6 +42,8 @@
             </module-dependencies>
             <public-packages>
                 <package>net.phyloviz.algo</package>
+                <package>net.phyloviz.algo.tree</package>
+                <package>net.phyloviz.algo.util</package>
             </public-packages>
         </data>
     </configuration>
