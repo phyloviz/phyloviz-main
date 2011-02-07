@@ -9,12 +9,12 @@ import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.AbstractDistance;
 import org.openide.util.Lookup;
 
-public final class GOeBurstVisualPanel1 extends JPanel {
+public final class MSTVisualPanel1 extends JPanel {
 
 	private DefaultComboBoxModel typeListModel;
 
-	/** Creates new form GOeBurstVisualPanel1 */
-	public GOeBurstVisualPanel1(TypingData<? extends Profile> td) {
+	/** Creates new form MSTVisualPanel1 */
+	public MSTVisualPanel1(TypingData<? extends Profile> td) {
 
 		typeListModel = new DefaultComboBoxModel();
 		Collection<? extends AbstractDistance> result = Lookup.getDefault().lookupAll(AbstractDistance.class);
@@ -60,7 +60,7 @@ public final class GOeBurstVisualPanel1 extends JPanel {
 
                 jPanel3.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
 
-                org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(GOeBurstVisualPanel1.class, "GOeBurstVisualPanel1.jLabel2.text")); // NOI18N
+                org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(MSTVisualPanel1.class, "MSTVisualPanel1.jLabel2.text")); // NOI18N
                 jLabel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
                 jPanel3.add(jLabel2);
 
@@ -76,7 +76,7 @@ public final class GOeBurstVisualPanel1 extends JPanel {
 
                 jPanel1.setLayout(new java.awt.BorderLayout());
 
-                org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(GOeBurstVisualPanel1.class, "GOeBurstVisualPanel1.jLabel3.text")); // NOI18N
+                org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(MSTVisualPanel1.class, "MSTVisualPanel1.jLabel3.text")); // NOI18N
                 jLabel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
                 jPanel1.add(jLabel3, java.awt.BorderLayout.CENTER);
 

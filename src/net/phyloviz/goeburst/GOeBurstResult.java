@@ -2,13 +2,12 @@ package net.phyloviz.goeburst;
 
 import java.util.Collection;
 import net.phyloviz.core.util.NodeFactory;
-import net.phyloviz.goeburst.algorithm.AbstractDistance;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.goeburst.ui.GOeBurstNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
 import org.openide.nodes.AbstractNode;
 
-public class GOeBurstResult implements NodeFactory {
+public class GOeBurstResult implements NodeFactory, Result {
 
 	private Collection<GOeBurstClusterWithStats> clustering;
 	private OutputPanel op;
@@ -22,6 +21,7 @@ public class GOeBurstResult implements NodeFactory {
 		this.ad = ad;
 	}
 
+	@Override
 	public OutputPanel getPanel() {
 		return op;
 	}

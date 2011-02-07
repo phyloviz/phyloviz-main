@@ -8,8 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import net.phyloviz.core.data.AbstractProfile;
-import net.phyloviz.goeburst.algorithm.AbstractDistance;
-import net.phyloviz.goeburst.algorithm.DisjointSet;
+import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 
 public class GOeBurstClusterWithStats extends GOeBurstCluster {
@@ -300,10 +300,10 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 			}
 			//ret = Math.min(f.getU().getUID(), f.getV().getUID())
 			//    - Math.min(e.getU().getUID(), e.getV().getUID());
-			if (ret == 0) {
-				ret = cmp.compare(f.getU().getID(), f.getV().getID())
-					- cmp.compare(e.getU().getID(), e.getV().getID());
-			}
+			//if (ret == 0) {
+			//	ret = cmp.compare(f.getU().getID(), f.getV().getID())
+			//		- cmp.compare(e.getU().getID(), e.getV().getID());
+			//}
 			//ret = Math.max(f.getU().getUID(), f.getV().getUID())
 			//    - Math.max(e.getU().getUID(), e.getV().getUID());
 

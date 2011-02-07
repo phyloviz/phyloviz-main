@@ -1,4 +1,4 @@
-package net.phyloviz.goeburst.algorithm;
+package net.phyloviz.goeburst;
 
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;

@@ -11,27 +11,26 @@ import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
 
-public class GOeBurstWizardPanel1 implements WizardDescriptor.ValidatingPanel {
+public class MSTWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 
 	/**
 	 * The visual component that displays this panel. If you need to access the
 	 * component from this class, just use getComponent().
 	 */
-	private GOeBurstVisualPanel1 component;
+	private MSTVisualPanel1 component;
 
 	private Node node;
 
-	public GOeBurstWizardPanel1(Node node) {
+	public MSTWizardPanel1(Node node) {
 		super();
 		this.node = node;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Component getComponent() {
 		if (component == null) {
 			TypingData<? extends Profile> td = node.getLookup().lookup(TypingData.class);
-			component = new GOeBurstVisualPanel1(td);
+			component = new MSTVisualPanel1(td);
 		}
 		return component;
 	}
@@ -56,12 +55,12 @@ public class GOeBurstWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 
 	@Override
 	public void readSettings(Object settings) {
-		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/goeburst/GOeBurstImage.png", true));
+		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/goeburst/GOeBurstMSTImage.png", true));
 	}
 
 	@Override
 	public void storeSettings(Object settings) {
-		((WizardDescriptor) settings).putProperty("distance", ((GOeBurstVisualPanel1) getComponent()).getDistance());
+		((WizardDescriptor) settings).putProperty("distance", ((MSTVisualPanel1) getComponent()).getDistance());
 	}
 
 	@Override

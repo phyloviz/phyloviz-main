@@ -1,5 +1,7 @@
 package net.phyloviz.goeburst.algorithm;
 
+import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.util.DisjointSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

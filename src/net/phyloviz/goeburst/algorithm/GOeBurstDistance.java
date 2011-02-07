@@ -1,5 +1,6 @@
 package net.phyloviz.goeburst.algorithm;
 
+import net.phyloviz.goeburst.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import org.openide.util.lookup.ServiceProvider;

@@ -1,7 +1,7 @@
 package net.phyloviz.goeburst.cluster;
 
 import net.phyloviz.core.data.AbstractProfile;
-import net.phyloviz.goeburst.algorithm.AbstractDistance;
+import net.phyloviz.goeburst.AbstractDistance;
 
 public class Edge implements Comparable<Edge> {
 	private AbstractProfile u;

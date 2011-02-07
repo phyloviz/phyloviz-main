@@ -2,7 +2,7 @@ package net.phyloviz.goeburst.ui;
 
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
-import net.phyloviz.goeburst.GOeBurstResult;
+import net.phyloviz.goeburst.Result;
 import org.openide.nodes.Node;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
@@ -16,7 +16,7 @@ public class OutputViewAction extends NodeAction {
 	@Override
 	protected void performAction(Node[] nodes) {
 
-		GOeBurstResult gr = nodes[0].getLookup().lookup(GOeBurstResult.class);
+		Result gr = nodes[0].getLookup().lookup(Result.class);
 		if (! gr.getPanel().isOpened())
 			gr.getPanel().open();
 		gr.getPanel().requestActive();

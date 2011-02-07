@@ -1,5 +1,6 @@
 package net.phyloviz.goeburst.algorithm;
 
+import net.phyloviz.goeburst.AbstractDistance;
 import java.util.Collection;
 
 import net.phyloviz.core.data.AbstractProfile;

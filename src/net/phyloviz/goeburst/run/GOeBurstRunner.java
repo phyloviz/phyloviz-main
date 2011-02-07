@@ -11,7 +11,7 @@ import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.GOeBurstResult;
-import net.phyloviz.goeburst.algorithm.AbstractDistance;
+import net.phyloviz.goeburst.AbstractDistance;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;

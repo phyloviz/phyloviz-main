@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import net.phyloviz.core.data.AbstractProfile;
-import net.phyloviz.goeburst.algorithm.AbstractDistance;
-import net.phyloviz.goeburst.algorithm.DisjointSet;
+import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.util.DisjointSet;
 
 public class GOeBurstCluster extends Cluster {
 

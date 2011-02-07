@@ -1,3 +1,7 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package net.phyloviz.goeburst.ui;
 
 import java.awt.Component;
@@ -5,12 +9,9 @@ import java.awt.Dialog;
 import java.beans.PropertyChangeEvent;
 import java.text.MessageFormat;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import net.phyloviz.core.data.Profile;
-import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.AbstractDistance;
-import net.phyloviz.goeburst.run.GOeBurstRunner;
+import net.phyloviz.goeburst.run.MSTRunner;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Node;
@@ -21,20 +22,20 @@ import org.openide.nodes.NodeReorderEvent;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 
-public final class GOeBurstWizardAction extends NodeAction {
+public final class MSTWizardAction extends NodeAction {
 
 	private WizardDescriptor.Panel[] panels;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void performAction(Node[] nodes) {
-
+	public void performAction(Node[] nodes) {
+		
 		WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels(nodes[0]));
 		// {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
-		wizardDescriptor.setTitle("goeBURST Configuration");
+		wizardDescriptor.setTitle("MST Algorithm Configuration");
 		wizardDescriptor.putProperty("node", nodes[0]);
-	
+
 		Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
 		dialog.setVisible(true);
 		dialog.toFront();
@@ -43,21 +44,11 @@ public final class GOeBurstWizardAction extends NodeAction {
 
 			// do something
 			AbstractDistance ad = (AbstractDistance) wizardDescriptor.getProperty("distance");
-			int level = (Integer) wizardDescriptor.getProperty("level");
-
-			// Let us find the safe max. Note that we want to avoid complete graphs.
-			TypingData<? extends Profile> td = nodes[0].getLookup().lookup(TypingData.class);
-			int safeMax = ad.maximum(td) - 1;
-
-			if (level > safeMax) {
-				JOptionPane.showMessageDialog(null, "Invalid level for this dataset!", "Error", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
 
 			OutputPanel op = new OutputPanel();
-			Runnable job = new GOeBurstRunner(nodes[0], op, level, ad);
+			Runnable job = new MSTRunner(nodes[0], op, ad);
 
-			op.setName(nodes[0].getParentNode().getDisplayName() + ": goeBURST Output");
+			op.setName(nodes[0].getParentNode().getDisplayName() + ": goeBURST Full MST Output");
 			op.open();
 			op.requestActive();
 
@@ -76,8 +67,7 @@ public final class GOeBurstWizardAction extends NodeAction {
 	private WizardDescriptor.Panel[] getPanels(Node node) {
 		if (panels == null) {
 			panels = new WizardDescriptor.Panel[]{
-					new GOeBurstWizardPanel1(node),
-					new GOeBurstWizardPanel2(node)
+					new MSTWizardPanel1(node)
 				};
 			String[] steps = new String[panels.length];
 			for (int i = 0; i < panels.length; i++) {
@@ -107,7 +97,7 @@ public final class GOeBurstWizardAction extends NodeAction {
 
 	@Override
 	public String getName() {
-		return "Run goeBURST";
+		return "goeBURST Full MST";
 	}
 
 	@Override
@@ -165,4 +155,5 @@ public final class GOeBurstWizardAction extends NodeAction {
 		public void propertyChange(PropertyChangeEvent evt) {
 		}
 	}
+
 }
