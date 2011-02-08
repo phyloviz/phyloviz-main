@@ -118,7 +118,7 @@ public class TreePanel extends CheckboxTree {
 
 				while (it.hasNext()) {
 					String s = it.next();
-					DefaultMutableTreeNode novo = find(s);
+					DefaultMutableTreeNode novo = find(i,s);
 					TreeNode[] novoPath = novo.getPath();
 					if (novo != null && novoPath.length > 0) {
 						pathsToBeSelected.add(new TreePath(novo.getPath()));
@@ -142,7 +142,13 @@ public class TreePanel extends CheckboxTree {
 		}
 	}
 
-	public DefaultMutableTreeNode find(String name) {
+        public DefaultMutableTreeNode find(int i_child,String name){
+
+            DefaultMutableTreeNode tn=(DefaultMutableTreeNode)root.getChildAt(i_child);
+            return (find(tn,name));
+        }
+
+	public DefaultMutableTreeNode find(DefaultMutableTreeNode root,String name) {
 
 		// TODO: fix this... we must search by column!
 
