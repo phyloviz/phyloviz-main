@@ -14,6 +14,8 @@ import java.util.regex.PatternSyntaxException;
 import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.UIManager;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
@@ -42,14 +44,11 @@ public class TablePanel extends JTable {
 		aux.addMouseListener(new MyMouse());
 		setRowSelectionAllowed(true);
 		setColumnSelectionAllowed(true);
-
 		clicable = new TreeSet<Integer>();
-
 		filterSet = new TreeSet[this.getColumnCount()];
 		for (int i = 0; i < filterSet.length; i++) {
 			filterSet[i] = new TreeSet<String>();
-		}
-
+            }
 		Comparator<String> cmp = new Comparator<String>() {
 
 			@Override
@@ -65,6 +64,16 @@ public class TablePanel extends JTable {
 		sorter = new TableRowSorter<TableModel>(this.getModel());
 		sorter.setComparator(0, cmp);
 		setRowSorter(sorter);
+                this.getModel().addTableModelListener(new TableModelListener(){
+
+            @Override
+                  public void tableChanged(TableModelEvent e) {
+                       filterSet = new TreeSet[getModel().getColumnCount()];
+                        for (int i = 0; i < filterSet.length; i++) {
+                            filterSet[i] = new TreeSet<String>();
+                        }
+                  }
+                });
 	}
 
 	public TreeSet<String>[] getFilterSet() {

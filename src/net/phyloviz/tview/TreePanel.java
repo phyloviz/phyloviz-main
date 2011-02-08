@@ -11,6 +11,10 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.swing.MenuSelectionManager;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -26,14 +30,14 @@ public class TreePanel extends CheckboxTree {
 	private TreeModelTransformer transformModel;
 	private TreeSet<String>[] filterSet;
 	private DefaultMutableTreeNode root;
+        private DataModel model;
 
 	@SuppressWarnings("unchecked")
 	public TreePanel(DataModel model) {
 		super();
-
+                this.model=model;
 		tm = model.tableModel();
 		int ncol = tm.getColumnCount();
-
 		filterSet = new TreeSet[ncol];
 		for (int i = 0; i < filterSet.length; i++) {
 			filterSet[i] = new TreeSet<String>();
@@ -58,11 +62,39 @@ public class TreePanel extends CheckboxTree {
 		TreeModel lmodel = this.getModel();
 		this.setLargeModel(true);
 		this.setShowsRootHandles(true);
-
 		transformModel = new TreeModelTransformer(this, lmodel);
 		this.setModel(transformModel);
-	}
+               
+                tm.addTableModelListener(new TableModelListener(){
+ 
+            @Override
+                  public void tableChanged(TableModelEvent e) {
+                       filterSet = new TreeSet[tm.getColumnCount()];
+                        for (int i = 0; i < filterSet.length; i++) {
+                            filterSet[i] = new TreeSet<String>();
+                        }
+                       DefaultMutableTreeNode node = new DefaultMutableTreeNode(tm.getColumnName(tm.getColumnCount()-1));
+			Iterator<String> iter = getDomain(tm.getColumnCount()-1);
+			while (iter.hasNext()) {
+				String next = iter.next();
+				DefaultMutableTreeNode aux = new DefaultMutableTreeNode(next);
+				node.add(aux);
+			}
+			root.add(node);
+                        updateUI();
+                  }
+                });
+    }
 
+        private Iterator<String> getDomain(int index){
+            return model.getDomain(index).iterator();
+        }
+
+	
+
+
+         
+           
 	public TreeSet<String>[] getFilterSet() {
 		this.clearFilterSet();
 		TreePath[] selectedPaths = this.getCheckingModel().getCheckingPaths();
