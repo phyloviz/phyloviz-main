@@ -4,9 +4,15 @@
  */
 package net.phyloviz.core.wizard;
 
+import java.awt.Font;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import org.openide.util.NbPreferences;
 
 public final class LoadDataSetVisualPanel2 extends JPanel {
@@ -14,6 +20,19 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
 	/** Creates new form LoadDataSetVisualPanel2 */
 	public LoadDataSetVisualPanel2() {
 		initComponents();
+
+		try {
+			URL url = LoadDataSetVisualPanel1.class.getResource("LoadDataSetVisualPanel2.html");
+			jEditorPane1.setEditorKit(new HTMLEditorKit());
+			jEditorPane1.setPage(url);
+			Font font = UIManager.getFont("Label.font");
+			String bodyRule = "body { font-family: " + font.getFamily() + "; "
+				+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
+			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
+		} catch (IOException e) {
+			// Do nothing...
+			System.err.println(e.getMessage());
+		}
 	}
 
 	@Override
@@ -40,12 +59,13 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
                 jTextField1 = new javax.swing.JTextField();
                 jPanel5 = new javax.swing.JPanel();
                 jButton1 = new javax.swing.JButton();
+                jEditorPane1 = new javax.swing.JEditorPane();
 
                 setLayout(new java.awt.BorderLayout());
 
                 jPanel2.setLayout(new java.awt.BorderLayout());
 
-                jPanel3.setLayout(new java.awt.GridLayout(2, 0, 0, 8));
+                jPanel3.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
 
                 org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(LoadDataSetVisualPanel2.class, "LoadDataSetVisualPanel2.jLabel1.text")); // NOI18N
                 jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
@@ -53,7 +73,7 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
 
                 jPanel2.add(jPanel3, java.awt.BorderLayout.WEST);
 
-                jPanel4.setLayout(new java.awt.GridLayout(2, 0, 0, 8));
+                jPanel4.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
 
                 jTextField1.setText(org.openide.util.NbBundle.getMessage(LoadDataSetVisualPanel2.class, "LoadDataSetVisualPanel2.jTextField1.text")); // NOI18N
                 jPanel4.add(jTextField1);
@@ -61,7 +81,7 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
                 jPanel2.add(jPanel4, java.awt.BorderLayout.CENTER);
 
                 jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 0));
-                jPanel5.setLayout(new java.awt.GridLayout(2, 0, 0, 8));
+                jPanel5.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
 
                 org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(LoadDataSetVisualPanel2.class, "LoadDataSetVisualPanel2.jButton1.text")); // NOI18N
                 jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -74,6 +94,12 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
                 jPanel2.add(jPanel5, java.awt.BorderLayout.EAST);
 
                 add(jPanel2, java.awt.BorderLayout.PAGE_START);
+
+                jEditorPane1.setBackground(jPanel2.getBackground());
+                jEditorPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
+                jEditorPane1.setEditable(false);
+                jEditorPane1.setMaximumSize(new java.awt.Dimension(200, 200));
+                add(jEditorPane1, java.awt.BorderLayout.CENTER);
         }// </editor-fold>//GEN-END:initComponents
 
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -91,6 +117,7 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         private javax.swing.JButton jButton1;
+        private javax.swing.JEditorPane jEditorPane1;
         private javax.swing.JLabel jLabel1;
         private javax.swing.JPanel jPanel2;
         private javax.swing.JPanel jPanel3;
