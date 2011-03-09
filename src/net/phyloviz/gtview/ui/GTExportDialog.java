@@ -15,9 +15,9 @@ import prefuse.Display;
 public class GTExportDialog extends ExportDialog {
 	private static final long serialVersionUID = 1L;
 
-	private GraphView gv;
+	private GView gv;
 
-	public GTExportDialog(GraphView gv) {
+	public GTExportDialog(GView gv) {
 		this.gv = gv;
 	}
 

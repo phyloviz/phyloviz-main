@@ -9,6 +9,12 @@
 					<attr name="position" intvalue="0"/>
 				</file>
 			</folder>
+			<folder name="GOeBurstMST">
+				<file name="net-phyloviz-gtview-action-ViewAction.instance">
+					<attr name="instanceClass" stringvalue="net.phyloviz.gtview.action.ViewAction2"/>
+					<attr name="position" intvalue="0"/>
+				</file>
+			</folder>
 		</folder>
 	</folder>
 </filesystem>

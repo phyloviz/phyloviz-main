@@ -15,7 +15,7 @@ import java.util.List;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.AbstractProfile;
-import net.phyloviz.gtview.ui.GraphView;
+import net.phyloviz.gtview.ui.GView;
 
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.util.ColorLib;
@@ -24,10 +24,10 @@ import prefuse.visual.VisualItem;
 
 public class ChartRenderer  extends AbstractShapeRenderer {
 
-	private GraphView gv;
+	private GView gv;
 	private CategoryProvider cp;
 	
-	public ChartRenderer(CategoryProvider cp, GraphView gv) {
+	public ChartRenderer(CategoryProvider cp, GView gv) {
 		this.cp = cp;
 		this.gv = gv;
 	}

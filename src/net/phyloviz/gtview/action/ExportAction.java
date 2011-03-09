@@ -5,13 +5,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JMenuItem;
 import net.phyloviz.gtview.ui.GTExportDialog;
-import net.phyloviz.gtview.ui.GraphView;
+import net.phyloviz.gtview.ui.GView;
 
 public class ExportAction implements ActionListener {
 
-	private GraphView gv;
+	private GView gv;
 
-	public ExportAction(GraphView gv) {
+	public ExportAction(GView gv) {
 		this.gv = gv;
 	}
 

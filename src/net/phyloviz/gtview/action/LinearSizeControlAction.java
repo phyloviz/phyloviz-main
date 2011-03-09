@@ -5,13 +5,13 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import net.phyloviz.gtview.ui.GraphView;
+import net.phyloviz.gtview.ui.GView;
 
 public class LinearSizeControlAction extends AbstractAction {
 
-	private GraphView gv;
+	private GView gv;
 
-	public LinearSizeControlAction(GraphView gv) {
+	public LinearSizeControlAction(GView gv) {
 		this.gv = gv;
 	}
 

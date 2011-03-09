@@ -21,8 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import net.phyloviz.gtview.ui.GraphView;
-import net.phyloviz.gtview.ui.GraphView.Pair;
+import net.phyloviz.gtview.ui.GView;
+import net.phyloviz.gtview.ui.ForcePair;
 import org.openide.util.ImageUtilities;
 import org.openide.windows.TopComponent;
 import prefuse.util.force.Force;
@@ -30,10 +30,10 @@ import prefuse.util.force.ForceSimulator;
 
 public class ViewControlAction implements ActionListener {
 
-	private GraphView gv;
+	private GView gv;
 	private JDialog forceDialog;
 
-	public ViewControlAction(GraphView gv) {
+	public ViewControlAction(GView gv) {
 		this.gv = gv;
 		gv.addAncestorListener(new AncestorListener() {
 
@@ -115,7 +115,7 @@ public class ViewControlAction implements ActionListener {
 							System.out.println(ni);
 							for (int j = 0; j < ni; j++) {
 								line = br.readLine();
-								Pair p = Pair.valueOf(line);
+								ForcePair p = ForcePair.valueOf(line);
 								array[i].setParameter(j, p.value);
 							}
 							i++;
@@ -157,7 +157,7 @@ public class ViewControlAction implements ActionListener {
 
 					try {
 
-						ArrayList<Pair> pair = gv.getForces();
+						ArrayList<ForcePair> pair = gv.getForces();
 						PrintWriter pw = new PrintWriter(file);
 						for (int i = 0; i < pair.size(); i++) {
 							System.out.println(pair.get(i).toString());
