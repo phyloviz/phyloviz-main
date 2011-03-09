@@ -85,6 +85,7 @@
                 <package>net.phyloviz.goeburst</package>
                 <package>net.phyloviz.goeburst.algorithm</package>
                 <package>net.phyloviz.goeburst.cluster</package>
+                <package>net.phyloviz.goeburst.tree</package>
             </public-packages>
         </data>
     </configuration>

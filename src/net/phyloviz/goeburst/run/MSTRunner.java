@@ -40,7 +40,7 @@ public class MSTRunner implements Runnable {
 
 		DataSet ds = n.getParentNode().getLookup().lookup(DataSet.class);
 		Population pop = ds.getLookup().lookup(Population.class);
-		TypingData<? extends Profile> td = ds.getLookup().lookup(TypingData.class);
+		TypingData<? extends Profile> td = (TypingData<? extends Profile>) ds.getLookup().lookup(TypingData.class);
 
 		ArrayList<GOeBurstTreeNode> nlst = new ArrayList<GOeBurstTreeNode>();
 

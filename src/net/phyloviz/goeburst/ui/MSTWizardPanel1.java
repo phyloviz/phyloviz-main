@@ -29,7 +29,7 @@ public class MSTWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 	@Override
 	public Component getComponent() {
 		if (component == null) {
-			TypingData<? extends Profile> td = node.getLookup().lookup(TypingData.class);
+			TypingData<? extends Profile> td = (TypingData<? extends Profile>) node.getLookup().lookup(TypingData.class);
 			component = new MSTVisualPanel1(td);
 		}
 		return component;

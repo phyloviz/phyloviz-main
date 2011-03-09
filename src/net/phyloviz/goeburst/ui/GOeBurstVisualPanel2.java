@@ -18,7 +18,7 @@ public final class GOeBurstVisualPanel2 extends JPanel {
 		jSlider1.setMinimum(1);
 		jSlider1.setMaximum(Math.max(GOeBurstCluster.MAXLV, 3));
 		jSlider1.setValue(1);
-		Hashtable labelTable = new Hashtable();
+		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		labelTable.put(Integer.valueOf(1), new JLabel("SLV"));
 		labelTable.put(Integer.valueOf(2), new JLabel("DLV"));
 		labelTable.put(Integer.valueOf(3), new JLabel("TLV"));
