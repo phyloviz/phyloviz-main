@@ -21,9 +21,15 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -63,6 +69,8 @@ import prefuse.data.Schema;
 import prefuse.data.Table;
 import prefuse.data.Tuple;
 import prefuse.data.event.TupleSetListener;
+import prefuse.data.expression.Predicate;
+import prefuse.data.expression.parser.ExpressionParser;
 import prefuse.data.search.PrefixSearchTupleSet;
 import prefuse.data.tuple.TupleSet;
 import prefuse.render.AbstractShapeRenderer;
@@ -98,7 +106,12 @@ public class GraphView2 extends GView {
 
 	private JSearchPanel searchPanel;
 	private boolean searchMatch = false;
-	
+
+	private JPanel groupPanel;
+	private boolean groupPanelStatus;
+	private JList groupList;
+	private int itemFound = -1;
+
 	private JScrollPane infoPanel;
 	private boolean infoPanelStatus;
 	private JTextArea textArea;
@@ -197,6 +210,7 @@ public class GraphView2 extends GView {
 		// Build schemas.
 		Schema nodeSchema = new Schema();
 		nodeSchema.addColumn("st_id", String.class);
+		nodeSchema.addColumn("w", int.class);
 		nodeSchema.addColumn("st_ref", Profile.class);
 
 		Schema edgeSchema = new Schema();
@@ -213,6 +227,7 @@ public class GraphView2 extends GView {
 
 		uid2rowid = new TreeMap<Integer,Integer>();
 
+		int maxlv = 0;
 		Iterator<Edge> eIter = er.getEdges().iterator();
 		while (eIter.hasNext()) {
 			Edge e = eIter.next();
@@ -225,6 +240,7 @@ public class GraphView2 extends GView {
 				uid2rowid.put(st.getUID(), uRowNb);
 				nodeTable.setString(uRowNb, "st_id", st.getID());
 				nodeTable.set(uRowNb, "st_ref", st);
+				nodeTable.set(uRowNb, "w", 0);
 			} else
 				uRowNb = uid2rowid.get(st.getUID());
 
@@ -236,6 +252,7 @@ public class GraphView2 extends GView {
 				uid2rowid.put(st.getUID(), vRowNb);
 				nodeTable.setString(vRowNb, "st_id", st.getID());
 				nodeTable.set(vRowNb, "st_ref", st);
+				nodeTable.set(vRowNb, "w", 0);
 			} else
 				vRowNb = uid2rowid.get(st.getUID());
 
@@ -243,7 +260,13 @@ public class GraphView2 extends GView {
 			edgeTable.setInt(rowNb, SRC, uRowNb);
 			edgeTable.setInt(rowNb, TRG, vRowNb);
 			edgeTable.set(rowNb, "edge_ref", e);
-			edgeTable.set(rowNb, "w", er.getDistance().compute(e.getU().getProfile(), e.getV().getProfile()));
+
+			int lv = er.getDistance().compute(e.getU().getProfile(), e.getV().getProfile());
+
+			if (lv > maxlv)
+				maxlv = lv;
+
+			edgeTable.set(rowNb, "w", lv);
 		}
 
 		// Create the graph.
@@ -254,7 +277,54 @@ public class GraphView2 extends GView {
 
 		running = true;
 		linear = false;
-		
+
+		// Group panel.
+		groupList = new JList();
+		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+		groupPanel = new JPanel();
+		groupPanel.setLayout(new BorderLayout());
+
+		JScrollPane groupListPanel = new JScrollPane(groupList,
+		    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		groupListPanel.getViewport().setBackground(Color.WHITE);
+		groupListPanel.setBackground(Color.WHITE);
+		TitledBorder tb = new TitledBorder("Groups");
+		tb.setBorder(new LineBorder(Color.BLACK));
+		groupListPanel.setBorder(tb);
+
+		JPanel top = new JPanel();
+		top.setLayout(new BorderLayout());
+        	top.setBackground(Color.WHITE);
+                top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+
+		JLabel ll = new JLabel("Level: ");
+		//ll.setMargin( new Insets(1, 1, 1, 1));
+        	ll.setBackground(Color.WHITE);
+		top.add(ll, BorderLayout.WEST);
+
+		final SpinnerNumberModel model = new SpinnerNumberModel(maxlv, 1, maxlv, 1);
+		JSpinner sp = new JSpinner(model);
+        	sp.setBackground(Color.WHITE);
+		sp.setValue(maxlv);
+
+		model.addChangeListener(new ChangeListener() {
+                
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				view.setVisible("graph", null, false);
+				view.setVisible("graph", (Predicate) ExpressionParser.parse("w <= " + model.getNumber().intValue()), true);
+				view.run("draw");
+			}
+		});
+		top.add(sp, BorderLayout.CENTER);
+
+		groupPanel.add(top, BorderLayout.NORTH);
+		groupPanel.add(groupListPanel, BorderLayout.CENTER);
+		groupPanel.setPreferredSize(new Dimension(90,600));
+		add(groupPanel, BorderLayout.WEST);
+		groupPanelStatus = true;
+
 		// Info panel.
 		textArea = new JTextArea();
 		textArea.setEditable(false);
