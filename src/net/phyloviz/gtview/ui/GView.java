@@ -25,5 +25,7 @@ public abstract class GView extends JPanel {
 
         public abstract ArrayList<ForcePair> getForces();
 
+	public abstract void showGroupPanel(boolean status);
+
 	public abstract void showInfoPanel(boolean status);
 }

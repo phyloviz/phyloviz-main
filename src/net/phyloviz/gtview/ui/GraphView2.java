@@ -2,6 +2,7 @@ package net.phyloviz.gtview.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
@@ -11,10 +12,16 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -28,20 +35,25 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.phyloviz.algo.tree.Edge;
+import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
 import net.phyloviz.gtview.action.ExportAction;
+import net.phyloviz.gtview.action.GroupControlAction;
 import net.phyloviz.gtview.action.HighQualityAction;
 import net.phyloviz.gtview.action.InfoControlAction;
 import net.phyloviz.gtview.action.LinearSizeControlAction;
@@ -63,6 +75,7 @@ import prefuse.controls.PanControl;
 import prefuse.controls.WheelZoomControl;
 import prefuse.controls.ZoomControl;
 import prefuse.controls.ZoomToFitControl;
+import prefuse.data.CascadedTable;
 import prefuse.data.Graph;
 import prefuse.data.Node;
 import prefuse.data.Schema;
@@ -78,6 +91,8 @@ import prefuse.render.DefaultRendererFactory;
 import prefuse.render.LabelRenderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
+import prefuse.util.GraphicsLib;
+import prefuse.util.display.DisplayLib;
 import prefuse.util.force.Force;
 import prefuse.util.force.ForceSimulator;
 import prefuse.util.ui.JForcePanel;
@@ -88,42 +103,33 @@ import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
 
 public class GraphView2 extends GView {
-	private static final long serialVersionUID = 1L;
 
+	private static final long serialVersionUID = 1L;
 	private static final String SRC = Graph.DEFAULT_SOURCE_KEY;
 	private static final String TRG = Graph.DEFAULT_TARGET_KEY;
-
 	private Table nodeTable;
 	private Table edgeTable;
-
 	private TreeMap<Integer, Integer> uid2rowid;
-	Graph graph;
-	
+	private Graph graph;
 	private GOeBurstMSTResult er;
-
 	private Visualization view;
 	private Display display;
-
 	private JSearchPanel searchPanel;
 	private boolean searchMatch = false;
-
 	private JPanel groupPanel;
 	private boolean groupPanelStatus;
 	private JList groupList;
 	private int itemFound = -1;
-
 	private JScrollPane infoPanel;
 	private boolean infoPanelStatus;
 	private JTextArea textArea;
 	private JPopupMenu popupMenu;
-
 	private LabelRenderer lr;
 	private DefaultRendererFactory rf;
 	private ForceDirectedLayout fdl;
-
 	private boolean running;
 	private boolean linear;
-
+	private int level;
 	// Data analysis info...
 	private CategoryProvider cp;
 
@@ -140,7 +146,7 @@ public class GraphView2 extends GView {
 		// Setup renderers.
 		rf = new DefaultRendererFactory();
 		lr = new LabelRenderer("st_id");
-		lr.setRoundedCorner(10,10);
+		lr.setRoundedCorner(10, 10);
 		rf.setDefaultRenderer(lr);
 		view.setRendererFactory(rf);
 
@@ -148,14 +154,15 @@ public class GraphView2 extends GView {
 		ColorAction fill = new NodeColorAction("graph.nodes");
 		ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
 		ColorAction edge = new EdgeColorAction("graph.edges");
-		FontAction nfont = 
-		    new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
-			@Override
-			    public Font getFont(VisualItem item) {
-				    AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
-				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
-			    }
-		    };
+		FontAction nfont =
+			new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
+
+				@Override
+				public Font getFont(VisualItem item) {
+					AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
+					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+				}
+			};
 
 		ActionList draw = new ActionList();
 		draw.add(fill);
@@ -181,7 +188,7 @@ public class GraphView2 extends GView {
 
 		view.runAfter("draw", "layout");
 		view.runAfter("draw", "static");
-		
+
 		// Setup the display.
 		display = new Display(view);
 		display.setForeground(Color.GRAY);
@@ -197,35 +204,41 @@ public class GraphView2 extends GView {
 		display.addControlListener(new ZoomControl());
 		display.addControlListener(new ZoomToFitControl());
 		display.addControlListener((Control) new ItemInfoControl());
-                
+
 		display.addMouseMotionListener(new MouseMotionAdapter() {
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				view.run("static");
 			}
-
 		});
 
 		// Build schemas.
 		Schema nodeSchema = new Schema();
 		nodeSchema.addColumn("st_id", String.class);
-		nodeSchema.addColumn("w", int.class);
 		nodeSchema.addColumn("st_ref", Profile.class);
+		nodeSchema.addColumn("w", int.class);
+		nodeSchema.addColumn("g", int.class);
 
 		Schema edgeSchema = new Schema();
 		edgeSchema.addColumn(SRC, int.class);
 		edgeSchema.addColumn(TRG, int.class);
 		edgeSchema.addColumn("edge_ref", Edge.class);
 		edgeSchema.addColumn("w", int.class);
+		edgeSchema.addColumn("g", int.class);
 
-		// Create and fill tables.
+		// Create tables.
 		nodeSchema.lockSchema();
 		edgeSchema.lockSchema();
 		nodeTable = nodeSchema.instantiate();
 		edgeTable = edgeSchema.instantiate();
 
-		uid2rowid = new TreeMap<Integer,Integer>();
+		// Create initial group.
+		Group g = new Group();
+		g.setID(1);
+
+		// Fill tables.
+		uid2rowid = new TreeMap<Integer, Integer>();
 
 		int maxlv = 0;
 		Iterator<Edge> eIter = er.getEdges().iterator();
@@ -234,27 +247,35 @@ public class GraphView2 extends GView {
 
 			int uRowNb = -1;
 			Profile st = e.getU().getProfile();
-			if (! uid2rowid.containsKey(st.getUID())) {
+			if (!uid2rowid.containsKey(st.getUID())) {
 
 				uRowNb = nodeTable.addRow();
 				uid2rowid.put(st.getUID(), uRowNb);
 				nodeTable.setString(uRowNb, "st_id", st.getID());
 				nodeTable.set(uRowNb, "st_ref", st);
 				nodeTable.set(uRowNb, "w", 0);
-			} else
+				nodeTable.set(uRowNb, "g", 1);
+
+				g.add(st.getUID());
+			} else {
 				uRowNb = uid2rowid.get(st.getUID());
+			}
 
 			int vRowNb = -1;
 			st = e.getV().getProfile();
-			if (! uid2rowid.containsKey(st.getUID())) {
+			if (!uid2rowid.containsKey(st.getUID())) {
 
 				vRowNb = nodeTable.addRow();
 				uid2rowid.put(st.getUID(), vRowNb);
 				nodeTable.setString(vRowNb, "st_id", st.getID());
 				nodeTable.set(vRowNb, "st_ref", st);
 				nodeTable.set(vRowNb, "w", 0);
-			} else
+				nodeTable.set(vRowNb, "g", 1);
+
+				g.add(st.getUID());
+			} else {
 				vRowNb = uid2rowid.get(st.getUID());
+			}
 
 			int rowNb = edgeTable.addRow();
 			edgeTable.setInt(rowNb, SRC, uRowNb);
@@ -262,12 +283,14 @@ public class GraphView2 extends GView {
 			edgeTable.set(rowNb, "edge_ref", e);
 
 			int lv = er.getDistance().compute(e.getU().getProfile(), e.getV().getProfile());
-
-			if (lv > maxlv)
+			if (lv > maxlv) {
 				maxlv = lv;
+			}
 
 			edgeTable.set(rowNb, "w", lv);
+			edgeTable.set(rowNb, "g", 1);
 		}
+		level = maxlv;
 
 		// Create the graph.
 		graph = new Graph(nodeTable, edgeTable, false);
@@ -281,12 +304,55 @@ public class GraphView2 extends GView {
 		// Group panel.
 		groupList = new JList();
 		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		groupList.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting()) {
+					return;
+				}
+
+				view.setVisible("graph", null, false);
+				int[] selectedIndices = groupList.getSelectedIndices();
+				ArrayList<Group> gList = new ArrayList<Group>(selectedIndices.length);
+				for (int i = 0; i < selectedIndices.length; i++) {
+					Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
+					view.setVisible("graph",
+						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + level), true);
+
+					gList.add(g);
+				}
+
+				view.run("draw");
+				Iterator<Group> ig = gList.iterator();
+				while (ig.hasNext()) {
+					Group g = ig.next();
+					textArea.append("Group " + g.id + " (" + g.size() + ")\n");
+				}
+				textArea.append("\n");
+				textArea.setCaretPosition(textArea.getDocument().getLength());
+
+				double x = display.getDisplayX();
+				double y = display.getDisplayY();
+				double dx = display.getWidth();
+				double dy = display.getHeight();
+				display.panAbs(x + dx / 2, y + dy / 2);
+
+				if (!display.isTranformInProgress()) {
+					Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
+					GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
+					DisplayLib.fitViewToBounds(display, bounds, 5);
+				}
+			}
+		});
+		groupList.setCellRenderer(new GroupCellRenderer());
+		groupList.setListData(new Group[]{g});
 
 		groupPanel = new JPanel();
 		groupPanel.setLayout(new BorderLayout());
 
 		JScrollPane groupListPanel = new JScrollPane(groupList,
-		    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		groupListPanel.getViewport().setBackground(Color.WHITE);
 		groupListPanel.setBackground(Color.WHITE);
 		TitledBorder tb = new TitledBorder("Groups");
@@ -295,33 +361,103 @@ public class GraphView2 extends GView {
 
 		JPanel top = new JPanel();
 		top.setLayout(new BorderLayout());
-        	top.setBackground(Color.WHITE);
-                top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		top.setBackground(Color.WHITE);
+		top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
 		JLabel ll = new JLabel("Level: ");
 		//ll.setMargin( new Insets(1, 1, 1, 1));
-        	ll.setBackground(Color.WHITE);
+		ll.setBackground(Color.WHITE);
 		top.add(ll, BorderLayout.WEST);
 
 		final SpinnerNumberModel model = new SpinnerNumberModel(maxlv, 1, maxlv, 1);
 		JSpinner sp = new JSpinner(model);
-        	sp.setBackground(Color.WHITE);
+		sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		sp.setBackground(Color.WHITE);
 		sp.setValue(maxlv);
 
 		model.addChangeListener(new ChangeListener() {
-                
+
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				view.setVisible("graph", null, false);
-				view.setVisible("graph", (Predicate) ExpressionParser.parse("w <= " + model.getNumber().intValue()), true);
+				level = model.getNumber().intValue();
+
+				int[] selectedIndices = groupList.getSelectedIndices();
+				for (int i = 0; i < selectedIndices.length; i++) {
+					Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
+					view.setVisible("graph",
+						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + level), true);
+				}
 				view.run("draw");
 			}
 		});
 		top.add(sp, BorderLayout.CENTER);
 
+		JButton ub = new JButton("Get Groups");
+		ub.setMargin(new Insets(1, 1, 1, 1));
+		ub.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				DisjointSet ds = new DisjointSet(graph.getNodeCount());
+				for (int i = 0; i < graph.getEdgeCount(); i++) {
+					if (edgeTable.getInt(i, "w") <= level) {
+						ds.unionSet(edgeTable.getInt(i, SRC), edgeTable.getInt(i, TRG));
+					}
+				}
+
+				HashMap<Integer, Group> gmap = new HashMap<Integer, Group>();
+				for (int i = 0; i < graph.getNodeCount(); i++) {
+					if (!gmap.containsKey(ds.findSet(i))) {
+						gmap.put(ds.findSet(i), new Group());
+					}
+
+					Group g = gmap.get(ds.findSet(i));
+					g.add(i);
+				}
+
+				Group[] ga = gmap.values().toArray(new Group[0]);
+				Arrays.sort(ga, new Comparator<Group>() {
+
+					@Override
+					public int compare(Group o1, Group o2) {
+						return o2.size() - o1.size();
+					}
+				});
+				int gc = 0;
+				for (int i = 0; i < ga.length; i++) {
+					ga[i].setID(i+1);
+
+					if (ga[i].size() == 1)
+						nodeTable.setInt(ga[i].getItems().get(0), "g", ga[i].getID());
+				}
+
+				for (int i = 0; i < graph.getEdgeCount(); i++) {
+
+					if (edgeTable.getInt(i, "w") > level) {
+						edgeTable.setInt(i, "g", -1);
+						continue;
+					}
+
+					int u = edgeTable.getInt(i, SRC);
+					int v = edgeTable.getInt(i, TRG);
+
+					Group g = gmap.get(ds.findSet(u));
+					nodeTable.setInt(u, "g", g.getID());
+					nodeTable.setInt(v, "g", g.getID());
+					edgeTable.setInt(i, "g", g.getID());
+				}
+
+				groupList.setListData(ga);
+				startAnimation();
+			}
+		});
+		top.add(ub, BorderLayout.SOUTH);
+
 		groupPanel.add(top, BorderLayout.NORTH);
 		groupPanel.add(groupListPanel, BorderLayout.CENTER);
-		groupPanel.setPreferredSize(new Dimension(90,600));
+		groupPanel.setPreferredSize(new Dimension(90, 600));
 		add(groupPanel, BorderLayout.WEST);
 		groupPanelStatus = true;
 
@@ -329,35 +465,48 @@ public class GraphView2 extends GView {
 		textArea = new JTextArea();
 		textArea.setEditable(false);
 		//textArea.setText("Click an edge!");
-		
+
 		infoPanel = new JScrollPane(textArea,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		infoPanel.getViewport().setBackground(Color.WHITE);
 		infoPanel.setBackground(Color.WHITE);
 		TitledBorder itb = new TitledBorder("Info:");
 		itb.setBorder(new LineBorder(Color.BLACK));
 		infoPanel.setBorder(itb);
-		infoPanel.setPreferredSize(new Dimension(210,600));
+		infoPanel.setPreferredSize(new Dimension(210, 600));
 		//add(infoPanel, BorderLayout.EAST);
 		infoPanelStatus = false;
-		
+
 		// Search stuff.
 		TupleSet search = new PrefixSearchTupleSet();
 		search.addTupleSetListener(new TupleSetListener() {
+
 			@Override
 			public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
 				view.run("static");
 				searchMatch = true;
+
+				itemFound = -1;
+				if (t.getTupleCount() >= 1) {
+					String ss = searchPanel.getQuery();
+					CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
+					if (tableView.getRowCount() > 0) {
+						int gid = tableView.getInt(0, "g");
+						itemFound = gid;
+					}
+				}
+				groupList.repaint();
 			}
 		});
-	        view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
+		view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
 		searchPanel = new NodeSearchPanel(view);
 		searchPanel.setShowResultCount(true);
-	
+
 		// Animation speed control.
 		final JValueSlider animCtl = new JValueSlider("animation speed >>", 1, 100, 50);
-        	animCtl.setBackground(Color.WHITE);
+		animCtl.setBackground(Color.WHITE);
 		animCtl.addChangeListener(new ChangeListener() {
+
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				fdl.setMaxTimeStep(animCtl.getValue().longValue());
@@ -365,7 +514,7 @@ public class GraphView2 extends GView {
 		});
 
 		JButton playButton = new JButton(">");
-		playButton.setMargin( new Insets(1, 1, 1, 1));
+		playButton.setMargin(new Insets(1, 1, 1, 1));
 		playButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -375,7 +524,7 @@ public class GraphView2 extends GView {
 		});
 
 		JButton pauseButton = new JButton("||");
-		pauseButton.setMargin( new Insets(1, 1, 1, 1));
+		pauseButton.setMargin(new Insets(1, 1, 1, 1));
 		pauseButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -385,7 +534,7 @@ public class GraphView2 extends GView {
 		});
 
 		popupMenu = new JPopupMenu();
-		//popupMenu.add(new GroupControlAction(this).getMenuItem());
+		popupMenu.add(new GroupControlAction(this).getMenuItem());
 		popupMenu.add(new InfoControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
@@ -395,12 +544,13 @@ public class GraphView2 extends GView {
 		popupMenu.add(new ExportAction(this).getMenuItem());
 
 		JButton optionsButton = new JButton("Options");
-		optionsButton.setMargin( new Insets(1, 1, 1, 1));
+		optionsButton.setMargin(new Insets(1, 1, 1, 1));
 		optionsButton.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mousePressed(MouseEvent e) {
-                		popupMenu.show(e.getComponent(), e.getX(), e.getY());
-            		}
+				popupMenu.show(e.getComponent(), e.getX(), e.getY());
+			}
 		});
 
 		// Bottom box.
@@ -421,21 +571,24 @@ public class GraphView2 extends GView {
 		box.updateUI();
 		add(box, BorderLayout.SOUTH);
 	}
-	
+
 	public void startAnimation() {
 		view.run("draw");
 		view.run("layout");
 		updateUI();
+		groupList.setSelectedIndex(0);
+		groupList.repaint();
 	}
-	
-	public JScrollPane getInfoPanel(){
+
+	public JScrollPane getInfoPanel() {
 		return infoPanel;
 	}
-	
+
 	public void restartAnimation() {
 
-		if (running)
+		if (running) {
 			return;
+		}
 
 		//view.cancel("static");
 		view.run("layout");
@@ -449,8 +602,9 @@ public class GraphView2 extends GView {
 
 	public void stopAnimation() {
 
-		if (! running)
+		if (!running) {
 			return;
+		}
 
 		view.cancel("layout");
 		//view.run("static");
@@ -463,14 +617,30 @@ public class GraphView2 extends GView {
 	}
 
 	@Override
-	public void showInfoPanel(boolean status) {
-		if (status == infoPanelStatus)
+	public void showGroupPanel(boolean status) {
+		if (status == groupPanelStatus) {
 			return;
-		
-		if (status) 
+		}
+
+		if (status) {
+			add(groupPanel, BorderLayout.WEST);
+		} else {
+			remove(groupPanel);
+		}
+		groupPanelStatus = status;
+	}
+
+	@Override
+	public void showInfoPanel(boolean status) {
+		if (status == infoPanelStatus) {
+			return;
+		}
+
+		if (status) {
 			add(infoPanel, BorderLayout.EAST);
-		else
+		} else {
 			remove(infoPanel);
+		}
 		infoPanelStatus = status;
 	}
 
@@ -495,7 +665,7 @@ public class GraphView2 extends GView {
 	public void setCategoryProvider(CategoryProvider cp) {
 		this.cp = cp;
 	}
-	
+
 	public void appendTextToInfoPanel(String text) {
 		textArea.append(text);
 		textArea.setCaretPosition(textArea.getDocument().getLength());
@@ -510,39 +680,41 @@ public class GraphView2 extends GView {
 	public Visualization getVisualization() {
 		return view;
 	}
-	
+
 	public long getSpeed() {
 		return fdl.getMaxTimeStep();
 	}
-	
+
 	public void setSpeed(long step) {
 		fdl.setMaxTimeStep(step);
 	}
-	
+
 	public void resetDefaultRenderer() {
 		view.cancel("layout");
 		view.cancel("static");
 		rf.setDefaultRenderer(lr);
-		if (running)
+		if (running) {
 			view.run("layout");
-		else
+		} else {
 			view.run("static");
+		}
 	}
 
 	public void setDefaultRenderer(AbstractShapeRenderer r) {
 		view.cancel("layout");
 		view.cancel("static");
 		rf.setDefaultRenderer(r);
-		if (running)
+		if (running) {
 			view.run("layout");
-		else
+		} else {
 			view.run("static");
+		}
 	}
 
 	@Override
-        public ForceDirectedLayout getForceLayout(){
-            return fdl;
-        }
+	public ForceDirectedLayout getForceLayout() {
+		return fdl;
+	}
 
 	// We make sure that we return always the same panel.
 	@Override
@@ -550,81 +722,85 @@ public class GraphView2 extends GView {
 		return new JForcePanel(fdl.getForceSimulator());
 	}
 
-        public static class Pair{
-            public float value;
-            public String name;
-            public Pair(String name,float i){
-                value=i;
-                this.name=name;
-            }
+	public static class Pair {
+
+		public float value;
+		public String name;
+
+		public Pair(String name, float i) {
+			value = i;
+			this.name = name;
+		}
 
 		@Override
-            public String toString(){
-                return name+ ":"+value;
-            }
+		public String toString() {
+			return name + ":" + value;
+		}
 
-            public static Pair valueOf(String s){
-                int k=s.indexOf(':');
-                String i=s.substring(0,k);
-                float j=Float.parseFloat(s.substring(k+1));
-                Pair p=new Pair(i,j);
-                return p;
-            }
-        }
+		public static Pair valueOf(String s) {
+			int k = s.indexOf(':');
+			String i = s.substring(0, k);
+			float j = Float.parseFloat(s.substring(k + 1));
+			Pair p = new Pair(i, j);
+			return p;
+		}
+	}
 
 	@Override
-        public ArrayList<ForcePair> getForces() {
-             ForceSimulator fs =fdl.getForceSimulator();
-              Force[] farray=fs.getForces();
-              ArrayList<ForcePair> array=new ArrayList<ForcePair>();
-              for(int i=0;i<farray.length;i++){
+	public ArrayList<ForcePair> getForces() {
+		ForceSimulator fs = fdl.getForceSimulator();
+		Force[] farray = fs.getForces();
+		ArrayList<ForcePair> array = new ArrayList<ForcePair>();
+		for (int i = 0; i < farray.length; i++) {
 
-                 int ni= farray[i].getParameterCount();
-                  for(int j=0;j<ni;j++){
-                      array.add(new ForcePair(farray[i].getParameterName(j),farray[i].getParameter(j)));
-                  }
-              }
-              return array;
+			int ni = farray[i].getParameterCount();
+			for (int j = 0; j < ni; j++) {
+				array.add(new ForcePair(farray[i].getParameterName(j), farray[i].getParameter(j)));
+			}
+		}
+		return array;
 		//return fdl.getForceSimulator();
 	}
 
 	// Private classes.
-	private class NodeColorAction extends ColorAction{
+	private class NodeColorAction extends ColorAction {
 
 		public NodeColorAction(String group) {
-        		super(group, VisualItem.FILLCOLOR);
-                      
-        	}
-        
+			super(group, VisualItem.FILLCOLOR);
+
+		}
+
 		@Override
 		public int getColor(VisualItem item) {
 			Tuple itemTuple = item.getSourceTuple();
-			
 
-			if ( m_vis.isInGroup(item, Visualization.SEARCH_ITEMS) ) {
+
+			if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
 
 				if (itemTuple.getString("st_id").equals(searchPanel.getQuery())) {
-					if (searchMatch)
+					if (searchMatch) {
 						display.panToAbs(new Point2D.Double(item.getX(), item.getY()));
+					}
 					searchMatch = false;
-					return ColorLib.rgb(255,0,0);
+					return ColorLib.rgb(255, 0, 0);
 				}
 
-				return ColorLib.rgb(200,100,100);
+				return ColorLib.rgb(200, 100, 100);
 
-			} else if (item.isFixed())
-				return ColorLib.rgb(255,100,100);
-			else if (item.isHighlighted())
-				return ColorLib.rgb(255,200,125);
-			else {
+			} else if (item.isFixed()) {
+				return ColorLib.rgb(255, 100, 100);
+			} else if (item.isHighlighted()) {
+				return ColorLib.rgb(255, 200, 125);
+			} else {
 				//Color color = colors.get(itemTuple.getString("st_id"));
 				//if (color != null)
 				//	return color.getRGB();
-				
-				if (((Node) item).getDegree() < 3)
-					return ColorLib.rgb(200,200,255);
-				else
-					return ColorLib.rgb(200,200,55);
+
+				if (((Node) item).getDegree() < 3) {
+					return ColorLib.rgb(200, 200, 255);
+				} else {
+					return ColorLib.rgb(200, 200, 55);
+				}
 			}
 		}
 	}
@@ -632,17 +808,17 @@ public class GraphView2 extends GView {
 	private class EdgeColorAction extends ColorAction {
 
 		public EdgeColorAction(String group) {
-        		super(group, VisualItem.STROKECOLOR);
-        	}
-        
+			super(group, VisualItem.STROKECOLOR);
+		}
+
 		@Override
 		public int getColor(VisualItem item) {
 			int w = item.getSourceTuple().getInt("w");
 
-			return ColorLib.gray(255 - 255/w); // .rgb(255, 255,   0);
+			return ColorLib.gray(255 - 255 / w); // .rgb(255, 255,   0);
 		}
 	}
-		
+
 	private class NodeSearchPanel extends JSearchPanel {
 
 		private static final long serialVersionUID = 1L;
@@ -650,30 +826,31 @@ public class GraphView2 extends GView {
 		NodeSearchPanel(Visualization view) {
 			super(view, "graph.nodes", Visualization.SEARCH_ITEMS, "st_id", true, true);
 			setShowResultCount(false);
-			setBorder(BorderFactory.createEmptyBorder(5,5,4,0));
+			setBorder(BorderFactory.createEmptyBorder(5, 5, 4, 0));
 			setFont(FontLib.getFont("Tahoma", Font.PLAIN, 11));
 			setBackground(Color.WHITE);
 			setForeground(Color.BLACK);
 			requestFocus();
 		}
 	}
-	
+
 	private class ItemInfoControl extends ControlAdapter {
+
 		@Override
 		public void itemClicked(VisualItem item, MouseEvent e) {
 
-                     
+
 
 			if (item instanceof EdgeItem) {
 				Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
 				textArea.append(edge.getU().getProfile().getID() + " -- "
-					      + edge.getV().getProfile().getID() + " (lv="
-					      + item.getSourceTuple().getString("w") + ")\n\n");
+					+ edge.getV().getProfile().getID() + " (lv="
+					+ item.getSourceTuple().getString("w") + ")\n\n");
 			}
 			if (item instanceof NodeItem) {
 				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
 				textArea.append(st.toString() + "\n");
-				
+
 				if (cp != null) {
 					textArea.append("Chart details:\n");
 					int total = 0;
@@ -689,13 +866,85 @@ public class GraphView2 extends GView {
 						}
 					}
 					double percent = (((double) (st.getFreq() - total) * 100) / st.getFreq());
-					if (percent > 0)
+					if (percent > 0) {
 						textArea.append(" + 'others' " + df.format(percent) + "%\n");
+					}
 				}
-				
+
 				textArea.append("\n");
 			}
 			textArea.setCaretPosition(textArea.getDocument().getLength());
+		}
+	}
+
+	private class Group {
+
+		private int id;
+		private LinkedList<Integer> list;
+
+		Group() {
+			this.id = 0;
+			list = new LinkedList<Integer>();
+		}
+
+		public void setID(int id) {
+			this.id = id;
+		}
+
+		public int getID() {
+			return id;
+		}
+
+		public List<Integer> getItems() {
+			return list;
+		}
+
+		public void add(int u) {
+			list.add(u);
+		}
+
+		public int size() {
+			return list.size();
+		}
+
+		@Override
+		public String toString() {
+			return Integer.toString(id);
+		}
+	}
+
+	private class GroupCellRenderer extends JLabel implements ListCellRenderer {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			String s = value.toString();
+			setText(s);
+			if (isSelected) {
+				setBackground(list.getSelectionBackground());
+				setForeground(list.getSelectionForeground());
+			} else {
+				setBackground(list.getBackground());
+				setForeground(list.getForeground());
+			}
+
+			setEnabled(list.isEnabled());
+			setFont(list.getFont());
+
+			Group g = (Group) groupList.getModel().getElementAt(index);
+			if (g.size() == 1) {
+				setFont(list.getFont().deriveFont(Font.ITALIC));
+				setForeground(Color.GRAY);
+			}
+
+			if (itemFound == g.getID()) {
+				setFont(list.getFont().deriveFont(Font.BOLD));
+				setForeground(Color.RED);
+			}
+
+			setOpaque(true);
+			return this;
 		}
 	}
 }

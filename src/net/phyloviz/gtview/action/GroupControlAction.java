@@ -6,13 +6,13 @@ import javax.swing.AbstractAction;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import net.phyloviz.gtview.ui.GraphView;
+import net.phyloviz.gtview.ui.GView;
 
 public class GroupControlAction extends AbstractAction {
 
-	private GraphView gv;
+	private GView gv;
 
-	public GroupControlAction (GraphView gv) {
+	public GroupControlAction (GView gv) {
 		this.gv = gv;
 	}
 
