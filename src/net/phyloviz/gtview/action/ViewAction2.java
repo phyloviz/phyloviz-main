@@ -4,7 +4,6 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
-import net.phyloviz.gtview.ui.GTPanel;
 import net.phyloviz.gtview.ui.GTPanel2;
 import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Node;
@@ -24,7 +23,7 @@ public class ViewAction2 extends NodeAction {
 		
 		//If a viewer is already open, just give it focus
 		for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
-			if (tc instanceof GTPanel && tc.getLookup().lookup(GOeBurstMSTResult.class) == gr) {
+			if (tc instanceof GTPanel2 && tc.getLookup().lookup(GOeBurstMSTResult.class) == gr) {
 				tc.requestActive();
 				return;
 			}
