@@ -93,6 +93,6 @@ public class MSTRunner implements Runnable {
 		op.appendWithDate("MST algorithm: done.\n");
 		op.flush();
 
-		ds.add(new GOeBurstMSTResult(tree, ad, op));
+		ds.add(new GOeBurstMSTResult(ds, tree, ad, op));
 	}
 }
