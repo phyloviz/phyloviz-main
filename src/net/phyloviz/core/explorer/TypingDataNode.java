@@ -5,12 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.swing.Action;
 import net.phyloviz.core.data.TypingData;
-import org.openide.actions.PropertiesAction;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
-import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 
 public class TypingDataNode extends AbstractNode {
@@ -47,8 +45,8 @@ public class TypingDataNode extends AbstractNode {
 		a4p.addAll(Utilities.actionsForPath("/Actions/PHYLOViZ/DataModel"));
 		a4p.addAll(Utilities.actionsForPath("/Actions/PHYLOViZ/Algorithm"));
 
-		Action[] actions = a4p.toArray(new Action[a4p.size() + 1]);
-		actions[a4p.size()] = SystemAction.get(PropertiesAction.class);
+		Action[] actions = a4p.toArray(new Action[a4p.size()]);
+		//actions[a4p.size()] = SystemAction.get(PropertiesAction.class);
 
 		return actions;
 	}

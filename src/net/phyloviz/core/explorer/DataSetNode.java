@@ -7,7 +7,6 @@ import javax.swing.Action;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
 import org.openide.actions.DeleteAction;
-import org.openide.actions.PropertiesAction;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
@@ -53,7 +52,7 @@ public class DataSetNode extends AbstractNode {
 
 		return new SystemAction[] {
 			SystemAction.get(DeleteAction.class),
-			SystemAction.get(PropertiesAction.class)
+			//SystemAction.get(PropertiesAction.class)
 		};
 
 /*		Action[] actions = null;
