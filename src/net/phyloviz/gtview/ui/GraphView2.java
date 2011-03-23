@@ -38,6 +38,7 @@ import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -50,6 +51,8 @@ import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.Isolate;
+import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
 import net.phyloviz.gtview.action.ExportAction;
@@ -133,12 +136,12 @@ public class GraphView2 extends GView {
 	// Data analysis info...
 	private CategoryProvider cp;
 
-	public GraphView2(GOeBurstMSTResult er) {
+	public GraphView2(GOeBurstMSTResult _er) {
 		this.setLayout(new BorderLayout());
 		this.setBackground(Color.WHITE);
 		this.setOpaque(true);
 
-		this.er = er;
+		this.er = _er;
 
 		// Create an empty visualization.
 		view = new Visualization();
@@ -253,8 +256,8 @@ public class GraphView2 extends GView {
 				uid2rowid.put(st.getUID(), uRowNb);
 				nodeTable.setString(uRowNb, "st_id", st.getID());
 				nodeTable.set(uRowNb, "st_ref", st);
-				nodeTable.set(uRowNb, "w", 0);
-				nodeTable.set(uRowNb, "g", 1);
+				nodeTable.setInt(uRowNb, "w", 0);
+				nodeTable.setInt(uRowNb, "g", 1);
 
 				g.add(st.getUID());
 			} else {
@@ -269,8 +272,8 @@ public class GraphView2 extends GView {
 				uid2rowid.put(st.getUID(), vRowNb);
 				nodeTable.setString(vRowNb, "st_id", st.getID());
 				nodeTable.set(vRowNb, "st_ref", st);
-				nodeTable.set(vRowNb, "w", 0);
-				nodeTable.set(vRowNb, "g", 1);
+				nodeTable.setInt(vRowNb, "w", 0);
+				nodeTable.setInt(vRowNb, "g", 1);
 
 				g.add(st.getUID());
 			} else {
@@ -359,15 +362,14 @@ public class GraphView2 extends GView {
 		tb.setBorder(new LineBorder(Color.BLACK));
 		groupListPanel.setBorder(tb);
 
-		JPanel top = new JPanel();
-		top.setLayout(new BorderLayout());
+
+		JPanel top = new JPanel(new BorderLayout());
 		top.setBackground(Color.WHITE);
-		top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		//top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
 		JLabel ll = new JLabel("Level: ");
 		//ll.setMargin( new Insets(1, 1, 1, 1));
 		ll.setBackground(Color.WHITE);
-		top.add(ll, BorderLayout.WEST);
 
 		final SpinnerNumberModel model = new SpinnerNumberModel(maxlv, 1, maxlv, 1);
 		JSpinner sp = new JSpinner(model);
@@ -391,7 +393,12 @@ public class GraphView2 extends GView {
 				view.run("draw");
 			}
 		});
+
+		top.add(ll, BorderLayout.WEST);
 		top.add(sp, BorderLayout.CENTER);
+
+		JPanel bs = new JPanel(new BorderLayout());
+		bs.setBackground(Color.WHITE);
 
 		JButton ub = new JButton("Get Groups");
 		ub.setMargin(new Insets(1, 1, 1, 1));
@@ -453,9 +460,53 @@ public class GraphView2 extends GView {
 				startAnimation();
 			}
 		});
-		top.add(ub, BorderLayout.SOUTH);
+		bs.add(ub, BorderLayout.NORTH);
 
-		groupPanel.add(top, BorderLayout.NORTH);
+		JButton sb = new JButton("Save Groups");
+		sb.setEnabled(er.getDataSet().getLookup().lookup(Population.class) != null);
+		sb.setMargin(new Insets(1, 1, 1, 1));
+		sb.addActionListener(new ActionListener() {
+
+			Population pop = er.getDataSet().getLookup().lookup(Population.class);
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				// Integrate with isolate data, if it exists.
+				if (pop != null) {
+
+					final HashMap<String, String> st2cl = new HashMap<String, String>();
+					for (int i = 0; i < nodeTable.getRowCount(); i++) {
+						st2cl.put(nodeTable.getString(i, "st_id"),
+							String.valueOf(nodeTable.getInt(i, "g")));
+					}
+
+					pop.addColumn("goeBURST MST[" + level + "]", new Population.ColumnFiller() {
+
+						@Override
+						public String getValue(Isolate i) {
+							return st2cl.get(i.get(er.getDataSet().getPopKey()));
+						}
+					});
+
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							pop.tableModel().fireTableStructureChanged();
+						}
+					});
+				}
+			}
+		});
+		bs.add(sb, BorderLayout.SOUTH);
+
+		bs.add(Box.createVerticalStrut(3), BorderLayout.CENTER);
+
+                top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 3, 2, 3));
+		top.add(bs, BorderLayout.SOUTH);
+
+		groupPanel.add(top, BorderLayout.SOUTH);
 		groupPanel.add(groupListPanel, BorderLayout.CENTER);
 		groupPanel.setPreferredSize(new Dimension(90, 600));
 		add(groupPanel, BorderLayout.WEST);
@@ -578,6 +629,8 @@ public class GraphView2 extends GView {
 		updateUI();
 		groupList.setSelectedIndex(0);
 		groupList.repaint();
+
+		running = true;
 	}
 
 	public JScrollPane getInfoPanel() {
