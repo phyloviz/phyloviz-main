@@ -21,8 +21,10 @@ import javax.swing.JTextField;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.ui.ChartLegendPanel;
 import net.phyloviz.core.data.DataModel;
+import net.phyloviz.core.data.DataSaver;
 import net.phyloviz.core.data.DataSet;
-import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
 
 public class TViewPanel extends TopComponent {
@@ -45,7 +47,15 @@ public class TViewPanel extends TopComponent {
 
 	/** Creates new form TViewPanel */
 	public TViewPanel(String name, DataModel dm, DataSet _ds) {
-		super(Lookups.singleton(dm));
+		InstanceContent ic = new InstanceContent();
+		associateLookup(new AbstractLookup(ic));
+
+		ic.add(dm);
+		
+		DataSaver saver = dm.getSaver();
+		if (saver != null)
+			ic.add(saver);
+
 		initComponents();
 		this.setName(name);
 		this.ds = _ds;
