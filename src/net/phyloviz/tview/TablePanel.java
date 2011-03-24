@@ -167,7 +167,7 @@ public class TablePanel extends JTable {
 				int[] array = new int[clicable.size()];
 				Iterator<Integer> ii = clicable.iterator();
 				while (ii.hasNext())
-					array[i] = ii.next().intValue();
+					array[i++] = ii.next().intValue();
 				sorter.setRowFilter(RowFilter.regexFilter(text, array));
 			} catch (PatternSyntaxException pse) {
         			StatusDisplayer.getDefault().setStatusText("Error: Bad regex pattern: " + text);
