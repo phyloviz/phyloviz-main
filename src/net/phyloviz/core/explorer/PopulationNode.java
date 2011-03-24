@@ -8,13 +8,20 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
-import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 public class PopulationNode extends AbstractNode {
 
 	public PopulationNode(Population pop) {
-		super(Children.LEAF, Lookups.singleton(pop));
+		this(pop, new InstanceContent());
 	        setDisplayName(pop.toString());
+	}
+
+	private PopulationNode(Population pop, InstanceContent ic) {
+		super(Children.LEAF, new AbstractLookup(ic));
+		ic.add(pop);
+		ic.add(pop.getSaver());
 	}
 
 	@Override

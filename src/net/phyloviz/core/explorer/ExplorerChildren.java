@@ -9,8 +9,7 @@ import org.openide.util.LookupListener;
 
 public class ExplorerChildren extends Children.Keys<NodeFactory> {
 
-	Lookup.Result<NodeFactory> result;
-	LookupListener listener;
+	private Lookup.Result<NodeFactory> result;
 
 	public ExplorerChildren(Lookup lookup) {
 		super();

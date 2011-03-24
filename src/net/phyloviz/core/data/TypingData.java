@@ -35,6 +35,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	private TreeSet<T> unique;
 
 	private TableModel model;
+	private DataSaver saver;
 
 	private boolean weightOk;
 	private int weight;
@@ -238,6 +239,14 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 			model = new TableModel();
 
 		return model;
+	}
+
+	@Override
+	public DataSaver getSaver() {
+		if (saver == null)
+			saver = new DataSaver(this);
+
+		return saver;
 	}
 
 	public class TableModel extends AbstractTableModel {

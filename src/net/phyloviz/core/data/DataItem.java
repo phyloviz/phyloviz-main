@@ -51,5 +51,5 @@ public interface DataItem {
 	 *
 	 * @return the weight for this item.
 	 */
-public int weight();
+	public int weight();
 }

@@ -28,4 +28,6 @@ public interface DataModel {
 	public int size();
 
 	public int weight();
+
+	public DataSaver getSaver();
 }

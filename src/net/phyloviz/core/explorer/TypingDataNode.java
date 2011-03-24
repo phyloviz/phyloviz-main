@@ -9,14 +9,22 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
-import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 
 public class TypingDataNode extends AbstractNode {
 
 	public TypingDataNode(TypingData td) {
-		super(Children.LEAF, Lookups.singleton(td));
+		this(td, new InstanceContent());
 	        setDisplayName(td.toString());
 	}
+
+	private TypingDataNode(TypingData td, InstanceContent ic) {
+		super(Children.LEAF, new AbstractLookup(ic));
+		ic.add(td);
+		ic.add(td.getSaver());
+	}
+
 
 	@Override
 	public Image getIcon (int type) {

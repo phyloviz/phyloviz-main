@@ -50,6 +50,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	private HashMap<String, Integer> h2idx;
 	private ArrayList<Isolate> collection;
 	private TableModel model;
+	private DataSaver saver;
 	private int key;
 
 	/**
@@ -274,6 +275,14 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		}
 
 		return model;
+	}
+
+	@Override
+	public DataSaver getSaver() {
+		if (saver == null)
+			saver = new DataSaver(this);
+
+		return saver;
 	}
 
 	public class TableModel extends AbstractTableModel {
