@@ -868,7 +868,7 @@ public class GraphView2 extends GView {
 		public int getColor(VisualItem item) {
 			int w = item.getSourceTuple().getInt("w");
 
-			return ColorLib.gray(255 - 255 / w); // .rgb(255, 255,   0);
+			return ColorLib.gray(255 - 200 / w); // .rgb(255, 255,   0);
 		}
 	}
 
