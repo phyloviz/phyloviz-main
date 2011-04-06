@@ -4,15 +4,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.MessageFormat;
+import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
 import org.openide.WizardDescriptor.Panel;
 import org.openide.util.HelpCtx;
 
-public final class LoadDataSetWizardAction implements ActionListener {
+public final class LoadDataSetWizardAction extends AbstractAction {
 
 	private WizardDescriptor.Panel[] panels;
 
