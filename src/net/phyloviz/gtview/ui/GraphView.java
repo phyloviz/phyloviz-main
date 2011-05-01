@@ -822,7 +822,7 @@ public class GraphView extends GView {
 			}
 			if (item instanceof NodeItem) {
 				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
-				textArea.append(st +
+				textArea.append(st + "\n" +
 						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
 				
 				textArea.append("Chart details:\n");
