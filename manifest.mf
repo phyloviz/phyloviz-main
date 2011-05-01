@@ -3,4 +3,4 @@ OpenIDE-Module-Install: net/phyloviz/welcome/Installer.class
 OpenIDE-Module: net.phyloviz.welcome/1
 OpenIDE-Module-Layer: net/phyloviz/welcome/resources/layer.xml
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/welcome/Bundle.properties
-OpenIDE-Module-Implementation-Version: 0
+OpenIDE-Module-Implementation-Version: 1
