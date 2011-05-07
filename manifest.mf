@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module: net.phyloviz.tview/1
-OpenIDE-Module-Implementation-Version: 4
+OpenIDE-Module-Implementation-Version: 5
 OpenIDE-Module-Layer: net/phyloviz/tview/layer.xml
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/tview/Bundle.properties
 OpenIDE-Module-Requires: org.openide.windows.WindowManager
