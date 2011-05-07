@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 OpenIDE-Module: net.phyloviz.category/1
-OpenIDE-Module-Implementation-Version: 2
+OpenIDE-Module-Implementation-Version: 3
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/category/Bundle.properties
 
