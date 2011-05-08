@@ -86,6 +86,8 @@ import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.DataItem;
+import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
@@ -516,10 +518,10 @@ public class GraphView2 extends GView {
 							String.valueOf(nodeTable.getInt(i, "g")));
 					}
 
-					pop.addColumn("goeBURST MST[" + level + "]", new Population.ColumnFiller() {
+					pop.addColumn("goeBURST MST[" + level + "]", new DataModel.ColumnFiller() {
 
 						@Override
-						public String getValue(Isolate i) {
+						public String getValue(DataItem i) {
 							return st2cl.get(i.get(er.getDataSet().getPopKey()));
 						}
 					});
