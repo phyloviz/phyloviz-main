@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import javax.swing.SwingUtilities;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.DataItem;
+import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
@@ -100,10 +102,10 @@ public class GOeBurstRunner implements Runnable {
 					st2cl.put(itr.next().getID(), id);
 				}
 			}
-			pop.addColumn("goeBURST[" + (times++) + "]", new Population.ColumnFiller() {
+			pop.addColumn("goeBURST[" + (times++) + "]", new DataModel.ColumnFiller() {
 
 				@Override
-				public String getValue(Isolate i) {
+				public String getValue(DataItem i) {
 					return st2cl.get(i.get(ds.getPopKey()));
 				}
 			});
