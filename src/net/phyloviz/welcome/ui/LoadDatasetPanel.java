@@ -48,13 +48,18 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import net.phyloviz.core.wizard.LoadDataSetWizardAction;
 import net.phyloviz.welcome.content.BundleSupport;
 import net.phyloviz.welcome.content.Constants;
 import net.phyloviz.welcome.content.LinkButton;
 import net.phyloviz.welcome.content.Utils;
+import org.openide.cookies.InstanceCookie;
+import org.openide.filesystems.FileUtil;
+import org.openide.loaders.DataObject;
 
 /**
  *
@@ -85,7 +90,16 @@ class LoadDatasetPanel extends JPanel implements Constants {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logUsage();
-                new LoadDataSetWizardAction().actionPerformed(e); //NOI18N
+               	try {
+		    DataObject dobj = DataObject.find(FileUtil.getConfigFile("WelcomePage/GettingStartedLinks/sampleproject.instance"));
+		    InstanceCookie.Of instCookie = dobj.getCookie(InstanceCookie.Of.class);
+                    if( null != instCookie && instCookie.instanceOf( Action.class ) ) {
+                	Action res = (Action) instCookie.instanceCreate();
+			res.actionPerformed(e);
+		    }
+		} catch (Exception ex) {
+                    Logger.getLogger(LoadDatasetPanel.class.getName()).log(Level.INFO, null, ex);
+		}
             }
         };
         b.setFont(GET_STARTED_FONT);
@@ -100,7 +114,16 @@ class LoadDatasetPanel extends JPanel implements Constants {
             @Override
             public void actionPerformed(ActionEvent e) {
                 logUsage();
-                new LoadDataSetWizardAction().actionPerformed(e); //NOI18N
+               	try {
+		    DataObject dobj = DataObject.find(FileUtil.getConfigFile("WelcomePage/GettingStartedLinks/sampleproject.instance"));
+		    InstanceCookie.Of instCookie = dobj.getCookie(InstanceCookie.Of.class);
+                    if( null != instCookie && instCookie.instanceOf( Action.class ) ) {
+                	Action res = (Action) instCookie.instanceCreate();
+			res.actionPerformed(e);
+		    }
+		} catch (Exception ex) {
+                    Logger.getLogger(LoadDatasetPanel.class.getName()).log(Level.INFO, null, ex);
+		}
             }
         };
         b.setFont(GET_STARTED_FONT);
