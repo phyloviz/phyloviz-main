@@ -33,12 +33,6 @@
  * to do so, delete this exception statement from your version.
  */
 
-/**
- * @(#)Isolate.java 27/01/11
- *
- * Copyright 2011 Phyloviz. All rights reserved.
- * Use is subject to license terms.
- */
 package net.phyloviz.core.data;
 
 import java.util.ArrayList;
@@ -52,7 +46,7 @@ import java.util.Arrays;
  * information, important information for its characterization.
  *
  * @since   PHILOViZ 1.0
- * @author A. P. Francisco
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
  */
 public class Isolate implements DataItem {
 
@@ -88,7 +82,7 @@ public class Isolate implements DataItem {
 	 * @param  idx index of the data to return.
 	 * @return the data at the specified position in the ancillary data list of
 	 * this isolate.
-	 * @throws IndexOutOfBoundsException - if the idx argument is negative
+	 * @throws IndexOutOfBoundsException  if the argument <code>idx</code> is negative
 	 * or not less than the size of the ancillary data list.
 	 */
 	@Override
@@ -105,7 +99,7 @@ public class Isolate implements DataItem {
 	 *
 	 * @param idx index of the data to replace
 	 * @param value data to be stored at the specified position.
-	 * @throws IndexOutOfBoundsException  - if the idx argument is negative
+	 * @throws IndexOutOfBoundsException   if the argument <code>idx</code> is negative
 	 * or not less than the size of the ancillary data list.
 	 */
 	protected void set(int idx, String value) {
@@ -145,11 +139,24 @@ public class Isolate implements DataItem {
 		return null;
 	}
 
+        /**
+	 * Returns the number of features (including the ID) of this isolate.
+	 * If contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
+	 * <tt>Integer.MAX_VALUE</tt>.
+	 *
+	 * @return the number of elements (including the ID) for this isolate.
+	 */
 	@Override
 	public int length() {
 		return values.size();
 	}
-
+	
+        /**
+	 * Returns the frequency of this isolate, which is 1.
+	 *
+	 * @return the frequency the isolate,  which is 1.
+	 *
+	 */
 	@Override
 	public int weight() {
 		return 1;

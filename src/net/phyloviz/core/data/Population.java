@@ -33,12 +33,6 @@
  * to do so, delete this exception statement from your version.
  */
 
-/*
- * @(#)Population.java 28/01/11
- *
- * Copyright 2011 Phyloviz. All rights reserved.
- * Use is subject to license terms.
- */
 package net.phyloviz.core.data;
 
 import java.util.ArrayList;
@@ -59,32 +53,47 @@ import org.openide.util.lookup.InstanceContent;
 /**
  * The <code> Population </code> class represents the set of the
  * isolates of a bacterial population.
+ * The isolates of a population can be displayed as a two dimensional table, where each
+ * row corresponds to a different isolate and each column to a specific feature of the isolate.
+ * A population instance can be explored in the context of an explorer viewer.
+ *
  *
  * @since   PHILOViZ 1.0
- * @author A. P. Francisco
- *
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
  */
 public class Population implements DataModel, Lookup.Provider, NodeFactory {
 
 	private InstanceContent ic;
 	private AbstractLookup lookup;
+
 	/**
 	 * The set of the ancillary data names.
 	 */
 	private ArrayList<String> headers;
+
 	/**
 	 * The list of sets of ancillary data values.
 	 * Each position of this list contains the corresponding set of ancillary
 	 * data values to a specific ancillary data name.
 	 */
 	private ArrayList<HashSet<String>> domains;
+
 	/**
 	 *  The map that to each ancillary data name maps
 	 *  an internal index.
 	 */
 	private HashMap<String, Integer> h2idx;
+
+	/**
+	 *  The list of the isolates that belong to this population.
+	 */
 	private ArrayList<Isolate> collection;
+
+	/**
+	 * A tabular model of this population.
+	 * */
 	private TableModel model;
+
 	private DataSaver saver;
 	private int key;
 
@@ -101,14 +110,12 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	}
 
 	/**
-	 * Adds an isolate to this population with <code>values<code/> as its
-	 * ancillary data if they are the same as for the isolates that
-	 * belong to this population.
+	 * Adds an isolate to this population with <code>values</code> as its
+	 * ancillary data.
 	 *
 	 * @param values the ancillary data values of an isolate.
-	 * @return <code> true </code> if they are the same as for the isolates
-	 * that belong to this population.
-	 *
+	 * @return <code>true</code> if <code>values</code> has the expected
+	 * length for this population.
 	 */
 	public boolean addIsolate(String[] values) {
 
@@ -140,68 +147,81 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	}
 
 	/**
+	 * Sorts the isolates from this population according to the order
+	 * induced by the specified comparator. All isolates in the population
+	 * must be mutually
+	 * comparable using the specified comparator
+	 * (that is, c.compare(e1, e2) must not throw a
+	 * <code>ClassCastException</code> for any elements e1 and e2 in the
+	 * population).
 	 *
-	 * @param c
+	 * @param c  the comparator to determine the order of the list. A
+	 * null value indicates that the elements' natural ordering should
+	 * be used.
 	 */
 	public void sort(Comparator<Isolate> c) {
 		Collections.sort(collection, c);
 	}
 
+	/**
+	 * Returns an iterator over the elements in this population.
+	 * There are no guarantees concerning the order in which the elements
+	 * are returned
+	 * @return  an <code>Iterator</code>
+	 * over the elements in this population.
+	 */
 	@Override
 	public Iterator<Isolate> iterator() {
 		return new PopulationIterator();
 	}
 
+	/**
+	 * Returns a string representation of this population.
+	 * The string representation express de kind of elements of this
+	 * population, i.e., isolates.
+	 * @overrides <code>toString</code> in class <code>Object</code>
+	 * @return a string representation of this population.
+	 */
 	@Override
 	public String toString() {
 		return "Isolate Data";
 	}
 
 	// LookUp Methods
+
+	/** Returns the lookup associated with the object.
+	 * @return  fully initialized lookup instance provided by this object.
+	 * @override  <code>getLookUp</code> in class <code>AbstractLookUp</code>.
+	 */
 	@Override
 	public Lookup getLookup() {
 		return lookup;
 	}
 
+	/**
+	 * Registers the object o within this lookup.
+	 * @see - org.openide.util.Lookup.Provider.
+	 * @param o  the object to be registered.
+	 */
 	public void add(Object o) {
 		ic.add(o);
 	}
 
+	/**
+	 * Unregisters the object <code>o</code> within this lookup.
+	 * @param  o the object to be registered..
+	 */
 	public void remove(Object o) {
 		ic.remove(o);
 	}
 
+	/**
+	 * Allows to explore this population in the context of an explorer viewer.
+	 * @return - Returns this population as a node in the explorer view.
+	 */
 	@Override
 	public AbstractNode getNode() {
 		return new PopulationNode(this);
-	}
-
-	@Override
-	public int getKey() {
-		return key;
-	}
-
-	public void setKey(int key) {
-		this.key = key;
-	}
-
-	@Override
-	public String getDomainLabel(int idx) {
-		if (idx < 0 || idx >= headers.size()) {
-			return null;
-		}
-
-		return headers.get(idx);
-	}
-
-	@Override
-	public Collection<? extends DataItem> getItems() {
-		return new ArrayList<Isolate>(collection);
-	}
-
-	@Override
-	public int weight() {
-		return size();
 	}
 
 	private class PopulationIterator implements Iterator<Isolate> {
@@ -262,6 +282,35 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	}
 
 	//Data Model Methods
+
+	/**
+	 * Returns the key column of this population model.
+	 *
+	 * @return the index of the key column for this population model.
+	 */
+	@Override
+	public int getKey() {
+		return key;
+	}
+
+	/**
+	 * Changes the key column of this population model.
+	 * @param key   the new key column for this population model.
+	 */
+	public void setKey(int key) {
+		this.key = key;
+	}
+
+	/**
+	 * Adds a new column to this population model with name
+	 * <code>header</code> and values obtaineds thought <code>cf</code>,
+	 * if there is not already a column with the same name.
+	 *
+	 * @param header the name of the column to add.
+	 * @param cf  the values filler for the column to add.
+	 * @return <code>true</code> if this population model
+	 * did not already contain a column with  the specified name.
+	 */
 	@Override
 	public boolean addColumn(String header, ColumnFiller cf) {
 		if (h2idx.containsKey(header)) {
@@ -290,6 +339,49 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		return true;
 	}
 
+	/**
+	 * Returns the label that describes the domain
+	 * of the data values that
+	 * are in the column idx of the table model of this population.
+	 * @param idx the idx column in the table model.
+	 * @return the label that describes the domain of the data values that are
+	 * on the column idx of the table model of this population. It returns null
+	 * if <code>idx</code> is not a valid index.
+	 */
+	@Override
+	public String getDomainLabel(int idx) {
+		if (idx < 0 || idx >= headers.size()) {
+			return null;
+		}
+
+		return headers.get(idx);
+	}
+
+	/**
+	 * Returns a collection with all the isolates of this population.
+	 * @return a <code> Collection</code> with all the isolates of this population.
+	 */
+	@Override
+	public Collection<? extends DataItem> getItems() {
+		return new ArrayList<Isolate>(collection);
+	}
+
+	/**
+	 * Returns the sum of the weights of all the isolates of this population.
+	 * @return the sum of the weights of all the isolates of this population.
+	 */
+	@Override
+	public int weight() {
+		return size();
+	}
+
+	/**
+	 * Returns the set of data values that belong to the isolates and
+	 * are in the column idx of the table model inherent to this population.
+	 * @param idx  the idx column in the table model inherent to this population.
+	 * @return the set of data values that belong to the isolates that are
+	 * on the column idx of the table model inherent to this population.
+	 */
 	@Override
 	public HashSet<String> getDomain(int idx) {
 		if (idx < 0 || idx > domains.size()) {
@@ -299,6 +391,10 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		return domains.get(idx);
 	}
 
+	/**
+	 *  Returns a table model for this population.
+	 * @return a table model for this population.
+	 */
 	@Override
 	public AbstractTableModel tableModel() {
 		if (model == null) {
@@ -310,8 +406,9 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 
 	@Override
 	public DataSaver getSaver() {
-		if (saver == null)
+		if (saver == null) {
 			saver = new DataSaver(this);
+		}
 
 		return saver;
 	}
