@@ -65,4 +65,11 @@ public interface DataModel {
 	public int weight();
 
 	public DataSaver getSaver();
+
+	public boolean addColumn(String domainLabel, ColumnFiller cf);
+
+	public interface ColumnFiller {
+
+		public String getValue(DataItem i);
+	}
 }

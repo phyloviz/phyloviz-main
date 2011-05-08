@@ -148,7 +148,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	}
 
 	@Override
-	public PopulationIterator iterator() {
+	public Iterator<Isolate> iterator() {
 		return new PopulationIterator();
 	}
 
@@ -204,7 +204,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		return size();
 	}
 
-	public class PopulationIterator implements Iterator<Isolate> {
+	private class PopulationIterator implements Iterator<Isolate> {
 
 		private Iterator<Isolate> i;
 		private Isolate last;
@@ -262,6 +262,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	}
 
 	//Data Model Methods
+	@Override
 	public boolean addColumn(String header, ColumnFiller cf) {
 		if (h2idx.containsKey(header)) {
 			return false;
@@ -298,13 +299,8 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		return domains.get(idx);
 	}
 
-	public interface ColumnFiller {
-
-		public String getValue(Isolate i);
-	}
-
 	@Override
-	public TableModel tableModel() {
+	public AbstractTableModel tableModel() {
 		if (model == null) {
 			model = new TableModel();
 		}
@@ -320,7 +316,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 		return saver;
 	}
 
-	public class TableModel extends AbstractTableModel {
+	private class TableModel extends AbstractTableModel {
 
 		@Override
 		public int getRowCount() {

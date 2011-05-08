@@ -211,6 +211,11 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		return weight;
 	}
 
+	@Override
+	public boolean addColumn(String domainLabel, ColumnFiller cf) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 	public class DataIterator implements Iterator<T> {
 
 		private Iterator<T> i;

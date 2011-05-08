@@ -116,7 +116,6 @@
             <public-packages>
                 <package>net.phyloviz.core.data</package>
                 <package>net.phyloviz.core.util</package>
-                <package>net.phyloviz.core.wizard</package>
             </public-packages>
         </data>
     </configuration>
