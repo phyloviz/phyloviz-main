@@ -32,12 +32,23 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.core.util;
 
 import org.openide.nodes.AbstractNode;
 
+/**
+ *  This interface is defined for implementing the concept of a factory for nodes in an explorer viewer
+ * (factory pattern). The classes that implement this interface will be able to create
+ * a node (instance) for an explorer viewer.
+ *
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
+ */
 public interface NodeFactory {
 
+	/**
+	 * Allows to explore this instance in the context of an explorer viewer.
+	 * @return  Returns this instance as a node in the explorer view.
+	 * @see AbstractNode
+	 */
 	public AbstractNode getNode();
 }

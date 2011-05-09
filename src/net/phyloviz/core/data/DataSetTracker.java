@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.core.data;
 
 import org.openide.util.Lookup;
@@ -40,6 +39,12 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.ServiceProvider;
 
+/**
+ * The instances of this class tracks all DataSet instances.
+ *
+ * @since   PHILOViZ 1.0
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
+ */
 @ServiceProvider(service = DataSetTracker.class)
 public class DataSetTracker implements Lookup.Provider {
 
@@ -51,15 +56,27 @@ public class DataSetTracker implements Lookup.Provider {
 		lookup = new AbstractLookup(ic);
 	}
 
+	/** Returns a lookup associated with the object.
+	 * @return  fully initialized lookup instance provided by this object.
+	 * @override  <code>getLookUp</code> in class <code>AbstractLookUp</code>.
+	 */
 	@Override
 	public Lookup getLookup() {
 		return lookup;
 	}
 
+	/**
+	 *  Registers the object within this lookup.
+	 * @param o the object to register within this lookup.
+	 */
 	public void add(DataSet ds) {
 		ic.add(ds);
 	}
 
+	/**
+	 * Unregisters the object within this lookup.
+	 * @param o the object to be unregistered.
+	 */
 	public void remove(DataSet ds) {
 		ic.remove(ds);
 	}

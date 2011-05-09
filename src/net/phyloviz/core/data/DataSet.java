@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.core.data;
 
 import net.phyloviz.core.explorer.DataSetNode;
@@ -42,14 +41,24 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
+/**
+ *  The DataSet class represents a set that contains population data and related
+ *  typing data. An instance of this class can be explored in the context of
+ * an explorer viewer.
+ *
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
+ */
 public class DataSet implements Lookup.Provider, NodeFactory {
 
 	private InstanceContent ic;
 	private AbstractLookup lookup;
-
 	private String name;
 	private int popKey;
 
+	/**
+	 * Constructs a new data designed by <code>name</code>
+	 * @param name the name of the data set.
+	 */
 	public DataSet(String name) {
 		ic = new InstanceContent();
 		lookup = new AbstractLookup(ic);
@@ -57,35 +66,67 @@ public class DataSet implements Lookup.Provider, NodeFactory {
 		popKey = -1;
 	}
 
+	/**
+	 * Returns the key column of the tabular model for the population of this data set.
+	 *
+	 * @return the index of the key column of the tabular model for the population of this data set.
+	 */
 	public int getPopKey() {
 		return popKey;
 	}
 
+	/**
+	 * Changes the key column of the tabular model for the population of this data set.
+	 * @param key   the new key column for the tabular model of the population of this data set.
+	 */
 	public void setPopKey(int key) {
 		Population pop = lookup.lookup(Population.class);
-		if (pop != null)
+		if (pop != null) {
 			pop.setKey(key);
+		}
 		popKey = key;
 	}
 
+	/**
+	 * Returns a string representation of this data set.
+	 * @overrides <code>toString</code> in class <code>Object</code>
+	 * @return a string representation of this data set.
+	 */
 	@Override
 	public String toString() {
 		return name;
 	}
 
+	/** Returns lookup associated with the object.
+	 * @return  fully initialized lookup instance provided by this object.
+	 * @override  <code>getLookUp</code> in class <code>AbstractLookUp</code>.
+	 */
 	@Override
 	public Lookup getLookup() {
 		return lookup;
 	}
 
+	/**
+	 *  Registers the object with this lookup.
+	 * @param o the object to register with this lookup.
+	 */
 	public void add(Object o) {
 		ic.add(o);
 	}
 
+	/**
+	 * Unregisters the object with this lookup.
+	 * @param o the object to be unregistered.
+	 */
 	public void remove(Object o) {
 		ic.remove(o);
 	}
 
+	/**
+	 * Allows to explore the population in the context of an explorer viewer.
+	 * @return  returns the population as a node in the explorer view.
+	 * @see AbstractNode
+	 */
 	@Override
 	public AbstractNode getNode() {
 		return new DataSetNode(this);

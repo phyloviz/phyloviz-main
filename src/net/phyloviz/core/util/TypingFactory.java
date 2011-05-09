@@ -41,9 +41,36 @@ import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 
+/**
+ *  This interface is defined for implementing the concept of a factory for
+ *  typing data of profiles (factory pattern). The classes that implement this interface
+ *  will be able to create typing data for a list of profiles.
+ *
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
+ */
 public interface TypingFactory {
 
+	/**
+	 * Returns a new typing data, obtained from reading files
+	 * with the description of the profiles.
+	 * @param r The reader of descriptions of the profiles.
+	 * @return a new typing data, obtained from <code>r</code>.
+	 * @throws IOException if an I/O error occurs.
+	 */
 	public TypingData<? extends AbstractProfile> loadData(Reader r) throws IOException;
 
+	/**
+	 * This method updates a typing data instance with the data given by a population.
+	 * Each isolate from the considered population may be related to a
+	 * profile of the considered typing data, if they match a specific identificator.
+	 * Thus, the typing data is updated according to the isolates of the population.
+	 * @param td the typing data to be updated.
+	 * @param pop the population to be considered for update.
+	 * @param key an index of a column in the table view of the population,
+	 * where are the matching identificators.
+	 * @return an updated version of the typing data.
+	 * @throws IndexOutOfBoundsException if the index <code>key</code> is
+	 * not valid in the table view of the population.
+	 */
 	public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key);
 }

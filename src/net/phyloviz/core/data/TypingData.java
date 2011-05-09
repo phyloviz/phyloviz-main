@@ -33,10 +33,6 @@
  * to do so, delete this exception statement from your version.
  */
 
-/* Fri Nov 12 15:38:55 UTC 2010
- * Created by aplf@
- */
-
 package net.phyloviz.core.data;
 
 import java.util.ArrayList;
@@ -56,31 +52,61 @@ import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
+/**
+ * The <code>TypingData</code> class represents the set of the
+ * isolates profiles created by a microbial typing method.
+ * Each typing data has a table view, i.e., in can be displayed as a two
+ * dimensional table. 
+ *
+ * @since   PHILOViZ 1.0
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
+ *
+ */
 public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.Provider, NodeFactory {
 
 	private InstanceContent ic;
 	private AbstractLookup lookup;
-
 	private String description;
+	/**
+	 * The list of the feature names corresponding to this kind of profiles.
+	 * This names will be the headers of the columns in a table view of this
+	 * typing data.
+	 */
 	private String[] headers;
+	/**
+	 * The array of sets of the feature data values.
+	 * Each position of this array contains the corresponding set of the feature
+	 * data values to a specific feature data name.
+	 */
 	private HashSet<String>[] domains;
+	/**
+	 *  The map that to each feature data name maps
+	 *  an internal index.
+	 */
 	private HashMap<String, Integer> h2idx;
-
+	/**
+	 *  The list of the profiles that belong to this population.
+	 */
 	private ArrayList<T> collection;
 	private TreeSet<T> unique;
-
+	/**
+	 * A tabular model of this population.
+	 * */
 	private TableModel model;
 	private DataSaver saver;
-
 	private boolean weightOk;
 	private int weight;
 
+	/**
+	 * Constructs an empty typing data model, with <code>nColumns</code> features.
+	 */
 	@SuppressWarnings("unchecked")
 	public TypingData(int nColumns) {
 		headers = new String[nColumns];
 		domains = new HashSet[nColumns];
-		for (int i = 0; i < nColumns; i++)
+		for (int i = 0; i < nColumns; i++) {
 			domains[i] = new HashSet<String>();
+		}
 		h2idx = new HashMap<String, Integer>();
 
 		collection = new ArrayList<T>();
@@ -89,37 +115,73 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		weightOk = false;
 	}
 
+	/**
+	 * Constructs an empty typing data model, with  <code>ha.lenght</code>
+	 * features, named by the array <code>ha</code>.
+	 */
 	public TypingData(String[] ha) {
 		this(ha.length);
 		System.arraycopy(ha, 0, headers, 0, ha.length);
 	}
 
+	/**
+	 * Returns the number of profiles in this typing data.
+	 *
+	 * @return the number of profiles of this typing data.
+	 */
 	@Override
 	public int size() {
 		return collection.size();
 	}
 
+	/**
+	 * Sets the column <code> idx</code> of  this typing data model with a new name
+	 * <code>header</code>.
+	 *
+	 * @param header the new name of the column <code>idx</code>.
+	 * @thows ArrayIndexOutOfBoundException if the <code>idx</code> does not
+	 * corresponds to an existent column.
+	 */
 	public void setHeader(int idx, String header) {
-		if (idx >= 0 && idx < headers.length)
+		if (idx >= 0 && idx < headers.length) {
 			headers[idx] = header;
+		}
 	}
 
+	/**
+	 * Obtains the list of the feature names headers or labels.
+	 * This names are the headers of the columns in a table view of this
+	 * typing data model.
+	 *
+	 */
 	public Collection<String> getHeaders() {
 		return Arrays.asList(headers);
 	}
 
+	/**
+	 * Adds a new profile to this typing data, if there is not
+	 * already an equal one. The new profile should have values for
+	 * all the features considered in this typing data. Otherwise, it will not
+	 * be added.
+	 * @param profile the new profile to be added.
+	 * @return true if it is a new profile with values for each feature considered
+	 * in this typing data. Otherwise, it returns false.
+	 */
 	public boolean addData(T profile) {
 
 		// Do we have values for all fields?
-		if (profile.profileLength() != headers.length - 1)
+		if (profile.profileLength() != headers.length - 1) {
 			return false;
+		}
 
-		if (! unique.add(profile))
+		if (!unique.add(profile)) {
 			return false;
+		}
 
 		domains[0].add(profile.getID());
-		for (int i = 0; i < profile.profileLength(); i++)
-			domains[i+1].add(profile.getValue(i));
+		for (int i = 0; i < profile.profileLength(); i++) {
+			domains[i + 1].add(profile.getValue(i));
+		}
 
 		collection.add(profile);
 
@@ -128,84 +190,176 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		return true;
 	}
 
+	/**
+	 * Returns the profile in this typing data equals to the given profile,
+	 * or null if there is no such profile.
+	 * @param profile the profile to match.
+	 * @return the profile equals to the parameter, or null if there is no
+	 * such element.
+	 */
 	public T getEqual(T profile) {
 		T p = unique.ceiling(profile);
 
-		if (p.equals(profile))
+		if (p.equals(profile)) {
 			return p;
+		}
 
 		return null;
 	}
 
+	/**
+	 *  Sorts the profiles of this typing data according
+	 *  to the order induced by the specified comparator.
+	 *  @param c  the comparator to determine the order of the profiles.
+	 *  A <code>null</code> value indicates that the elements' natural
+	 * ordering should be used.
+	 */
 	public void sort(Comparator<T> c) {
 		Collections.sort(collection, c);
 	}
 
+	/**
+	 * Returns an iterator over the profiles in this typing data.
+	 * There are no guarantees concerning the order in which the profiles
+	 * are returned
+	 * @return   an <code>Iterator</code>
+	 * over the profiles in this typing data.
+	 */
 	@Override
-	public DataIterator iterator() {
+	public Iterator<T> iterator() {
 		return new DataIterator();
 	}
 
+	/**
+	 * Returns a description of this typing data.
+	 * @return  a description of this typing data.
+	 *
+	 */
 	public String getDescription() {
 		return description;
 	}
 
+	/**
+	 *  Changes the description of this typing data.
+	 * @param  desc the new description of this typing data.
+	 */
 	public void setDescription(String desc) {
 		description = desc;
 	}
 
+	/**
+	 * Returns a string representation of this typing data, which consists
+	 * of its own description.
+	 * @return  a string representation of this typing data.
+	 */
 	@Override
-	public HashSet<String> getDomain(int idx) {
-		if (idx < 0 || idx > domains.length)
-			return null;
-
-		return domains[idx];
+	public String toString() {
+		return description;
 	}
 
-	@Override
-	public AbstractNode getNode() {
-		return new TypingDataNode(this);
-	}
-
-	@Override
-	public Lookup getLookup() {
-		return lookup;
-	}
-
-	public void add(Object o) {
-		ic.add(o);
-	}
-
-	public void remove(Object o) {
-		ic.remove(o);
-	}
-
-	@Override
-	public int getKey() {
-		return 0;
-	}
-
+	/**
+	 * Returns the label that describes the domain
+	 * of the data values that belong to the profiles and
+	 * are in the column idx of the table model of this typing data.
+	 * @param idx  the idx column in the table model.
+	 * @return the label that describes the domain of the data values that are
+	 * on the column idx of the table model of this typing data.
+	 */
 	@Override
 	public String getDomainLabel(int idx) {
-		if (idx < 0 || idx >= headers.length)
+		if (idx < 0 || idx >= headers.length) {
 			return null;
+		}
 
 		return headers[idx];
 	}
 
 	@Override
+	/**
+	 * Returns the set of data values that belong to the profiles and
+	 * are in the column idx of the table model inherent to this typing data.
+	 * @param idx  the idx column in the table model inherent to this typing data.
+	 * @return the set of data values that belong to the profiles that are
+	 * on the column idx of the table model inherent to this typing data.
+	 */
+	public HashSet<String> getDomain(int idx) {
+		if (idx < 0 || idx > domains.length) {
+			return null;
+		}
+
+		return domains[idx];
+	}
+
+	/**
+	 * Allows to explore the population in the context of an explorer viewer.
+	 * @return  Returns the population as a node in the explorer view.
+	 * @see AbstractNode
+	 */
+	@Override
+	public AbstractNode getNode() {
+		return new TypingDataNode(this);
+	}
+
+	/**
+	 *  Returns the lookup inherited to this typing data.
+	 * @see Lookup
+	 * @return the lookup inherited to this typing data.
+	 */
+	@Override
+	public Lookup getLookup() {
+		return lookup;
+	}
+
+	/**
+	 * Registers the object <code>o</code> with this lookup.
+	 * @see  org.openide.util.Lookup.Provider.
+	 * @param o  the object to be registered.
+	 */
+	public void add(Object o) {
+		ic.add(o);
+	}
+
+	/**
+	 * Unregisters the object <code>o</code> with this lookup.
+	 * @see  org.openide.util.Lookup.Provider.
+	 * @param o  the object to be registered.
+	 */
+	public void remove(Object o) {
+		ic.remove(o);
+	}
+
+	/**
+	 * Returns the key column of this typing data model.
+	 *
+	 * @return the index of the key column for this typing data model.
+	 */
+	@Override
+	public int getKey() {
+		return 0;
+	}
+
+	/**
+	 * Returns a collection with all the profiles of this data model.
+	 * @return a collection with all the profiles of this data model.
+	 */
+	@Override
 	public Collection<? extends DataItem> getItems() {
 		return new ArrayList<T>(collection);
 	}
 
+	/**
+	 * Returns the sum of the weights of all the profiles of this typing data.
+	 * @return the sum of the weights of all the profiles of this typing data.
+	 */
 	@Override
 	public synchronized int weight() {
 
-		if (! weightOk ) {
+		if (!weightOk) {
 			weight = 0;
 			Iterator<T> i = collection.iterator();
-			while (i.hasNext())
+			while (i.hasNext()) {
 				weight += i.next().weight();
+			}
 		}
 
 		return weight;
@@ -216,7 +370,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public class DataIterator implements Iterator<T> {
+	private class DataIterator implements Iterator<T> {
 
 		private Iterator<T> i;
 		private T last;
@@ -236,7 +390,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		@Override
 		public T next() {
 			last = i.next();
-			idx ++;
+			idx++;
 			return last;
 		}
 
@@ -246,15 +400,17 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		}
 
 		public String getID() {
-			if (last == null)
+			if (last == null) {
 				return null;
-			
+			}
+
 			return last.getID();
 		}
 
 		public String getValue(int idx) {
-			if (last == null)
+			if (last == null) {
 				return null;
+			}
 
 			return last.getValue(idx);
 		}
@@ -268,28 +424,29 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		}
 	}
 
+	/**
+	 *  Returns a table model for this typing data model.
+	 * @return a table model for this typing data model.
+	 */
 	@Override
-	public String toString() {
-		return description;
-	}
-
-	@Override
-	public TableModel tableModel() {
-		if (model == null)
+	public AbstractTableModel tableModel() {
+		if (model == null) {
 			model = new TableModel();
+		}
 
 		return model;
 	}
 
 	@Override
 	public DataSaver getSaver() {
-		if (saver == null)
+		if (saver == null) {
 			saver = new DataSaver(this);
+		}
 
 		return saver;
 	}
 
-	public class TableModel extends AbstractTableModel {
+	private class TableModel extends AbstractTableModel {
 
 		@Override
 		public int getRowCount() {
@@ -308,16 +465,18 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 		@Override
 		public int findColumn(String name) {
-			if (h2idx.containsKey(name))
+			if (h2idx.containsKey(name)) {
 				return h2idx.get(name);
+			}
 
 			return -1;
 		}
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			if (rowIndex < 0 || rowIndex >= collection.size())
+			if (rowIndex < 0 || rowIndex >= collection.size()) {
 				return null;
+			}
 
 			return collection.get(rowIndex).get(columnIndex);
 		}

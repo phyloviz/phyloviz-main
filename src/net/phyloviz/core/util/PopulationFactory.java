@@ -40,8 +40,23 @@ import java.io.IOException;
 import java.io.Reader;
 import net.phyloviz.core.data.Population;
 
+/**
+ *  This class represents the concept of a factory for populations of isolates
+ *  (factory pattern). An instance of this class can produce new populations of
+ *  isolates, obtained from reading files with the description of the population
+ *  of isolates.
+ *
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
+ */
 public class PopulationFactory {
 
+	/**
+	 *  Returns a new population of isolates, obtained from reading files
+	 * with the description of the population  of isolates.
+	 * @param r the reader of descriptions of isolates.
+	 * @return a new population, obtained from <code>r</code>.
+	 * @throws IOException if an I/O error occurs.
+	 */
 	public Population loadPopulation(Reader r) throws IOException {
 
 		Population pop = new Population();
@@ -50,8 +65,9 @@ public class PopulationFactory {
 		String[] tokens = in.readLine().split("\t", -1);
 
 		// Store headers.
-		for (int i = 0; i < tokens.length; i++)
+		for (int i = 0; i < tokens.length; i++) {
 			pop.addColumn(tokens[i], null);
+		}
 
 		while (in.ready()) {
 			tokens = in.readLine().split("\t", -1);

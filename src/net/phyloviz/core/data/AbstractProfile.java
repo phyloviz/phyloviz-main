@@ -33,12 +33,6 @@
  * to do so, delete this exception statement from your version.
  */
 
-/*
- * @(#)AbstractProfile.java 27/01/11
- *
- * Copyright 2011 Phyloviz. All rights reserved.
- * Use is subject to license terms.
- */
 package net.phyloviz.core.data;
 
 /**
@@ -46,12 +40,12 @@ package net.phyloviz.core.data;
  * interface, to minimize the effort required to implement this interface.
  *
  * @since   PHILOViZ 1.0
- * @author A. P. Francisco
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
  */
 public abstract class AbstractProfile implements Profile {
 
 	/**
-	 * The internal value  of the identifier this typing profile.
+	 * The internal value  of the identifier for this typing profile.
 	 */
 	protected int uid;
 
@@ -60,16 +54,46 @@ public abstract class AbstractProfile implements Profile {
 	 */
 	protected String id;
 
+        /**
+	 * Returns an <tt>int</tt>  that represents the internal identifier of this typing
+	 * profile.
+	 *
+	 * @return the internal value of the identifier for this typing profile.
+	 *
+	 */
 	@Override
 	public int getUID() {
 		return uid;
 	}
 
+       /**
+	 * Returns a <tt>String</tt>  that represents the identifier of this typing
+	 * profile.
+	 *
+	 * @return the identifier of this typing profile.
+	 */
 	@Override
 	public String getID() {
 		return id;
 	}
 
+        /**
+	 * Returns  the value of a feature of this
+	 * profile as a string that is at the specified index. An index ranges from
+	 * <code>0</code> to <code>profileLenght() - 1</code>.
+	 * The first description corresponds to the feature that
+	 * is at index <code>0</code>, the next at index <code>1</code>,
+	 * and so on, as for array indexing.
+	 *
+	 *
+	 * @param      idx the index of the description of a feature.
+	 * @return     the <code>String</code>  representation
+	 *             of a feature at the specified index of the list of features .
+	 *             The first <code>String</code> is at index <code>0</code>.
+         *             It returns <code>null</code> if the <code>idx</code>
+	 *             argument is negative or not less than the <code>profileLenght()</code>
+	 *             of this profile.
+	 */
 	@Override
 	public String get(int idx) {
 		if (idx < 0 || idx >= length()) {
@@ -83,11 +107,25 @@ public abstract class AbstractProfile implements Profile {
 		}
 	}
 
+        /**
+	 * Returns the number of features of this profile (including its ID).
+	 * If contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
+	 * <tt>Integer.MAX_VALUE</tt>.
+	 *
+	 * @return the number of elements in this profile (including its ID).
+	 */
 	@Override
 	public int length() {
 		return profileLength() + 1;
 	}
 
+        /**
+	 * Returns the weight of this typing
+	 * profile among all the isolates.
+	 *
+	 * @return the weight of this typing profile.
+	 *
+	 */
 	@Override
 	public int weight() {
 		return getFreq();

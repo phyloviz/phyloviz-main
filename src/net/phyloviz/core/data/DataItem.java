@@ -39,8 +39,7 @@ package net.phyloviz.core.data;
  * This interface describes the minimal requirements for a data item, i.e., a
  * data vector.
  * @since   PHILOViZ 1.0
- * @author A. P. Francisco
- *
+ * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
  */
 public interface DataItem {
 
@@ -62,18 +61,18 @@ public interface DataItem {
 	 *
 	 *
 	 * @param      idx the index of the description of a feature.
-	 * @return     the <code>String</code>  that gives the description
-	 *             of a feature at the specified index of the list of features .
+	 * @return     the <code>String</code>  representation
+	 *             of a feature at the specified index of the list of features.
 	 *             The first <code>String</code> is at index <code>0</code>.
 	 * @exception  IndexOutOfBoundsException  if the <code>idx</code>
-	 *             argument is negative or not less than the length of this
+	 *             argument is negative or not less than
 	 *             <code>length()</code>.
 	 */
 	public String get(int idx);
 
 	/**
 	 * Returns the number of features of this data item.
-	 * If contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
+	 * If it contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
 	 * <tt>Integer.MAX_VALUE</tt>.
 	 *
 	 * @return the number of elements in this collection.
