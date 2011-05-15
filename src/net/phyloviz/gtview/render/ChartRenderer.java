@@ -138,7 +138,7 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 		
 		int offset = 0;
 
-		if (st != null) offset = (int)(gv.getLinearSize() ? st.getFreq() : (12 * Math.log(1 + st.getFreq())));
+		if (st != null) offset = (int)(gv.getLinearSize() ? 12*st.getFreq() : (12 * Math.log(1 + st.getFreq())));
 		int w = 30 + offset;
 		int h = 30 + offset;
 		

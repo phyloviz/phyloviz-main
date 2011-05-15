@@ -200,7 +200,7 @@ public class GraphView extends GView {
 			@Override
 			    public Font getFont(VisualItem item) {
 				    AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
-				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11*st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
 			    }
 		    };
 
@@ -503,7 +503,7 @@ public class GraphView extends GView {
 	public JScrollPane getInfoPanel(){
 		return infoPanel;
 	}
-	
+
 	public JScrollPane getGroupPanel(){
 		return groupPanel;
 	}
@@ -538,6 +538,7 @@ public class GraphView extends GView {
 		updateUI();
 	}
 
+	@Override
 	public void showGroupPanel(boolean status) {
 		if (status == groupPanelStatus)
 			return;

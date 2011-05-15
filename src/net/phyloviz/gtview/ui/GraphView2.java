@@ -88,7 +88,6 @@ import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataItem;
 import net.phyloviz.core.data.DataModel;
-import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
@@ -200,7 +199,7 @@ public class GraphView2 extends GView {
 				@Override
 				public Font getFont(VisualItem item) {
 					AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
-					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11*st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
 				}
 			};
 
