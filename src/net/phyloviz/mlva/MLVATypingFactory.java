@@ -81,14 +81,19 @@ public class MLVATypingFactory implements TypingFactory {
 
 			MLVAType profile = new MLVAType(uid++, STvec);
 
-			if (! td.addData(profile)) {
-				MLVAType oldProfile = td.getEqual(profile);
-				if (oldProfile != null && !profile.getID().equals(oldProfile.getID())) {
-
-					oldProfile.incFreq();
-
+			MLVAType oldProfile = td.getEqual(profile);
+			if (oldProfile != null) {
+				oldProfile.incFreq();
+				if (!profile.getID().equals(oldProfile.getID())) {
 					Logger.getLogger(MLVATypingFactory.class.getName()).log(Level.WARNING,
-						"{0} aka {1}\n", new Object[]{profile.getID(), oldProfile.getID()});
+						"Duplicated profile: {0} aka {1} (frequency updated)", new Object[]{profile.getID(), oldProfile.getID()});
+				}
+			} else {
+				try {
+					td.addData(profile);
+				} catch(Exception e) {
+					Logger.getLogger(MLVATypingFactory.class.getName()).log(Level.WARNING,
+						e.getMessage());
 				}
 			}
 		}

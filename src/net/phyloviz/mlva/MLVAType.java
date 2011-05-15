@@ -35,6 +35,7 @@
 
 package net.phyloviz.mlva;
 
+import java.util.Arrays;
 import net.phyloviz.core.data.AbstractProfile;
 
 public class MLVAType extends AbstractProfile implements Comparable<MLVAType> {
@@ -84,8 +85,19 @@ public class MLVAType extends AbstractProfile implements Comparable<MLVAType> {
 		return ret;
 	}
 
-	public boolean equals(MLVAType st) {
-		return this.compareTo(st) == 0;
+	@Override
+	public boolean equals(Object st) {
+		if (st instanceof MLVAType)
+			return this.compareTo((MLVAType) st) == 0;
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 37 * hash + Arrays.deepHashCode(this.alleles);
+		return hash;
 	}
 
 	@Override

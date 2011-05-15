@@ -24,7 +24,9 @@
                     </run-dependency>
                 </dependency>
             </module-dependencies>
-            <public-packages/>
+            <public-packages>
+                <package>net.phyloviz.mlva</package>
+            </public-packages>
         </data>
     </configuration>
 </project>
