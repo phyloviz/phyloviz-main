@@ -67,28 +67,34 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	private InstanceContent ic;
 	private AbstractLookup lookup;
 	private String description;
+
 	/**
 	 * The list of the feature names corresponding to this kind of profiles.
 	 * This names will be the headers of the columns in a table view of this
 	 * typing data.
 	 */
 	private String[] headers;
+
 	/**
 	 * The array of sets of the feature data values.
 	 * Each position of this array contains the corresponding set of the feature
 	 * data values to a specific feature data name.
 	 */
 	private HashSet<String>[] domains;
+
 	/**
 	 *  The map that to each feature data name maps
 	 *  an internal index.
 	 */
 	private HashMap<String, Integer> h2idx;
+
 	/**
 	 *  The list of the profiles that belong to this population.
 	 */
 	private ArrayList<T> collection;
 	private TreeSet<T> unique;
+	private HashSet<String> idset;
+	
 	/**
 	 * A tabular model of this population.
 	 * */
@@ -111,6 +117,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 		collection = new ArrayList<T>();
 		unique = new TreeSet<T>();
+		idset = new HashSet<String>();
 
 		weightOk = false;
 	}
@@ -164,18 +171,28 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 * all the features considered in this typing data. Otherwise, it will not
 	 * be added.
 	 * @param profile the new profile to be added.
-	 * @return true if it is a new profile with values for each feature considered
-	 * in this typing data. Otherwise, it returns false.
+	 * @return the inserted profile.
+	 * @throws an exception on unsuccess.
 	 */
-	public boolean addData(T profile) {
+	public T addData(T profile) throws Exception {
 
 		// Do we have values for all fields?
 		if (profile.profileLength() != headers.length - 1) {
-			return false;
+			throw new Exception("Incompatible length: "
+				+ profile.getID() + " has length"
+				+ profile.profileLength() + "(!="
+				+ (headers.length - 1) + ")");
 		}
 
-		if (!unique.add(profile)) {
-			return false;
+		if (unique.contains(profile)) {
+			throw new Exception("Duplicated profile: "
+				+ profile.getID() + " aka "
+				+ this.getEqual(profile).getID());
+		}
+
+		if (idset.contains(profile.getID())) {
+			throw new Exception("Duplicated profile ID: "
+				+ profile.getID());
 		}
 
 		domains[0].add(profile.getID());
@@ -184,10 +201,12 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		}
 
 		collection.add(profile);
+		unique.add(profile);
+		idset.add(profile.getID());
 
 		weightOk = false;
 
-		return true;
+		return profile;
 	}
 
 	/**
@@ -200,7 +219,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	public T getEqual(T profile) {
 		T p = unique.ceiling(profile);
 
-		if (p.equals(profile)) {
+		if (p != null && p.equals(profile)) {
 			return p;
 		}
 
