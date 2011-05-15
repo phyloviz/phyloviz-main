@@ -939,6 +939,7 @@ public class GraphView2 extends GView {
 			if (item instanceof NodeItem) {
 				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
 				textArea.append(st.toString() + "\n");
+				textArea.append("# isolates = " + st.getFreq() + "\n");
 
 				if (cp != null) {
 					textArea.append("Chart details:\n");
