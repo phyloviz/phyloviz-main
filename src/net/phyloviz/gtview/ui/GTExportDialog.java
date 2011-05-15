@@ -58,16 +58,11 @@ public class GTExportDialog extends ExportDialog {
 
 	@Override
 	protected boolean writeFile(Component component, ExportFileType t) throws IOException {
-		
+
 		DisplayImage comp = new DisplayImage((Display) component);
-
-		gv.getVisualization().run("static");
-
 		boolean r = super.writeFile(comp, t);
-		
 		return r;
 	}
-
 
 	private class DisplayImage extends Component {
 
@@ -85,9 +80,12 @@ public class GTExportDialog extends ExportDialog {
 
 			VectorGraphics vg = VectorGraphics.create(g);
 			vg.setColorMode(PrintColor.COLOR);
+			vg.setBackground(Color.WHITE);
 
 			// set up the display, render, then revert to normal settings
 			boolean q = d.isHighQuality();
+			d.setHighQuality(false);
+			gv.getVisualization().run("static");
 			d.setHighQuality(true);
 			d.paintDisplay(vg, d.getSize());
 			d.setHighQuality(q);

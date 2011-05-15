@@ -114,10 +114,6 @@
                 <binary-origin>release/modules/ext/jdom-1.0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsio-swf-2.1.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsio-swf-2.1.1.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-emf-2.1.1.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-emf-2.1.1.jar</binary-origin>
             </class-path-extension>
@@ -140,10 +136,6 @@
             <class-path-extension>
                 <runtime-relative-path>ext/prefuse.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/prefuse.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsio-java-2.1.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsio-java-2.1.1.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphics2d-2.1.1.jar</runtime-relative-path>
