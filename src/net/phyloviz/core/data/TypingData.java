@@ -172,7 +172,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 * be added.
 	 * @param profile the new profile to be added.
 	 * @return the inserted profile.
-	 * @throws an exception on unsuccess.
+	 * @throws Exception on unsuccess.
 	 */
 	public T addData(T profile) throws Exception {
 
