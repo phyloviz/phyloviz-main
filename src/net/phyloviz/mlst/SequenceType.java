@@ -35,6 +35,7 @@
 
 package net.phyloviz.mlst;
 
+import java.util.Arrays;
 import net.phyloviz.core.data.AbstractProfile;
 
 public class SequenceType extends AbstractProfile implements Comparable<SequenceType> {
@@ -84,8 +85,19 @@ public class SequenceType extends AbstractProfile implements Comparable<Sequence
 		return ret;
 	}
 
-	public boolean equals(SequenceType st) {
-		return this.compareTo(st) == 0;
+	@Override
+	public boolean equals(Object st) {
+		if (st instanceof SequenceType)
+			return this.compareTo((SequenceType) st) == 0;
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 29 * hash + Arrays.deepHashCode(this.alleles);
+		return hash;
 	}
 
 	@Override

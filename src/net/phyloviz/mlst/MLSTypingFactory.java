@@ -81,14 +81,19 @@ public class MLSTypingFactory implements TypingFactory {
 
 			SequenceType profile = new SequenceType(uid++, STvec);
 
-			if (! td.addData(profile)) {
-				SequenceType oldProfile = td.getEqual(profile);
-				if (oldProfile != null && !profile.getID().equals(oldProfile.getID())) {
-
-					oldProfile.incFreq();
-
+			SequenceType oldProfile = td.getEqual(profile);
+			if (oldProfile != null) {
+				oldProfile.incFreq();
+				if (!profile.getID().equals(oldProfile.getID())) {
 					Logger.getLogger(MLSTypingFactory.class.getName()).log(Level.WARNING,
-						"{0} aka {1}\n", new Object[]{profile.getID(), oldProfile.getID()});
+						"Duplicated profile: {0} aka {1} (frequency updated)", new Object[]{profile.getID(), oldProfile.getID()});
+				}
+			} else {
+				try {
+					td.addData(profile);
+				} catch(Exception e) {
+					Logger.getLogger(MLSTypingFactory.class.getName()).log(Level.WARNING,
+						e.getLocalizedMessage());
 				}
 			}
 		}
