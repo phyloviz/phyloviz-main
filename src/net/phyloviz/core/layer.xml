@@ -45,8 +45,16 @@
             <file name="org-openide-actions-PrintAction.shadow_hidden"/>
             <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
             <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+            <file name="org-netbeans-modules-openfile-OpenFileAction.shadow_hidden"/>
+            <file name="org-netbeans-modules-openfile-RecentFileAction.shadow_hidden"/>
         </folder>
+        <file name="Edit_hidden"/>
         <file name="GoTo_hidden"/>
+        <folder name="Help">
+            <file name="netbeans-kb.url_hidden"/>
+            <file name="org-netbeans-modules-usersguide-master.xml_hidden"/>
+            <file name="shortcuts.xml_hidden"/>
+        </folder>
         <folder name="View">
             <file name="org-netbeans-core-actions-HTMLViewAction.shadow_hidden"/>
         </folder>
@@ -55,6 +63,8 @@
                 <attr name="originalFile" stringvalue="Actions/Window/net-phyloviz-core-explorer-DataSetExplorerAction.instance"/>
                 <attr name="position" intvalue="0"/>
             </file>
+            <file name="SwitchToRecentDocumentAction.shadow_hidden"/>
+            <file name="org-netbeans-core-windows-actions-GlobalPropertiesAction.shadow_hidden"/>
         </folder>
     </folder>
     <folder name="Services">

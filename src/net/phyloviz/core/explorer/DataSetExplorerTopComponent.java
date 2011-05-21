@@ -37,6 +37,7 @@ package net.phyloviz.core.explorer;
 
 import java.awt.BorderLayout;
 import java.util.logging.Logger;
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
@@ -83,7 +84,12 @@ public final class DataSetExplorerTopComponent extends TopComponent implements E
 		keys.put(KeyStroke.getKeyStroke("DELETE"), "delete");
 
 		associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-		mgr.setRootContext(new AbstractNode(new ExplorerChildren(Lookup.getDefault().lookup(DataSetTracker.class).getLookup())));
+		mgr.setRootContext(new AbstractNode(new ExplorerChildren(Lookup.getDefault().lookup(DataSetTracker.class).getLookup())) {
+			@Override
+			public Action[] getActions(boolean context) {
+				return new Action[0];
+			};
+		});
 	}
 
 	/** This method is called from within the constructor to
