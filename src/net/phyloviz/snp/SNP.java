@@ -40,25 +40,25 @@ import net.phyloviz.core.data.AbstractProfile;
 
 public class SNP extends AbstractProfile implements Comparable<SNP> {
 
-	private String[] alleles;
+	private String[] snps;
 	private int freq;
 
 	public SNP(int uid, String[] profile) {
 		this.uid = uid;
 		this.id = profile[0];
 		this.freq = 1;
-		this.alleles = new String[profile.length - 1];
-		System.arraycopy(profile, 1, alleles, 0, profile.length - 1);
+		this.snps = new String[profile.length - 1];
+		System.arraycopy(profile, 1, snps, 0, profile.length - 1);
 	}
 
 	@Override
 	public String getValue(int idx) {
-		return alleles[idx];
+		return snps[idx];
 	}
 
 	@Override
 	public int profileLength() {
-		return alleles.length;
+		return snps.length;
 	}
 
 	@Override
@@ -79,8 +79,8 @@ public class SNP extends AbstractProfile implements Comparable<SNP> {
 	public int compareTo(SNP st) {
 		int ret, i;
 
-		for (ret = i = 0; ret == 0 && i < alleles.length; i++)
-			ret = alleles[i].compareTo(st.alleles[i]);
+		for (ret = i = 0; ret == 0 && i < snps.length; i++)
+			ret = snps[i].compareTo(st.snps[i]);
 
 		return ret;
 	}
@@ -96,7 +96,7 @@ public class SNP extends AbstractProfile implements Comparable<SNP> {
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 29 * hash + Arrays.deepHashCode(this.alleles);
+		hash = 29 * hash + Arrays.deepHashCode(this.snps);
 		return hash;
 	}
 
@@ -106,8 +106,8 @@ public class SNP extends AbstractProfile implements Comparable<SNP> {
 		int i;
 
 		s = "SNP: " + id + " Profile:";
-		for (i = 0; i < alleles.length; i++)
-			s += " " + alleles[i];
+		for (i = 0; i < snps.length; i++)
+			s += " " + snps[i];
 
 		return s;
 	}
