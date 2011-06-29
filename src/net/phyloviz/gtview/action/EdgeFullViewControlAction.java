@@ -40,13 +40,13 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import net.phyloviz.gtview.ui.GraphView;
+import net.phyloviz.gtview.ui.SLVGraphView;
 
 public class EdgeFullViewControlAction extends AbstractAction {
 
-	private GraphView gv;
+	private SLVGraphView gv;
 
-	public EdgeFullViewControlAction(GraphView gv) {
+	public EdgeFullViewControlAction(SLVGraphView gv) {
 		this.gv = gv;
 	}
 
