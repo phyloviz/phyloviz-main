@@ -524,7 +524,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 
 			if (!f.visible() && ad.compute(f.getU(), f.getV()) == ad.compute(e.getU(), e.getV())
 				&& cut.findSet(f.getU().getUID()) != cut.findSet(f.getV().getUID())) {
-				info.info += " + " + f.getU().getUID() + " -- " + f.getV().getUID() + " ";
+				info.info += " + " + f.getU().getID() + " -- " + f.getV().getID() + " ";
 
 				nt++;
 
