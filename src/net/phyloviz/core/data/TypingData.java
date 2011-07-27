@@ -128,7 +128,8 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 */
 	public TypingData(String[] ha) {
 		this(ha.length);
-		System.arraycopy(ha, 0, headers, 0, ha.length);
+		for (int i = 0; i < ha.length; i++)
+			setHeader(i, ha[i]);
 	}
 
 	/**
@@ -149,9 +150,10 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 * @thows ArrayIndexOutOfBoundException if the <code>idx</code> does not
 	 * corresponds to an existent column.
 	 */
-	public void setHeader(int idx, String header) {
+	public final void setHeader(int idx, String header) {
 		if (idx >= 0 && idx < headers.length) {
 			headers[idx] = header;
+			h2idx.put(header, idx);
 		}
 	}
 
