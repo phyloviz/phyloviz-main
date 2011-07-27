@@ -2,6 +2,7 @@ package net.phyloviz.category.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import javax.swing.JOptionPane;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
 import org.openide.util.HelpCtx;
@@ -38,6 +39,16 @@ public class ChartLegendPanel extends TopComponent {
 					removeAll();
 					add(ch.getChartPie(), BorderLayout.CENTER);
 					add(ch.getLegends(), BorderLayout.EAST);
+
+					if (cp.getCategories().size() == 1) {
+						JOptionPane.showMessageDialog(getParent(),
+							"Your selection returns only one category!",
+							"Warning", JOptionPane.WARNING_MESSAGE);
+					} else if (cp.getCategories().size() == 0) {
+						JOptionPane.showMessageDialog(getParent(),
+							"Your selection does not return any category!",
+							"Warning", JOptionPane.WARNING_MESSAGE);
+					}
 					//requestActive();
 					revalidate();
 				}
