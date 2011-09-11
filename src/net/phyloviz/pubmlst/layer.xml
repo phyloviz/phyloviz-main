@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="File">
+            <file name="net-phyloviz-pubmlst-wizard-PubMLSTWizardAction.instance">
+                <attr name="delegate" newvalue="net.phyloviz.pubmlst.wizard.PubMLSTWizardAction"/>
+                <attr name="iconBase" stringvalue="net/phyloviz/pubmlst/PubMLST-icon.png"/>
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="noIconInMenu" stringvalue="false"/>
+                <attr name="displayName" bundlevalue="net.phyloviz.pubmlst.Bundle#CTL_PubMLSTAction"/>
+            </file>
+        </folder>
+    </folder>
+	<folder name="Menu">
+        <folder name="File">
+            <file name="net-phyloviz-pubmlst-wizard-PubMLSTWizardAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/File/net-phyloviz-pubmlst-wizard-PubMLSTWizardAction.instance"/>
+                <attr name="position" intvalue="1"/>
+            </file>
+        </folder>
+    </folder>
+</filesystem>
