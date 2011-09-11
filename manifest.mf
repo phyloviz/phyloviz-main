@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: net.phyloviz.stats/1
+OpenIDE-Module-Implementation-Version: 1
+OpenIDE-Module-Layer: net/phyloviz/stats/layer.xml
+OpenIDE-Module-Localizing-Bundle: net/phyloviz/stats/Bundle.properties
+
