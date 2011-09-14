@@ -68,7 +68,11 @@ public class MLVATypingFactory implements TypingFactory {
 		TypingData<MLVAType> td = null;
 
 		while (in.ready()) {
-			String[] lineFields = in.readLine().split("[ ,\t]+", 0);
+			String s = in.readLine();
+			if (s == null)
+				break;
+
+			String[] lineFields = s.split("[ ,\t]+", 0);
 
 			// Get headers and initialize this instance.
 			if (td == null) {
