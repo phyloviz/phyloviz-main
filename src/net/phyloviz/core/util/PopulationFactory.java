@@ -70,7 +70,11 @@ public class PopulationFactory {
 		}
 
 		while (in.ready()) {
-			tokens = in.readLine().split("\t", -1);
+			String s = in.readLine();
+			if (s == null)
+				break;
+
+			tokens = s.split("\t", -1);
 
 			pop.addIsolate(tokens);
 		}
