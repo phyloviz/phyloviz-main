@@ -1,5 +1,7 @@
 package net.phyloviz.pubmlst.soap;
 
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 import org.apache.axis.description.OperationDesc;
@@ -13,10 +15,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+import javax.xml.rpc.ServiceException;
 
 public class PubmlstSOAP {
 
 	private String endpoint;
+	private final int TIMEOUT = 500;
 
 	public PubmlstSOAP() {
 		endpoint = org.openide.util.NbBundle.getMessage(
@@ -51,74 +55,104 @@ public class PubmlstSOAP {
 	}
 
 	public String getProfile(String database, int st) {
-		String sAlleles = null;
-		try {
-			Service service = new Service();
-			Call call = (Call) service.createCall();
-			call.setTargetEndpointAddress(new java.net.URL(endpoint));
-			call.registerTypeMapping(AlleleNumber.class, new QName(
-					"http://pubmlst.org/MLST", "alleleNumber"),
-					BeanSerializerFactory.class, BeanDeserializerFactory.class,
-					false);
-			OperationDesc oper = new OperationDesc();
-			oper.addParameter(new ParameterDesc(new QName("", "database"),
-					ParameterDesc.IN, new QName(
-					"http://www.w3.org/2001/XMLSchema", "string"),
-					String.class, false, false));
-			oper.addParameter(new ParameterDesc(new QName("", "ST"),
-					ParameterDesc.IN, new QName(
-					"http://www.w3.org/2001/XMLSchema", "int"),
-					int.class, false, false));
-			ParameterDesc param = new ParameterDesc(new QName("", "profile"),
-					ParameterDesc.OUT, new QName("http://pubmlst.org/MLST",
-					"profile"), AlleleNumber[].class, false, false);
-			param.setItemQName(new QName("", "alleleNumber"));
-			oper.addParameter(param);
-			param = new ParameterDesc(new QName("", "complex"),
-					ParameterDesc.OUT, new QName(
-					"http://www.w3.org/2001/XMLSchema", "string"),
-					String.class, false, false);
-			param.setOmittable(true);
-			oper.addParameter(param);
-			oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-			call.setOperation(oper);
-			call.setOperationName(new QName("http://pubmlst.org/MLST",
-					"getProfile"));
-			call.invoke(new Object[]{database, st});
-			Map output = call.getOutputParams();
-			AlleleNumber[] alleles = (AlleleNumber[]) output.get(new QName("",
-					"profile"));
-			sAlleles = "" + st;
-			for (int i = 0; i < alleles.length; i++) {
-				sAlleles += "\t" + alleles[i].getId();
+		String sProfile = null;
+		boolean bTimeOut = false;
+		do {
+			try {
+				Service service = new Service();
+				Call call = (Call) service.createCall();
+				call.setTargetEndpointAddress(new java.net.URL(endpoint));
+				call.registerTypeMapping(AlleleNumber.class, new QName(
+						"http://pubmlst.org/MLST", "alleleNumber"),
+						BeanSerializerFactory.class, BeanDeserializerFactory.class,
+						false);
+				OperationDesc oper = new OperationDesc();
+				oper.addParameter(new ParameterDesc(new QName("", "database"),
+						ParameterDesc.IN, new QName(
+						"http://www.w3.org/2001/XMLSchema", "string"),
+						String.class, false, false));
+				oper.addParameter(new ParameterDesc(new QName("", "ST"),
+						ParameterDesc.IN, new QName(
+						"http://www.w3.org/2001/XMLSchema", "int"),
+						int.class, false, false));
+				ParameterDesc param = new ParameterDesc(new QName("", "profile"),
+						ParameterDesc.OUT, new QName("http://pubmlst.org/MLST",
+						"profile"), AlleleNumber[].class, false, false);
+				param.setItemQName(new QName("", "alleleNumber"));
+				oper.addParameter(param);
+				// TODO: ask Keith to correct this (test with bcc-st-3)
+//			param = new ParameterDesc(new QName("", "complex"),
+//					ParameterDesc.OUT, new QName(
+//					"http://www.w3.org/2001/XMLSchema", "string"),
+//					String.class, false, false);
+//			param.setOmittable(true);
+				oper.addParameter(param);
+				oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+				call.setOperation(oper);
+				call.setOperationName(new QName("http://pubmlst.org/MLST",
+						"getProfile"));
+				call.invoke(new Object[]{database, st});
+				Map output = call.getOutputParams();
+				AlleleNumber[] alleles = (AlleleNumber[]) output.get(new QName("",
+						"profile"));
+				sProfile = "" + st;
+				for (int i = 0; i < alleles.length; i++) {
+					sProfile += "\t" + alleles[i].getId();
+				}
+				// TODO: same as above
+//			String complex = ((String) output.get(new QName("", "complex")));
+//			if (complex != null) {
+//				sProfile += complex;
+//			}
+			} catch (ServiceException e) {
+				System.err.println("ServiceException: " + e.toString());
+			} catch (MalformedURLException e) {
+				System.err.println("MalformedURLException: " + e.toString());
+			} catch (RemoteException e) {
+				System.err.println("RemoteException: " + e.toString());
+				bTimeOut = true;
+				try {
+					Thread.sleep(TIMEOUT);
+				} catch (InterruptedException ex) {
+				}
 			}
-		} catch (Exception e) {
-			System.err.println(e.toString());
-		}
-		return sAlleles;
+		} while (bTimeOut);
+		return sProfile;
 	}
 
 	public HashMap<String, String> getIsolate(String database, int isolate) {
 		HashMap<String, String> hmRet = new HashMap<String, String>();
-		try {
-			Service service = new Service();
-			Call call = (Call) service.createCall();
-			call.setTargetEndpointAddress(new java.net.URL(endpoint));
-			call.setOperationName(new QName("http://pubmlst.org/MLST/",
-					"getIsolate"));
-			call.addParameter("database", org.apache.axis.Constants.XSD_STRING,
-					javax.xml.rpc.ParameterMode.IN);
-			call.addParameter("id", org.apache.axis.Constants.XSD_INT,
-					javax.xml.rpc.ParameterMode.IN);
-			call.setReturnType(org.apache.axis.Constants.SOAP_VECTOR);
-			Vector ret = (Vector) call.invoke(new Object[]{database, isolate});
-			for (int i = 0; i < ret.size(); i++) {
-				Vector v = (Vector) ret.get(i);
-				hmRet.put((String) v.get(0), "" + v.get(1));
+		boolean bTimeOut = false;
+		do {
+			try {
+				Service service = new Service();
+				Call call = (Call) service.createCall();
+				call.setTargetEndpointAddress(new java.net.URL(endpoint));
+				call.setOperationName(new QName("http://pubmlst.org/MLST/",
+						"getIsolate"));
+				call.addParameter("database", org.apache.axis.Constants.XSD_STRING,
+						javax.xml.rpc.ParameterMode.IN);
+				call.addParameter("id", org.apache.axis.Constants.XSD_INT,
+						javax.xml.rpc.ParameterMode.IN);
+				call.setReturnType(org.apache.axis.Constants.SOAP_VECTOR);
+				Vector ret = (Vector) call.invoke(new Object[]{database, isolate});
+				for (int i = 0; i < ret.size(); i++) {
+					Vector v = (Vector) ret.get(i);
+					hmRet.put((String) v.get(0), "" + v.get(1));
+				}
+			} catch (ServiceException e) {
+				System.err.println("ServiceException: " + e.toString());
+			} catch (MalformedURLException e) {
+				System.err.println("MalformedURLException: " + e.toString());
+			} catch (RemoteException e) {
+				System.err.println("RemoteException: " + e.toString());
+				bTimeOut = true;
+				try {
+					Thread.sleep(TIMEOUT);
+				} catch (InterruptedException ex) {
+				}
 			}
-		} catch (Exception e) {
-			System.err.println(e.toString());
-		}
+		} while (bTimeOut);
 		return hmRet;
 	}
 
