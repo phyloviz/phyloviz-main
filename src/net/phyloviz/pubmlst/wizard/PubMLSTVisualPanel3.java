@@ -37,8 +37,12 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 		keyListModel = new DefaultComboBoxModel();
 		initComponents();
 
+		setEditorPanel("PubMLSTVisualPanel3a.html");
+	}
+	
+	private void setEditorPanel(String sFile) {
 		try {
-			URL url = PubMLSTVisualPanel3.class.getResource("PubMLSTVisualPanel3.html");
+			URL url = PubMLSTVisualPanel3.class.getResource(sFile);
 			jEditorPane1.setEditorKit(new HTMLEditorKit());
 			jEditorPane1.setPage(url);
 			Font font = UIManager.getFont("Label.font");
@@ -49,7 +53,6 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 			// Do nothing...
 			System.err.println(e.getMessage());
 		}
-
 	}
 
 	public void setDatabase(String sDBShort) {
@@ -251,6 +254,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 		// Disable key chooser
 		jComboBox1.setEnabled(false);
 		jButton2.setEnabled(false);
+		setEditorPanel("PubMLSTVisualPanel3a.html");
 	}//GEN-LAST:event_jRadioButton1ActionPerformed
 
 	private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
@@ -263,6 +267,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 		// Enable key chooser
 		jComboBox1.setEnabled(true);
 		jButton2.setEnabled(true);
+		setEditorPanel("PubMLSTVisualPanel3b.html");
 	}//GEN-LAST:event_jRadioButton2ActionPerformed
 
 	private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
@@ -275,6 +280,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 		// Enable key chooser
 		jComboBox1.setEnabled(true);
 		jButton2.setEnabled(true);
+		setEditorPanel("PubMLSTVisualPanel3c.html");
 	}//GEN-LAST:event_jRadioButton3ActionPerformed
 
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
