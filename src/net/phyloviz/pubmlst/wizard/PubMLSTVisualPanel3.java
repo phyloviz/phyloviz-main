@@ -386,21 +386,30 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 			jButton2ActionPerformed(null);
 
 			sIsolateData = "";
-			for (int i = 1; i <= iMaxIsolate; i++) {
+			for (int is = 1, i = 1; is <= iMaxIsolate; i++) {
 				if (isCancelled()) {
 					bEmpty = true;
 					jProgressBar1.setString("Canceled!");
 					return null;
 				}
 				Map<String, String> hmFields = soapClient.getIsolate(sPubMLSTDB, i);
-				for (int f = 0; f < keyListModel.getSize(); f++) {
-					sIsolateData += (f == 0) ? "\n" : "\t";
-					String field = (String) keyListModel.getElementAt(f);
-					if (hmFields.containsKey(field)) {
-						sIsolateData += hmFields.get(field);
+				if (!hmFields.isEmpty()) {
+					for (int f = 0; f < keyListModel.getSize(); f++) {
+						sIsolateData += (f == 0) ? "\n" : "\t";
+						String field = (String) keyListModel.getElementAt(f);
+						if (hmFields.containsKey(field)) {
+							sIsolateData += hmFields.get(field);
+						}
 					}
+					int percent = is * 100 / iMaxIsolate;
+					setProgress(percent);
+					jProgressBar1.setString(percent + "% - " + is + " isolates");
+					is++;
 				}
-				setProgress(i * 100 / iMaxIsolate);
+				if (i > 3 * iMaxIsolate) {
+					jProgressBar1.setString("Force cancel: too many missing data!");
+					break;
+				}
 			}
 			bEmpty = false;
 			jToggleButton1.setEnabled(false);
