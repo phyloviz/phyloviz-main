@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -77,12 +79,14 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 		iMaxST = soapClient.getProfileCount(sPubMLSTDB);
 		jlNumberSTs.setText(iMaxST + " STs");
 		ArrayList<String> alLocus = soapClient.getLocusList(sPubMLSTDB);
+		sData = "st";
 		String sProfile = "";
 		for (String s : alLocus) {
-			sProfile += "    " + s;
+			sData += "\t" + s;
+			sProfile += "   " + s;
 		}
 		jlProfile.setText(sProfile.trim());
-		sData = "st" + sProfile;
+		//sData += "\tclonal_complex";
 		bEmpty = true;
 
 		// ProgressBar initialization
@@ -197,14 +201,27 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 		@Override
 		public Void doInBackground() {
 			PubmlstSOAP soapClient = new PubmlstSOAP();
-			for (int i = 1; i <= iMaxST; i++) {
+			for (int st = 1, i = 1; st <= iMaxST; i++) {
 				if (isCancelled()) {
 					bEmpty = true;
 					jProgressBar1.setString("Canceled!");
 					return null;
 				}
-				sData += "\n" + soapClient.getProfile(sPubMLSTDB, i);
-				setProgress(i * 100 / iMaxST);
+				String profile = soapClient.getProfile(sPubMLSTDB, i);
+				if (profile != null) {
+					sData += "\n" + profile;
+					int percent = st * 100 / iMaxST;
+					setProgress(percent);
+					jProgressBar1.setString(percent + "% - " + st + " STs");
+					st++;
+				}
+				// Failsafe
+				if (iMaxST < 1000 && i > 3 * iMaxST
+						|| iMaxST > 1000 && i > 2 * iMaxST
+						|| iMaxST > 3000 && i > 1.5 * iMaxST) {
+					jProgressBar1.setString("Force cancel: too many missing data!");
+					break;
+				}
 			}
 			bEmpty = false;
 			jToggleButton1.setEnabled(false);
