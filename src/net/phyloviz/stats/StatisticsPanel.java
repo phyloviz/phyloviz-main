@@ -25,7 +25,7 @@ public class StatisticsPanel extends TopComponent {
 		this.setName(name);
 		this.atm = dm.tableModel();
 
-		jlDatasetSize.setText((dm.size() - 1) + "");
+		jlDatasetSize.setText(dm.size() + "");
 		if (dm instanceof TypingData) {
 			jLabel4.setText("Profile size:");
 		}
@@ -44,7 +44,7 @@ public class StatisticsPanel extends TopComponent {
 				int iIndex = (Integer) jcb.getSelectedIndex();
 				if (!htmlCache.hasBody(iIndex)) {
 					htmlCache.bodyInit();
-					for (int i = 1; i < atm.getRowCount(); i++) {
+					for (int i = 0; i < atm.getRowCount(); i++) {
 						htmlCache.bodyAddValue((String) atm.getValueAt(i, iIndex));
 					}
 					htmlCache.bodyFinish(iIndex, (String) jcb.getSelectedItem());
