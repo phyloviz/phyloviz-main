@@ -30,7 +30,7 @@ public class HTMLCache {
 	public void bodyInit() {
 		tmCurrentBody = new TreeMap<String, Integer>();
 		iCurrentTotal = 0;
-		df = new DecimalFormat("#.#####");
+		df = new DecimalFormat("#.####");
 	}
 
 	public void bodyAddValue(String value) {
