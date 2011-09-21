@@ -70,7 +70,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -148,6 +147,9 @@ public class GraphView2 extends GView {
 	private static final long serialVersionUID = 1L;
 	private static final String SRC = Graph.DEFAULT_SOURCE_KEY;
 	private static final String TRG = Graph.DEFAULT_TARGET_KEY;
+
+	private String name;
+
 	private Table nodeTable;
 	private Table edgeTable;
 	private TreeMap<Integer, Integer> uid2rowid;
@@ -161,9 +163,7 @@ public class GraphView2 extends GView {
 	private boolean groupPanelStatus;
 	private JList groupList;
 	private int itemFound = -1;
-	private JScrollPane infoPanel;
-	private boolean infoPanelStatus;
-	private JTextArea textArea;
+	private InfoPanel infoPanel;
 	private JPopupMenu popupMenu;
 	private LabelRenderer lr;
 	private DefaultRendererFactory rf;
@@ -175,10 +175,12 @@ public class GraphView2 extends GView {
 	// Data analysis info...
 	private CategoryProvider cp;
 
-	public GraphView2(GOeBurstMSTResult _er) {
+	public GraphView2(String name, GOeBurstMSTResult _er) {
 		this.setLayout(new BorderLayout());
 		this.setBackground(Color.WHITE);
 		this.setOpaque(true);
+
+		this.name = name;
 
 		this.er = _er;
 
@@ -371,10 +373,9 @@ public class GraphView2 extends GView {
 				Iterator<Group> ig = gList.iterator();
 				while (ig.hasNext()) {
 					Group g = ig.next();
-					textArea.append("Group " + g.id + " (" + g.size() + ")\n" + g.levelStats());
+					appendTextToInfoPanel("Group " + g.id + " (" + g.size() + ")\n" + g.levelStats());
 				}
-				textArea.append("\n");
-				textArea.setCaretPosition(textArea.getDocument().getLength());
+				appendTextToInfoPanel("\n");
 
 				double x = display.getDisplayX();
 				double y = display.getDisplayY();
@@ -554,21 +555,9 @@ public class GraphView2 extends GView {
 		add(groupPanel, BorderLayout.WEST);
 		groupPanelStatus = true;
 
-		// Info panel.
-		textArea = new JTextArea();
-		textArea.setEditable(false);
-		//textArea.setText("Click an edge!");
-
-		infoPanel = new JScrollPane(textArea,
-			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		infoPanel.getViewport().setBackground(Color.WHITE);
-		infoPanel.setBackground(Color.WHITE);
-		TitledBorder itb = new TitledBorder("Info:");
-		itb.setBorder(new LineBorder(Color.BLACK));
-		infoPanel.setBorder(itb);
-		infoPanel.setPreferredSize(new Dimension(210, 600));
-		//add(infoPanel, BorderLayout.EAST);
-		infoPanelStatus = false;
+		infoPanel = new InfoPanel(name + " Info");
+		infoPanel.open();
+		infoPanel.requestActive();
 
 		// Search stuff.
 		TupleSet search = new PrefixSearchTupleSet();
@@ -676,7 +665,8 @@ public class GraphView2 extends GView {
 		running = true;
 	}
 
-	public JScrollPane getInfoPanel() {
+	@Override
+	public InfoPanel getInfoPanel() {
 		return infoPanel;
 	}
 
@@ -727,17 +717,19 @@ public class GraphView2 extends GView {
 	}
 
 	@Override
-	public void showInfoPanel(boolean status) {
-		if (status == infoPanelStatus) {
-			return;
-		}
+	public void showInfoPanel() {
+		if (infoPanel == null)
+			infoPanel = new InfoPanel(name + " Info");
+		
+		if (! infoPanel.isOpened())
+			infoPanel.open();
 
-		if (status) {
-			add(infoPanel, BorderLayout.EAST);
-		} else {
-			remove(infoPanel);
-		}
-		infoPanelStatus = status;
+		infoPanel.requestActive();
+	}
+
+	@Override
+	public void closeInfoPanel() {
+		infoPanel.close();
 	}
 
 	@Override
@@ -763,8 +755,10 @@ public class GraphView2 extends GView {
 	}
 
 	public void appendTextToInfoPanel(String text) {
-		textArea.append(text);
-		textArea.setCaretPosition(textArea.getDocument().getLength());
+		if (infoPanel != null) {
+			infoPanel.append(text);
+			infoPanel.flush();
+		}
 	}
 
 	@Override
@@ -952,17 +946,17 @@ public class GraphView2 extends GView {
 
 			if (item instanceof EdgeItem) {
 				Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
-				textArea.append(edge.getU().getProfile().getID() + " -- "
+				appendTextToInfoPanel(edge.getU().getProfile().getID() + " -- "
 					+ edge.getV().getProfile().getID() + " (lv="
 					+ item.getSourceTuple().getString("w") + ")\n\n");
 			}
 			if (item instanceof NodeItem) {
 				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
-				textArea.append(st.toString() + "\n");
-				textArea.append("# isolates = " + st.getFreq() + "\n");
+				appendTextToInfoPanel(st.toString() + "\n");
+				appendTextToInfoPanel("# isolates = " + st.getFreq() + "\n");
 
 				if (cp != null) {
-					textArea.append("Chart details:\n");
+					appendTextToInfoPanel("Chart details:\n");
 					int total = 0;
 					DecimalFormat df = new DecimalFormat("#.##");
 					Collection<Category> groupsList = cp.getCategories(st.getID());
@@ -971,19 +965,18 @@ public class GraphView2 extends GView {
 						while (groups.hasNext()) {
 							Category group = groups.next();
 							double percent = (((double) group.weight() * 100) / st.getFreq());
-							textArea.append(" +" + group.getName() + " " + df.format(percent) + "%\n");
+							appendTextToInfoPanel(" +" + group.getName() + " " + df.format(percent) + "%\n");
 							total += group.weight();
 						}
 					}
 					double percent = (((double) (st.getFreq() - total) * 100) / st.getFreq());
 					if (percent > 0) {
-						textArea.append(" + 'others' " + df.format(percent) + "%\n");
+						appendTextToInfoPanel(" + 'others' " + df.format(percent) + "%\n");
 					}
 				}
 
-				textArea.append("\n");
+				appendTextToInfoPanel("\n");
 			}
-			textArea.setCaretPosition(textArea.getDocument().getLength());
 		}
 	}
 

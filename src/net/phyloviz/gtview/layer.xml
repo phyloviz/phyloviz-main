@@ -8,10 +8,12 @@
 					<attr name="instanceClass" stringvalue="net.phyloviz.gtview.action.ViewAction"/>
 					<attr name="position" intvalue="0"/>
 				</file>
+				<!--
 				<file name="net-phyloviz-gtview-action-SLVGraphViewAction.instance">
 					<attr name="instanceClass" stringvalue="net.phyloviz.gtview.action.SLVGraphViewAction"/>
 					<attr name="position" intvalue="10"/>
 				</file>
+				-->
 			</folder>
 			<folder name="GOeBurstMST">
 				<file name="net-phyloviz-gtview-action-ViewAction2.instance">

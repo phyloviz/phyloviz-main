@@ -35,72 +35,46 @@
 
 package net.phyloviz.gtview.ui;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import javax.swing.JMenuItem;
-import net.phyloviz.category.CategoryChangeListener;
-import net.phyloviz.category.CategoryProvider;
-import net.phyloviz.core.data.DataSet;
-import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
-import net.phyloviz.gtview.render.ChartRenderer;
-import org.openide.util.Lookup.Result;
-import org.openide.util.LookupEvent;
-import org.openide.util.LookupListener;
-import org.openide.util.lookup.Lookups;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Writer;
+import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
-public class GTPanel2 extends TopComponent {
+public class InfoPanel extends TopComponent {
 
-	private GraphView2 gv;
-	private ArrayList<JMenuItem> al;
-	private Result<CategoryProvider> r;
-	private CategoryChangeListener gvCatListen;
+	private BufferedWriter bf;
 
-	/** Creates new form GTPanel */
-	public GTPanel2(String name, GOeBurstMSTResult gr, DataSet ds) {
-		super(Lookups.singleton(gr));
-		initComponents();
+	/** Creates new form OutputPanel */
+	public InfoPanel(String name) {
 		this.setName(name);
-		gv = new GraphView2(name, gr);
-		this.add(gv);
-		gv.startAnimation();
+		initComponents();
+		bf = new BufferedWriter(new LocalWriter());
+	}
 
-		gvCatListen = new CategoryChangeListener() {
+	@Override
+	public void open() {
+		Mode m = WindowManager.getDefault().findMode("output");
+		m.dockInto(this);
+		super.open();
+	}
 
-			@Override
-			public void categoryChange(CategoryProvider cp) {
+	public void append(String text) {
+		try {
+			bf.write(text);
+		} catch (IOException ex) {
+			// No exception to be caught, see LocalWriter.
+		}
+	}
 
-				if (cp.isOn()) {
-					gv.setDefaultRenderer(new ChartRenderer(cp, gv));
-					gv.setCategoryProvider(cp);
-				} else {
-					gv.resetDefaultRenderer();
-					gv.setCategoryProvider(null);
-				}
-			}
-		};
-
-		// Let us track category providers...
-		// TODO: implement this within a renderer.
-		r = ds.getLookup().lookupResult(CategoryProvider.class);
-		Iterator<? extends CategoryProvider> i = r.allInstances().iterator();
-		while (i.hasNext())
-			i.next().addCategoryChangeListener(gvCatListen);
-
-		r.addLookupListener(new LookupListener() {
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public void resultChanged(LookupEvent le) {
-
-				Iterator<? extends CategoryProvider> i = ((Result<CategoryProvider>) le.getSource()).allInstances().iterator();
-				while (i.hasNext()) {
-					CategoryProvider cp = i.next();
-					cp.removeCategoryChangeListener(gvCatListen);
-					cp.addCategoryChangeListener(gvCatListen);
-				}
-			}
-		});
+	public void flush() {
+		try {
+			bf.flush();
+		} catch (IOException ex) {
+			// No exception to be caught, see LocalWriter.
+		}
+		jTextArea1.setCaretPosition(jTextArea1.getDocument().getLength());
 	}
 
 	@Override
@@ -110,14 +84,7 @@ public class GTPanel2 extends TopComponent {
 
 	@Override
 	protected String preferredID() {
-		return "GTPanel";
-	}
-
-	@Override
-	protected void componentClosed() {
-		gv.closeInfoPanel();
-		gv.stopAnimation();
-		super.componentClosed();
+		return "InfoPanel";
 	}
 
 	/** This method is called from within the constructor to
@@ -129,10 +96,38 @@ public class GTPanel2 extends TopComponent {
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
         private void initComponents() {
 
+                jScrollPane1 = new javax.swing.JScrollPane();
+                jTextArea1 = new javax.swing.JTextArea();
+
                 setLayout(new java.awt.BorderLayout());
+
+                jTextArea1.setColumns(20);
+                jTextArea1.setEditable(false);
+                jTextArea1.setRows(5);
+                jScrollPane1.setViewportView(jTextArea1);
+
+                add(jScrollPane1, java.awt.BorderLayout.CENTER);
         }// </editor-fold>//GEN-END:initComponents
-
-
         // Variables declaration - do not modify//GEN-BEGIN:variables
+        private javax.swing.JScrollPane jScrollPane1;
+        private javax.swing.JTextArea jTextArea1;
         // End of variables declaration//GEN-END:variables
+
+	private class LocalWriter extends Writer {
+
+		@Override
+		public void write(char[] cbuf, int off, int len) {
+			jTextArea1.append(new String(cbuf, off, len));
+		}
+
+		@Override
+		public void flush() {
+			// No flush is required.
+		}
+
+		@Override
+		public void close() {
+			// No closeable.
+		}
+	}
 }

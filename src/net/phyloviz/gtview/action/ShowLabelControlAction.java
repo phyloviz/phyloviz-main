@@ -38,29 +38,38 @@ package net.phyloviz.gtview.action;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
-
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import net.phyloviz.gtview.ui.GView;
 
-public class InfoControlAction extends AbstractAction {
+public class ShowLabelControlAction extends AbstractAction {
 
 	private GView gv;
 
-	public InfoControlAction(GView gv) {
+	public ShowLabelControlAction(GView gv) {
 		this.gv = gv;
 	}
 
 	public JMenuItem getMenuItem() {
-		final JMenuItem mi = new JMenuItem("Info");
-		mi.setToolTipText("Info Panel");
-		mi.setMnemonic(KeyEvent.VK_I);
-		mi.addActionListener(this);
 
+		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Labels");
+		mi.setToolTipText("Show labels");
+		mi.setMnemonic(KeyEvent.VK_A);
+		mi.setSelected(true);
+		mi.addActionListener(this);
 		return mi;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		gv.showInfoPanel();
+
+		if (gv == null) {
+			((JCheckBoxMenuItem) e.getSource()).setSelected(false);
+			return;
+		}
+
+		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+		gv.setShowLabel(status);
 	}
+
 }

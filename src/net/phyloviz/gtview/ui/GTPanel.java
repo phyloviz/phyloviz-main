@@ -61,7 +61,7 @@ public class GTPanel extends TopComponent {
 		super(Lookups.singleton(gr));
 		initComponents();
 		this.setName(name);
-		gv = new GraphView(gr);
+		gv = new GraphView(name, gr);
 		this.add(gv);
 		gv.startAnimation();
 
@@ -115,6 +115,7 @@ public class GTPanel extends TopComponent {
 
 	@Override
 	protected void componentClosed() {
+		gv.closeInfoPanel();
 		gv.stopAnimation();
 		super.componentClosed();
 	}

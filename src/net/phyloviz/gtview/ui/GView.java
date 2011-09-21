@@ -66,5 +66,9 @@ public abstract class GView extends JPanel {
 
 	public abstract void showGroupPanel(boolean status);
 
-	public abstract void showInfoPanel(boolean status);
+	public abstract void showInfoPanel();
+
+	public abstract void closeInfoPanel();
+
+	public abstract InfoPanel getInfoPanel();
 }
