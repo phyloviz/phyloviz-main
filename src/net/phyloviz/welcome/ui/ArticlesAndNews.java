@@ -74,24 +74,24 @@ class ArticlesAndNews extends RSSFeedReaderPanel {
         add( buildBottomContent(), BorderLayout.SOUTH );
     }
 
-    @Override
-    protected JComponent buildContent(String url, boolean showProxyButton) {
-        final Preferences p = NbPreferences.root().node("/org/netbeans/modules/autoupdate"); // NOI18N
-        if( null != p ) {
-            String ideId = p.get ("ideIdentity", null); // NOI18N
-            if( null != ideId && ideId.length() > 0 ) {
-                if( url.contains("?") ) { // NOI18N
-                    url += "&unique="; // NOI18N
-                } else {
-                    url +=  "?unique="; // NOI18N
-                }
-                url += ideId;
-            }
-        }
-        feed = new ArticlesAndNewsRSSFeed( url, BundleSupport.getURL("News"), showProxyButton ); // NOI18N
-        feed.addPropertyChangeListener( RSSFeed.FEED_CONTENT_PROPERTY, this );
-        return feed;
-    }
+//    @Override
+//    protected JComponent buildContent(String url, boolean showProxyButton) {
+//        final Preferences p = NbPreferences.root().node("/org/netbeans/modules/autoupdate"); // NOI18N
+//        if( null != p ) {
+//            String ideId = p.get ("ideIdentity", null); // NOI18N
+//            if( null != ideId && ideId.length() > 0 ) {
+//                if( url.contains("?") ) { // NOI18N
+//                    url += "&unique="; // NOI18N
+//                } else {
+//                    url +=  "?unique="; // NOI18N
+//                }
+//                url += ideId;
+//            }
+//        }
+//        feed = new ArticlesAndNewsRSSFeed( url, BundleSupport.getURL("News"), showProxyButton ); // NOI18N
+//        feed.addPropertyChangeListener( RSSFeed.FEED_CONTENT_PROPERTY, this );
+//        return feed;
+//    }
     
     protected JComponent buildBottomContent() {
         WebLink news = new WebLink("AllNews", true); // NOI18N
@@ -116,9 +116,9 @@ class ArticlesAndNews extends RSSFeedReaderPanel {
         return panel;
     }
 
-    private class ArticlesAndNewsRSSFeed extends CombinationRSSFeed {
-        public ArticlesAndNewsRSSFeed( String url1, String url2, boolean showProxyButton ) {
-            super( url1, url2, showProxyButton, MAX_ARTICLES_COUNT );
-        }
-    }
+//    private class ArticlesAndNewsRSSFeed extends CombinationRSSFeed {
+//        public ArticlesAndNewsRSSFeed( String url1, String url2, boolean showProxyButton ) {
+//            super( url1, url2, showProxyButton, MAX_ARTICLES_COUNT );
+//        }
+//    }
 }
