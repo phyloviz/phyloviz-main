@@ -52,6 +52,10 @@ public abstract class GView extends JPanel {
 
 	public abstract void setLinearSize(boolean status);
 
+	public abstract boolean showLabel();
+
+	public abstract void setShowLabel(boolean status);
+
 	public abstract void setHighQuality(boolean status);
 
 	public abstract JForcePanel getForcePanel();

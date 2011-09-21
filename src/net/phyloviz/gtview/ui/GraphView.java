@@ -88,6 +88,7 @@ import net.phyloviz.gtview.action.GroupControlAction;
 import net.phyloviz.gtview.action.HighQualityAction;
 import net.phyloviz.gtview.action.InfoControlAction;
 import net.phyloviz.gtview.action.LinearSizeControlAction;
+import net.phyloviz.gtview.action.ShowLabelControlAction;
 import net.phyloviz.gtview.action.ViewControlAction;
 import prefuse.Display;
 import prefuse.Visualization;
@@ -170,6 +171,7 @@ public class GraphView extends GView {
 
 	private boolean running;
 	private boolean linear;
+	private boolean label;
 
 	// Data analysis info...
 	private CategoryProvider cp;
@@ -459,6 +461,7 @@ public class GraphView extends GView {
 		popupMenu.add(new InfoControlAction(this).getMenuItem());
 		popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
+		popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
@@ -698,8 +701,18 @@ public class GraphView extends GView {
 		//return fdl.getForceSimulator();
 	}
 
-       
-              
+	@Override
+	public boolean showLabel() {
+		return label;
+	}
+
+	@Override
+	public void setShowLabel(boolean status) {
+		if (label != status) {
+			label = status;
+			view.run("draw");
+		}
+	}
       
 	// Private classes.
 	private class NodeColorAction extends ColorAction{

@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -96,6 +97,7 @@ import net.phyloviz.gtview.action.GroupControlAction;
 import net.phyloviz.gtview.action.HighQualityAction;
 import net.phyloviz.gtview.action.InfoControlAction;
 import net.phyloviz.gtview.action.LinearSizeControlAction;
+import net.phyloviz.gtview.action.ShowLabelControlAction;
 import net.phyloviz.gtview.action.ViewControlAction;
 
 import prefuse.Display;
@@ -168,6 +170,7 @@ public class GraphView2 extends GView {
 	private ForceDirectedLayout fdl;
 	private boolean running;
 	private boolean linear;
+	private boolean label;
 	private int level;
 	// Data analysis info...
 	private CategoryProvider cp;
@@ -326,6 +329,8 @@ public class GraphView2 extends GView {
 				maxlv = lv;
 			}
 
+			g.edgeAtLevel(lv);
+
 			edgeTable.set(rowNb, "w", lv);
 			edgeTable.set(rowNb, "g", 1);
 		}
@@ -366,7 +371,7 @@ public class GraphView2 extends GView {
 				Iterator<Group> ig = gList.iterator();
 				while (ig.hasNext()) {
 					Group g = ig.next();
-					textArea.append("Group " + g.id + " (" + g.size() + ")\n");
+					textArea.append("Group " + g.id + " (" + g.size() + ")\n" + g.levelStats());
 				}
 				textArea.append("\n");
 				textArea.setCaretPosition(textArea.getDocument().getLength());
@@ -487,6 +492,7 @@ public class GraphView2 extends GView {
 					int v = edgeTable.getInt(i, TRG);
 
 					Group g = gmap.get(ds.findSet(u));
+					g.edgeAtLevel(edgeTable.getInt(i, "w"));
 					nodeTable.setInt(u, "g", g.getID());
 					nodeTable.setInt(v, "g", g.getID());
 					edgeTable.setInt(i, "g", g.getID());
@@ -625,6 +631,7 @@ public class GraphView2 extends GView {
 		popupMenu.add(new InfoControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
+		popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
@@ -851,6 +858,19 @@ public class GraphView2 extends GView {
 		//return fdl.getForceSimulator();
 	}
 
+	@Override
+	public boolean showLabel() {
+		return label;
+	}
+
+	@Override
+	public void setShowLabel(boolean status) {
+		if (label != status) {
+			label = status;
+			view.run("draw");
+		}
+	}
+
 	// Private classes.
 	private class NodeColorAction extends ColorAction {
 
@@ -971,10 +991,12 @@ public class GraphView2 extends GView {
 
 		private int id;
 		private LinkedList<Integer> list;
+		private TreeMap<Integer,Integer> levelStat;
 
 		Group() {
 			this.id = 0;
 			list = new LinkedList<Integer>();
+			levelStat = new TreeMap<Integer, Integer>();
 		}
 
 		public void setID(int id) {
@@ -997,9 +1019,27 @@ public class GraphView2 extends GView {
 			return list.size();
 		}
 
+		public void edgeAtLevel(int level) {
+			Integer n = levelStat.get(level);
+
+			levelStat.put(level, (n == null) ? 1 : n + 1);
+		}
+
 		@Override
 		public String toString() {
 			return Integer.toString(id);
+		}
+
+		public String levelStats() {
+			String s = "";
+
+			Iterator<Entry<Integer, Integer>> i = levelStat.entrySet().iterator();
+			while (i.hasNext()) {
+				Entry<Integer, Integer> e = i.next();
+				s += " + " + e.getValue() + " links at level " + e.getKey() + "\n";
+			}
+
+			return s;
 		}
 	}
 

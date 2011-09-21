@@ -124,9 +124,12 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 		g.setPaint(new Color(255,255,255));
 		Font font = FontLib.getFont("Tahoma", Font.PLAIN, 11  /*+ 5*Math.log(freq)*/);
 		g.setFont(font);
-		String stIdstr = stId;
-		int nCaracteres = stIdstr.length();
-		g.drawString(stIdstr, x - (2.6f * nCaracteres), y + 4.0f);
+
+		if (gv.showLabel()) {
+			String stIdstr = stId;
+			int nCaracteres = stIdstr.length();
+			g.drawString(stIdstr, x - (2.6f * nCaracteres), y + 4.0f);
+		}
 	}
 	
 	@Override
