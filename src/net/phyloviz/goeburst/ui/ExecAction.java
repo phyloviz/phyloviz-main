@@ -53,10 +53,9 @@ public class ExecAction extends NodeAction {
 	protected void performAction(Node[] nodes) {
 		int level = 1;
 
-		OutputPanel op = new OutputPanel();
+		OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": goeBURST Output");
 		Runnable job = new GOeBurstRunner(nodes[0], op, level, new GOeBurstDistance());
 
-		op.setName(nodes[0].getParentNode().getDisplayName() + ": goeBURST Output");
 		op.open();
 		op.requestActive();
 

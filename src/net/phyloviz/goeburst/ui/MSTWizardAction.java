@@ -80,10 +80,9 @@ public final class MSTWizardAction extends NodeAction {
 			// do something
 			AbstractDistance ad = (AbstractDistance) wizardDescriptor.getProperty("distance");
 
-			OutputPanel op = new OutputPanel();
+			OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": goeBURST Full MST Output");
 			Runnable job = new MSTRunner(nodes[0], op, ad);
 
-			op.setName(nodes[0].getParentNode().getDisplayName() + ": goeBURST Full MST Output");
 			op.open();
 			op.requestActive();
 

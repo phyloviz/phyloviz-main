@@ -36,9 +36,18 @@
 package net.phyloviz.goeburst.ui;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Date;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.cookies.SaveCookie;
+import org.openide.filesystems.FileChooserBuilder;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
@@ -48,7 +57,55 @@ public class OutputPanel extends TopComponent {
 	private BufferedWriter bf;
 
 	/** Creates new form OutputPanel */
-	public OutputPanel() {
+	public OutputPanel(final String name) {
+		InstanceContent ic = new InstanceContent();
+		associateLookup(new AbstractLookup(ic));
+
+		ic.add(new SaveCookie() {
+
+			@Override
+			public void save() throws IOException {
+				String title = "Saving " + name + "...";
+				File f = new FileChooserBuilder(OutputPanel.class).setTitle(title).showSaveDialog();
+				if (f != null) {
+					try {
+						if (!f.exists()) {
+							if (!f.createNewFile()) {
+								String failMsg = "Unable to create " + f.getName();
+								DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+								return;
+							}
+						} else {
+							String overwriteMessage = "Overwriting " + f.getName();
+							Object userChose = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(overwriteMessage));
+							if (NotifyDescriptor.CANCEL_OPTION.equals(userChose)) {
+								return;
+							}
+						}
+
+						save(f.getAbsoluteFile());
+					} catch (IOException ioe) {
+						String failMsg = "Error: " + ioe.getMessage();
+						DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+					}
+				} else {
+					throw new FileNotFoundException("Unknown file!");
+				}
+			}
+
+			private void save(File f) throws FileNotFoundException, IOException {
+				PrintWriter pw = new PrintWriter(f);
+				jTextArea1.write(pw);
+				pw.close();
+			}
+
+			@Override
+			public String toString() {
+				return name;
+			}
+		});
+
+		this.setName(name);
 		initComponents();
 		bf = new BufferedWriter(new LocalWriter());
 	}
