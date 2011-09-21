@@ -30,7 +30,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 	private boolean bEmpty;
 	private String sPubMLSTDB;
 	private DefaultComboBoxModel keyListModel;
-	PubmlstSOAP soapClient;
+	private PubmlstSOAP soapClient;
 
 	/** Creates new form PubMLSTVisualPanel2 */
 	public PubMLSTVisualPanel3() {
@@ -39,7 +39,14 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 
 		setEditorPanel("PubMLSTVisualPanel3a.html");
 	}
-	
+
+	private PubmlstSOAP getSOAPClient() {
+		if (soapClient == null) {
+			soapClient = new PubmlstSOAP();
+		}
+		return soapClient;
+	}
+
 	private void setEditorPanel(String sFile) {
 		try {
 			URL url = PubMLSTVisualPanel3.class.getResource(sFile);
@@ -59,7 +66,9 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 		// PubMLST initialization
 		sPubMLSTDB = sDBShort;
 		bEmpty = true;
-
+		iMaxIsolate = getSOAPClient().getIsolateCount(sPubMLSTDB);
+		jRadioButton2.setText("Load isolate data from pubmlst.org (n=" + iMaxIsolate + ")");
+		
 		// To prevent bad UI experience when comming back to this UI
 		// Pubmlst.org loader
 		jRadioButton1.setSelected(true);
@@ -286,7 +295,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 		String[] result = null;
 		if (jRadioButton2.isSelected()) {
-			result = soapClient.getIsolateFields(sPubMLSTDB);
+			result = getSOAPClient().getIsolateFields(sPubMLSTDB);
 		} else {
 			try {
 				// Get headers...
@@ -329,9 +338,6 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 	private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
 		JToggleButton tb = (JToggleButton) evt.getSource();
 		if (tb.isSelected()) {
-			soapClient = new PubmlstSOAP();
-			iMaxIsolate = soapClient.getIsolateCount(sPubMLSTDB);
-
 			jProgressBar1.setString(null);
 			task = new Task();
 			task.addPropertyChangeListener(new PropertyChangeListener() {
@@ -388,7 +394,6 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 
 		@Override
 		public Void doInBackground() {
-			soapClient = new PubmlstSOAP();
 			jButton2ActionPerformed(null);
 
 			sIsolateData = "";
@@ -398,7 +403,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 					jProgressBar1.setString("Canceled!");
 					return null;
 				}
-				Map<String, String> hmFields = soapClient.getIsolate(sPubMLSTDB, i);
+				Map<String, String> hmFields = getSOAPClient().getIsolate(sPubMLSTDB, i);
 				if (!hmFields.isEmpty()) {
 					for (int f = 0; f < keyListModel.getSize(); f++) {
 						sIsolateData += (f == 0) ? "\n" : "\t";
@@ -409,7 +414,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 					}
 					int percent = is * 100 / iMaxIsolate;
 					setProgress(percent);
-					jProgressBar1.setString(percent + "% - " + is + " isolates");
+					jProgressBar1.setString(is + " of " + iMaxIsolate + " isolates (" + percent + "%)");
 					is++;
 				}
 				if (i > 3 * iMaxIsolate) {

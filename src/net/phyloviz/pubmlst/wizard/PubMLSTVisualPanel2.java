@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -26,6 +24,7 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 	private String sData;
 	private boolean bEmpty;
 	private String sPubMLSTDB;
+	private PubmlstSOAP soapClient;
 
 	/** Creates new form PubMLSTVisualPanel2 */
 	public PubMLSTVisualPanel2() {
@@ -70,15 +69,21 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 		}
 
 	}
+	
+	private PubmlstSOAP getSOAPClient() {
+		if (soapClient == null) {
+			soapClient = new PubmlstSOAP();
+		}
+		return soapClient;
+	}
 
 	public void setDatabase(String sDBShort, String sDBFull) {
 		// Form initialization
 		jlPubMLST.setText(sDBFull);
 		sPubMLSTDB = sDBShort;
-		PubmlstSOAP soapClient = new PubmlstSOAP();
-		iMaxST = soapClient.getProfileCount(sPubMLSTDB);
-		jlNumberSTs.setText(iMaxST + " STs");
-		ArrayList<String> alLocus = soapClient.getLocusList(sPubMLSTDB);
+		iMaxST = getSOAPClient().getProfileCount(sPubMLSTDB);
+		jlPubMLST.setText(sDBFull + " (n=" + iMaxST + ")");
+		ArrayList<String> alLocus = getSOAPClient().getLocusList(sPubMLSTDB);
 		sData = "st";
 		String sProfile = "";
 		for (String s : alLocus) {
@@ -123,12 +128,10 @@ public final class PubMLSTVisualPanel2 extends JPanel {
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jToggleButton1 = new javax.swing.JToggleButton();
         jPanel4 = new javax.swing.JPanel();
         jlPubMLST = new javax.swing.JLabel();
-        jlNumberSTs = new javax.swing.JLabel();
         jlProfile = new javax.swing.JLabel();
         jProgressBar1 = new javax.swing.JProgressBar();
         jEditorPane1 = new javax.swing.JEditorPane();
@@ -137,15 +140,11 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jPanel3.setLayout(new java.awt.GridLayout(4, 0, 0, 8));
+        jPanel3.setLayout(new java.awt.GridLayout(3, 0, 0, 8));
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel2.class, "PubMLSTVisualPanel2.jLabel2.text")); // NOI18N
         jLabel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
         jPanel3.add(jLabel2);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel4, org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel2.class, "PubMLSTVisualPanel2.jLabel4.text")); // NOI18N
-        jLabel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
-        jPanel3.add(jLabel4);
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel2.class, "PubMLSTVisualPanel2.jLabel1.text")); // NOI18N
         jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
@@ -157,13 +156,10 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.WEST);
 
-        jPanel4.setLayout(new java.awt.GridLayout(4, 0, 0, 8));
+        jPanel4.setLayout(new java.awt.GridLayout(3, 0, 0, 8));
 
         org.openide.awt.Mnemonics.setLocalizedText(jlPubMLST, org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel2.class, "PubMLSTVisualPanel2.jlPubMLST.text")); // NOI18N
         jPanel4.add(jlPubMLST);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jlNumberSTs, org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel2.class, "PubMLSTVisualPanel2.jlNumberSTs.text")); // NOI18N
-        jPanel4.add(jlNumberSTs);
 
         org.openide.awt.Mnemonics.setLocalizedText(jlProfile, org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel2.class, "PubMLSTVisualPanel2.jlProfile.text")); // NOI18N
         jPanel4.add(jlProfile);
@@ -185,13 +181,11 @@ public final class PubMLSTVisualPanel2 extends JPanel {
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JLabel jlNumberSTs;
     private javax.swing.JLabel jlProfile;
     private javax.swing.JLabel jlPubMLST;
     // End of variables declaration//GEN-END:variables
@@ -200,19 +194,18 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 
 		@Override
 		public Void doInBackground() {
-			PubmlstSOAP soapClient = new PubmlstSOAP();
 			for (int st = 1, i = 1; st <= iMaxST; i++) {
 				if (isCancelled()) {
 					bEmpty = true;
 					jProgressBar1.setString("Canceled!");
 					return null;
 				}
-				String profile = soapClient.getProfile(sPubMLSTDB, i);
+				String profile = getSOAPClient().getProfile(sPubMLSTDB, i);
 				if (profile != null) {
 					sData += "\n" + profile;
 					int percent = st * 100 / iMaxST;
 					setProgress(percent);
-					jProgressBar1.setString(percent + "% - " + st + " STs");
+					jProgressBar1.setString(st + " of " + iMaxST + " STs (" + percent + "%)");
 					st++;
 				}
 				// Failsafe

@@ -18,8 +18,9 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 
 	private DefaultComboBoxModel datasetListModel;
 	private Vector vDatabases;
-	int iSelected;
-	String sPubMLSTDB;
+	private int iSelected;
+	private String sPubMLSTDB;
+	private PubmlstSOAP soapClient;
 
 	/** Creates new form PubMLSTVisualPanel1 */
 	public PubMLSTVisualPanel1() {
@@ -33,26 +34,15 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 			public void actionPerformed(ActionEvent ae) {
 				JComboBox cb = (JComboBox) ae.getSource();
 				int i = cb.getSelectedIndex();
-				Vector vElem = (Vector) vDatabases.get(i);
-				sPubMLSTDB = (String) vElem.get(0);
+				if (i >= 0) {
+					Vector vElem = (Vector) vDatabases.get(i);
+					sPubMLSTDB = (String) vElem.get(0);
+				}
 			}
 		});
 
 
-		PubmlstSOAP soapClient = new PubmlstSOAP();
-		vDatabases = soapClient.getDatabaseList();
-		if (vDatabases == null || vDatabases.isEmpty()) {
-			datasetListModel.removeAllElements();
-			datasetListModel.addElement(org.openide.util.NbBundle.getMessage(
-					PubMLSTVisualPanel1.class, "PubmlstSOAP.offline"));
-			jComboBox1.setEnabled(false);
-		} else {
-			for (int i = 0; i < vDatabases.size(); i++) {
-				Vector db = (Vector) vDatabases.get(i);
-				datasetListModel.addElement(db.get(1));
-			}
-			jComboBox1.setEnabled(true);
-		}
+		updateKeyList(true);
 
 		try {
 			URL url = PubMLSTVisualPanel1.class.getResource("PubMLSTVisualPanel1.html");
@@ -65,6 +55,31 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 		} catch (IOException e) {
 			// Do nothing...
 			System.err.println(e.getMessage());
+		}
+	}
+
+	private PubmlstSOAP getSOAPClient() {
+		if (soapClient == null) {
+			soapClient = new PubmlstSOAP();
+		}
+		return soapClient;
+	}
+
+	private void updateKeyList(boolean fetch) {
+		datasetListModel.removeAllElements();
+		if (fetch) {
+			vDatabases = getSOAPClient().getDatabaseList();
+		}
+		if (vDatabases == null || vDatabases.isEmpty()) {
+			datasetListModel.addElement(org.openide.util.NbBundle.getMessage(
+					PubMLSTVisualPanel1.class, "PubmlstSOAP.offline"));
+			jComboBox1.setEnabled(false);
+		} else {
+			for (int i = 0; i < vDatabases.size(); i++) {
+				Vector db = (Vector) vDatabases.get(i);
+				datasetListModel.addElement(db.get(1));
+			}
+			jComboBox1.setEnabled(true);
 		}
 	}
 
@@ -82,6 +97,10 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 	}
 
 	public String getSelectedDBFull() {
+		int i = jComboBox1.getSelectedIndex();
+		if (i < 0) {
+			return "";
+		}
 		Vector v = (Vector) vDatabases.get(jComboBox1.getSelectedIndex());
 		return (String) v.get(1);
 	}
@@ -100,7 +119,9 @@ public final class PubMLSTVisualPanel1 extends JPanel {
         jLabel2 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox();
+        jButton1 = new javax.swing.JButton();
         jEditorPane1 = new javax.swing.JEditorPane();
 
         setLayout(new java.awt.BorderLayout());
@@ -124,8 +145,20 @@ public final class PubMLSTVisualPanel1 extends JPanel {
         jTextField1.setText(org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel1.class, "PubMLSTVisualPanel1.jTextField1.text")); // NOI18N
         jPanel4.add(jTextField1);
 
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
         jComboBox1.setModel(datasetListModel);
-        jPanel4.add(jComboBox1);
+        jPanel1.add(jComboBox1, java.awt.BorderLayout.CENTER);
+
+        org.openide.awt.Mnemonics.setLocalizedText(jButton1, org.openide.util.NbBundle.getMessage(PubMLSTVisualPanel1.class, "PubMLSTVisualPanel1.jButton1.text")); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, java.awt.BorderLayout.EAST);
+
+        jPanel4.add(jPanel1);
 
         jPanel2.add(jPanel4, java.awt.BorderLayout.CENTER);
 
@@ -137,11 +170,17 @@ public final class PubMLSTVisualPanel1 extends JPanel {
         jEditorPane1.setMaximumSize(new java.awt.Dimension(200, 200));
         add(jEditorPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+	updateKeyList(true);
+}//GEN-LAST:event_jButton1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
