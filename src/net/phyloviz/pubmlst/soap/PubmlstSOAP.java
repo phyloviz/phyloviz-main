@@ -15,12 +15,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.rpc.ServiceException;
 
 public class PubmlstSOAP {
 
 	private String endpoint;
-	private final int TIMEOUT = 500;
+	private final int WAIT = 200;//500;
+//	private final int TIMEOUT = 2000;
 
 	public PubmlstSOAP() {
 		endpoint = org.openide.util.NbBundle.getMessage(
@@ -91,6 +94,7 @@ public class PubmlstSOAP {
 				call.setOperation(oper);
 				call.setOperationName(new QName("http://pubmlst.org/MLST",
 						"getProfile"));
+//				call.setTimeout(TIMEOUT);
 				call.invoke(new Object[]{database, st});
 				Map output = call.getOutputParams();
 				AlleleNumber[] alleles = (AlleleNumber[]) output.get(new QName("",
@@ -105,15 +109,21 @@ public class PubmlstSOAP {
 //				sProfile += complex;
 //			}
 			} catch (ServiceException e) {
-				System.err.println("ServiceException: " + e.toString());
+				Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+						"ServiceException: " + e.toString());
 			} catch (MalformedURLException e) {
-				System.err.println("MalformedURLException: " + e.toString());
+				Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+						"MalformedURLException: " + e.toString());
 			} catch (RemoteException e) {
-				System.err.println("RemoteException: " + e.toString());
-				bTimeOut = true;
-				try {
-					Thread.sleep(TIMEOUT);
-				} catch (InterruptedException ex) {
+				Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+						"RemoteException: " + e.toString());
+				if (e.toString().contains("java.net.ConnectException")
+						|| e.toString().contains("java.net.SocketTimeoutException")) {
+					bTimeOut = true;
+					try {
+						Thread.sleep(WAIT);
+					} catch (InterruptedException ex) {
+					}
 				}
 			}
 		} while (bTimeOut);
@@ -135,21 +145,28 @@ public class PubmlstSOAP {
 				call.addParameter("id", org.apache.axis.Constants.XSD_INT,
 						javax.xml.rpc.ParameterMode.IN);
 				call.setReturnType(org.apache.axis.Constants.SOAP_VECTOR);
+//				call.setTimeout(TIMEOUT);
 				Vector ret = (Vector) call.invoke(new Object[]{database, isolate});
 				for (int i = 0; i < ret.size(); i++) {
 					Vector v = (Vector) ret.get(i);
 					hmRet.put((String) v.get(0), "" + v.get(1));
 				}
 			} catch (ServiceException e) {
-				System.err.println("ServiceException: " + e.toString());
+				Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+						"ServiceException: " + e.toString());
 			} catch (MalformedURLException e) {
-				System.err.println("MalformedURLException: " + e.toString());
+				Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+						"MalformedURLException: " + e.toString());
 			} catch (RemoteException e) {
-				System.err.println("RemoteException: " + e.toString());
-				bTimeOut = true;
-				try {
-					Thread.sleep(TIMEOUT);
-				} catch (InterruptedException ex) {
+				Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+						"RemoteException: " + e.toString());
+				if (e.toString().contains("java.net.ConnectException")
+						|| e.toString().contains("java.net.SocketTimeoutException")) {
+					bTimeOut = true;
+					try {
+						Thread.sleep(WAIT);
+					} catch (InterruptedException ex) {
+					}
 				}
 			}
 		} while (bTimeOut);
@@ -167,8 +184,8 @@ public class PubmlstSOAP {
 			call.setReturnType(org.apache.axis.Constants.SOAP_VECTOR);
 			ret = (Vector) call.invoke(new Object[]{});
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println(e.toString());
+			Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+					"Exception: " + e.toString());
 		}
 		return ret;
 	}
@@ -183,7 +200,8 @@ public class PubmlstSOAP {
 					"getProfileCount"));
 			iRet = (Integer) call.invoke(new Object[]{database});
 		} catch (Exception e) {
-			System.err.println(database + ": " + e.toString());
+			Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+					"Exception: " + e.toString());
 		}
 		return iRet;
 	}
@@ -198,7 +216,8 @@ public class PubmlstSOAP {
 					"getIsolateCount"));
 			iRet = (Integer) call.invoke(new Object[]{database});
 		} catch (Exception e) {
-			System.err.println(database + ": " + e.toString());
+			Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+					"Exception: " + e.toString());
 		}
 		return iRet;
 	}
@@ -216,7 +235,8 @@ public class PubmlstSOAP {
 				alRet.add((String) ret.get(i));
 			}
 		} catch (Exception e) {
-			System.err.println(database + ": " + e.toString());
+			Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+					"Exception: " + e.toString());
 		}
 		return alRet;
 	}
@@ -239,7 +259,8 @@ public class PubmlstSOAP {
 				saRet[i] = (String) v.get(0);
 			}
 		} catch (Exception e) {
-			System.err.println(database + ": " + e.toString());
+			Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+					"Exception: " + e.toString());
 		}
 		return saRet;
 	}
