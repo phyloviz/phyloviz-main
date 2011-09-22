@@ -169,7 +169,7 @@ public class SLVGraphView extends GView {
 
 	private boolean running;
 	private boolean linear;
-	private boolean label;
+	private boolean label = true;
 
 	// Data analysis info...
 	private CategoryProvider cp;

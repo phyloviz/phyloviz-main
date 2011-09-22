@@ -170,7 +170,7 @@ public class GraphView2 extends GView {
 	private ForceDirectedLayout fdl;
 	private boolean running;
 	private boolean linear;
-	private boolean label;
+	private boolean label = true;
 	private int level;
 	// Data analysis info...
 	private CategoryProvider cp;
