@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+	<folder name="Actions">
+		<folder name="PHYLOViZ">
+			<folder name="GOeBurst">
+				<file name="net-phyloviz-gtview-action-SLVGraphViewAction.instance">
+					<attr name="instanceClass" stringvalue="net.phyloviz.gtview.action.SLVGraphViewAction"/>
+					<attr name="position" intvalue="10"/>
+				</file>
+			</folder>
+		</folder>
+	</folder>
+</filesystem>
