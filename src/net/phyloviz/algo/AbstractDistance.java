@@ -33,11 +33,24 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.algo.tree;
+package net.phyloviz.algo;
 
+import java.util.Comparator;
 import net.phyloviz.core.data.Profile;
 
-public interface Node {
+public interface AbstractDistance<T extends Profile> {
 
-	public Profile getProfile();
+	public int compare(Edge<T> ex, Edge<T> ey);
+	
+	public int compare(T px, T py);
+
+	public int level(T px, T py);
+
+	public int level(Edge<T> e);
+
+	public int maxLevel();
+
+	public Comparator<T> getProfileComparator();
+
+	public Comparator<Edge<T>> getEdgeComparator();
 }

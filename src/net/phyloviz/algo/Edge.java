@@ -33,23 +33,43 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.algo.tree;
+package net.phyloviz.algo;
 
-public class Edge {
+import net.phyloviz.core.data.Profile;
 
-	private Node u;
-	private Node v;
+public class Edge<T extends Profile> implements Comparable<Edge<T>> {
 
-	public Edge(Node u, Node v) {
+	private T u;
+	private T v;
+
+	public Edge(T u, T v) {
+		if (u.getUID() > v.getUID()) {
+			T x = u;
+			u = v;
+			v = x;
+		}
+		
 		this.u = u;
 		this.v = v;
 	}
 
-	public Node getU() {
+	public T getU() {
 		return u;
 	}
 
-	public Node getV() {
+	public T getV() {
 		return v;
+	}
+
+	@Override
+	public int compareTo(Edge<T> e) {
+		if (u.getUID() - e.getU().getUID() != 0)
+			return u.getUID() - e.getU().getUID();
+		
+		return v.getUID() - e.getV().getUID();
+	}
+
+	public boolean equals(Edge<T> e) {
+		return compareTo(e) == 0;
 	}
 }
