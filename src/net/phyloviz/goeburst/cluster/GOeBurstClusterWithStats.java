@@ -38,33 +38,28 @@ package net.phyloviz.goeburst.cluster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.TreeMap;
-import net.phyloviz.core.data.AbstractProfile;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 
 public class GOeBurstClusterWithStats extends GOeBurstCluster {
 
-	private STLV maxLVs;
+	private int[] maxLVs;
 	private TreeMap<Edge, EdgeInfo> eInfoMap;
 	private EdgeTieStats stat;
-	private ArrayList<Edge> SLVedges;
+	private ArrayList<Edge<GOeBurstNodeExtended>> SLVedges;
 	private GOeBurstWithStats mInstance;
-	protected AbstractProfile fakeRoot;
+	protected GOeBurstNodeExtended fakeRoot;
 
-	public GOeBurstClusterWithStats(GOeBurstWithStats algInstance, AbstractDistance ad) {
+	public GOeBurstClusterWithStats(GOeBurstWithStats algInstance, AbstractDistance<GOeBurstNodeExtended> ad) {
 		super(ad);
 		mInstance = algInstance;
-		maxLVs = new STLV();
+		maxLVs = new int[MAXLV + 1];
 		eInfoMap = new TreeMap<Edge, EdgeInfo>();
 		stat = new EdgeTieStats();
-
-		SLVedges = new ArrayList<Edge>();
-
+		SLVedges = new ArrayList<Edge<GOeBurstNodeExtended>>();
 		fakeRoot = null;
 	}
 
@@ -78,20 +73,8 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		return id;
 	}
 
-	public AbstractProfile getFakeRoot() {
+	public GOeBurstNodeExtended getFakeRoot() {
 		return fakeRoot;
-	}
-
-	public int getXLV(AbstractProfile st, int level) {
-		return getXLV(st.getUID(), level);
-	}
-
-	public int getXLV(int STid, int level) {
-		if (level > MAXLV || level < 0) {
-			level = MAXLV;
-		}
-
-		return lvMap.get(STid).lv[level];
 	}
 
 	public int getMaxXLV(int level) {
@@ -99,25 +82,22 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 			level = MAXLV;
 		}
 
-		return maxLVs.lv[level];
+		return maxLVs[level];
 	}
 
 	@Override
-	public Collection<AbstractProfile> getSLVs(AbstractProfile st) {
-		return slvList.get(st.getUID());
+	public boolean add(GOeBurstNodeExtended p) {
+		boolean r = super.add(p);
+		this.updateMaxLVs(p);
+		return r;
 	}
-
+	
 	@Override
-	public Collection<AbstractProfile> getDLVs(AbstractProfile st) {
-		return dlvList.get(st.getUID());
-	}
-
-	@Override
-	public void add(Edge e) {
+	public void add(Edge<GOeBurstNodeExtended> e) {
 		add(e.getU());
 		add(e.getV());
 		edges.add(e);
-		if (ad.compute(e.getU(), e.getV()) == 1) {
+		if (ad.level(e) == 1) {
 			SLVedges.add(e);
 		}
 	}
@@ -128,7 +108,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	public Collection<AbstractProfile> getSTs() {
+	public Collection<GOeBurstNodeExtended> getSTs() {
 		return nodes;
 	}
 
@@ -138,7 +118,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	public ArrayList<Edge> getEdges() {
+	public ArrayList<Edge<GOeBurstNodeExtended>> getEdges() {
 		return edges;
 	}
 
@@ -159,9 +139,9 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	public void updateVisibleEdges() {
 
 		// Kruskal's algorithm.
-		Collections.sort(getEdges(), new GOeBurstEdgeComparator());
+		Collections.sort(getEdges(), ad.getEdgeComparator());
 		DisjointSet s = new DisjointSet(maxStId);
-		Iterator<Edge> iter = getEdges().iterator();
+		Iterator<Edge<GOeBurstNodeExtended>> iter = getEdges().iterator();
 		visibleEdges = 0;
 
 		while (iter.hasNext()) {
@@ -179,20 +159,18 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	public void updateVisibleEdges(AbstractProfile root) {
-		STLV data = lvMap.get(root.getUID());
+	public void updateVisibleEdges(GOeBurstNodeExtended root) {
 		int[] orig = new int[MAXLV + 1];
 
-		System.arraycopy(data.lv, 0, orig, 0, MAXLV + 1);
-
-		for (int i = 0; i <= MAXLV; i++) {
-			data.lv[i] = Integer.MAX_VALUE;
+		for (int i = 0; i < MAXLV + 1; i++) {
+			orig[i] = root.getLV(i);
+			root.setLV(i, Integer.MAX_VALUE);
 		}
 
 		updateVisibleEdges();
-		fakeRoot = root;
 
-		System.arraycopy(orig, 0, data.lv, 0, MAXLV + 1);
+		for (int i = 0; i < MAXLV + 1; i++)
+			root.setLV(i, orig[i]);
 	}
 
 	@Override
@@ -209,145 +187,20 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		return 0;
 	}
 
-	@Override
-	protected void updateLVs(AbstractProfile u) {
+	protected void updateMaxLVs(GOeBurstNodeExtended u) {
+		// Update maxLVs info.
+		int i, j;
 
-		GOeBurstClusterWithStats.STLV uLV = lvMap.get(u.getUID());
-		LinkedList<AbstractProfile> uSLVs = slvList.get(u.getUID());
-		LinkedList<AbstractProfile> uDLVs = dlvList.get(u.getUID());
-
-		Iterator<AbstractProfile> vIter = getSTs().iterator();
-		while (vIter.hasNext()) {
-			AbstractProfile v = vIter.next();
-
-			if (u.equals(v)) {
-				continue;
-			}
-
-			GOeBurstClusterWithStats.STLV vLV = lvMap.get(v.getUID());
-
-			int diff = ad.compute(u, v);
-
-			if (diff == 1) {
-				uSLVs.add(v);
-				slvList.get(v.getUID()).add(u);
-			}
-
-			if (diff == 2) {
-				uDLVs.add(v);
-				dlvList.get(v.getUID()).add(u);
-			}
-
-			if (diff <= MAXLV) {
-				uLV.lv[diff - 1]++;
-				vLV.lv[diff - 1]++;
-			} else {
-				uLV.lv[MAXLV]++;
-				vLV.lv[MAXLV]++;
-			}
-
-			// Update maxLVs info.
-			int i;
-
-			for (i = 0; i < MAXLV && uLV.lv[i] == maxLVs.lv[i]; i++);
-			if (i < MAXLV && uLV.lv[i] >= maxLVs.lv[i]) {
-				System.arraycopy(uLV.lv, 0, maxLVs.lv, 0, MAXLV + 1);
-			}
-
-			for (i = 0; i < MAXLV && vLV.lv[i] == maxLVs.lv[i]; i++);
-			if (i < MAXLV && vLV.lv[i] >= maxLVs.lv[i]) {
-				System.arraycopy(vLV.lv, 0, maxLVs.lv, 0, MAXLV + 1);
-			}
-		}
+		for (i = 0; i < MAXLV && u.getLV(i) == maxLVs[i]; i++);
+		if (i < MAXLV && u.getLV(i) >= maxLVs[i])
+			for (j = 0; j < MAXLV + 1; j++)
+				maxLVs[j] = u.getLV(j);
 	}
 
-	public boolean isFounder(AbstractProfile st) {
+	public boolean isFounder(GOeBurstNodeExtended st) {
 		int i;
-		for (i = 0; i < MAXLV && this.getXLV(st, i) == maxLVs.lv[i]; i++);
+		for (i = 0; i < MAXLV && st.getLV(i) == maxLVs[i]; i++);
 		return i >= MAXLV;
-	}
-
-	protected class GOeBurstEdgeComparator implements Comparator<Edge> {
-
-		@Override
-		public int compare(Edge f, Edge e) {
-			int ret = 0;
-			int k = 0;
-
-			ret = ad.compute(f.getU(), f.getV()) - ad.compute(e.getU(), e.getV());
-			if (ret != 0) {
-				return ret;
-			}
-
-			while (k < MAXLV) {
-				ret = Math.max(
-					lvMap.get(f.getU().getUID()).lv[k],
-					lvMap.get(f.getV().getUID()).lv[k])
-					- Math.max(
-					lvMap.get(e.getU().getUID()).lv[k],
-					lvMap.get(e.getV().getUID()).lv[k]);
-				if (ret != 0) {
-					break;
-				}
-
-				ret = Math.min(
-					lvMap.get(f.getU().getUID()).lv[k],
-					lvMap.get(f.getV().getUID()).lv[k])
-					- Math.min(
-					lvMap.get(e.getU().getUID()).lv[k],
-					lvMap.get(e.getV().getUID()).lv[k]);
-				if (ret != 0) {
-					break;
-				}
-
-				k++;
-			}
-
-			/* ST frequency. */
-			if (k >= MAXLV) {
-				ret = Math.max(f.getU().getFreq(), f.getV().getFreq())
-					- Math.max(e.getU().getFreq(), e.getV().getFreq());
-
-				if (ret == 0) {
-					ret = Math.min(f.getU().getFreq(), f.getV().getFreq())
-						- Math.min(e.getU().getFreq(), e.getV().getFreq());
-				}
-			}
-
-			/* Decreasing... */
-			ret *= -1;
-			Comparator<String> cmp = new Comparator<String>() {
-
-				@Override
-				public int compare(String o1, String o2) {
-					int size = o1.length() - o2.length();
-					if (size != 0) {
-						return size;
-					}
-					return o1.compareTo(o2);
-				}
-			};
-
-			/* Last chance... */
-			if (ret == 0) {
-				ret = cmp.compare(f.getU().getID(), f.getV().getID())
-					- cmp.compare(e.getU().getID(), e.getV().getID());
-			}
-			//ret = Math.min(f.getU().getUID(), f.getV().getUID())
-			//    - Math.min(e.getU().getUID(), e.getV().getUID());
-			//if (ret == 0) {
-			//	ret = cmp.compare(f.getU().getID(), f.getV().getID())
-			//		- cmp.compare(e.getU().getID(), e.getV().getID());
-			//}
-			//ret = Math.max(f.getU().getUID(), f.getV().getUID())
-			//    - Math.max(e.getU().getUID(), e.getV().getUID());
-
-			return ret;
-		}
-
-		public boolean equals(Edge f, Edge e) {
-			return compare(f, e) == 0;
-		}
 	}
 
 	static private class EdgeInfo {
@@ -373,12 +226,12 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	public void computeStatistics() {
-		Iterator<Edge> iter = this.getEdges().iterator();
+		Iterator<Edge<GOeBurstNodeExtended>> iter = this.getEdges().iterator();
 
 		while (iter.hasNext()) {
-			Edge e = iter.next();
+			Edge<GOeBurstNodeExtended> e = iter.next();
 
-			stat.ne[ad.compute(e.getU(), e.getV()) - 1]++;
+			stat.ne[ad.level(e) - 1]++;
 
 			if (!e.visible()) {
 				continue;
@@ -388,112 +241,22 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		}
 	}
 
-	public String getInfo(AbstractProfile st) {
+	public String getInfo(GOeBurstNodeExtended st) {
 		String s = "";
 
-		s += "# SLVs = " + getXLV(st.getUID(), 0) + " ( " + mInstance.getSTxLV(st, 0) + " )";
-		s += "\n# DLVs = " + getXLV(st.getUID(), 1) + " ( " + mInstance.getSTxLV(st, 1) + " )";
-		s += "\n# TLVs = " + getXLV(st.getUID(), 2) + " ( " + mInstance.getSTxLV(st, 2) + " )";
-		s += "\n# SAT  = " + getXLV(st.getUID(), 3) + " ( " + mInstance.getSTxLV(st, 3) + " )";
+		s +=   "# SLVs = " + st.getLV(0) + " ( " + mInstance.getSTxLV(st, 0) + " )";
+		s += "\n# DLVs = " + st.getLV(1) + " ( " + mInstance.getSTxLV(st, 1) + " )";
+		s += "\n# TLVs = " + st.getLV(2) + " ( " + mInstance.getSTxLV(st, 2) + " )";
+		s += "\n# SAT  = " + st.getLV(3) + " ( " + mInstance.getSTxLV(st, 3) + " )";
 		s += "\n# isolates = " + st.getFreq();
 		s += "\n";
 
 		return s;
 	}
 
-	private int compareTie(Edge f, Edge e) {
-		int ret = 0;
-		int k = 0;
-		int lv = -1;
+	public String getInfo(Edge<GOeBurstNodeExtended> e) {
 
-		//ret = f.getU().diff(f.getV()) - e.getU().diff(e.getV());
-		//if (ret != 0)
-		//	return ret;
-
-		while (k < MAXLV) {
-			ret = Math.max(
-				lvMap.get(f.getU().getUID()).lv[k],
-				lvMap.get(f.getV().getUID()).lv[k])
-				- Math.max(
-				lvMap.get(e.getU().getUID()).lv[k],
-				lvMap.get(e.getV().getUID()).lv[k]);
-
-			lv++;
-			if (ret != 0) {
-				break;
-			}
-
-			ret = Math.min(
-				lvMap.get(f.getU().getUID()).lv[k],
-				lvMap.get(f.getV().getUID()).lv[k])
-				- Math.min(
-				lvMap.get(e.getU().getUID()).lv[k],
-				lvMap.get(e.getV().getUID()).lv[k]);
-
-			lv++;
-			if (ret != 0) {
-				break;
-			}
-
-			k++;
-		}
-		/* SAT is ignored! */
-
-		/* ST frequency. */
-		if (k >= MAXLV) {
-
-			lv = 2 * MAXLV + 1;
-
-			ret = Math.max(f.getU().getFreq(), f.getV().getFreq())
-				- Math.max(e.getU().getFreq(), e.getV().getFreq());
-
-			lv++;
-
-			if (ret == 0) {
-				ret = Math.min(f.getU().getFreq(), f.getV().getFreq())
-					- Math.min(e.getU().getFreq(), e.getV().getFreq());
-
-				lv++;
-			}
-		}
-
-		/* Decreasing... */
-		ret *= -1;
-
-
-		Comparator<String> cmp = new Comparator<String>() {
-
-			@Override
-			public int compare(String o1, String o2) {
-				int size = o1.length() - o2.length();
-				if (size != 0) {
-					return size;
-				}
-				return o1.compareTo(o2);
-			}
-		};
-
-		/* Last chance... */
-		if (ret == 0) {
-			ret = cmp.compare(f.getU().getID(), f.getV().getID())
-				- cmp.compare(e.getU().getID(), e.getV().getID());
-
-			lv++;
-		}
-
-		if (ret == 0) {
-			ret = cmp.compare(f.getU().getID(), f.getV().getID())
-				- cmp.compare(e.getU().getID(), e.getV().getID());
-
-			lv++;
-		}
-
-		return lv;
-	}
-
-	public String getInfo(Edge e) {
-
-		if (ad.compute(e.getU(), e.getV()) != 1) {
+		if (ad.level(e.getU(), e.getV()) != 1) {
 			return "";
 		}
 
@@ -506,9 +269,9 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		info.info = "";
 		// Find cut for 'e'.
 		DisjointSet cut = new DisjointSet(maxStId);
-		Iterator<Edge> niter = SLVedges.iterator();
+		Iterator<Edge<GOeBurstNodeExtended>> niter = SLVedges.iterator();
 		while (niter.hasNext()) {
-			Edge f = niter.next();
+			Edge<GOeBurstNodeExtended> f = niter.next();
 
 			if (f.visible() && f != e && !cut.sameSet(f.getU().getUID(), f.getV().getUID())) {
 				cut.unionSet(f.getU().getUID(), f.getV().getUID());
@@ -520,15 +283,15 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		int nt = 0;
 		niter = SLVedges.iterator();
 		while (niter.hasNext()) {
-			Edge f = niter.next();
+			Edge<GOeBurstNodeExtended> f = niter.next();
 
-			if (!f.visible() && ad.compute(f.getU(), f.getV()) == ad.compute(e.getU(), e.getV())
+			if (!f.visible() && ad.level(f) == ad.level(e)
 				&& cut.findSet(f.getU().getUID()) != cut.findSet(f.getV().getUID())) {
 				info.info += " + " + f.getU().getID() + " -- " + f.getV().getID() + " ";
 
 				nt++;
 
-				int tb = compareTie(e, f);
+				int tb = Math.abs(ad.compare(e, f)) - 1;
 
 				maxtb = (tb > maxtb) ? tb : maxtb;
 
@@ -545,7 +308,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 			}
 		}
 
-		stat.fne[ad.compute(e.getU(), e.getV()) - 1]++;
+		stat.fne[ad.level(e.getU(), e.getV()) - 1]++;
 
 		if (nt == 0) {
 			info.info += "0 ties\n";

@@ -44,7 +44,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.goeburst.run.GOeBurstRunner;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
@@ -82,7 +82,7 @@ public final class GOeBurstWizardAction extends NodeAction {
 
 			// Let us find the safe max. Note that we want to avoid complete graphs.
 			TypingData<? extends Profile> td = nodes[0].getLookup().lookup(TypingData.class);
-			int safeMax = ad.maximum(td) - 1;
+			int safeMax = ad.maxLevel() - 1;
 
 			if (level > safeMax) {
 				JOptionPane.showMessageDialog(null, "Invalid level for this dataset!", "Error", JOptionPane.ERROR_MESSAGE);

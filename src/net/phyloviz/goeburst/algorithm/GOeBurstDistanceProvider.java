@@ -32,15 +32,28 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
+package net.phyloviz.goeburst.algorithm;
 
-package net.phyloviz.goeburst;
-
-import net.phyloviz.core.data.Profile;
+import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.TypingData;
+import net.phyloviz.goeburst.tree.GOeBurstNode;
+import org.openide.util.lookup.ServiceProvider;
 
-public interface AbstractDistance {
+/**
+ *
+ * @author aplf
+ */
+@ServiceProvider(service = DistanceProvider.class)
+public class GOeBurstDistanceProvider implements DistanceProvider<GOeBurstNode> {
 
-	public int compute(Profile x, Profile y);
+	@Override
+	public AbstractDistance<GOeBurstNode> getDistance(TypingData td) {
+		return new GOeBurstDistance(td);
+	}
 
-	public int maximum(TypingData td);
+	@Override
+	public String toString() {
+		return "eBURST Distance";
+	}	
 }

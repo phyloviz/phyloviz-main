@@ -35,9 +35,11 @@
 
 package net.phyloviz.goeburst;
 
+import net.phyloviz.algo.AbstractDistance;
 import java.util.Collection;
 import net.phyloviz.core.util.NodeFactory;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
+import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.goeburst.ui.GOeBurstNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
 import org.openide.nodes.AbstractNode;
@@ -46,10 +48,10 @@ public class GOeBurstResult implements NodeFactory, Result {
 
 	private Collection<GOeBurstClusterWithStats> clustering;
 	private OutputPanel op;
-	private AbstractDistance ad;
+	private AbstractDistance<GOeBurstNodeExtended> ad;
 	private int level;
 
-	public GOeBurstResult(Collection<GOeBurstClusterWithStats> clustering, AbstractDistance ad, int level, OutputPanel op) {
+	public GOeBurstResult(Collection<GOeBurstClusterWithStats> clustering, AbstractDistance<GOeBurstNodeExtended> ad, int level, OutputPanel op) {
 		this.clustering = clustering;
 		this.op = op;
 		this.level = level;
@@ -69,7 +71,7 @@ public class GOeBurstResult implements NodeFactory, Result {
 		return level;
 	}
 
-	public AbstractDistance getDistance() {
+	public AbstractDistance<GOeBurstNodeExtended> getDistance() {
 		return ad;
 	}
 

@@ -39,7 +39,7 @@ import java.awt.Component;
 import javax.swing.event.ChangeListener;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.nodes.Node;

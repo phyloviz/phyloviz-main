@@ -35,7 +35,7 @@
 
 package net.phyloviz.goeburst.algorithm;
 
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.util.DisjointSet;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,12 +43,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeMap;
 
-import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;
+import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 
-public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
+public class GOeBurst implements ClusteringMethod<GOeBurstCluster, GOeBurstNodeExtended> {
 	
 	private int level;
 	private int maxStId;
@@ -63,9 +64,13 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 	}
 
 	@Override
-	public Collection<GOeBurstCluster> getClustering(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
+	public Collection<GOeBurstCluster> getClustering(TypingData<? extends Profile> otd, AbstractDistance<GOeBurstNodeExtended> ad) {
+	
+		ArrayList<GOeBurstNodeExtended> td = new ArrayList<GOeBurstNodeExtended>(otd.size());
+		for (Iterator<? extends Profile> iter = otd.iterator(); iter.hasNext(); )
+			td.add(new GOeBurstNodeExtended(iter.next()));
 		
-		ArrayList<Edge> edges = getEdges(td, ad);
+		ArrayList<Edge<GOeBurstNodeExtended>> edges = getEdges(td, ad);
 		Collection<GOeBurstCluster> clustering = getGroups(td, edges, ad);
 		
 		// Update LVs for STs in each group and set group id.
@@ -80,32 +85,32 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 		return clustering;
 	}
 
-	private ArrayList<Edge> getEdges(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
-		ArrayList<Edge> edges = new ArrayList<Edge>();
+	private ArrayList<Edge<GOeBurstNodeExtended>> getEdges(Collection<GOeBurstNodeExtended> td, AbstractDistance<GOeBurstNodeExtended> ad) {
+		ArrayList<Edge<GOeBurstNodeExtended>> edges = new ArrayList<Edge<GOeBurstNodeExtended>>();
 		maxStId = 0;
 		
-		Iterator<? extends AbstractProfile> uIter = td.iterator();
+		Iterator<GOeBurstNodeExtended> uIter = td.iterator();
 		while (uIter.hasNext()) {
-			AbstractProfile u = uIter.next();
+			GOeBurstNodeExtended u = uIter.next();
 			
 			maxStId = Math.max(maxStId, u.getUID());
 			
-			Iterator<? extends AbstractProfile> vIter = td.iterator();
+			Iterator<GOeBurstNodeExtended> vIter = td.iterator();
 			while (vIter.hasNext()) {
-				AbstractProfile v = vIter.next();
+				GOeBurstNodeExtended v = vIter.next();
 
-				if (u.getUID() < v.getUID() && ad.compute(u, v) <= level)
-					edges.add(new Edge(u, v, ad));
+				if (u.getUID() < v.getUID() && ad.level(u, v) <= level)
+					edges.add(new Edge<GOeBurstNodeExtended>(u, v));
 			}
 		}
 		
 		return edges;
 	}
 	
-	private Collection<GOeBurstCluster> getGroups(TypingData<? extends AbstractProfile> td, Collection<Edge> edges, AbstractDistance ad) {
+	private Collection<GOeBurstCluster> getGroups(Collection<GOeBurstNodeExtended> td, Collection<Edge<GOeBurstNodeExtended>> edges, AbstractDistance<GOeBurstNodeExtended> ad) {
 		DisjointSet s = new DisjointSet(maxStId);
 		
-		Iterator<Edge> eIter = edges.iterator();
+		Iterator<Edge<GOeBurstNodeExtended>> eIter = edges.iterator();
 		while (eIter.hasNext()) {
 			Edge e = eIter.next();
 			s.unionSet(e.getU().getUID(), e.getV().getUID());
@@ -114,7 +119,7 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 		TreeMap<Integer,GOeBurstCluster> groups = new TreeMap<Integer,GOeBurstCluster>();
 		eIter = edges.iterator();
 		while (eIter.hasNext()) {
-			Edge e = eIter.next();
+			Edge<GOeBurstNodeExtended> e = eIter.next();
 			
 			int pi = s.findSet(e.getU().getUID());
 			GOeBurstCluster g = groups.get(pi);
@@ -127,9 +132,9 @@ public class GOeBurst implements ClusteringMethod<GOeBurstCluster> {
 		}
 		
 		// Add singletons.
-		Iterator<? extends AbstractProfile> stIter = td.iterator();
+		Iterator<GOeBurstNodeExtended> stIter = td.iterator();
 		while (stIter.hasNext()) {
-			AbstractProfile st = stIter.next();
+			GOeBurstNodeExtended st = stIter.next();
 			
 			int pi = s.findSet(st.getUID());
 			if (groups.get(pi) == null) {

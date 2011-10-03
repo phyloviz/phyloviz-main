@@ -38,18 +38,16 @@ package net.phyloviz.goeburst.run;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import net.phyloviz.algo.tree.Edge;
+import net.phyloviz.algo.Edge;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.tree.MSTAlgorithm;
 import net.phyloviz.core.data.Profile;
-import net.phyloviz.goeburst.tree.GOeBurstEdgeComparator;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
-import net.phyloviz.goeburst.tree.GOeBurstTreeNode;
+import net.phyloviz.goeburst.tree.GOeBurstNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
 import org.openide.nodes.Node;
 
@@ -57,10 +55,10 @@ public class MSTRunner implements Runnable {
 
 	private Node n;
 	private OutputPanel op;
-	private AbstractDistance ad;
+	private AbstractDistance<GOeBurstNode> ad;
 	static int times = 0;
 
-	public MSTRunner(Node n, OutputPanel op, AbstractDistance ad) {
+	public MSTRunner(Node n, OutputPanel op, AbstractDistance<GOeBurstNode> ad) {
 		this.n = n;
 		this.op = op;
 		this.ad = ad;
@@ -77,52 +75,45 @@ public class MSTRunner implements Runnable {
 		Population pop = ds.getLookup().lookup(Population.class);
 		TypingData<? extends Profile> td = (TypingData<? extends Profile>) ds.getLookup().lookup(TypingData.class);
 
-		ArrayList<GOeBurstTreeNode> nlst = new ArrayList<GOeBurstTreeNode>();
+		ArrayList<GOeBurstNode> nlst = new ArrayList<GOeBurstNode>();
 
 		Iterator<? extends Profile> ip = td.iterator();
 		while (ip.hasNext())
-			nlst.add(new GOeBurstTreeNode(ip.next()));
+			nlst.add(new GOeBurstNode(ip.next()));
 
 		op.appendWithDate("\nMST algorithm: computing LVs...\n");
 		op.flush();
 
-		int maxLV = ad.maximum(td);
+		int maxLV = ad.maxLevel();
 
-		Iterator<GOeBurstTreeNode> in = nlst.iterator();
+		Iterator<GOeBurstNode> in = nlst.iterator();
 		while (in.hasNext())
 			in.next().updateLVs(nlst, ad, maxLV);
 
 		op.appendWithDate("\nMST algorithm: sorting nodes...\n");
 		op.flush();
 
-		Collections.sort(nlst, new Comparator<GOeBurstTreeNode>() {
-
-			@Override
-			public int compare(GOeBurstTreeNode u, GOeBurstTreeNode v) {
-				return u.diffLV(v);
-			}
-
-		});
+		Collections.sort(nlst, ad.getProfileComparator());
 
 		op.appendWithDate("\nMST algorithm: computing tree edges...\n");
 		op.flush();
 
-		Collection<Edge> tree = null;
+		Collection<Edge<GOeBurstNode>> tree = null;
 		if (nlst.size() > 2) {
-			MSTAlgorithm algorithm = new MSTAlgorithm(nlst, new GOeBurstEdgeComparator(ad, maxLV));
+			MSTAlgorithm<GOeBurstNode> algorithm = new MSTAlgorithm<GOeBurstNode>(nlst, ad.getEdgeComparator());
 			tree = algorithm.getTree();
 		}
 
 		op.appendWithDate("\nMST algorithm: printing edges...\n");
 		op.flush();
 
-		Iterator<Edge> ei = tree.iterator();
+		Iterator<Edge<GOeBurstNode>> ei = tree.iterator();
 		while (ei.hasNext()) {
-			Edge e = ei.next();
+			Edge<GOeBurstNode> e = ei.next();
 
-			int diff = Math.abs(((GOeBurstTreeNode) e.getU()).diffLV((GOeBurstTreeNode) e.getV()));
+			int diff = Math.abs(e.getU().diffLV(e.getV()));
 
-			op.append(e.getU().getProfile().getID() + " -- " + e.getV().getProfile().getID() + " (level: " + diff  + ")\n");
+			op.append(e.getU().getID() + " -- " + e.getV().getID() + " (level: " + diff  + ")\n");
 		}
 
 		op.appendWithDate("MST algorithm: done.\n");

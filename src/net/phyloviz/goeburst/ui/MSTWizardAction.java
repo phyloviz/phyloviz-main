@@ -45,7 +45,7 @@ import java.beans.PropertyChangeEvent;
 import java.text.MessageFormat;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.goeburst.run.MSTRunner;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;

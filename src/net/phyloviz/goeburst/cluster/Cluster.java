@@ -39,28 +39,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeSet;
 
-import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.Profile;
 
-public abstract class Cluster implements Comparable<Cluster> {
+public abstract class Cluster<T extends Profile> implements Comparable<Cluster> {
 	protected int id;
-	protected TreeSet<AbstractProfile> nodes;
-	protected ArrayList<Edge> edges;
+	protected TreeSet<T> nodes;
+	protected ArrayList<Edge<T>> edges;
 	protected int visibleEdges;
 	protected int isolates;
 	
 	public Cluster () {
 		id = 0;
-		nodes = new TreeSet<AbstractProfile>();
-		edges = new ArrayList<Edge>();
+		nodes = new TreeSet<T>();
+		edges = new ArrayList<Edge<T>>();
 		isolates = 0;
 		visibleEdges = 0;
 	}
 	
-	public Collection<AbstractProfile> getSTs() {
+	public Collection<T> getSTs() {
 		return nodes;
 	}
 	
-	public ArrayList<Edge> getEdges() {
+	public ArrayList<Edge<T>> getEdges() {
 		return edges;
 	}
 
@@ -76,7 +76,7 @@ public abstract class Cluster implements Comparable<Cluster> {
 		return visibleEdges;
 	}
 	
-	public boolean add(AbstractProfile st) {
+	public boolean add(T st) {
 		// Note that a 'TreeSet' only stores distinct elements. 
 		if (!nodes.add(st))
 			return false;
@@ -86,7 +86,7 @@ public abstract class Cluster implements Comparable<Cluster> {
 		return true;
 	}
 	
-	public void add(Edge e) {
+	public void add(Edge<T> e) {
 		add(e.getU());
 		add(e.getV());
 		edges.add(e);

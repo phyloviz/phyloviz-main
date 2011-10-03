@@ -32,94 +32,109 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
+package net.phyloviz.goeburst.tree;
 
-package net.phyloviz.goeburst.ui;
+import java.util.Collection;
+import java.util.Iterator;
+import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.core.data.Profile;
 
-import java.beans.PropertyChangeEvent;
-import javax.swing.SwingUtilities;
-import net.phyloviz.goeburst.algorithm.GOeBurstDistance;
-import net.phyloviz.goeburst.run.GOeBurstRunner;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
-import org.openide.util.HelpCtx;
-import org.openide.util.actions.NodeAction;
+public class GOeBurstNode implements Profile, Comparable<GOeBurstNode> {
 
-public class ExecAction extends NodeAction {
+	protected Profile p;
+	protected int[] lv;
 
-	@Override
-	protected void performAction(Node[] nodes) {
-		int level = 1;
+	public GOeBurstNode(Profile p) {
+		this.p = p;
+	}
 
-		OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": goeBURST Output");
-		Runnable job = new GOeBurstRunner(nodes[0], op, level, new GOeBurstDistance());
+	public void updateLVs(Collection<GOeBurstNode> nlst, AbstractDistance<GOeBurstNode> ad, int maxLen) {
 
-		op.open();
-		op.requestActive();
+		lv = new int[maxLen];
 
-		Thread thread = new Thread(job);
-		thread.setDaemon(true);
-		thread.start();
+		Iterator<GOeBurstNode> vIter = nlst.iterator();
+		while (vIter.hasNext()) {
+			GOeBurstNode v = vIter.next();
 
-		nodes[0].addNodeListener(new LocalNodeListener(op));
+			if (p.equals(v.p))
+				continue;
+
+			lv[ad.level(this, v) - 1] ++;
+		}
+	}
+
+	public int getLV(int idx) {
+
+		if (idx < 0 || idx >= lv.length)
+			return -1;
+
+		return lv[idx];
+	}
+
+	public int diffLV(GOeBurstNode v) {
+		int ret, i;
+
+		for (ret = i = 0; ret == 0 && i < lv.length; i++)
+			ret = getLV(i) - v.getLV(i);
+
+		return Integer.signum(ret)*i;
 	}
 
 	@Override
-	protected boolean enable(Node[] nodes) {
-		return nodes.length == 1;
+	public int getUID() {
+		return p.getUID();
 	}
 
 	@Override
-	protected boolean asynchronous() {
-		return false;
+	public String getID() {
+		return p.getID();
 	}
 
 	@Override
-	public String getName() {
-		return "Run goeBURST";
+	public int profileLength() {
+		return p.profileLength();
 	}
 
 	@Override
-	public HelpCtx getHelpCtx() {
-		return null;
+	public String getValue(int idx) {
+		return p.getValue(idx);
+		
 	}
 
-	private class LocalNodeListener implements NodeListener {
-
-		private OutputPanel tvp;
-
-		LocalNodeListener(OutputPanel tvp) {
-			this.tvp = tvp;
-		}
-
-		@Override
-		public void childrenAdded(NodeMemberEvent nme) {
-		}
-
-		@Override
-		public void childrenRemoved(NodeMemberEvent nme) {
-		}
-
-		@Override
-		public void childrenReordered(NodeReorderEvent nre) {
-		}
-
-		@Override
-		public void nodeDestroyed(NodeEvent ne) {
-
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					tvp.close();
-				}
-			});
-		}
-
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-		}
+	@Override
+	public int getFreq() {
+		return p.getFreq();
 	}
 
+	@Override
+	public void setFreq(int freq) {
+		p.setFreq(freq);
+	}
+
+	@Override
+	public String get(int idx) {
+		return p.get(idx);
+	}
+
+	@Override
+	public int length() {
+		return p.length();
+	}
+
+	@Override
+	public int weight() {
+		return p.weight();
+	}
+
+	@Override
+	public int compareTo(GOeBurstNode o) {
+		if (p instanceof Comparable)
+			return ((Comparable<Profile>) p).compareTo(o.p);
+
+		return p.getUID() - o.getUID();
+	}
+
+	public boolean equals(GOeBurstNode o) {
+		return this.compareTo(o) == 0;
+	}
 }

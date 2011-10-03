@@ -44,15 +44,16 @@ import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataItem;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.DataSet;
-import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.GOeBurstResult;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
+import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.goeburst.ui.OutputPanel;
 import org.openide.nodes.Node;
 
@@ -62,12 +63,12 @@ public class GOeBurstRunner implements Runnable {
 	private DataSet ds;
 	private Population pop;
 	private OutputPanel op;
-	private AbstractDistance ad;
+	private AbstractDistance<GOeBurstNodeExtended> ad;
 	private HashMap<String, String> st2cl;
 	private int level;
 	static int times = 0;
 
-	public GOeBurstRunner(Node n, OutputPanel op, int level, AbstractDistance ad) {
+	public GOeBurstRunner(Node n, OutputPanel op, int level, AbstractDistance<GOeBurstNodeExtended> ad) {
 		this.n = n;
 		this.op = op;
 		this.level = level;
@@ -97,7 +98,7 @@ public class GOeBurstRunner implements Runnable {
 			while (igo.hasNext()) {
 				GOeBurstCluster cluster = igo.next();
 				String id = "" + cluster.getID();
-				Iterator<AbstractProfile> itr = cluster.getSTs().iterator();
+				Iterator<? extends Profile> itr = cluster.getSTs().iterator();
 				while (itr.hasNext()) {
 					st2cl.put(itr.next().getID(), id);
 				}
@@ -127,26 +128,26 @@ public class GOeBurstRunner implements Runnable {
 
 			op.append("CC " + g.getID() + " has " + g.size() + " STs:\n");
 
-			Iterator<AbstractProfile> is = g.getSTs().iterator();
+			Iterator<? extends Profile> is = g.getSTs().iterator();
 			while (is.hasNext()) {
-				AbstractProfile st = is.next();
+				GOeBurstNodeExtended st = (GOeBurstNodeExtended) is.next();
 
 				op.append("ST " + st.getID() + " (" + st.getFreq() + ") "
-					+ g.getXLV(st, 0) + " " + g.getXLV(st, 1) + " " + g.getXLV(st, 2) + " " + g.getXLV(st, 3) + " ("
+					+ st.getLV(0) + " " + st.getLV(1) + " " + st.getLV(2) + " " + st.getLV(3) + " ("
 					+ algorithm.getSTxLV(st, 0) + " " + algorithm.getSTxLV(st, 1) + " " + algorithm.getSTxLV(st, 2) + " " + algorithm.getSTxLV(st, 3)
 					+ ")" + (g.isFounder(st) ? " *" : "  ") + "\n");
 
 			}
 
-			ArrayList<Edge> elst = g.getEdges();
+			ArrayList<Edge<GOeBurstNodeExtended>> elst = g.getEdges();
 			if (g.size() >= 2) {
 				op.append("\nCC " + g.getID() + " has " + (g.size() - 1) + "/" + elst.size() + " selected edges:\n");
 			} else {
 				op.append("\nCC " + g.getID() + " has " + (g.size() - 1) + "/" + elst.size() + " selected edges\n");
 			}
-			Iterator<Edge> ie = elst.iterator();
+			Iterator<Edge<GOeBurstNodeExtended>> ie = elst.iterator();
 			while (ie.hasNext()) {
-				Edge e = ie.next();
+				Edge<GOeBurstNodeExtended> e = ie.next();
 				if (e.visible()) {
 					op.append(e.getU().getID() + " - " + e.getV().getID() + "\n");
 				}

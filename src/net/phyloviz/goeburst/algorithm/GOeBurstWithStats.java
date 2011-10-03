@@ -35,35 +35,43 @@
 
 package net.phyloviz.goeburst.algorithm;
 
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.util.DisjointSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.TreeMap;
-import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.cluster.Edge;
-import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
+import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 
-public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithStats> {
+public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithStats, GOeBurstNodeExtended> {
 	
 	private int level;
 	private int maxStId;
-	private TreeMap<Integer,GOeBurstCluster.STLV> stLVs;
+
+	private class STLV {
+		int[] lv = new int[GOeBurstClusterWithStats.MAXLV + 1];
+	}
+	private TreeMap<Integer,STLV> stLVs;
 	
 	public GOeBurstWithStats(int level) {
 		this.level = level;
 		this.maxStId = 0;
-		this.stLVs = new TreeMap<Integer,GOeBurstCluster.STLV>();
+		this.stLVs = new TreeMap<Integer,STLV>();
 	}
 
 	@Override
-	public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
+	public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends Profile> otd, AbstractDistance<GOeBurstNodeExtended> ad) {
+
+		ArrayList<GOeBurstNodeExtended> td = new ArrayList<GOeBurstNodeExtended>(otd.size());
+		for (Iterator<? extends Profile> iter = otd.iterator(); iter.hasNext(); )
+			td.add(new GOeBurstNodeExtended(iter.next()));
 		
-		ArrayList<Edge> edges = getEdges(td, ad);
+		ArrayList<Edge<GOeBurstNodeExtended>> edges = getEdges(td, ad);
 		Collection<GOeBurstClusterWithStats> clustering = getGroups(td, edges, ad);
 		
 		// Update LVs for STs in each group and set group id.
@@ -78,34 +86,34 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 		return clustering;
 	}
 	
-	public int getSTxLV(AbstractProfile st, int lv) {
+	public int getSTxLV(Profile st, int lv) {
 		if (lv > GOeBurstClusterWithStats.MAXLV || lv < 0)
 			level = GOeBurstClusterWithStats.MAXLV;
 			
 		return stLVs.get(st.getUID()).lv[lv];
 	}
 
-	private ArrayList<Edge> getEdges(TypingData<? extends AbstractProfile> td, AbstractDistance ad) {
-		ArrayList<Edge> edges = new ArrayList<Edge>();
+	private ArrayList<Edge<GOeBurstNodeExtended>> getEdges(Collection<GOeBurstNodeExtended> td, AbstractDistance<GOeBurstNodeExtended> ad) {
+		ArrayList<Edge<GOeBurstNodeExtended>> edges = new ArrayList<Edge<GOeBurstNodeExtended>>();
 		maxStId = 0;
 		
-		Iterator<? extends AbstractProfile> uIter = td.iterator();
+		Iterator<GOeBurstNodeExtended> uIter = td.iterator();
 		while (uIter.hasNext()) {
-			AbstractProfile u = uIter.next();
-			GOeBurstClusterWithStats.STLV uLV = stLVs.get(u.getUID());
+			GOeBurstNodeExtended u = uIter.next();
+			STLV uLV = stLVs.get(u.getUID());
 			
 			if (uLV == null) {
-				uLV = new GOeBurstClusterWithStats.STLV();
+				uLV = new STLV();
 				stLVs.put(u.getUID(), uLV);
 			}
 			
 			maxStId = Math.max(maxStId, u.getUID());
 			
-			Iterator<? extends AbstractProfile> vIter = td.iterator();
+			Iterator<GOeBurstNodeExtended> vIter = td.iterator();
 			while (vIter.hasNext()) {
-				AbstractProfile v = vIter.next();
+				GOeBurstNodeExtended v = vIter.next();
 				
-				int diff = ad.compute(u, v);
+				int diff = ad.level(u, v);
 				
 				if (u != v && diff <= GOeBurstClusterWithStats.MAXLV)
 					uLV.lv[diff - 1] ++;
@@ -113,17 +121,17 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 					uLV.lv[GOeBurstClusterWithStats.MAXLV] ++;
 
 				if (u.getUID() < v.getUID() && diff <= level)
-					edges.add(new Edge(u, v, ad));
+					edges.add(new Edge<GOeBurstNodeExtended>(u, v));
 			}
 		}
 		
 		return edges;
 	}
 	
-	private Collection<GOeBurstClusterWithStats> getGroups(TypingData<? extends AbstractProfile> td, Collection<Edge> edges, AbstractDistance ad) {
+	private Collection<GOeBurstClusterWithStats> getGroups(Collection<GOeBurstNodeExtended> td, Collection<Edge<GOeBurstNodeExtended>> edges, AbstractDistance<GOeBurstNodeExtended> ad) {
 		DisjointSet s = new DisjointSet(maxStId);
 		
-		Iterator<Edge> eIter = edges.iterator();
+		Iterator<Edge<GOeBurstNodeExtended>> eIter = edges.iterator();
 		while (eIter.hasNext()) {
 			Edge e = eIter.next();
 			s.unionSet(e.getU().getUID(), e.getV().getUID());
@@ -132,7 +140,7 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 		TreeMap<Integer,GOeBurstClusterWithStats> groups = new TreeMap<Integer,GOeBurstClusterWithStats>();
 		eIter = edges.iterator();
 		while (eIter.hasNext()) {
-			Edge e = eIter.next();
+			Edge<GOeBurstNodeExtended> e = eIter.next();
 			
 			int pi = s.findSet(e.getU().getUID());
 			GOeBurstClusterWithStats g = groups.get(pi);
@@ -145,9 +153,9 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 		}
 		
 		// Add singletons.
-		Iterator<? extends AbstractProfile> stIter = td.iterator();
+		Iterator<GOeBurstNodeExtended> stIter = td.iterator();
 		while (stIter.hasNext()) {
-			AbstractProfile st = stIter.next();
+			GOeBurstNodeExtended st = stIter.next();
 			
 			int pi = s.findSet(st.getUID());
 			if (groups.get(pi) == null) {

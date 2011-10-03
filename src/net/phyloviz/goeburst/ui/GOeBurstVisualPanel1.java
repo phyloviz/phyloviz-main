@@ -41,7 +41,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.DistanceProvider;
 import org.openide.util.Lookup;
 
 public final class GOeBurstVisualPanel1 extends JPanel {
@@ -52,11 +53,11 @@ public final class GOeBurstVisualPanel1 extends JPanel {
 	public GOeBurstVisualPanel1(TypingData<? extends Profile> td) {
 
 		typeListModel = new DefaultComboBoxModel();
-		Collection<? extends AbstractDistance> result = Lookup.getDefault().lookupAll(AbstractDistance.class);
-		Iterator<? extends AbstractDistance> ir = result.iterator();
+		Collection<? extends DistanceProvider> result = Lookup.getDefault().lookupAll(DistanceProvider.class);
+		Iterator<? extends DistanceProvider> ir = result.iterator();
 		while (ir.hasNext()) {
-			AbstractDistance ad = ir.next();
-			if (ad.maximum(td) > 0)
+			AbstractDistance ad = ir.next().getDistance(td);
+			if (ad != null && ad.maxLevel() > 0)
 				typeListModel.addElement(ad);
 		}
 

@@ -36,10 +36,10 @@
 package net.phyloviz.goeburst.tree;
 
 import java.util.Collection;
-import net.phyloviz.algo.tree.Edge;
+import net.phyloviz.algo.Edge;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.util.NodeFactory;
-import net.phyloviz.goeburst.AbstractDistance;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.goeburst.Result;
 import net.phyloviz.goeburst.ui.GOeBurstMSTNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
@@ -48,11 +48,11 @@ import org.openide.nodes.AbstractNode;
 public class GOeBurstMSTResult implements NodeFactory, Result {
 
 	private DataSet ds;
-	private Collection<Edge> edges;
-	private AbstractDistance ad;
+	private Collection<Edge<GOeBurstNode>> edges;
+	private AbstractDistance<GOeBurstNode> ad;
 	private OutputPanel op;
 
-	public GOeBurstMSTResult(DataSet ds, Collection<Edge> edges, AbstractDistance ad, OutputPanel op) {
+	public GOeBurstMSTResult(DataSet ds, Collection<Edge<GOeBurstNode>> edges, AbstractDistance<GOeBurstNode> ad, OutputPanel op) {
 		this.ds = ds;
 		this.edges = edges;
 		this.op = op;
@@ -64,11 +64,11 @@ public class GOeBurstMSTResult implements NodeFactory, Result {
 		return op;
 	}
 
-	public Collection<Edge> getEdges() {
+	public Collection<Edge<GOeBurstNode>> getEdges() {
 		return edges;
 	}
 
-	public AbstractDistance getDistance() {
+	public AbstractDistance<GOeBurstNode> getDistance() {
 		return ad;
 	}
 
