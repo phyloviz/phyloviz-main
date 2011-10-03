@@ -77,10 +77,11 @@ import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
-import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 //import net.phyloviz.gtview.action.EdgeFullViewControlAction;
+import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.gtview.action.EdgeViewControlAction;
 import net.phyloviz.gtview.action.ExportAction;
 import net.phyloviz.gtview.action.GroupControlAction;
@@ -141,8 +142,8 @@ public class GraphView extends GView {
 	private Table nodeTable;
 	private Table edgeTable;
 
-	private TreeMap<AbstractProfile, Integer> st2rowid;
-	private TreeMap<Edge, Integer> edge2rowid;
+	private TreeMap<Profile, Integer> st2rowid;
+	private TreeMap<Edge<GOeBurstNodeExtended>, Integer> edge2rowid;
 	Graph graph;
 	
 	private GOeBurstResult er;
@@ -202,7 +203,7 @@ public class GraphView extends GView {
 		    new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
 			@Override
 			    public Font getFont(VisualItem item) {
-				    AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
+				    GOeBurstNodeExtended st = (GOeBurstNodeExtended) item.getSourceTuple().get("st_ref");
 				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11*st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
 			    }
 		    };
@@ -269,7 +270,7 @@ public class GraphView extends GView {
 		nodeSchema.addColumn("founder", int.class);
 		nodeSchema.addColumn("hdlv", int.class);
 		nodeSchema.addColumn("dg", int.class);
-		nodeSchema.addColumn("st_ref", AbstractProfile.class);
+		nodeSchema.addColumn("st_ref", GOeBurstNodeExtended.class);
 
 		Schema edgeSchema = new Schema();
 		edgeSchema.addColumn(SRC, int.class);
@@ -285,16 +286,16 @@ public class GraphView extends GView {
 		edgeTable = edgeSchema.instantiate();
 
 		TreeMap<String,Integer> nodeMap = new TreeMap<String,Integer>();
-		st2rowid = new TreeMap<AbstractProfile,Integer>();
-		edge2rowid = new TreeMap<Edge,Integer>();
+		st2rowid = new TreeMap<Profile,Integer>();
+		edge2rowid = new TreeMap<Edge<GOeBurstNodeExtended>,Integer>();
 
 		Iterator<GOeBurstClusterWithStats> gIter = groups.iterator();
 		while (gIter.hasNext()) {
 			GOeBurstClusterWithStats g = gIter.next();
 			
-			Iterator<AbstractProfile> stIter = g.getSTs().iterator();
+			Iterator<GOeBurstNodeExtended> stIter = g.getSTs().iterator();
 			while (stIter.hasNext()) {
-				AbstractProfile st = stIter.next();
+				GOeBurstNodeExtended st = stIter.next();
 				int rowNb = nodeTable.addRow();
 				st2rowid.put(st, rowNb);
 				nodeMap.put(st.getID(), rowNb);
@@ -307,9 +308,9 @@ public class GraphView extends GView {
 				nodeTable.set(rowNb, "st_ref", st);
 			}
 
-			Iterator<Edge> edgeIter = g.getEdges().iterator();
+			Iterator<Edge<GOeBurstNodeExtended>> edgeIter = g.getEdges().iterator();
 			while (edgeIter.hasNext()) {
-				Edge e = edgeIter.next();
+				Edge<GOeBurstNodeExtended> e = edgeIter.next();
 		
 				if (! e.visible())
 					continue;
@@ -323,7 +324,7 @@ public class GraphView extends GView {
 							nodeTable.getInt(nodeMap.get(e.getU().getID()), "dg") + 1);
 					nodeTable.setInt(nodeMap.get(e.getV().getID()), "dg",
 							nodeTable.getInt(nodeMap.get(e.getV().getID()), "dg") + 1);
-					edgeTable.setInt(rowNb, "viz", er.getDistance().compute(e.getU(), e.getV()));
+					edgeTable.setInt(rowNb, "viz", er.getDistance().level(e));
 				//} else {
 				//	edgeTable.setInt(rowNb, "viz", -1);
 				}
@@ -802,17 +803,17 @@ public class GraphView extends GView {
 	private class BurstNeighborHighlightControl extends NeighborHighlightControl {
 		@Override
 		protected void setNeighborHighlight(NodeItem n, boolean state) {
-			AbstractProfile st = (AbstractProfile) n.getSourceTuple().get("st_ref");
+			GOeBurstNodeExtended st = (GOeBurstNodeExtended) n.getSourceTuple().get("st_ref");
 			GOeBurstClusterWithStats g = (GOeBurstClusterWithStats) groupList.getModel().getElementAt(n.getSourceTuple().getInt("group"));
 			
-			Iterator<AbstractProfile> iter = g.getSLVs(st).iterator();
+			Iterator<GOeBurstNodeExtended> iter = st.getSLVs().iterator();
 		        while (iter.hasNext() ) {
 		        	NodeItem nitem = 
 	        			(NodeItem) view.getVisualItem("graph.nodes", n.getTable().getTuple(st2rowid.get(iter.next())));
 		        	nitem.setHighlighted(state);
 		        }
 
-			iter = g.getDLVs(st).iterator();
+			iter = st.getDLVs().iterator();
 		        while (iter.hasNext() )
 		        	n.getTable().setInt(st2rowid.get(iter.next()), "hdlv", state ? 1 : 0);
 		}
@@ -856,16 +857,27 @@ public class GraphView extends GView {
 		@Override
 		public void itemClicked(VisualItem item, MouseEvent e) {
 
-                     
-
 			if (item instanceof EdgeItem) {
-				Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
-				appendTextToInfoPanel(edge +
+				Edge<GOeBurstNodeExtended> edge = (Edge<GOeBurstNodeExtended>) ((EdgeItem) item).getSourceTuple().get("edge_ref");
+
+				char lv = '?';
+				switch (er.getDistance().level(edge.getU(), edge.getV())) {
+				case 1:
+					lv = 's';
+					break;
+				case 2:
+					lv = 'd';
+					break;
+				case 3:
+					lv = 't';
+				}
+				
+				appendTextToInfoPanel(edge  + " ( " + lv + "lv level )\n" +
 						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(edge)
 						+ "\n");
 			}
 			if (item instanceof NodeItem) {
-				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
+				GOeBurstNodeExtended st = (GOeBurstNodeExtended) ((NodeItem) item).getSourceTuple().get("st_ref");
 				appendTextToInfoPanel(st + "\n" +
 						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
 				
@@ -926,16 +938,16 @@ public class GraphView extends GView {
 				((JCheckBoxMenuItem) event.getSource()).setSelected(true);
 				if (g.getFakeRoot() != null)
 					nodeTable.setInt(st2rowid.get(g.getFakeRoot()), "founder", g.isFounder(g.getFakeRoot()) ? 1 : 0);
-				g.updateVisibleEdges((AbstractProfile) item.get("st_ref"));
+				g.updateVisibleEdges((GOeBurstNodeExtended) item.get("st_ref"));
 				nodeTable.setInt(st2rowid.get(g.getFakeRoot()), "founder", 2);
 			}
 			
 			view.setVisible("graph", null, false);
 			view.cancel("layout");
 			
-			Iterator<Edge> edgeIter = g.getEdges().iterator();
+			Iterator<Edge<GOeBurstNodeExtended>> edgeIter = g.getEdges().iterator();
 			while (edgeIter.hasNext()) {
-				Edge e = edgeIter.next();
+				Edge<GOeBurstNodeExtended> e = edgeIter.next();
 				
 				if (! e.visible() && edge2rowid.containsKey(e)) {
 					graph.removeEdge(edge2rowid.get(e));
@@ -953,7 +965,7 @@ public class GraphView extends GView {
 					
 					edgeTable.setInt(rowID, "group", g.getID());
 					edgeTable.set(rowID, "edge_ref", e);
-					edgeTable.setInt(rowID, "viz", er.getDistance().compute(e.getU(), e.getV()));
+					edgeTable.setInt(rowID, "viz", er.getDistance().level(e));
 					
 					int stRow = st2rowid.get(e.getU());
 					nodeTable.setInt(stRow, "dg", nodeTable.getInt(stRow, "dg") + 1);

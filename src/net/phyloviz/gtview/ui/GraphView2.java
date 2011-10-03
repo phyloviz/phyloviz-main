@@ -81,16 +81,16 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.phyloviz.algo.tree.Edge;
+import net.phyloviz.algo.Edge;
 import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
-import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataItem;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
+import net.phyloviz.goeburst.tree.GOeBurstNode;
 import net.phyloviz.gtview.action.ExportAction;
 import net.phyloviz.gtview.action.GroupControlAction;
 import net.phyloviz.gtview.action.HighQualityAction;
@@ -203,7 +203,7 @@ public class GraphView2 extends GView {
 
 				@Override
 				public Font getFont(VisualItem item) {
-					AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
+					Profile st = (Profile) item.getSourceTuple().get("st_ref");
 					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11*st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
 				}
 			};
@@ -285,12 +285,12 @@ public class GraphView2 extends GView {
 		uid2rowid = new TreeMap<Integer, Integer>();
 
 		int maxlv = 0;
-		Iterator<Edge> eIter = er.getEdges().iterator();
+		Iterator<Edge<GOeBurstNode>> eIter = er.getEdges().iterator();
 		while (eIter.hasNext()) {
-			Edge e = eIter.next();
+			Edge<GOeBurstNode> e = eIter.next();
 
 			int uRowNb = -1;
-			Profile st = e.getU().getProfile();
+			Profile st = e.getU();
 			if (!uid2rowid.containsKey(st.getUID())) {
 
 				uRowNb = nodeTable.addRow();
@@ -306,7 +306,7 @@ public class GraphView2 extends GView {
 			}
 
 			int vRowNb = -1;
-			st = e.getV().getProfile();
+			st = e.getV();
 			if (!uid2rowid.containsKey(st.getUID())) {
 
 				vRowNb = nodeTable.addRow();
@@ -326,7 +326,7 @@ public class GraphView2 extends GView {
 			edgeTable.setInt(rowNb, TRG, vRowNb);
 			edgeTable.set(rowNb, "edge_ref", e);
 
-			int lv = er.getDistance().compute(e.getU().getProfile(), e.getV().getProfile());
+			int lv = er.getDistance().level(e.getU(), e.getV());
 			if (lv > maxlv) {
 				maxlv = lv;
 			}
@@ -946,12 +946,12 @@ public class GraphView2 extends GView {
 
 			if (item instanceof EdgeItem) {
 				Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
-				appendTextToInfoPanel(edge.getU().getProfile().getID() + " -- "
-					+ edge.getV().getProfile().getID() + " (lv="
+				appendTextToInfoPanel(edge.getU().getID() + " -- "
+					+ edge.getV().getID() + " (lv="
 					+ item.getSourceTuple().getString("w") + ")\n\n");
 			}
 			if (item instanceof NodeItem) {
-				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
+				Profile st = (Profile) ((NodeItem) item).getSourceTuple().get("st_ref");
 				appendTextToInfoPanel(st.toString() + "\n");
 				appendTextToInfoPanel("# isolates = " + st.getFreq() + "\n");
 

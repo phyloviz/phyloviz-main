@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.gtview.ui;
 
 import java.awt.BorderLayout;
@@ -77,9 +76,10 @@ import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
-import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;
+import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.gtview.action.EdgeFullViewControlAction;
 import net.phyloviz.gtview.action.ExportAction;
 import net.phyloviz.gtview.action.GroupControlAction;
@@ -130,47 +130,35 @@ import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
 
 public class SLVGraphView extends GView {
-	private static final long serialVersionUID = 1L;
 
+	private static final long serialVersionUID = 1L;
 	private static final String SRC = Graph.DEFAULT_SOURCE_KEY;
 	private static final String TRG = Graph.DEFAULT_TARGET_KEY;
-
 	private String name;
-
 	private Table nodeTable;
 	private Table edgeTable;
-
-	private TreeMap<AbstractProfile, Integer> st2rowid;
+	private TreeMap<Profile, Integer> st2rowid;
 	private TreeMap<Edge, Integer> edge2rowid;
 	Graph graph;
-	
 	private GOeBurstResult er;
-
 	private Visualization view;
 	private Display display;
-
 	private String viz = "viz = 1";
-	
 	private JSearchPanel searchPanel;
 	private boolean searchMatch = false;
-	
 	TitledBorder tb;
 	private JScrollPane groupPanel;
 	private boolean groupPanelStatus;
 	private JList groupList;
 	private int itemFound = -1;
-	
 	private InfoPanel infoPanel;
 	private JPopupMenu popupMenu;
-
 	private LabelRenderer lr;
 	private DefaultRendererFactory rf;
 	private ForceDirectedLayout fdl;
-
 	private boolean running;
 	private boolean linear;
 	private boolean label = true;
-
 	// Data analysis info...
 	private CategoryProvider cp;
 
@@ -189,7 +177,7 @@ public class SLVGraphView extends GView {
 		// Setup renderers.
 		rf = new DefaultRendererFactory();
 		lr = new LabelRenderer("st_id");
-		lr.setRoundedCorner(10,10);
+		lr.setRoundedCorner(10, 10);
 		rf.setDefaultRenderer(lr);
 		view.setRendererFactory(rf);
 
@@ -197,14 +185,15 @@ public class SLVGraphView extends GView {
 		ColorAction fill = new NodeColorAction("graph.nodes");
 		ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
 		ColorAction edge = new EdgeColorAction("graph.edges");
-		FontAction nfont = 
-		    new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
-			@Override
-			    public Font getFont(VisualItem item) {
-				    AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
-				    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11*st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
-			    }
-		    };
+		FontAction nfont =
+			new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
+
+				@Override
+				public Font getFont(VisualItem item) {
+					GOeBurstNodeExtended st = (GOeBurstNodeExtended) item.getSourceTuple().get("st_ref");
+					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+				}
+			};
 
 		ActionList draw = new ActionList();
 		draw.add(fill);
@@ -230,7 +219,7 @@ public class SLVGraphView extends GView {
 
 		view.runAfter("draw", "layout");
 		view.runAfter("draw", "static");
-		
+
 		// Setup the display.
 		display = new Display(view);
 		display.setForeground(Color.GRAY);
@@ -247,14 +236,13 @@ public class SLVGraphView extends GView {
 		display.addControlListener(new ZoomControl());
 		display.addControlListener(new ZoomToFitControl());
 		display.addControlListener((Control) new ItemInfoControl());
-                
+
 		display.addMouseMotionListener(new MouseMotionAdapter() {
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				view.run("static");
 			}
-
 		});
 
 		Collection<GOeBurstClusterWithStats> groups = er.getClustering();
@@ -268,7 +256,7 @@ public class SLVGraphView extends GView {
 		nodeSchema.addColumn("founder", int.class);
 		nodeSchema.addColumn("hdlv", int.class);
 		nodeSchema.addColumn("dg", int.class);
-		nodeSchema.addColumn("st_ref", AbstractProfile.class);
+		nodeSchema.addColumn("st_ref", GOeBurstNodeExtended.class);
 
 		Schema edgeSchema = new Schema();
 		edgeSchema.addColumn(SRC, int.class);
@@ -283,17 +271,17 @@ public class SLVGraphView extends GView {
 		nodeTable = nodeSchema.instantiate();
 		edgeTable = edgeSchema.instantiate();
 
-		TreeMap<String,Integer> nodeMap = new TreeMap<String,Integer>();
-		st2rowid = new TreeMap<AbstractProfile,Integer>();
-		edge2rowid = new TreeMap<Edge,Integer>();
+		TreeMap<String, Integer> nodeMap = new TreeMap<String, Integer>();
+		st2rowid = new TreeMap<Profile, Integer>();
+		edge2rowid = new TreeMap<Edge, Integer>();
 
 		Iterator<GOeBurstClusterWithStats> gIter = groups.iterator();
 		while (gIter.hasNext()) {
 			GOeBurstClusterWithStats g = gIter.next();
-			
-			Iterator<AbstractProfile> stIter = g.getSTs().iterator();
+
+			Iterator<GOeBurstNodeExtended> stIter = g.getSTs().iterator();
 			while (stIter.hasNext()) {
-				AbstractProfile st = stIter.next();
+				GOeBurstNodeExtended st = stIter.next();
 				int rowNb = nodeTable.addRow();
 				st2rowid.put(st, rowNb);
 				nodeMap.put(st.getID(), rowNb);
@@ -306,25 +294,26 @@ public class SLVGraphView extends GView {
 				nodeTable.set(rowNb, "st_ref", st);
 			}
 
-			Iterator<Edge> edgeIter = g.getEdges().iterator();
+			Iterator<Edge<GOeBurstNodeExtended>> edgeIter = g.getEdges().iterator();
 			while (edgeIter.hasNext()) {
-				Edge e = edgeIter.next();
-		
+				Edge<GOeBurstNodeExtended> e = edgeIter.next();
+
 				//if (! e.visible())
 				//	continue;
-				int dist = er.getDistance().compute(e.getU(), e.getV());
-				if (dist != 1)
+				int dist = er.getDistance().level(e);
+				if (dist != 1) {
 					continue;
-				
+				}
+
 				int rowNb = edgeTable.addRow();
 				edge2rowid.put(e, rowNb);
 				edgeTable.setInt(rowNb, SRC, nodeMap.get(e.getU().getID()));
-				
+
 				if (e.visible()) {
 					nodeTable.setInt(nodeMap.get(e.getU().getID()), "dg",
-							nodeTable.getInt(nodeMap.get(e.getU().getID()), "dg") + 1);
+						nodeTable.getInt(nodeMap.get(e.getU().getID()), "dg") + 1);
 					nodeTable.setInt(nodeMap.get(e.getV().getID()), "dg",
-							nodeTable.getInt(nodeMap.get(e.getV().getID()), "dg") + 1);
+						nodeTable.getInt(nodeMap.get(e.getV().getID()), "dg") + 1);
 					edgeTable.setInt(rowNb, "viz", dist);
 				} else {
 					edgeTable.setInt(rowNb, "viz", -1);
@@ -343,58 +332,61 @@ public class SLVGraphView extends GView {
 
 		running = true;
 		linear = false;
-		
+
 		/* Setup groupPanel. */
 		groupList = new JList();
 		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		groupList.addListSelectionListener(new ListSelectionListener() {
+
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				if (e.getValueIsAdjusting())
+				if (e.getValueIsAdjusting()) {
 					return;
-				
+				}
+
 				view.setVisible("graph", null, false);
 				int[] selectedIndices = groupList.getSelectedIndices();
 				ArrayList<GOeBurstClusterWithStats> gList = new ArrayList<GOeBurstClusterWithStats>(selectedIndices.length);
 				for (int i = 0; i < selectedIndices.length; i++) {
 					view.setVisible("graph",
-					    (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+						(Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
 
 					gList.add((GOeBurstClusterWithStats) groupList.getModel().getElementAt(selectedIndices[i]));
 				}
 
 				view.run("draw");
 				appendTextToInfoPanel(GOeBurstClusterWithStats.combinedInfo(gList) + "\n");
-				
+
 				double x = display.getDisplayX();
 				double y = display.getDisplayY();
 				double dx = display.getWidth();
 				double dy = display.getHeight();
-				display.pan(x+dx/2,y+dy/2);
+				display.pan(x + dx / 2, y + dy / 2);
 			}
 		});
 		groupList.setCellRenderer(new GroupCellRenderer());
 		groupList.setListData(new Vector<GOeBurstClusterWithStats>(groups));
-		
+
 		groupPanel = new JScrollPane(groupList,
-		    JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		groupPanel.getViewport().setBackground(Color.WHITE);
 		groupPanel.setBackground(Color.WHITE);
-		tb = new TitledBorder("Groups at " +
-				(level == 1 ? "S" : level == 2 ? "D" : "T") + "LV:");
+		tb = new TitledBorder("Groups at "
+			+ (level == 1 ? "S" : level == 2 ? "D" : "T") + "LV:");
 		tb.setBorder(new LineBorder(Color.BLACK));
 		groupPanel.setBorder(tb);
-		groupPanel.setPreferredSize(new Dimension(90,600));
+		groupPanel.setPreferredSize(new Dimension(90, 600));
 		add(groupPanel, BorderLayout.WEST);
 		groupPanelStatus = true;
-		
+
 		infoPanel = new InfoPanel(name + " Info");
 		infoPanel.open();
 		infoPanel.requestActive();
-		
+
 		// Search stuff.
 		TupleSet search = new PrefixSearchTupleSet();
 		search.addTupleSetListener(new TupleSetListener() {
+
 			@Override
 			public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
 				view.run("static");
@@ -402,8 +394,8 @@ public class SLVGraphView extends GView {
 
 				itemFound = -1;
 				if (t.getTupleCount() >= 1) {
-					String ss=searchPanel.getQuery();
-					CascadedTable tableView = new CascadedTable(nodeTable,(Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
+					String ss = searchPanel.getQuery();
+					CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
 					if (tableView.getRowCount() > 0) {
 						int gid = tableView.getInt(0, "group");
 						itemFound = gid;
@@ -412,14 +404,15 @@ public class SLVGraphView extends GView {
 				groupList.repaint();
 			}
 		});
-	        view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
+		view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
 		searchPanel = new NodeSearchPanel(view);
 		searchPanel.setShowResultCount(true);
-	
+
 		// Animation speed control.
 		final JValueSlider animCtl = new JValueSlider("animation speed >>", 1, 100, 50);
-        	animCtl.setBackground(Color.WHITE);
+		animCtl.setBackground(Color.WHITE);
 		animCtl.addChangeListener(new ChangeListener() {
+
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				fdl.setMaxTimeStep(animCtl.getValue().longValue());
@@ -427,7 +420,7 @@ public class SLVGraphView extends GView {
 		});
 
 		JButton playButton = new JButton(">");
-		playButton.setMargin( new Insets(1, 1, 1, 1));
+		playButton.setMargin(new Insets(1, 1, 1, 1));
 		playButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -437,7 +430,7 @@ public class SLVGraphView extends GView {
 		});
 
 		JButton pauseButton = new JButton("||");
-		pauseButton.setMargin( new Insets(1, 1, 1, 1));
+		pauseButton.setMargin(new Insets(1, 1, 1, 1));
 		pauseButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -457,12 +450,13 @@ public class SLVGraphView extends GView {
 		popupMenu.add(new ExportAction(this).getMenuItem());
 
 		JButton optionsButton = new JButton("Options");
-		optionsButton.setMargin( new Insets(1, 1, 1, 1));
+		optionsButton.setMargin(new Insets(1, 1, 1, 1));
 		optionsButton.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mousePressed(MouseEvent e) {
-                		popupMenu.show(e.getComponent(), e.getX(), e.getY());
-            		}
+				popupMenu.show(e.getComponent(), e.getX(), e.getY());
+			}
 		});
 
 		// Bottom box.
@@ -483,7 +477,7 @@ public class SLVGraphView extends GView {
 		box.updateUI();
 		add(box, BorderLayout.SOUTH);
 	}
-	
+
 	public void startAnimation() {
 		view.run("draw");
 		view.run("layout");
@@ -491,20 +485,21 @@ public class SLVGraphView extends GView {
 		groupList.setSelectedIndex(0);
 		groupList.repaint();
 	}
-	
+
 	@Override
-	public InfoPanel getInfoPanel(){
+	public InfoPanel getInfoPanel() {
 		return infoPanel;
 	}
 
-	public JScrollPane getGroupPanel(){
+	public JScrollPane getGroupPanel() {
 		return groupPanel;
 	}
-	
+
 	public void restartAnimation() {
 
-		if (running)
+		if (running) {
 			return;
+		}
 
 		//view.cancel("static");
 		view.run("layout");
@@ -518,8 +513,9 @@ public class SLVGraphView extends GView {
 
 	public void stopAnimation() {
 
-		if (! running)
+		if (!running) {
 			return;
+		}
 
 		view.cancel("layout");
 		//view.run("static");
@@ -533,23 +529,27 @@ public class SLVGraphView extends GView {
 
 	@Override
 	public void showGroupPanel(boolean status) {
-		if (status == groupPanelStatus)
+		if (status == groupPanelStatus) {
 			return;
-		
-		if (status) 
+		}
+
+		if (status) {
 			add(groupPanel, BorderLayout.WEST);
-		else
+		} else {
 			remove(groupPanel);
+		}
 		groupPanelStatus = status;
 	}
-	
+
 	@Override
 	public void showInfoPanel() {
-		if (infoPanel == null)
+		if (infoPanel == null) {
 			infoPanel = new InfoPanel(name + " Info");
+		}
 
-		if (! infoPanel.isOpened())
+		if (!infoPanel.isOpened()) {
 			infoPanel.open();
+		}
 
 		infoPanel.requestActive();
 	}
@@ -578,31 +578,33 @@ public class SLVGraphView extends GView {
 	}
 
 	public void setAllEdges(boolean status) {
-		if (status)
+		if (status) {
 			viz = "viz > 0";
-		else
+		} else {
 			viz = "viz = 1";
-		
+		}
+
 		view.setVisible("graph", null, false);
 		int[] selectedIndices = groupList.getSelectedIndices();
 		for (int i = 0; i < selectedIndices.length; i++) {
 			view.setVisible("graph",
-			    (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+				(Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
 		}
 		view.run("draw");
 	}
 
 	public void forceSetAllEdges(boolean status) {
-		if (status)
+		if (status) {
 			viz = "viz > -2";
-		else
+		} else {
 			viz = "viz = 1";
+		}
 
 		view.setVisible("graph", null, false);
 		int[] selectedIndices = groupList.getSelectedIndices();
 		for (int i = 0; i < selectedIndices.length; i++) {
 			view.setVisible("graph",
-			    (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+				(Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
 		}
 		view.run("draw");
 	}
@@ -610,7 +612,7 @@ public class SLVGraphView extends GView {
 	public void setCategoryProvider(CategoryProvider cp) {
 		this.cp = cp;
 	}
-	
+
 	public void appendTextToInfoPanel(String text) {
 		if (infoPanel != null) {
 			infoPanel.append(text);
@@ -627,15 +629,15 @@ public class SLVGraphView extends GView {
 	public Visualization getVisualization() {
 		return view;
 	}
-	
+
 	public long getSpeed() {
 		return fdl.getMaxTimeStep();
 	}
-	
+
 	public void setSpeed(long step) {
 		fdl.setMaxTimeStep(step);
 	}
-	
+
 //	public void addSelection(File file, Color color) {
 //		try {
 //			Scanner in = new Scanner(file);
@@ -645,35 +647,35 @@ public class SLVGraphView extends GView {
 //			System.out.println("Error:" + e.getStackTrace());
 //		}
 //	}
-
 //	public void resetSelection() {
 //		colors.clear();
 //	}
-	
 	public void resetDefaultRenderer() {
 		view.cancel("layout");
 		view.cancel("static");
 		rf.setDefaultRenderer(lr);
-		if (running)
+		if (running) {
 			view.run("layout");
-		else
+		} else {
 			view.run("static");
+		}
 	}
 
 	public void setDefaultRenderer(AbstractShapeRenderer r) {
 		view.cancel("layout");
 		view.cancel("static");
 		rf.setDefaultRenderer(r);
-		if (running)
+		if (running) {
 			view.run("layout");
-		else
+		} else {
 			view.run("static");
+		}
 	}
 
 	@Override
-        public ForceDirectedLayout getForceLayout(){
-            return fdl;
-        }
+	public ForceDirectedLayout getForceLayout() {
+		return fdl;
+	}
 
 	// We make sure that we return always the same panel.
 	@Override
@@ -682,22 +684,22 @@ public class SLVGraphView extends GView {
 	}
 
 	@Override
-        public ArrayList<ForcePair> getForces() {
-             ForceSimulator fs =fdl.getForceSimulator();
-              Force[] farray=fs.getForces();
-              ArrayList<ForcePair> array=new ArrayList<ForcePair>();
-              for(int i=0;i<farray.length;i++){
+	public ArrayList<ForcePair> getForces() {
+		ForceSimulator fs = fdl.getForceSimulator();
+		Force[] farray = fs.getForces();
+		ArrayList<ForcePair> array = new ArrayList<ForcePair>();
+		for (int i = 0; i < farray.length; i++) {
 
-                 int ni= farray[i].getParameterCount();
-                  for(int j=0;j<ni;j++){
-                      array.add(new ForcePair(farray[i].getParameterName(j),farray[i].getParameter(j)));
-                  }
-              }
-              return array;
+			int ni = farray[i].getParameterCount();
+			for (int j = 0; j < ni; j++) {
+				array.add(new ForcePair(farray[i].getParameterName(j), farray[i].getParameter(j)));
+			}
+		}
+		return array;
 		//return fdl.getForceSimulator();
 	}
 
-     	@Override
+	@Override
 	public boolean showLabel() {
 		return label;
 	}
@@ -709,51 +711,55 @@ public class SLVGraphView extends GView {
 			view.run("draw");
 		}
 	}
-      
+
 	// Private classes.
-	private class NodeColorAction extends ColorAction{
+	private class NodeColorAction extends ColorAction {
 
 		public NodeColorAction(String group) {
-        		super(group, VisualItem.FILLCOLOR);
-                      
-        	}
-        
+			super(group, VisualItem.FILLCOLOR);
+
+		}
+
 		@Override
 		public int getColor(VisualItem item) {
 			Tuple itemTuple = item.getSourceTuple();
-			
 
-			if ( m_vis.isInGroup(item, Visualization.SEARCH_ITEMS) ) {
+
+			if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
 
 				if (itemTuple.getString("st_id").equals(searchPanel.getQuery())) {
-					if (searchMatch)
+					if (searchMatch) {
 						display.panToAbs(new Point2D.Double(item.getX(), item.getY()));
+					}
 					searchMatch = false;
-					return ColorLib.rgb(255,0,0);
+					return ColorLib.rgb(255, 0, 0);
 				}
 
-				return ColorLib.rgb(200,100,100);
+				return ColorLib.rgb(200, 100, 100);
 
-			} else if (item.isFixed())
-				return ColorLib.rgb(255,100,100);
-			else if (item.isHighlighted())
-				return ColorLib.rgb(255,200,125);
-			else if (itemTuple.getInt("hdlv") == 1)
-				return ColorLib.rgb(255,255,125);
-			else {
+			} else if (item.isFixed()) {
+				return ColorLib.rgb(255, 100, 100);
+			} else if (item.isHighlighted()) {
+				return ColorLib.rgb(255, 200, 125);
+			} else if (itemTuple.getInt("hdlv") == 1) {
+				return ColorLib.rgb(255, 255, 125);
+			} else {
 				//Color color = colors.get(itemTuple.getString("st_id"));
 				//if (color != null)
 				//	return color.getRGB();
-				
-				if (itemTuple.getInt("founder") == 1)
+
+				if (itemTuple.getInt("founder") == 1) {
 					return ColorLib.rgb(200, 255, 55);
-				if (itemTuple.getInt("founder") == 2)
+				}
+				if (itemTuple.getInt("founder") == 2) {
 					return ColorLib.rgb(55, 255, 200);
-				
-				if (item.getSourceTuple().getInt("dg") < 3)
-					return ColorLib.rgb(200,200,255);
-				else
-					return ColorLib.rgb(200,200,55);
+				}
+
+				if (item.getSourceTuple().getInt("dg") < 3) {
+					return ColorLib.rgb(200, 200, 255);
+				} else {
+					return ColorLib.rgb(200, 200, 55);
+				}
 			}
 		}
 	}
@@ -761,30 +767,36 @@ public class SLVGraphView extends GView {
 	private class EdgeColorAction extends ColorAction {
 
 		public EdgeColorAction(String group) {
-        		super(group, VisualItem.STROKECOLOR);
-        	}
-        
+			super(group, VisualItem.STROKECOLOR);
+		}
+
 		@Override
 		public int getColor(VisualItem item) {
 
 			// Black -> Red (tiebreak)
 			Edge edge = (Edge) item.getSourceTuple().get("edge_ref");
 
-			if (item.getSourceTuple().getInt("viz") > 1)
-				return ColorLib.gray(170 + (item.getSourceTuple().getInt("viz") - 1)*(85/GOeBurstCluster.MAXLV));
-			
+			if (item.getSourceTuple().getInt("viz") > 1) {
+				return ColorLib.gray(170 + (item.getSourceTuple().getInt("viz") - 1) * (85 / GOeBurstCluster.MAXLV));
+			}
+
 			// old color: ColorLib.gray(200);
 			GOeBurstClusterWithStats g = (GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getSourceTuple().getInt("group"));
 			switch (g.getEdgeMaxTieLevel(edge)) {
-				case 0: return  ColorLib.rgb(  0,   0,   0);
-				case 1: return  ColorLib.rgb(  0,   0, 255);
-				case 2: return  ColorLib.rgb(  0, 255,   0);
-				case 3: return  ColorLib.rgb(255,   0,   0);
-				default: return ColorLib.rgb(255, 255,   0); 
+				case 0:
+					return ColorLib.rgb(0, 0, 0);
+				case 1:
+					return ColorLib.rgb(0, 0, 255);
+				case 2:
+					return ColorLib.rgb(0, 255, 0);
+				case 3:
+					return ColorLib.rgb(255, 0, 0);
+				default:
+					return ColorLib.rgb(255, 255, 0);
 			}
 		}
 	}
-		
+
 	private class NodeSearchPanel extends JSearchPanel {
 
 		private static final long serialVersionUID = 1L;
@@ -792,33 +804,35 @@ public class SLVGraphView extends GView {
 		NodeSearchPanel(Visualization view) {
 			super(view, "graph.nodes", Visualization.SEARCH_ITEMS, "st_id", true, true);
 			setShowResultCount(false);
-			setBorder(BorderFactory.createEmptyBorder(5,5,4,0));
+			setBorder(BorderFactory.createEmptyBorder(5, 5, 4, 0));
 			setFont(FontLib.getFont("Tahoma", Font.PLAIN, 11));
 			setBackground(Color.WHITE);
 			setForeground(Color.BLACK);
 			requestFocus();
 		}
 	}
-	
+
 	private class BurstNeighborHighlightControl extends NeighborHighlightControl {
+
 		@Override
 		protected void setNeighborHighlight(NodeItem n, boolean state) {
-			AbstractProfile st = (AbstractProfile) n.getSourceTuple().get("st_ref");
+			GOeBurstNodeExtended st = (GOeBurstNodeExtended) n.getSourceTuple().get("st_ref");
 			GOeBurstClusterWithStats g = (GOeBurstClusterWithStats) groupList.getModel().getElementAt(n.getSourceTuple().getInt("group"));
-			
-			Iterator<AbstractProfile> iter = g.getSLVs(st).iterator();
-		        while (iter.hasNext() ) {
-		        	NodeItem nitem = 
-	        			(NodeItem) view.getVisualItem("graph.nodes", n.getTable().getTuple(st2rowid.get(iter.next())));
-		        	nitem.setHighlighted(state);
-		        }
 
-			iter = g.getDLVs(st).iterator();
-		        while (iter.hasNext() )
-		        	n.getTable().setInt(st2rowid.get(iter.next()), "hdlv", state ? 1 : 0);
+			Iterator<GOeBurstNodeExtended> iter = st.getSLVs().iterator();
+			while (iter.hasNext()) {
+				NodeItem nitem =
+					(NodeItem) view.getVisualItem("graph.nodes", n.getTable().getTuple(st2rowid.get(iter.next())));
+				nitem.setHighlighted(state);
+			}
+
+			iter = st.getDLVs().iterator();
+			while (iter.hasNext()) {
+				n.getTable().setInt(st2rowid.get(iter.next()), "hdlv", state ? 1 : 0);
+			}
 		}
 	}
-	
+
 	private class GroupCellRenderer extends JLabel implements ListCellRenderer {
 
 		private static final long serialVersionUID = 1L;
@@ -852,24 +866,38 @@ public class SLVGraphView extends GView {
 			return this;
 		}
 	}
-	
+
 	private class ItemInfoControl extends ControlAdapter {
+
 		@Override
 		public void itemClicked(VisualItem item, MouseEvent e) {
 
-                     
+
 
 			if (item instanceof EdgeItem) {
-				Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
-				appendTextToInfoPanel(edge +
-						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(edge)
-						+ "\n");
+				Edge<GOeBurstNodeExtended> edge = (Edge<GOeBurstNodeExtended>) ((EdgeItem) item).getSourceTuple().get("edge_ref");
+
+				char lv = '?';
+				switch (er.getDistance().level(edge.getU(), edge.getV())) {
+				case 1:
+					lv = 's';
+					break;
+				case 2:
+					lv = 'd';
+					break;
+				case 3:
+					lv = 't';
+				}
+				
+				appendTextToInfoPanel(edge  + " ( " + lv + "lv level )\n" 
+					+ ((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(edge)
+					+ "\n");
 			}
 			if (item instanceof NodeItem) {
-				AbstractProfile st = (AbstractProfile) ((NodeItem) item).getSourceTuple().get("st_ref");
-				appendTextToInfoPanel(st + "\n" +
-						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
-				
+				GOeBurstNodeExtended st = (GOeBurstNodeExtended) ((NodeItem) item).getSourceTuple().get("st_ref");
+				appendTextToInfoPanel(st + "\n"
+					+ ((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
+
 				appendTextToInfoPanel("Chart details:\n");
 				if (cp != null) {
 					int total = 0;
@@ -885,90 +913,93 @@ public class SLVGraphView extends GView {
 						}
 					}
 					double percent = (((double) (st.getFreq() - total) * 100) / st.getFreq());
-					if (percent > 0)
+					if (percent > 0) {
 						appendTextToInfoPanel(" + 'others' " + df.format(percent) + "%\n");
+					}
 				}
-				
+
 				appendTextToInfoPanel("\n");
 
 				if (e.isShiftDown()) {
 					JPopupMenu menu = new JPopupMenu();
 					JCheckBoxMenuItem founderItem = new JCheckBoxMenuItem("Founder");
 					founderItem.setToolTipText("Set as founder");
-					
+
 					GOeBurstClusterWithStats g = (GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"));
 					founderItem.setSelected(g.getFakeRoot() != null && g.getFakeRoot().getID().equals(item.getString("st_id")));
 					founderItem.addActionListener(new FounderActionListener(item));
-					
+
 					menu.add(founderItem);
 					menu.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
 		}
 	}
-	
+
 	private class FounderActionListener implements ActionListener {
+
 		VisualItem item;
-		
+
 		FounderActionListener(VisualItem item) {
 			super();
-			this.item = item;	
+			this.item = item;
 		}
-		
+
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			GOeBurstClusterWithStats g = (GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"));
-			
+
 			if (g.getFakeRoot() != null && g.getFakeRoot().getID().equals(item.getString("st_id"))) {
 				((JCheckBoxMenuItem) event.getSource()).setSelected(false);
 				nodeTable.setInt(st2rowid.get(g.getFakeRoot()), "founder", g.isFounder(g.getFakeRoot()) ? 1 : 0);
 				g.updateVisibleEdges();
 			} else {
 				((JCheckBoxMenuItem) event.getSource()).setSelected(true);
-				if (g.getFakeRoot() != null)
+				if (g.getFakeRoot() != null) {
 					nodeTable.setInt(st2rowid.get(g.getFakeRoot()), "founder", g.isFounder(g.getFakeRoot()) ? 1 : 0);
-				g.updateVisibleEdges((AbstractProfile) item.get("st_ref"));
+				}
+				g.updateVisibleEdges((GOeBurstNodeExtended) item.get("st_ref"));
 				nodeTable.setInt(st2rowid.get(g.getFakeRoot()), "founder", 2);
 			}
-			
+
 			view.setVisible("graph", null, false);
 			view.cancel("layout");
-			
-			Iterator<Edge> edgeIter = g.getEdges().iterator();
+
+			Iterator<Edge<GOeBurstNodeExtended>> edgeIter = g.getEdges().iterator();
 			while (edgeIter.hasNext()) {
-				Edge e = edgeIter.next();
-				
-				if (! e.visible() && edge2rowid.containsKey(e)) {
+				Edge<GOeBurstNodeExtended> e = edgeIter.next();
+
+				if (!e.visible() && edge2rowid.containsKey(e)) {
 					graph.removeEdge(edge2rowid.get(e));
 					edge2rowid.remove(e);
-					
+
 					int stRow = st2rowid.get(e.getU());
 					nodeTable.setInt(stRow, "dg", nodeTable.getInt(stRow, "dg") - 1);
 					stRow = st2rowid.get(e.getV());
 					nodeTable.setInt(stRow, "dg", nodeTable.getInt(stRow, "dg") - 1);
 				}
-				
-				if (e.visible() && ! edge2rowid.containsKey(e)) {
+
+				if (e.visible() && !edge2rowid.containsKey(e)) {
 					int rowID = graph.addEdge(st2rowid.get(e.getU()), st2rowid.get(e.getV()));
 					edge2rowid.put(e, rowID);
-					
+
 					edgeTable.setInt(rowID, "group", g.getID());
 					edgeTable.set(rowID, "edge_ref", e);
-					edgeTable.setInt(rowID, "viz", er.getDistance().compute(e.getU(), e.getV()));
-					
+					edgeTable.setInt(rowID, "viz", er.getDistance().level(e));
+
 					int stRow = st2rowid.get(e.getU());
 					nodeTable.setInt(stRow, "dg", nodeTable.getInt(stRow, "dg") + 1);
 					stRow = st2rowid.get(e.getV());
 					nodeTable.setInt(stRow, "dg", nodeTable.getInt(stRow, "dg") + 1);
 				}
 			}
-			
+
 			int[] selectedIndices = groupList.getSelectedIndices();
 
 			for (int i = 0; i < selectedIndices.length; i++) {
-				
+
 				view.setVisible("graph",
-				    (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+					(Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
 			}
 			view.run("draw");
 			view.run("layout");
