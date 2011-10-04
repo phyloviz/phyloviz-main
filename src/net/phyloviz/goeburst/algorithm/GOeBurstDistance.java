@@ -47,8 +47,12 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 	private Comparator<GOeBurstNode> pcmp;
 
 	public GOeBurstDistance(TypingData td) {
+		this(td, td.getHeaders().size() - 1);
+	}
+
+	public GOeBurstDistance(TypingData td, int maxLevel) {
 		// -1 because of the id...
-		maxLV = td.getHeaders().size() - 1;
+		maxLV = maxLevel;
 		ecmp = new EdgeComparator();
 		pcmp = new ProfileComparator();
 	}
@@ -151,7 +155,7 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 			/* ST frequency. */
 			if (k >= maxLV) {
 
-				lv = 2*maxLV + 1;
+				lv = 2*maxLV + 2;
 				
 				ret = Math.max(f.getU().getFreq(), f.getV().getFreq())
 					- Math.max(e.getU().getFreq(), e.getV().getFreq());
@@ -184,7 +188,7 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 				ret = cmp.compare(f.getU().getID(), f.getV().getID())
 					- cmp.compare(e.getU().getID(), e.getV().getID());
 
-				lv ++;
+				lv += 2;
 			}
 
 			return Integer.signum(ret)*lv;

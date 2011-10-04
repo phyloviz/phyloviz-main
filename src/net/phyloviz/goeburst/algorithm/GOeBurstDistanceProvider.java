@@ -55,5 +55,10 @@ public class GOeBurstDistanceProvider implements DistanceProvider<GOeBurstNode> 
 	@Override
 	public String toString() {
 		return "eBURST Distance";
-	}	
+	}
+
+	@Override
+	public AbstractDistance<GOeBurstNode> getDistance(TypingData td, int maxLevel) {
+		return new GOeBurstDistance(td, maxLevel);
+	}
 }

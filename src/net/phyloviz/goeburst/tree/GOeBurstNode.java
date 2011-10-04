@@ -80,6 +80,10 @@ public class GOeBurstNode implements Profile, Comparable<GOeBurstNode> {
 		return Integer.signum(ret)*i;
 	}
 
+	public Profile getProfile() {
+		return p;
+	}
+	
 	@Override
 	public int getUID() {
 		return p.getUID();
@@ -136,5 +140,10 @@ public class GOeBurstNode implements Profile, Comparable<GOeBurstNode> {
 
 	public boolean equals(GOeBurstNode o) {
 		return this.compareTo(o) == 0;
+	}
+
+	@Override
+	public String toString() {
+		return p.toString();
 	}
 }

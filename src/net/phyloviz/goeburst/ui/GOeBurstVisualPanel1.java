@@ -43,6 +43,7 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
+import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import org.openide.util.Lookup;
 
 public final class GOeBurstVisualPanel1 extends JPanel {
@@ -56,7 +57,7 @@ public final class GOeBurstVisualPanel1 extends JPanel {
 		Collection<? extends DistanceProvider> result = Lookup.getDefault().lookupAll(DistanceProvider.class);
 		Iterator<? extends DistanceProvider> ir = result.iterator();
 		while (ir.hasNext()) {
-			AbstractDistance ad = ir.next().getDistance(td);
+			AbstractDistance ad = ir.next().getDistance(td, Math.max(GOeBurstCluster.MAXLV, 3));
 			if (ad != null && ad.maxLevel() > 0)
 				typeListModel.addElement(ad);
 		}
