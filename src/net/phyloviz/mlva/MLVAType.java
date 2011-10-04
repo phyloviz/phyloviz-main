@@ -40,22 +40,30 @@ import net.phyloviz.core.data.AbstractProfile;
 
 public class MLVAType extends AbstractProfile implements Comparable<MLVAType> {
 
-	private String[] alleles;
+	private double[] alleles;
 	private int freq;
 
 	public MLVAType(int uid, String[] profile) {
 		this.uid = uid;
 		this.id = profile[0];
 		this.freq = 1;
-		this.alleles = new String[profile.length - 1];
-		System.arraycopy(profile, 1, alleles, 0, profile.length - 1);
+		this.alleles = new double[profile.length - 1];
+
+		for (int i = 0; i < profile.length - 1; i++)
+			alleles[i] = Double.parseDouble(profile[i + 1]);
+		
+		//System.arraycopy(profile, 1, alleles, 0, profile.length - 1);
 	}
 
 	@Override
 	public String getValue(int idx) {
-		return alleles[idx];
+		return Double.toString(alleles[idx]);
 	}
 
+	public double getDouble(int idx) {
+		return alleles[idx];
+	}
+	
 	@Override
 	public int profileLength() {
 		return alleles.length;
@@ -80,7 +88,7 @@ public class MLVAType extends AbstractProfile implements Comparable<MLVAType> {
 		int ret, i;
 
 		for (ret = i = 0; ret == 0 && i < alleles.length; i++)
-			ret = alleles[i].compareTo(st.alleles[i]);
+			ret = Double.compare(alleles[i], st.alleles[i]);
 
 		return ret;
 	}
@@ -96,7 +104,7 @@ public class MLVAType extends AbstractProfile implements Comparable<MLVAType> {
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 37 * hash + Arrays.deepHashCode(this.alleles);
+		hash = 37 * hash + Arrays.hashCode(alleles);
 		return hash;
 	}
 
