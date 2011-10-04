@@ -41,4 +41,6 @@ import net.phyloviz.core.data.TypingData;
 public interface DistanceProvider<T extends Profile> {
 
 	public AbstractDistance<T> getDistance(TypingData td);
+
+	public AbstractDistance<T> getDistance(TypingData td, int maxLevel);
 }
