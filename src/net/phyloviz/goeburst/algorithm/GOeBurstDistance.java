@@ -105,6 +105,16 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 		return ecmp;
 	}
 
+	@Override
+	public String info(GOeBurstNode px, GOeBurstNode py) {
+		return "";
+	}
+
+	@Override
+	public String info(Edge<GOeBurstNode> e) {
+		return "";
+	}
+
 	private class ProfileComparator implements Comparator<GOeBurstNode> {
 
 		@Override
