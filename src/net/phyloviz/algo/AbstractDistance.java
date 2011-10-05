@@ -48,6 +48,10 @@ public interface AbstractDistance<T extends Profile> {
 
 	public int level(Edge<T> e);
 
+	public String info(T px, T py);
+
+	public String info(Edge<T> e);
+
 	public int maxLevel();
 
 	public Comparator<T> getProfileComparator();
