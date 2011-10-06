@@ -71,14 +71,13 @@ public class AlignedSequenceFactory implements TypingFactory {
 		while (s != null && s.charAt(0) == '>') {
 
 			String[] STvec = new String[2];
-			STvec[0] = s;
+			STvec[0] = s.substring(2, Math.min(8, s.length()));
 			STvec[1] = "";
 			s = in.readLine();
 			while (s != null && s.charAt(0) != '>') {
 				STvec[1] += s;
 				s = in.readLine();	
 			}
-
 			
 			if (STvec[1] == null || STvec[1].equals(""))
 				continue;
