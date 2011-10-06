@@ -948,7 +948,14 @@ public class GraphView2 extends GView {
 				Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
 				appendTextToInfoPanel(edge.getU().getID() + " -- "
 					+ edge.getV().getID() + " (lv="
-					+ item.getSourceTuple().getString("w") + ")\n\n");
+					+ item.getSourceTuple().getString("w"));
+
+				String einfo = er.getDistance().info(edge);
+				if (einfo != null)
+					appendTextToInfoPanel("; " + einfo + ")\n\n");
+				else
+					appendTextToInfoPanel(")\n\n");
+
 			}
 			if (item instanceof NodeItem) {
 				Profile st = (Profile) ((NodeItem) item).getSourceTuple().get("st_ref");

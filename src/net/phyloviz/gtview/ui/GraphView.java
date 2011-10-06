@@ -871,9 +871,16 @@ public class GraphView extends GView {
 				case 3:
 					lv = 't';
 				}
+			
+				appendTextToInfoPanel(edge  + " ( " + lv + "lv level"); 
 				
-				appendTextToInfoPanel(edge  + " ( " + lv + "lv level )\n" +
-						((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(edge)
+				String einfo = er.getDistance().info(edge);
+				if (einfo != null)
+					appendTextToInfoPanel("; " + einfo + ")\n");
+				else
+					appendTextToInfoPanel(")\n");
+				
+				appendTextToInfoPanel(((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(edge)
 						+ "\n");
 			}
 			if (item instanceof NodeItem) {
