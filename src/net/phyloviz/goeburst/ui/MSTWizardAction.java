@@ -92,6 +92,8 @@ public final class MSTWizardAction extends NodeAction {
 
 			nodes[0].addNodeListener(new LocalNodeListener(op));
 		}
+
+		panels = null;
 	}
 
 	/**

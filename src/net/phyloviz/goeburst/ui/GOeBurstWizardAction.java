@@ -102,6 +102,8 @@ public final class GOeBurstWizardAction extends NodeAction {
 
 			nodes[0].addNodeListener(new LocalNodeListener(op));
 		}
+
+		panels = null;
 	}
 
 	/**
