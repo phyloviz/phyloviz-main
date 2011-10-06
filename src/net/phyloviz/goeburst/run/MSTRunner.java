@@ -113,7 +113,12 @@ public class MSTRunner implements Runnable {
 
 			int diff = Math.abs(e.getU().diffLV(e.getV()));
 
-			op.append(e.getU().getID() + " -- " + e.getV().getID() + " (level: " + diff  + ")\n");
+			op.append(e.getU().getID() + " -- " + e.getV().getID() + " (level: " + diff);
+			String einfo = ad.info(e);
+			if (einfo != null)
+				op.append("; " + ad.info(e) + ")\n");
+			else
+				op.append(")\n");
 		}
 
 		op.appendWithDate("MST algorithm: done.\n");

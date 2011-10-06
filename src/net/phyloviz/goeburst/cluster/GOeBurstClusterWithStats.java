@@ -86,13 +86,6 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 	}
 
 	@Override
-	public boolean add(GOeBurstNodeExtended p) {
-		boolean r = super.add(p);
-		this.updateMaxLVs(p);
-		return r;
-	}
-	
-	@Override
 	public void add(Edge<GOeBurstNodeExtended> e) {
 		add(e.getU());
 		add(e.getV());
@@ -187,7 +180,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		return 0;
 	}
 
-	protected void updateMaxLVs(GOeBurstNodeExtended u) {
+	public void updateMaxLVs(GOeBurstNodeExtended u) {
 		// Update maxLVs info.
 		int i, j;
 
@@ -195,6 +188,8 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		if (i < MAXLV && u.getLV(i) >= maxLVs[i])
 			for (j = 0; j < MAXLV + 1; j++)
 				maxLVs[j] = u.getLV(j);
+
+		System.out.println("maxLV: " + maxLVs[0]);
 	}
 
 	public boolean isFounder(GOeBurstNodeExtended st) {
@@ -296,15 +291,22 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 				maxtb = (tb > maxtb) ? tb : maxtb;
 
 				if (tb / 2 == MAXLV + 1) {
-					info.info += "(tiebreak at freq)\n";
+					info.info += "(tiebreak at freq";
 				} else if (tb / 2 == MAXLV + 2) {
-					info.info += "(tiebreak at id)\n";
+					info.info += "(tiebreak at id";
 				} else if (tb / 2 == MAXLV) {
-					info.info += "(tiebreak at sat)\n";
+					info.info += "(tiebreak at sat";
 				} else {
 					int c = (1 + tb / 2);
-					info.info += "(tiebreak at " + ((c == 1) ? 's' : ((c == 2) ? 'd' : 't')) + "lv)\n";
+					info.info += "(tiebreak at " + ((c == 1) ? 's' : ((c == 2) ? 'd' : 't')) + "lv";
 				}
+
+				String einfo = ad.info(f);
+				if (einfo != null)
+					info.info += "; " + einfo + ")\n";
+				else
+					info.info += ")\n";
+
 			}
 		}
 

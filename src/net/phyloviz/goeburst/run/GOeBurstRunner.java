@@ -149,7 +149,12 @@ public class GOeBurstRunner implements Runnable {
 			while (ie.hasNext()) {
 				Edge<GOeBurstNodeExtended> e = ie.next();
 				if (e.visible()) {
-					op.append(e.getU().getID() + " - " + e.getV().getID() + "\n");
+					op.append(e.getU().getID() + " - " + e.getV().getID());
+					String einfo = ad.info(e);
+					if (einfo != null)
+						op.append(" (" + ad.info(e) + ")\n");
+					else
+						op.append("\n");
 				}
 			}
 			op.append("\n");

@@ -107,12 +107,12 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 
 	@Override
 	public String info(GOeBurstNode px, GOeBurstNode py) {
-		return "";
+		return null;
 	}
 
 	@Override
 	public String info(Edge<GOeBurstNode> e) {
-		return "";
+		return null;
 	}
 
 	private class ProfileComparator implements Comparator<GOeBurstNode> {
@@ -149,7 +149,7 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 				}
 
 				ret = Math.min(f.getU().getLV(k), f.getV().getLV(k))
-					- Math.min(f.getU().getLV(k), f.getV().getLV(k));
+					- Math.min(e.getU().getLV(k), e.getV().getLV(k));
 
 				lv ++;
 				

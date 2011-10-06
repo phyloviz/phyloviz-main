@@ -163,6 +163,8 @@ public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithSt
 				g.add(st);
 				groups.put(pi, g);
 			}
+
+			((GOeBurstClusterWithStats) groups.get(pi)).updateMaxLVs(st);
 		}
 		
 		ArrayList<GOeBurstClusterWithStats> gList = new ArrayList<GOeBurstClusterWithStats>(groups.values());
