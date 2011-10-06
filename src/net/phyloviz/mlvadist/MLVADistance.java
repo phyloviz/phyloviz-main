@@ -107,6 +107,26 @@ public class MLVADistance implements AbstractDistance<GOeBurstNode> {
 		return ecmp;
 	}
 
+	@Override
+	public String info(GOeBurstNode px, GOeBurstNode py) {
+
+		MLVAType a, b;
+
+		a = (MLVAType) px.getProfile();	
+		b = (MLVAType) py.getProfile();	
+		double fVal = 0;
+		for (int i = 0; i < a.profileLength(); i++)
+			fVal += Math.pow(a.getDouble(i) - b.getDouble(i), 2);
+		fVal = Math.sqrt(fVal);
+
+		return "euclidean distance: " + fVal;
+	}
+
+	@Override
+	public String info(Edge<GOeBurstNode> e) {
+		return info(e.getU(), e.getV());
+	}
+
 	private class ProfileComparator implements Comparator<GOeBurstNode> {
 
 		@Override
@@ -163,7 +183,7 @@ public class MLVADistance implements AbstractDistance<GOeBurstNode> {
 				}
 
 				ret = Math.min(f.getU().getLV(k), f.getV().getLV(k))
-					- Math.min(f.getU().getLV(k), f.getV().getLV(k));
+					- Math.min(e.getU().getLV(k), e.getV().getLV(k));
 
 				lv ++;
 				
