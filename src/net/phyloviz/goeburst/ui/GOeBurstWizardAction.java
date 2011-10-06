@@ -89,7 +89,7 @@ public final class GOeBurstWizardAction extends NodeAction {
 				return;
 			}
 
-			OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": goeBURST Output");
+			OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": goeBURST (Level " + level + "; " + ad.toString() + ") Output");
 			Runnable job = new GOeBurstRunner(nodes[0], op, level, ad);
 
 			op.open();

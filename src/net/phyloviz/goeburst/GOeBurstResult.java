@@ -82,6 +82,6 @@ public class GOeBurstResult implements NodeFactory, Result {
 
 	@Override
 	public String toString() {
-		return "goeBURST (Level " + level + ")";
+		return "goeBURST (Level " + level + "; " + ad.toString() + ")";
 	}
 }

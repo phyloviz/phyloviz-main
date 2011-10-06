@@ -79,7 +79,7 @@ public class GOeBurstMSTResult implements NodeFactory, Result {
 
 	@Override
 	public String toString() {
-		return "goeBURST Full MST";
+		return "goeBURST Full MST (" + ad.toString() + ")";
 	}
 
 	public DataSet getDataSet() {
