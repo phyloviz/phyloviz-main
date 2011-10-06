@@ -45,6 +45,7 @@ import javax.swing.SwingUtilities;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.goeburst.run.GOeBurstRunner;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
@@ -84,7 +85,7 @@ public final class GOeBurstWizardAction extends NodeAction {
 			TypingData<? extends Profile> td = nodes[0].getLookup().lookup(TypingData.class);
 			int safeMax = ad.maxLevel() - 1;
 
-			if (level > safeMax) {
+			if (level > GOeBurstCluster.MAXLV && level > safeMax) {
 				JOptionPane.showMessageDialog(null, "Invalid level for this dataset!", "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
