@@ -52,7 +52,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = TypingFactory.class)
 public class SNPNoIdFactory implements TypingFactory {
 	
-	private static final String customName = "Single-Nucleotide Polymorphism (without an ID per line)";
+	private static final String customName = "Single-Nucleotide Polymorphism (without explicit ID)";
 
 	@Override
 	public String toString() {
