@@ -39,7 +39,10 @@ import java.awt.Font;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -56,7 +59,15 @@ public final class LoadDataSetVisualPanel1 extends JPanel {
 	public LoadDataSetVisualPanel1() {
 
 		typeListModel = new DefaultComboBoxModel();
-		Collection<? extends TypingFactory> result = Lookup.getDefault().lookupAll(TypingFactory.class);
+		LinkedList<TypingFactory> result = new LinkedList<TypingFactory>(Lookup.getDefault().lookupAll(TypingFactory.class));
+		Collections.sort(result, new Comparator<TypingFactory>() {
+
+			@Override
+			public int compare(TypingFactory o1, TypingFactory o2) {
+				return o1.toString().compareTo(o2.toString());
+			}
+			
+		});
 		Iterator<? extends TypingFactory> ir = result.iterator();
 		while (ir.hasNext()) {
 			typeListModel.addElement(ir.next());
