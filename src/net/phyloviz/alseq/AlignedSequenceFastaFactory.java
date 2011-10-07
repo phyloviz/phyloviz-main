@@ -50,9 +50,9 @@ import net.phyloviz.core.util.TypingFactory;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = TypingFactory.class)
-public class AlignedSequenceFactory implements TypingFactory {
+public class AlignedSequenceFastaFactory implements TypingFactory {
 	
-	private static final String customName = "Aligned Sequences";
+	private static final String customName = "Aligned Sequences (FASTA)";
 
 	@Override
 	public String toString() {
@@ -65,14 +65,20 @@ public class AlignedSequenceFactory implements TypingFactory {
 		BufferedReader in = new BufferedReader(r);
 		int uid = 0;
 
-		TypingData<AlignedSequence> td = null;
+		TypingData<AlignedSequenceFasta> td = null;
 
 		String s = in.readLine();
-		while (s != null) {
+		while (s != null && s.charAt(0) == '>') {
 
 			String[] STvec = new String[2];
-			STvec[0] = String.valueOf(uid);
-			STvec[1] = s;
+			String header = s;
+			STvec[0] = String.valueOf(uid); // s.substring(2, Math.min(8, s.length()));
+			STvec[1] = "";
+			s = in.readLine();
+			while (s != null && s.charAt(0) != '>') {
+				STvec[1] += s;
+				s = in.readLine();	
+			}
 			
 			if (STvec[1] == null || STvec[1].equals(""))
 				continue;
@@ -84,17 +90,18 @@ public class AlignedSequenceFactory implements TypingFactory {
 				headers[0] = "ID";
 				for (int i = 0; i < len; i++)
 					headers[i + 1] = "s[" + i + "]";
-				td = new TypingData<AlignedSequence>(headers);
+				td = new TypingData<AlignedSequenceFasta>(headers);
 				//continue; // We may need to comment this given the FASTA format...
 			}
 			
-			AlignedSequence profile = new AlignedSequence(uid++, STvec);
+			AlignedSequenceFasta profile = new AlignedSequenceFasta(uid++, STvec);
+			profile.setHeader(header);
 
-			AlignedSequence oldProfile = td.getEqual(profile);
+			AlignedSequenceFasta oldProfile = td.getEqual(profile);
 			if (oldProfile != null) {
 				oldProfile.incFreq();
 				if (!profile.getID().equals(oldProfile.getID())) {
-					Logger.getLogger(AlignedSequenceFactory.class.getName()).log(Level.WARNING,
+					Logger.getLogger(AlignedSequenceFastaFactory.class.getName()).log(Level.WARNING,
 						"Duplicated profile: {0} aka {1} (frequency updated)", 
 						new Object[]{profile.getID(), oldProfile.getID()});
 				}
@@ -102,7 +109,7 @@ public class AlignedSequenceFactory implements TypingFactory {
 				try {
 					td.addData(profile);
 				} catch(Exception e) {
-					Logger.getLogger(AlignedSequenceFactory.class.getName()).log(Level.WARNING,
+					Logger.getLogger(AlignedSequenceFastaFactory.class.getName()).log(Level.WARNING,
 						e.getLocalizedMessage());
 				}
 			}
