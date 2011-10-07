@@ -85,7 +85,7 @@ public class SNPNoIdFactory implements TypingFactory {
 
 			String[] STvec = new String[lineFields.length + 1];
 			System.arraycopy(lineFields, 0, STvec, 1, lineFields.length);
-			STvec[0] = String.valueOf(uid);
+			STvec[0] = String.valueOf(uid + 1);
 
 			SNP profile = new SNP(uid++, STvec);
 
