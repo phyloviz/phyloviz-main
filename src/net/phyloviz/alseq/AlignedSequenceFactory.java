@@ -71,7 +71,7 @@ public class AlignedSequenceFactory implements TypingFactory {
 		while (s != null) {
 
 			String[] STvec = new String[2];
-			STvec[0] = String.valueOf(uid);
+			STvec[0] = String.valueOf(uid + 1);
 			STvec[1] = s;
 			
 			if (STvec[1] == null || STvec[1].equals(""))

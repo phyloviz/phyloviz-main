@@ -72,7 +72,7 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 
 			String[] STvec = new String[2];
 			String header = s;
-			STvec[0] = String.valueOf(uid); // s.substring(2, Math.min(8, s.length()));
+			STvec[0] = String.valueOf(uid + 1); // s.substring(2, Math.min(8, s.length()));
 			STvec[1] = "";
 			s = in.readLine();
 			while (s != null && s.charAt(0) != '>') {
