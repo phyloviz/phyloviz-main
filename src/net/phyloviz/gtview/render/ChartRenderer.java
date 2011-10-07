@@ -49,7 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
-import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.gtview.ui.GView;
 
 import prefuse.render.AbstractShapeRenderer;
@@ -137,7 +137,7 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 		int x = (int)item.getX();
 		int y = (int)item.getY();
 
-		AbstractProfile st = (AbstractProfile) item.getSourceTuple().get("st_ref");
+		Profile st = (Profile) item.getSourceTuple().get("st_ref");
 		
 		int offset = 0;
 
@@ -209,7 +209,7 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 			if ( shape instanceof Rectangle2D ) {
 
 				Rectangle area = (Rectangle) shape;
-				int freq = ((AbstractProfile) item.get("st_ref")).getFreq();
+				int freq = ((Profile) item.get("st_ref")).getFreq();
 				drawPie(g, area, stId, freq, fillColor);
 			}
 		} else if ( shape instanceof Line2D ) {
