@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: net.phyloviz.loadmlst/1
+OpenIDE-Module-Implementation-Version: 0
+OpenIDE-Module-Layer: net/phyloviz/loadmlst/layer.xml
+OpenIDE-Module-Localizing-Bundle: net/phyloviz/loadmlst/Bundle.properties
+
