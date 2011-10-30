@@ -67,7 +67,7 @@ public class LoadMLSTWizardPanel3 implements WizardDescriptor.ValidatingPanel {
 		tf = (TypingFactory) ((WizardDescriptor) settings).getProperty("typing_factory");
 		dataSetName = (String) ((WizardDescriptor) settings).getProperty("name");
 		iDBIndex = (Integer) ((WizardDescriptor) settings).getProperty("dbIndex");
-		((LoadMLSTVisualPanel3) getComponent()).setDatabase(iDBIndex);
+		((LoadMLSTVisualPanel3) getComponent()).initDynamicComponents(iDBIndex);
 	}
 
 	@Override

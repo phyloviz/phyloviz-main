@@ -82,24 +82,24 @@ public class LoadMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
 
 	@Override
 	public void validate() throws WizardValidationException {
-		if (tf == null) {
-			throw new WizardValidationException(null, "Could not load MSLT plugin", null);
-		}
-
-		if (((LoadMLSTVisualPanel2) getComponent()).isEmpty()) {
-			throw new WizardValidationException(null, "No typing data completely loaded yet!", null);
-		}
-
-		try {
-			ds = new DataSet(dataSetName);
-			td = tf.loadData(((LoadMLSTVisualPanel2) getComponent()).getTypingData());
-			td.setDescription(tf.toString());
-
-			ds.add(td);
-			Lookup.getDefault().lookup(DataSetTracker.class).add(ds);
-			StatusDisplayer.getDefault().setStatusText("Dataset loaded.");
-		} catch (IOException ex) {
-			throw new WizardValidationException(null, "Fatal error: " + ex.getMessage(), null);
-		}
+//		if (tf == null) {
+//			throw new WizardValidationException(null, "Could not load MSLT plugin", null);
+//		}
+//
+//		if (((LoadMLSTVisualPanel2) getComponent()).isEmpty()) {
+//			throw new WizardValidationException(null, "No typing data completely loaded yet!", null);
+//		}
+// TODO uncomment this
+//		try {
+//			ds = new DataSet(dataSetName);
+//			td = tf.loadData(((LoadMLSTVisualPanel2) getComponent()).getTypingData());
+//			td.setDescription(tf.toString());
+//
+//			ds.add(td);
+//			Lookup.getDefault().lookup(DataSetTracker.class).add(ds);
+//			StatusDisplayer.getDefault().setStatusText("Dataset loaded.");
+//		} catch (IOException ex) {
+//			throw new WizardValidationException(null, "Fatal error: " + ex.getMessage(), null);
+//		}
 	}
 }

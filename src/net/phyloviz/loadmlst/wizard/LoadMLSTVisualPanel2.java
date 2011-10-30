@@ -10,14 +10,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import net.phyloviz.loadmlst.xml.Parser;
+import net.phyloviz.loadmlst.io.XMLParser;
 
 public final class LoadMLSTVisualPanel2 extends JPanel {
 
@@ -37,19 +38,25 @@ public final class LoadMLSTVisualPanel2 extends JPanel {
 			public void actionPerformed(ActionEvent ae) {
 				JToggleButton tb = (JToggleButton) ae.getSource();
 				if (tb.isSelected()) {
-					jProgressBar1.setString(null);
-					task = new Task();
-					task.addPropertyChangeListener(new PropertyChangeListener() {
+					if (XMLParser.hasConnection()) {
+						jProgressBar1.setString(null);
+						task = new Task();
+						task.addPropertyChangeListener(new PropertyChangeListener() {
 
-						@Override
-						public void propertyChange(PropertyChangeEvent pce) {
-							if ("progress" == pce.getPropertyName()) {
-								int progress = (Integer) pce.getNewValue();
-								jProgressBar1.setValue(progress);
+							@Override
+							public void propertyChange(PropertyChangeEvent pce) {
+								if (pce.getPropertyName().equals("progress")) {
+									int progress = (Integer) pce.getNewValue();
+									jProgressBar1.setValue(progress);
+								}
 							}
-						}
-					});
-					task.execute();
+						});
+						task.execute();
+					} else {
+						jProgressBar1.setString(org.openide.util.NbBundle.getMessage(
+								XMLParser.class, "Connection.offline"));
+						jToggleButton1.setSelected(false);
+					}
 				} else {
 					task.cancel(true);
 				}
@@ -65,8 +72,8 @@ public final class LoadMLSTVisualPanel2 extends JPanel {
 					+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
-			// Do nothing...
-			System.err.println(e.getMessage());
+			Logger.getLogger(LoadMLSTVisualPanel2.class.getName()).log(Level.WARNING,
+					e.getLocalizedMessage());
 		}
 
 	}
@@ -75,9 +82,9 @@ public final class LoadMLSTVisualPanel2 extends JPanel {
 		// Form initialization
 		iIndex = iDBIndex;
 		jlDatasetName.setText(sDBName);
-		jlSize.setText(Parser.getParser().getProfileCount(iIndex) + " STs");
+		jlSize.setText(XMLParser.getParser().getProfileCount(iIndex) + " STs");
 		String s = "";
-		for (String locus : Parser.getParser().getLoci(iIndex)) {
+		for (String locus : XMLParser.getParser().getLoci(iIndex)) {
 			s += locus + "  ";
 		}
 		jlProfile.setText(s);
@@ -211,13 +218,13 @@ public final class LoadMLSTVisualPanel2 extends JPanel {
 		@Override
 		public Void doInBackground() {
 			try {
-				URL url = new URL(Parser.getParser().getProfileURL(iIndex));
+				URL url = new URL(XMLParser.getParser().getProfileURL(iIndex));
 				BufferedReader in = new BufferedReader(new InputStreamReader(
 						url.openStream()));
 				sData = filterHeader(in.readLine());
 				String line;
 				int i = 1;
-				int iMax = Parser.getParser().getProfileCount(iIndex);
+				int iMax = XMLParser.getParser().getProfileCount(iIndex);
 				while ((line = in.readLine()) != null) {
 					if (isCancelled()) {
 						bEmpty = true;
@@ -236,7 +243,8 @@ public final class LoadMLSTVisualPanel2 extends JPanel {
 				jToggleButton1.setEnabled(false);
 				jProgressBar1.setString("Done!");
 			} catch (IOException e) {
-				e.printStackTrace();
+				Logger.getLogger(LoadMLSTVisualPanel2.class.getName()).log(Level.WARNING,
+						e.getLocalizedMessage());
 			}
 			return null;
 		}

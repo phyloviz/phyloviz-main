@@ -7,13 +7,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import net.phyloviz.loadmlst.xml.Parser;
+import net.phyloviz.loadmlst.io.XMLParser;
 
 public final class LoadMLSTVisualPanel1 extends JPanel {
 
@@ -36,18 +38,18 @@ public final class LoadMLSTVisualPanel1 extends JPanel {
 					+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
-			// Do nothing...
-			System.err.println(e.getMessage());
+			Logger.getLogger(LoadMLSTVisualPanel1.class.getName()).log(Level.WARNING,
+					e.getLocalizedMessage());
 		}
 	}
 
 	private void updateKeyList() {
 		datasetListModel.removeAllElements();
-		Parser.getParser().reset();
-		ArrayList<String[]> alDatabases = Parser.getParser().getDatabaseList();
+		XMLParser.getParser().reset();
+		ArrayList<String[]> alDatabases = XMLParser.getParser().getDatabaseList();
 		if (alDatabases == null || alDatabases.isEmpty()) {
 			datasetListModel.addElement(org.openide.util.NbBundle.getMessage(
-					LoadMLSTVisualPanel1.class, "Parser.offline"));
+					LoadMLSTVisualPanel1.class, "Connection.offline"));
 			jComboBox1.setEnabled(false);
 		} else {
 			for (int i = 0; i < alDatabases.size(); i++) {
@@ -76,7 +78,7 @@ public final class LoadMLSTVisualPanel1 extends JPanel {
 		if (i < 0) {
 			return "";
 		}
-		return Parser.getParser().getDatabaseList().get(i)[0];
+		return XMLParser.getParser().getDatabaseList().get(i)[0];
 	}
 
 	/** This method is called from within the constructor to

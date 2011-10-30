@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -14,25 +16,26 @@ import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import net.phyloviz.loadmlst.xml.Parser;
+import net.phyloviz.loadmlst.io.XMLParser;
 import org.openide.util.NbPreferences;
 
 public final class LoadMLSTVisualPanel3 extends JPanel {
 
 	private ArrayList<String> alLoci;
-	private int iMaxIsolate;
+	private StringBuffer[] sbSequences;
 	private Task task;
-	private String sIsolateData;
 	private boolean bEmpty;
-	private int iDBIndex;
+	private int iIndex;
 
-	/** Creates new form PubMLSTVisualPanel2 */
+	/** Creates new form LoadMLSTVisualPanel3 */
 	public LoadMLSTVisualPanel3() {
+		initComponents();
+		iIndex = -1;
 	}
 
-	private void setEditorPanel(String sFile) {
+	public void setEditorPanel(String file) {
 		try {
-			URL url = LoadMLSTVisualPanel3.class.getResource(sFile);
+			URL url = LoadMLSTVisualPanel3.class.getResource(file);
 			jEditorPane1.setEditorKit(new HTMLEditorKit());
 			jEditorPane1.setPage(url);
 			Font font = UIManager.getFont("Label.font");
@@ -40,29 +43,11 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 					+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
-			// Do nothing...
-			System.err.println(e.getMessage());
+			Logger.getLogger(LoadMLSTVisualPanel3.class.getName()).log(Level.WARNING,
+					e.getLocalizedMessage());
 		}
-	}
-
-	public void setDatabase(int index) {
-		// initialization
-		iDBIndex = index;
-		alLoci = Parser.getParser().getLoci(iDBIndex);
-		//TODO criar uma cena global com isto
-		initComponents();
-
-		setEditorPanel("PubMLSTVisualPanel3a.html");
-		bEmpty = true;
-		// To prevent bad UI experience when comming back to this UI
-		// www loader
-		jRadioButton1.setSelected(true);
-		for (int i = 0; i < alLoci.size(); i++) {
-			jRadioButton1.setSelected(true);
-			jtbDownload[i].setSelected(false);
-			jtbDownload[i].setEnabled(false);
-			jtfFile[i].setEnabled(true);
-		}
+		// TODO: reajust jEditorPanel Dimensions
+		// TODO: Or even the whole Frame dimensions
 	}
 
 	@Override
@@ -78,7 +63,7 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		return bEmpty;
 	}
 
-	public boolean hasPubMLSTData() {
+	public boolean hasMLSTData() {
 		return jRadioButton2.isSelected();
 	}
 
@@ -95,11 +80,6 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		jPanel2 = new javax.swing.JPanel();
 		jRadioButton1 = new javax.swing.JRadioButton();
 		jRadioButton2 = new javax.swing.JRadioButton();
-		jPanel1 = new javax.swing.JPanel();
-		jPanel8 = new javax.swing.JPanel();
-		jLabel5 = new javax.swing.JLabel();
-		jToggleButton2 = new javax.swing.JToggleButton();
-		jLabel6 = new javax.swing.JLabel();
 		jEditorPane1 = new javax.swing.JEditorPane();
 
 		setLayout(new java.awt.BorderLayout());
@@ -113,6 +93,7 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		org.openide.awt.Mnemonics.setLocalizedText(jRadioButton1, org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jRadioButton1.text"));
 		jRadioButton1.addActionListener(new java.awt.event.ActionListener() {
 
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jRadioButton1ActionPerformed(evt);
 			}
@@ -123,6 +104,7 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		org.openide.awt.Mnemonics.setLocalizedText(jRadioButton2, org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jRadioButton2.text"));
 		jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
 
+			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jRadioButton2ActionPerformed(evt);
 			}
@@ -131,82 +113,97 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 
 		jPanel5.add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
-		int lines = alLoci.size();
-		jPanel1.setLayout(new java.awt.GridLayout(lines, 0));
+	}// </editor-fold>                        
 
-		// Dynamic Frame begin
-		jpLocusPanel = new javax.swing.JPanel[lines];
-		jpLocusSubPanel = new javax.swing.JPanel[lines];
-		jlName = new javax.swing.JLabel[lines];
-		jtbDownload = new javax.swing.JToggleButton[lines];
-		jtfFile = new javax.swing.JTextField[lines];
-		jbLocusBrowse = new javax.swing.JButton[lines];
+	// Dynamic Frame begin
+	public void initDynamicComponents(int iDBindex) {
+
+		// User already pressed Back -> Next
+		if (alLoci != null) {
+			System.out.println("alLoci != null");
+			// User selected a different DB
+			if (iDBindex != iIndex) {
+				// Delete old form to be replaced
+				jPanel5.remove(jPanel5.getComponentCount() - 1);
+				System.out.println("Delete Old");
+			} else {
+				// Everything stays the same
+				System.out.println("Stays the same");
+				return;
+			}
+		} else System.out.println("first time");
+		iIndex = iDBindex;
+		alLoci = XMLParser.getParser().getLoci(iIndex);
+		sbSequences = new StringBuffer[alLoci.size()];
+
+		jPanel1 = new javax.swing.JPanel();
+		jPanelStart = new javax.swing.JPanel();
+		jPanelStartS = new javax.swing.JPanel();
+		jPanelStartC = new javax.swing.JPanel();
+		jPanelStartE = new javax.swing.JPanel();
+		jPanelCenter = new javax.swing.JPanel();
+		jPanelEnd = new javax.swing.JPanel();
+		jlName = new javax.swing.JLabel[alLoci.size()];
+		jtbDownload = new javax.swing.JToggleButton[alLoci.size()];
+		jtfFile = new javax.swing.JTextField[alLoci.size()];
+		jbLocusBrowse = new javax.swing.JButton[alLoci.size()];
+
+		jPanel1.setLayout(new java.awt.BorderLayout());
+		jPanelStart.setLayout(new java.awt.BorderLayout());
+		jPanelStartS.setLayout(new java.awt.GridLayout(alLoci.size(), 0));
+		jPanelStartC.setLayout(new java.awt.GridLayout(alLoci.size(), 0));
+		jPanelStartE.setLayout(new java.awt.GridLayout(alLoci.size(), 0));
+		jPanelCenter.setLayout(new java.awt.GridLayout(alLoci.size(), 0));
+		jPanelEnd.setLayout(new java.awt.GridLayout(alLoci.size(), 0));
 
 		for (int i = 0; i < alLoci.size(); i++) {
-			jpLocusPanel[i] = new javax.swing.JPanel();
-			jpLocusPanel[i].setLayout(new java.awt.BorderLayout());
-
-			jpLocusSubPanel[i] = new javax.swing.JPanel();
-			jpLocusSubPanel[i].setLayout(new javax.swing.BoxLayout(jpLocusSubPanel[i], javax.swing.BoxLayout.LINE_AXIS));
-
 			jlName[i] = new javax.swing.JLabel(alLoci.get(i));
 			jlName[i].setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
-			jpLocusSubPanel[i].add(jlName[i]);
+			jPanelStartS.add(jlName[i]);
 
 			jtbDownload[i] = new javax.swing.JToggleButton(org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jtbDownload"));
 			jtbDownload[i].setEnabled(false);
+			jtbDownload[i].setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.LOWERED));
 			jtbDownload[i].addActionListener(new java.awt.event.ActionListener() {
 
+				@Override
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					jtbDownloadActionPerformed(evt);
 				}
 			});
-			jpLocusSubPanel[i].add(jtbDownload[i]);
+			jPanelStartC.add(jtbDownload[i]);
 
+//TODO define the insets
 			javax.swing.JLabel jlOR = new javax.swing.JLabel(org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jlOR"));
-			jpLocusSubPanel[i].add(jlOR);
-
-			jpLocusPanel[i].add(jpLocusSubPanel[i], java.awt.BorderLayout.WEST);
+			jlOR.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
+			jPanelStartE.add(jlOR);
 
 			jtfFile[i] = new javax.swing.JTextField();
 			jtfFile[i].setEnabled(false);
-			jpLocusPanel[i].add(jtfFile[i], java.awt.BorderLayout.CENTER);
+			jPanelCenter.add(jtfFile[i]);
 
 			jbLocusBrowse[i] = new javax.swing.JButton();
 			org.openide.awt.Mnemonics.setLocalizedText(jbLocusBrowse[i], org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jbLocusBrowse.text"));
 			jbLocusBrowse[i].setEnabled(false);
+			jbLocusBrowse[i].setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.LOWERED));
 			jbLocusBrowse[i].addActionListener(new java.awt.event.ActionListener() {
 
+				@Override
 				public void actionPerformed(java.awt.event.ActionEvent evt) {
 					jbBrowseActionPerformed(evt);
 				}
 			});
-			jpLocusPanel[i].add(jbLocusBrowse[i], java.awt.BorderLayout.EAST);
+			jPanelEnd.add(jbLocusBrowse[i]);
 
-			jPanel1.add(jpLocusPanel[i]);
-		}
-		// Dynamic Frame end
+		} // Dynamic Frame end
 
-		jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.LINE_AXIS));
+		jPanelStart.add(jPanelStartS, java.awt.BorderLayout.LINE_START);
+		jPanelStart.add(jPanelStartC, java.awt.BorderLayout.CENTER);
+		jPanelStart.add(jPanelStartE, java.awt.BorderLayout.LINE_END);
 
-		org.openide.awt.Mnemonics.setLocalizedText(jLabel5, org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jLabel5.text_1")); // NOI18N
-		jLabel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
-		jPanel8.add(jLabel5);
-
-		org.openide.awt.Mnemonics.setLocalizedText(jToggleButton2, org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jToggleButton2.text")); // NOI18N
-		jToggleButton2.setEnabled(
-				false);
-		jToggleButton2.addActionListener(
-				new java.awt.event.ActionListener() {
-
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jToggleButton2ActionPerformed(evt);
-					}
-				});
-		jPanel8.add(jToggleButton2);
-
-		org.openide.awt.Mnemonics.setLocalizedText(jLabel6, org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jLabel6.text_1")); // NOI18N
-		jPanel8.add(jLabel6);
+		jPanel1.add(jPanelStart, java.awt.BorderLayout.LINE_START);
+		jPanel1.add(jPanelCenter, java.awt.BorderLayout.CENTER);
+		jPanel1.add(jPanelEnd, java.awt.BorderLayout.LINE_END);
 
 		jPanel5.add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -217,9 +214,25 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		jEditorPane1.setEditable(
 				false);
 		jEditorPane1.setMaximumSize(
-				new java.awt.Dimension(200, 200));
+				new java.awt.Dimension(200, 200)); // TODO needed !?
 		add(jEditorPane1, java.awt.BorderLayout.CENTER);
-	}// </editor-fold>                        
+
+		bEmpty = true;
+		// To prevent bad UI experience when comming back to this UI
+		// www loader
+		jRadioButton1.setSelected(true);
+		for (int i = 0; i < alLoci.size(); i++) {
+			jRadioButton1.setSelected(true);
+			jtbDownload[i].setSelected(false);
+			jtbDownload[i].setEnabled(false);
+			jtfFile[i].setEnabled(true);
+		}
+
+		setEditorPanel("LoadMLSTVisualPanel3a.html");
+//		setSize(getPreferredSize());
+		repaint();
+//		setSize(getPreferredSize()); // TODO correct this!!!
+	}
 
 	private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {
 		for (int i = 0; i < alLoci.size(); i++) {
@@ -269,46 +282,41 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 				System.out.println("Found him!!!!");
 				if (jtbDownload[i].isSelected()) {
 					task = new Task(i);
-					task.addPropertyChangeListener(new PropertyChangeListener() {
-
-						@Override
-						public void propertyChange(PropertyChangeEvent pce) {
-							if (pce.getPropertyName().equals("progress")) {
-								int progress = (Integer) pce.getNewValue();
-							}
-						}
-					});
+//					task.addPropertyChangeListener(new PropertyChangeListener() {
+//
+//						@Override
+//						public void propertyChange(PropertyChangeEvent pce) {
+//							if (pce.getPropertyName().equals("progress")) {
+//								int progress = (Integer) pce.getNewValue();
+//							}
+//						}
+//					});
 					task.execute();
 				} else {
 					task.cancel(true);
+					sbSequences[i] = null;
+					jtbDownload[i].setText(org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jtbDownload"));
 				}
 				break;
 			}
 		}
 	}
 
-private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
-// TODO add your handling code here:
-}//GEN-LAST:event_jToggleButton2ActionPerformed
-
-private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-// TODO add your handling code here:
-}//GEN-LAST:event_jButton3ActionPerformed
 	// Variables declaration - do not modify                     
 	private javax.swing.ButtonGroup buttonGroup1;
 	private javax.swing.JEditorPane jEditorPane1;
-	private javax.swing.JLabel jLabel5;
-	private javax.swing.JLabel jLabel6;
 	private javax.swing.JPanel jPanel1;
+	private javax.swing.JPanel jPanelStart;
+	private javax.swing.JPanel jPanelStartS;
+	private javax.swing.JPanel jPanelStartC;
+	private javax.swing.JPanel jPanelStartE;
+	private javax.swing.JPanel jPanelCenter;
+	private javax.swing.JPanel jPanelEnd;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JPanel jPanel5;
-	private javax.swing.JPanel jPanel8;
 	private javax.swing.JRadioButton jRadioButton1;
 	private javax.swing.JRadioButton jRadioButton2;
-	private javax.swing.JToggleButton jToggleButton2;
 	private JFileChooser fc;
-	private javax.swing.JPanel[] jpLocusPanel;
-	private javax.swing.JPanel[] jpLocusSubPanel;
 	private javax.swing.JLabel[] jlName;
 	private javax.swing.JToggleButton[] jtbDownload;
 	private javax.swing.JTextField[] jtfFile;
@@ -316,21 +324,24 @@ private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 	class Task extends SwingWorker<Void, Void> {
 
-		private int index;
+		private int iSeq;
 
 		private Task(int i) {
-			index = i;
+			iSeq = i;
 		}
 
 		@Override
 		public Void doInBackground() {
 			// TODO something
+			sbSequences[iSeq] = new StringBuffer();
+			// ...
 			return null;
 		}
 
 		@Override
 		public void done() {
 			setCursor(null); //turn off the wait cursor
+			jtbDownload[iSeq].setText("Done!");
 		}
 	}
 }

@@ -1,29 +1,29 @@
-package net.phyloviz.loadmlst.xml;
+package net.phyloviz.loadmlst.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-import org.jdom.Content;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
-public class Parser {
+public class XMLParser {
 
-	private static Parser parser = null;
+	private static XMLParser parser = null;
 	private static Document document = null;
 	private static ArrayList<String[]> alDatabases = null;
 
-	private Parser() {
+	private XMLParser() {
 		loadXML();
 	}
 
 	private void loadXML() {
 		String endPoint = org.openide.util.NbBundle.getMessage(
-				Parser.class, "Parser.endpoint");
+				XMLParser.class, "MLSTDBs.endpoint");
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			document = builder.build(new URL(endPoint));
@@ -37,9 +37,26 @@ public class Parser {
 		}
 	}
 
-	public static Parser getParser() {
+	public static boolean hasConnection() {
+		boolean bHas = false;
+		String url = org.openide.util.NbBundle.getMessage(
+				XMLParser.class, "Connection.defaultURL");
+		try {
+			URL newURL = new URL(url);
+			InputStream is = newURL.openStream();
+			is.close();
+			bHas = true;
+		} catch (IOException e) {
+			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
+					org.openide.util.NbBundle.getMessage(
+					XMLParser.class, "Connection.offline"));
+		}
+		return bHas;
+	}
+
+	public static XMLParser getParser() {
 		if (parser == null) {
-			parser = new Parser();
+			parser = new XMLParser();
 		}
 		return parser;
 	}
