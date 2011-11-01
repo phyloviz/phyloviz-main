@@ -1,7 +1,12 @@
 package net.phyloviz.loadmlst.io;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -28,10 +33,14 @@ public class XMLParser {
 			SAXBuilder builder = new SAXBuilder();
 			document = builder.build(new URL(endPoint));
 			// TODO exception out of net
-		} catch (IOException ex) {
+		} catch (IOException e) {
+			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
+					e.getLocalizedMessage());
 			// No internet connection
 			document = null;
 		} catch (JDOMException e) {
+			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
+					e.getLocalizedMessage());
 			// JDOM Error Parsing XML
 			document = null;
 		}
@@ -48,8 +57,7 @@ public class XMLParser {
 			bHas = true;
 		} catch (IOException e) {
 			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
-					org.openide.util.NbBundle.getMessage(
-					XMLParser.class, "Connection.offline"));
+					e.getLocalizedMessage());
 		}
 		return bHas;
 	}
@@ -101,6 +109,55 @@ public class XMLParser {
 		}
 		Element e = (Element) document.getRootElement().getChildren("species").get(index);
 		return e.getChild("mlst").getChild("database").getChild("profiles").getChild("url").getText();
+	}
+
+	public static boolean fileExists(String file) {
+		File fd = new File(file);
+		return fd.exists();
+	}
+
+	private String readSequence(InputStream is) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String line, s = "";
+		while ((line = br.readLine()) != null) {
+			s += line + "\n";
+		}
+		return s.trim();
+	}
+
+	public String getLocusSequence(String file) {
+		String s = null;
+
+		try {
+			FileInputStream fstream = new FileInputStream(file);
+			s = readSequence(fstream);
+		} catch (IOException ex) {
+			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
+					ex.getLocalizedMessage());
+		}
+		return s;
+	}
+
+	public String getLocusSequence(int iDB, int iLocus) {
+		if (document == null) {
+			return null;
+		}
+		Element e = (Element) document.getRootElement().getChildren("species").get(iDB);
+		Element loci = e.getChild("mlst").getChild("database").getChild("loci");
+		Element locus = (Element) loci.getChildren("locus").get(iLocus);
+		String s = null;
+
+		try {
+			URL url = new URL(locus.getChild("url").getText());
+			s = readSequence(url.openStream());
+		} catch (MalformedURLException ex) {
+			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
+					ex.getLocalizedMessage());
+		} catch (IOException ex) {
+			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
+					ex.getLocalizedMessage());
+		}
+		return s;
 	}
 
 	public ArrayList<String> getLoci(int index) {

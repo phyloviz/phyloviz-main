@@ -54,7 +54,7 @@ public final class LoadMLSTVisualPanel2 extends JPanel {
 						task.execute();
 					} else {
 						jProgressBar1.setString(org.openide.util.NbBundle.getMessage(
-								XMLParser.class, "Connection.offline"));
+								LoadMLSTVisualPanel2.class, "Connection.offline"));
 						jToggleButton1.setSelected(false);
 					}
 				} else {

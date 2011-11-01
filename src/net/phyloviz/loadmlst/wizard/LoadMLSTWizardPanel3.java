@@ -1,11 +1,15 @@
 package net.phyloviz.loadmlst.wizard;
 
 import java.awt.Component;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import javax.swing.event.ChangeListener;
+import net.phyloviz.alseq.AlignedSequenceFastaFactory;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
-import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
 import org.openide.WizardDescriptor;
@@ -26,7 +30,6 @@ public class LoadMLSTWizardPanel3 implements WizardDescriptor.ValidatingPanel {
 	private int iDBIndex;
 	private TypingData<? extends AbstractProfile> td;
 	private TypingFactory tf;
-	private Population pop;
 	private DataSet ds;
 
 	// Get the visual component for the panel. In this template, the component
@@ -62,7 +65,7 @@ public class LoadMLSTWizardPanel3 implements WizardDescriptor.ValidatingPanel {
 
 	@Override
 	public void readSettings(Object settings) {
-		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/loadmlst/SequenceImage.png", true));
+		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/loadmlst/LoadMLST-Sequence.png", true));
 		td = (TypingData<AbstractProfile>) ((WizardDescriptor) settings).getProperty("typing_data");
 		tf = (TypingFactory) ((WizardDescriptor) settings).getProperty("typing_factory");
 		dataSetName = (String) ((WizardDescriptor) settings).getProperty("name");
@@ -77,6 +80,29 @@ public class LoadMLSTWizardPanel3 implements WizardDescriptor.ValidatingPanel {
 	@Override
 	public void validate() throws WizardValidationException {
 		ds = new DataSet(dataSetName);
+
+		LoadMLSTVisualPanel3 vp3 = (LoadMLSTVisualPanel3) getComponent();
+		if (vp3.isSeqDataSelected()) {
+			ArrayList<String> alLoci = vp3.getLoci();
+			if (vp3.hasSeqDataComplete() && alLoci != null) {
+				for (int i = 0; i < alLoci.size(); i++) {
+					try {
+						Reader reader = vp3.getSequence(i);
+						if (reader == null) {
+							reader = new FileReader(vp3.getFilename(i));
+						}
+						
+						TypingData<? extends AbstractProfile> seqData = new AlignedSequenceFastaFactory().loadData(reader);
+						seqData.setDescription(alLoci.get(i) + " locus sequence");
+						ds.add(seqData);
+						// TODO integrate data
+					} catch (IOException e) {
+					}
+				}
+			} else {
+				throw new WizardValidationException(null, "Sequence data not completely loaded yet!", null);
+			}
+		}
 
 		ds.add(td);
 		Lookup.getDefault().lookup(DataSetTracker.class).add(ds);

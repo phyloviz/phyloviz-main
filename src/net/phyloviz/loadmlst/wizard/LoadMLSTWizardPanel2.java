@@ -5,15 +5,12 @@ import java.io.IOException;
 import javax.swing.event.ChangeListener;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
-import net.phyloviz.core.data.DataSetTracker;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.mlst.MLSTypingFactory;
 import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
-import org.openide.awt.StatusDisplayer;
 import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 
 public class LoadMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
 
@@ -82,24 +79,19 @@ public class LoadMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
 
 	@Override
 	public void validate() throws WizardValidationException {
-//		if (tf == null) {
-//			throw new WizardValidationException(null, "Could not load MSLT plugin", null);
-//		}
-//
-//		if (((LoadMLSTVisualPanel2) getComponent()).isEmpty()) {
-//			throw new WizardValidationException(null, "No typing data completely loaded yet!", null);
-//		}
-// TODO uncomment this
-//		try {
-//			ds = new DataSet(dataSetName);
-//			td = tf.loadData(((LoadMLSTVisualPanel2) getComponent()).getTypingData());
-//			td.setDescription(tf.toString());
-//
-//			ds.add(td);
-//			Lookup.getDefault().lookup(DataSetTracker.class).add(ds);
-//			StatusDisplayer.getDefault().setStatusText("Dataset loaded.");
-//		} catch (IOException ex) {
-//			throw new WizardValidationException(null, "Fatal error: " + ex.getMessage(), null);
-//		}
+		if (tf == null) {
+			throw new WizardValidationException(null, "Could not load the plugin", null);
+		}
+
+		if (((LoadMLSTVisualPanel2) getComponent()).isEmpty()) {
+			throw new WizardValidationException(null, "No typing data completely loaded yet!", null);
+		}
+
+		try {
+			td = tf.loadData(((LoadMLSTVisualPanel2) getComponent()).getTypingData());
+			td.setDescription(tf.toString());
+		} catch (IOException ex) {
+			throw new WizardValidationException(null, "Fatal error: " + ex.getMessage(), null);
+		}
 	}
 }

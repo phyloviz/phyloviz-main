@@ -1,10 +1,9 @@
 package net.phyloviz.loadmlst.wizard;
 
 import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -22,9 +21,8 @@ import org.openide.util.NbPreferences;
 public final class LoadMLSTVisualPanel3 extends JPanel {
 
 	private ArrayList<String> alLoci;
-	private StringBuffer[] sbSequences;
+	private String[] saSequences;
 	private Task task;
-	private boolean bEmpty;
 	private int iIndex;
 
 	/** Creates new form LoadMLSTVisualPanel3 */
@@ -59,12 +57,29 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		return jtfFile[i].getText();
 	}
 
-	public boolean isEmpty() {
-		return bEmpty;
+	public boolean isSeqDataSelected() {
+		return jRadioButton2.isSelected();
 	}
 
-	public boolean hasMLSTData() {
-		return jRadioButton2.isSelected();
+	public ArrayList<String> getLoci() {
+		return alLoci;
+	}
+
+	public boolean hasSeqDataComplete() {
+		for (int i = 0; i < alLoci.size(); i++) {
+			if (saSequences[i] == null) {
+				if (XMLParser.fileExists(jtfFile[i].getText())) {
+					saSequences[i] = XMLParser.getParser().getLocusSequence(jtfFile[i].getText());
+				} else {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public StringReader getSequence(int i) {
+		return new StringReader(saSequences[i]);
 	}
 
 	/** This method is called from within the constructor to
@@ -120,21 +135,19 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 
 		// User already pressed Back -> Next
 		if (alLoci != null) {
-			System.out.println("alLoci != null");
 			// User selected a different DB
 			if (iDBindex != iIndex) {
 				// Delete old form to be replaced
 				jPanel5.remove(jPanel5.getComponentCount() - 1);
-				System.out.println("Delete Old");
 			} else {
 				// Everything stays the same
-				System.out.println("Stays the same");
 				return;
 			}
-		} else System.out.println("first time");
+		} // else it is the first time
+
 		iIndex = iDBindex;
 		alLoci = XMLParser.getParser().getLoci(iIndex);
-		sbSequences = new StringBuffer[alLoci.size()];
+		saSequences = new String[alLoci.size()];
 
 		jPanel1 = new javax.swing.JPanel();
 		jPanelStart = new javax.swing.JPanel();
@@ -217,7 +230,6 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 				new java.awt.Dimension(200, 200)); // TODO needed !?
 		add(jEditorPane1, java.awt.BorderLayout.CENTER);
 
-		bEmpty = true;
 		// To prevent bad UI experience when comming back to this UI
 		// www loader
 		jRadioButton1.setSelected(true);
@@ -229,9 +241,7 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		}
 
 		setEditorPanel("LoadMLSTVisualPanel3a.html");
-//		setSize(getPreferredSize());
-		repaint();
-//		setSize(getPreferredSize()); // TODO correct this!!!
+		setSize(getMinimumSize());
 	}
 
 	private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -241,6 +251,7 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 			jbLocusBrowse[i].setEnabled(false);
 		}
 		setEditorPanel("LoadMLSTVisualPanel3a.html");
+		setSize(getMinimumSize());
 	}
 
 	private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -250,6 +261,7 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 			jbLocusBrowse[i].setEnabled(true);
 		}
 		setEditorPanel("LoadMLSTVisualPanel3b.html");
+		setSize(getMinimumSize());
 	}
 
 	private void jbBrowseActionPerformed(java.awt.event.ActionEvent evt) {
@@ -279,7 +291,6 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		JToggleButton tb = (JToggleButton) evt.getSource();
 		for (int i = 0; i < alLoci.size(); i++) {
 			if (jtbDownload[i].equals(tb)) {
-				System.out.println("Found him!!!!");
 				if (jtbDownload[i].isSelected()) {
 					task = new Task(i);
 //					task.addPropertyChangeListener(new PropertyChangeListener() {
@@ -294,14 +305,13 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 					task.execute();
 				} else {
 					task.cancel(true);
-					sbSequences[i] = null;
+					saSequences[i] = null;
 					jtbDownload[i].setText(org.openide.util.NbBundle.getMessage(LoadMLSTVisualPanel3.class, "LoadMLSTVisualPanel3.jtbDownload"));
 				}
 				break;
 			}
 		}
 	}
-
 	// Variables declaration - do not modify                     
 	private javax.swing.ButtonGroup buttonGroup1;
 	private javax.swing.JEditorPane jEditorPane1;
@@ -333,15 +343,14 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 		@Override
 		public Void doInBackground() {
 			// TODO something
-			sbSequences[iSeq] = new StringBuffer();
-			// ...
+			saSequences[iSeq] = XMLParser.getParser().getLocusSequence(iIndex, iSeq);
 			return null;
 		}
 
 		@Override
 		public void done() {
 			setCursor(null); //turn off the wait cursor
-			jtbDownload[iSeq].setText("Done!");
+			jtbDownload[iSeq].setText("   Done!   ");
 		}
 	}
 }
