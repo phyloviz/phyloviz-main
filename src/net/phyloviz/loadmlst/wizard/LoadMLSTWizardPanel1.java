@@ -52,7 +52,6 @@ public class LoadMLSTWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 	// by the user.
 	@Override
 	public void readSettings(Object settings) {
-		// TODO: Put logo!!
 		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/loadmlst/LoadMLST-logo.png", true));
 	}
 

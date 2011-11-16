@@ -32,7 +32,6 @@ public class XMLParser {
 		try {
 			SAXBuilder builder = new SAXBuilder();
 			document = builder.build(new URL(endPoint));
-			// TODO exception out of net
 		} catch (IOException e) {
 			Logger.getLogger(XMLParser.class.getName()).log(Level.WARNING,
 					e.getLocalizedMessage());

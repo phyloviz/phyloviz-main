@@ -22,7 +22,7 @@ public final class LoadMLSTWizardAction implements ActionListener {
 		WizardDescriptor wizardDescriptor = new WizardDescriptor((Panel<WizardDescriptor>[]) getPanels());
 		// {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
-		wizardDescriptor.setTitle("Load PubMLST Database");
+		wizardDescriptor.setTitle(org.openide.util.NbBundle.getMessage(LoadMLSTWizardAction.class, "LoadMLSTWizardAction.title"));
 		wizardDescriptor.putProperty("WizardPanel_contentBackgroundColor", Color.WHITE);
 		//wizardDescriptor.putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/wizard.gif", true));
 		wizardDescriptor.putProperty("WizardPanel_imageAligment", "center");
@@ -44,7 +44,8 @@ public final class LoadMLSTWizardAction implements ActionListener {
 			panels = new WizardDescriptor.Panel[]{
 				new LoadMLSTWizardPanel1(),
 				new LoadMLSTWizardPanel2(),
-				new LoadMLSTWizardPanel3()
+				new LoadMLSTWizardPanel3(),
+				new LoadMLSTWizardPanel4()
 				};
 			String[] steps = new String[panels.length];
 			for (int i = 0; i < panels.length; i++) {

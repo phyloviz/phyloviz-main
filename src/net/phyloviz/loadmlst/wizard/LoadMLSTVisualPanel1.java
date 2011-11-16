@@ -66,11 +66,16 @@ public final class LoadMLSTVisualPanel1 extends JPanel {
 	}
 
 	public int getSelectedIndex() {
+		if (((String) jComboBox1.getSelectedItem()).equals(
+				org.openide.util.NbBundle.getMessage(
+				LoadMLSTVisualPanel1.class, "Connection.offline"))) {
+			return -1;
+		}
 		return jComboBox1.getSelectedIndex();
 	}
 
 	public String getSelectedName() {
-		int i = jComboBox1.getSelectedIndex();
+		int i = this.getSelectedIndex();
 		if (i < 0) {
 			return "";
 		}
