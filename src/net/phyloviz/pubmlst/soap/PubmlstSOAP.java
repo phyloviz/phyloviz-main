@@ -83,7 +83,7 @@ public class PubmlstSOAP {
 						"profile"), AlleleNumber[].class, false, false);
 				param.setItemQName(new QName("", "alleleNumber"));
 				oper.addParameter(param);
-				// TODO: ask Keith to correct this (test with bcc-st-3)
+// TODO: ask Keith to correct this (test with bcc-st-3)
 //			param = new ParameterDesc(new QName("", "complex"),
 //					ParameterDesc.OUT, new QName(
 //					"http://www.w3.org/2001/XMLSchema", "string"),
@@ -103,7 +103,7 @@ public class PubmlstSOAP {
 				for (int i = 0; i < alleles.length; i++) {
 					sProfile += "\t" + alleles[i].getId();
 				}
-				// TODO: same as above
+// Same as above: Ask Keith
 //			String complex = ((String) output.get(new QName("", "complex")));
 //			if (complex != null) {
 //				sProfile += complex;

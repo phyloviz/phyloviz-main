@@ -22,9 +22,8 @@ public final class PubMLSTWizardAction implements ActionListener {
 		WizardDescriptor wizardDescriptor = new WizardDescriptor((Panel<WizardDescriptor>[]) getPanels());
 		// {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
-		wizardDescriptor.setTitle("Load PubMLST Database");
+		wizardDescriptor.setTitle(org.openide.util.NbBundle.getMessage(PubMLSTWizardAction.class, "PubMLSTWizardAction.title"));
 		wizardDescriptor.putProperty("WizardPanel_contentBackgroundColor", Color.WHITE);
-		//wizardDescriptor.putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/wizard.gif", true));
 		wizardDescriptor.putProperty("WizardPanel_imageAligment", "center");
 		Dialog dialog = DialogDisplayer.getDefault().createDialog(wizardDescriptor);
 		dialog.setVisible(true);

@@ -16,7 +16,7 @@
         <folder name="File">
             <file name="net-phyloviz-pubmlst-wizard-PubMLSTWizardAction.shadow">
                 <attr name="originalFile" stringvalue="Actions/File/net-phyloviz-pubmlst-wizard-PubMLSTWizardAction.instance"/>
-                <attr name="position" intvalue="1"/>
+                <attr name="position" intvalue="2"/>
             </file>
         </folder>
     </folder>
