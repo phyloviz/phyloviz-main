@@ -44,6 +44,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Iterator;
 import java.util.TreeSet;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -58,6 +59,8 @@ import net.phyloviz.category.ui.ChartLegendPanel;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.DataSaver;
 import net.phyloviz.core.data.DataSet;
+import net.phyloviz.core.data.Profile;
+import net.phyloviz.core.data.TypingData;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.windows.TopComponent;
@@ -96,7 +99,17 @@ public class TViewPanel extends TopComponent {
 		this.ds = _ds;
 
 		cp = new CategoryProvider(dm);
-		ds.add(cp);
+		if (dm instanceof TypingData) {
+			((TypingData<? extends Profile>) dm).add(cp);
+		} else {
+			Iterator<? extends TypingData> tdi = ds.getLookup().lookupAll(TypingData.class).iterator();
+			while (tdi.hasNext()) {
+				TypingData<? extends Profile> ltd = tdi.next();
+				if (ltd.getKey() >= 0)
+					ltd.add(cp);
+			}
+				
+		}
 
 		clp = new ChartLegendPanel(new Dimension(128, 128), cp, dm.weight());
 		clp.setName(name + " (Selection view)");
