@@ -41,6 +41,8 @@ import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.DataSet;
+import net.phyloviz.core.data.Profile;
+import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.gtview.render.ChartRenderer;
 import org.openide.util.Lookup.Result;
@@ -57,7 +59,7 @@ public class SLVGraphGTPanel extends TopComponent {
 	private CategoryChangeListener gvCatListen;
 
 	/** Creates new form GTPanel */
-	public SLVGraphGTPanel(String name, GOeBurstResult gr, DataSet ds) {
+	public SLVGraphGTPanel(String name, GOeBurstResult gr, TypingData<? extends Profile> ds) {
 		super(Lookups.singleton(gr));
 		initComponents();
 		this.setName(name);
