@@ -41,7 +41,6 @@ import java.util.Collection;
 import javax.swing.Action;
 import net.phyloviz.core.data.TypingData;
 import org.openide.nodes.AbstractNode;
-import org.openide.nodes.Children;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Utilities;
 import org.openide.util.lookup.AbstractLookup;
@@ -55,7 +54,7 @@ public class TypingDataNode extends AbstractNode {
 	}
 
 	private TypingDataNode(TypingData td, InstanceContent ic) {
-		super(Children.LEAF, new AbstractLookup(ic));
+		super(new ExplorerChildren(td.getLookup()), new AbstractLookup(ic));
 		ic.add(td);
 		ic.add(td.getSaver());
 	}

@@ -108,6 +108,10 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 */
 	@SuppressWarnings("unchecked")
 	public TypingData(int nColumns) {
+
+		ic = new InstanceContent();
+		lookup = new AbstractLookup(ic);
+		
 		headers = new String[nColumns];
 		domains = new HashSet[nColumns];
 		for (int i = 0; i < nColumns; i++) {
