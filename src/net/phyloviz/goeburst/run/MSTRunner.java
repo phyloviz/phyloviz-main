@@ -73,7 +73,7 @@ public class MSTRunner implements Runnable {
 
 		DataSet ds = n.getParentNode().getLookup().lookup(DataSet.class);
 		Population pop = ds.getLookup().lookup(Population.class);
-		TypingData<? extends Profile> td = (TypingData<? extends Profile>) ds.getLookup().lookup(TypingData.class);
+		TypingData<? extends Profile> td = (TypingData<? extends Profile>) n.getLookup().lookup(TypingData.class);
 
 		ArrayList<GOeBurstNode> nlst = new ArrayList<GOeBurstNode>();
 
@@ -124,6 +124,6 @@ public class MSTRunner implements Runnable {
 		op.appendWithDate("MST algorithm: done.\n");
 		op.flush();
 
-		ds.add(new GOeBurstMSTResult(ds, tree, ad, op));
+		td.add(new GOeBurstMSTResult(ds, tree, ad, op));
 	}
 }
