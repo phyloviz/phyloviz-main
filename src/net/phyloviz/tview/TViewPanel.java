@@ -102,13 +102,9 @@ public class TViewPanel extends TopComponent {
 		if (dm instanceof TypingData) {
 			((TypingData<? extends Profile>) dm).add(cp);
 		} else {
-			Iterator<? extends TypingData> tdi = ds.getLookup().lookupAll(TypingData.class).iterator();
-			while (tdi.hasNext()) {
-				TypingData<? extends Profile> ltd = tdi.next();
-				if (ltd.getKey() >= 0)
-					ltd.add(cp);
-			}
-				
+			// TODO: fix this... it assumes that the first typing data as key reference...  
+			TypingData<? extends Profile> ltd = (TypingData<? extends Profile>) ds.getLookup().lookup(TypingData.class);
+			ltd.add(cp);
 		}
 
 		clp = new ChartLegendPanel(new Dimension(128, 128), cp, dm.weight());
