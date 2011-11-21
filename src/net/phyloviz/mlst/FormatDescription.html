@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+	<body>
+    The MLST Dataset type is chosen.  
+    <br/>
+    <br/>
+    The data format for the typing data should be as follows.
+    Load a tab separated file with the first row containing column headers
+    (field names). The first column should be a Sequence Identifier, such as
+    the ST for MLST data. Other columns should be the different loci used in
+    the typing scheme. 
+    <br/>
+    <br/>
+    Example of a MLST dataset for Streptococcus          
+    dysgalactiae subspecies equisimilis:
+<pre>
+  ST      gki     gtr     murI    mutS    recP    xpt     yqiZ
+  1       10      6       6       6       12      13      8
+  2       5       4       4       1       2       15      2
+  3       5       3       4       1       6       2       1
+  4       2       2       4       1       8       7       2
+  5       2       2       4       1       12      12      7
+  6       1       3       1       1       1       1       4
+  7       1       1       1       1       1       1       3
+  8       1       1       1       1       1       1       4
+</pre>
+    This files should not contain missing data. If any allele missing data
+    is found the entire line is discarded.
+	</body>
+</html>

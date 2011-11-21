@@ -38,6 +38,7 @@ package net.phyloviz.mlst;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -52,7 +53,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = TypingFactory.class)
 public class MLSTypingFactory implements TypingFactory {
 	
-	private static final String customName = "Multi-Locus Sequence Typing";
+	private static final String customName = "Multi-Locus Sequence Typing (MLST)";
 
 	@Override
 	public String toString() {
@@ -126,5 +127,16 @@ public class MLSTypingFactory implements TypingFactory {
 		}
 
 		return td;
+	}
+
+
+	@Override
+	public URL getDescription() {
+		return MLSTypingFactory.class.getResource("Description.html");
+	}
+
+	@Override
+	public URL getFormatDescription() {
+		return MLSTypingFactory.class.getResource("FormatDescription.html");
 	}
 }
