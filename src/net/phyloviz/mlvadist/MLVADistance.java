@@ -89,7 +89,7 @@ public class MLVADistance implements AbstractDistance<GOeBurstNode> {
 
 	@Override
 	public String toString() {
-		return "MLVA Distance";
+		return "Euclidean + goeBURST distance";
 	}
 
 	@Override

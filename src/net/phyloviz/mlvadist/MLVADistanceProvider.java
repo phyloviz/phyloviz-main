@@ -64,6 +64,6 @@ public class MLVADistanceProvider implements DistanceProvider<GOeBurstNode> {
 	
 	@Override
 	public String toString() {
-		return "MLVA Distance";
+		return "Euclidean + goeBURST distance";
 	}	
 }	
