@@ -38,6 +38,7 @@ package net.phyloviz.snp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -52,7 +53,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = TypingFactory.class)
 public class SNPFactory implements TypingFactory {
 	
-	private static final String customName = "Single-Nucleotide Polymorphism";
+	private static final String customName = "Single-Nucleotide Polymorphism (SNP)";
 
 	@Override
 	public String toString() {
@@ -126,5 +127,15 @@ public class SNPFactory implements TypingFactory {
 		}
 
 		return td;
+	}
+
+	@Override
+	public URL getDescription() {
+		return SNPFactory.class.getResource("Description.html");
+	}
+
+	@Override
+	public URL getFormatDescription() {
+		return SNPFactory.class.getResource("FormatDescription.html");
 	}
 }

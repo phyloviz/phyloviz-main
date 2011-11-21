@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+	<body>
+    The Single Nucleotide Polymorphism (SNP) (without explicit ID)  Dataset
+    type was chosen. 
+    <br/>
+    <br/>
+    The data format for the typing data should be as follows.
+    Load a tab separated file with the first row containing column headers
+    i.e. SNP identifiers.
+    On each column should be the different SNP values. For each SNP the
+    value can be either 0/1 for absence/presence or the actual nucleotide
+    found (A/T/G/C).                                                
+    A unique sequential ID identifier will be attributed to each SNP profile
+    based on the order of the profiles in the file.
+    <br/>                     
+    <br/>                     
+    An example of the file content for absence/presence of a given snp
+    follows:<br>
+<pre>
+    snp1  snp2  snp3  snp4  snp5                      
+    0     1     0     1     1
+    0     1     1     1     1
+    0     1     1     0     1
+    1     1     1     0     1
+    1     1     1     1     1
+    0     0     1     1     1
+</pre>
+	</body>
+</html>
