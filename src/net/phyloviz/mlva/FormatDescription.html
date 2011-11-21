@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+	<body>
+    The MLVA Dataset type was chosen. 
+    <br/>
+    <br/>
+    The data format for the typing data should be as follows.                                         
+    Load a tab separated file with the first row containing column headers
+    (field names). The first column should be a Sequence Identifier, an   
+    unique ID for the complete allelic profile.<br> Other columns should be
+    the different loci used in the typing scheme. For each loci the number
+    of repeats found should be given.
+    <br/>
+    <br/>
+    The following example represents an MLVA scheme with 7 loci named <code>l1</code> to
+    <code>l7</code>:
+<pre>
+  ST      l1     l2      l3      l4      l5      l6     l7
+  1       8      6       6       6       12      13     4
+  2       5      4.5     4       2.5     2       15     2
+  3       5.5    3       4       1.5     6       8      4                
+  (...)
+</pre>
+    This files should not contain missing data. If any allele missing data
+    is found the entire line is discarded.
+	</body>
+</html>

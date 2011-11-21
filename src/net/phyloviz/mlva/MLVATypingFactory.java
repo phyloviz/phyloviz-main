@@ -38,6 +38,7 @@ package net.phyloviz.mlva;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -52,7 +53,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = TypingFactory.class)
 public class MLVATypingFactory implements TypingFactory {
 	
-	private static final String customName = "Multi-Locus Variable Number of Tandem Repeats Analysis";
+	private static final String customName = "Multi-Locus Variable Number of Tandem Repeats Analysis (MLVA)";
 
 	@Override
 	public String toString() {
@@ -126,5 +127,15 @@ public class MLVATypingFactory implements TypingFactory {
 		}
 
 		return td;
+	}
+
+	@Override
+	public URL getDescription() {
+		return MLVATypingFactory.class.getResource("Description.html");
+	}
+
+	@Override
+	public URL getFormatDescription() {
+		return MLVATypingFactory.class.getResource("FormatDescription.html");
 	}
 }
