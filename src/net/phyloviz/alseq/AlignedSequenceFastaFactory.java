@@ -38,6 +38,7 @@ package net.phyloviz.alseq;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -139,5 +140,15 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 		}
 
 		return td;
+	}
+
+	@Override
+	public URL getDescription() {
+		return AlignedSequenceFastaFactory.class.getResource("FastaDescription.html");
+	}
+
+	@Override
+	public URL getFormatDescription() {
+		return AlignedSequenceFastaFactory.class.getResource("FastaFormatDescription.html");
 	}
 }
