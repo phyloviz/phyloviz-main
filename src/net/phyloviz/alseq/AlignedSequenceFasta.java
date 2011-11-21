@@ -104,6 +104,6 @@ public class AlignedSequenceFasta extends AbstractProfile implements Comparable<
 
 	@Override
 	public String toString() {
-		return "Seq: " + id + "Header: " + header + "\nSequence: " + sequence;
+		return "Seq: " + id + " Header: " + header + "\nSequence: " + sequence;
 	}
 }
