@@ -37,6 +37,7 @@ package net.phyloviz.core.util;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
@@ -62,15 +63,30 @@ public interface TypingFactory {
 	/**
 	 * This method updates a typing data instance with the data given by a population.
 	 * Each isolate from the considered population may be related to a
-	 * profile of the considered typing data, if they match a specific identificator.
+	 * profile of the considered typing data, if they match a specific identifier.
 	 * Thus, the typing data is updated according to the isolates of the population.
 	 * @param td the typing data to be updated.
 	 * @param pop the population to be considered for update.
 	 * @param key an index of a column in the table view of the population,
-	 * where are the matching identificators.
+	 * where are the matching identifier.
 	 * @return an updated version of the typing data.
 	 * @throws IndexOutOfBoundsException if the index <code>key</code> is
 	 * not valid in the table view of the population.
 	 */
 	public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key);
+
+	/**
+	 * This method provides a description (in HTML) for this kind of typing data.
+	 * 
+	 * @return description (in HTML) for this kind of typing data.
+	 */
+	public URL getDescription();
+
+	/**
+	 * This method provides a file format description (in HTML) for this kind of typing data.
+	 * 
+	 * @return file format description (in HTML) for this kind of typing data.
+	 */
+	public URL getFormatDescription();
+
 }

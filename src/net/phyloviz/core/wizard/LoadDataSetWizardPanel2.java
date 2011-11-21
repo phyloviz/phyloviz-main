@@ -36,6 +36,8 @@
 package net.phyloviz.core.wizard;
 
 import java.awt.Component;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -98,6 +100,7 @@ public class LoadDataSetWizardPanel2 implements WizardDescriptor.ValidatingPanel
 	public void readSettings(Object settings) {
 		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/TypingImage.png", true));
 		tf = (TypingFactory) ((WizardDescriptor) settings).getProperty("typing");
+		((LoadDataSetVisualPanel2) component).setDescription(tf.getFormatDescription());
 	}
 
 	@Override

@@ -47,7 +47,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 import org.openide.util.NbPreferences;
 
 public final class LoadDataSetVisualPanel2 extends JPanel {
@@ -55,21 +54,24 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
 	/** Creates new form LoadDataSetVisualPanel2 */
 	public LoadDataSetVisualPanel2() {
 		initComponents();
+	}
+
+	protected void setDescription(URL url) {
+		if (url == null)
+			url = LoadDataSetVisualPanel2.class.getResource("LoadDataSetVisualPanel1.html");
 
 		try {
-			URL url = LoadDataSetVisualPanel1.class.getResource("LoadDataSetVisualPanel2.html");
-			jEditorPane1.setEditorKit(new HTMLEditorKit());
 			jEditorPane1.setPage(url);
-			Font font = UIManager.getFont("Label.font");
-			String bodyRule = "body { font-family: " + font.getFamily() + "; "
-				+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
-			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
 			// Do nothing...
 			System.err.println(e.getMessage());
 		}
+		Font font = UIManager.getFont("Label.font");
+		String bodyRule = "body { font-family: " + font.getFamily() + "; "
+			+ "font-size: " + font.getSize() + "pt; width: " + jPanel2.getSize().width + "px;}";
+		((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 	}
-
+	
 	@Override
 	public String getName() {
 		return "Typing Data";
@@ -132,9 +134,11 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
         add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         jScrollPane1.setBorder(null);
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         jEditorPane1.setBackground(jPanel2.getBackground());
         jEditorPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
+        jEditorPane1.setContentType(org.openide.util.NbBundle.getMessage(LoadDataSetVisualPanel2.class, "LoadDataSetVisualPanel2.jEditorPane1.contentType")); // NOI18N
         jEditorPane1.setEditable(false);
         jEditorPane1.setMaximumSize(new java.awt.Dimension(200, 200));
         jScrollPane1.setViewportView(jEditorPane1);

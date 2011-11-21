@@ -36,9 +36,10 @@
 package net.phyloviz.core.wizard;
 
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -47,7 +48,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 import net.phyloviz.core.util.TypingFactory;
 import org.openide.util.Lookup;
 
@@ -64,7 +64,13 @@ public final class LoadDataSetVisualPanel1 extends JPanel {
 
 			@Override
 			public int compare(TypingFactory o1, TypingFactory o2) {
-				return o1.toString().compareTo(o2.toString());
+				String op1 = org.openide.util.NbBundle.getMessage(o1.getClass(), "TypingFactory.priority") ;
+				String op2 = org.openide.util.NbBundle.getMessage(o2.getClass(), "TypingFactory.priority") ;
+				int r = 0;
+				if (op1 != null && op2 != null)
+					r = op1.compareTo(op2);
+				
+				return (r == 0) ? o1.toString().compareTo(o2.toString()) : r;
 			}
 			
 		});
@@ -75,18 +81,43 @@ public final class LoadDataSetVisualPanel1 extends JPanel {
 
 		initComponents();
 		
+		URL url = result.getFirst().getDescription();
+		if (url == null)
+			url = LoadDataSetVisualPanel1.class.getResource("LoadDataSetVisualPanel1.html");
+
 		try {
-			URL url = LoadDataSetVisualPanel1.class.getResource("LoadDataSetVisualPanel1.html");
-			jEditorPane1.setEditorKit(new HTMLEditorKit());
 			jEditorPane1.setPage(url);
-			Font font = UIManager.getFont("Label.font");
-			String bodyRule = "body { font-family: " + font.getFamily() + "; "
-				+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
-			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
 			// Do nothing...
 			System.err.println(e.getMessage());
 		}
+
+		Font font = UIManager.getFont("Label.font");
+		String bodyRule = "body { font-family: " + font.getFamily() + "; "
+			+ "font-size: " + font.getSize() + "pt; width: " + jPanel2.getParent().getSize().width + "px;}";
+		((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
+
+		jComboBox1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				TypingFactory tf = (TypingFactory) jComboBox1.getSelectedItem();
+				URL url = tf.getDescription();
+				if (url == null)
+					url = LoadDataSetVisualPanel1.class.getResource("LoadDataSetVisualPanel1.html");
+
+				try {
+					jEditorPane1.setPage(url);
+				} catch (IOException e) {
+					// Do nothing...
+					System.err.println(e.getMessage());
+				}
+				Font font = UIManager.getFont("Label.font");
+				String bodyRule = "body { font-family: " + font.getFamily() + "; "
+					+ "font-size: " + font.getSize() + "pt; width: " + jPanel2.getParent().getSize().width + "px;}";
+				((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
+			}
+		});
 	}
 
 	@Override
@@ -151,9 +182,11 @@ public final class LoadDataSetVisualPanel1 extends JPanel {
         add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         jScrollPane1.setBorder(null);
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         jEditorPane1.setBackground(jPanel5.getBackground());
         jEditorPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
+        jEditorPane1.setContentType(org.openide.util.NbBundle.getMessage(LoadDataSetVisualPanel1.class, "LoadDataSetVisualPanel1.jEditorPane1.contentType")); // NOI18N
         jEditorPane1.setEditable(false);
         jEditorPane1.setMaximumSize(new java.awt.Dimension(200, 200));
         jScrollPane1.setViewportView(jEditorPane1);
