@@ -87,7 +87,7 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 
 	@Override
 	public String toString() {
-		return "eBURST Distance";
+		return "goeBURST distance";
 	}
 
 	@Override

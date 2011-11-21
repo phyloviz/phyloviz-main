@@ -54,7 +54,7 @@ public class GOeBurstDistanceProvider implements DistanceProvider<GOeBurstNode> 
 
 	@Override
 	public String toString() {
-		return "eBURST Distance";
+		return "goeBURST distance";
 	}
 
 	@Override
