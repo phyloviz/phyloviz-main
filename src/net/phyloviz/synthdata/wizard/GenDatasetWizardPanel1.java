@@ -52,6 +52,7 @@ public class GenDatasetWizardPanel1 implements WizardDescriptor.ValidatingPanel 
 	// by the user.
 	@Override
 	public void readSettings(Object settings) {
+	    // TODO: get a logo
 		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/synthdata/GenDataset-logo.png", true));
 	}
 

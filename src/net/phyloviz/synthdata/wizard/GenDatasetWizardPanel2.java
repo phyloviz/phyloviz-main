@@ -53,6 +53,7 @@ public class GenDatasetWizardPanel2 implements WizardDescriptor.ValidatingPanel 
     @Override
     public void readSettings(Object settings) {
 	   ((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/synthdata/GenDataset-logo.png", true));
+	   ((GenDatasetVisualPanel2) getComponent()).initSeed();
     }
 
     @Override
@@ -68,27 +69,32 @@ public class GenDatasetWizardPanel2 implements WizardDescriptor.ValidatingPanel 
 
     @Override
     public void validate() throws WizardValidationException {
-	   int igensize = validateIsNumber(component.getGenSize(), "Generations total #");
-	   int igensampled = validateIsNumber(component.getGenSampled(), "Generations sampled #");
-	   validateIsNumber(component.getPopSize(), "Population size");
-	   validateIsNumber(component.getProfileSize(), "Profile size");
-	   validateIsNumber(component.getMutRate(), "Rate of mutation");
-	   validateIsNumber(component.getRecRate(), "Rate of recombination");
-	   validateIsNumber(component.getRandomSeed(), "Random seed");
+	   int igensize = validateIsNumber(component.getGenSize(), 1, "Generations total #");
+	   int igensampled = validateIsNumber(component.getGenSampled(), 1, "Generations sampled #");
+	   int ipopsize = validateIsNumber(component.getPopSize(), 1, "Population size");
+	   validateIsNumber(component.getProfileSize(), 1, "Profile size");
+	   int imut = validateIsNumber(component.getMutRate(), 0, "Rate of mutation");
+	   int irec = validateIsNumber(component.getRecRate(), 0, "Rate of recombination");
+	   int iseed = validateIsNumber(component.getRandomSeed(), 1, "Random seed");
 
 	   if (igensampled > igensize) {
 		  throw new WizardValidationException(null, "Total generations must be bigger than sampled generations", null);
 	   }
-	   // TODO: Some limit for Mut & Rec ?!
+	   if (iseed <= 0 || iseed > Integer.MAX_VALUE) {
+		  throw new WizardValidationException(null, "Random seed must be between [1, " + (Integer.MAX_VALUE / 100) + "]", null);
+	   }
+	   if (imut > (2 * ipopsize) || irec > (2 * ipopsize)) {
+		  throw new WizardValidationException(null, "Mutation/Recombination cannot exceed 2x Population size", null);
+	   }
     }
 
-    private int validateIsNumber(String field, String desc) throws WizardValidationException {
-	   int ifield = 0;
+    private int validateIsNumber(String field, int min, String desc) throws WizardValidationException {
+	   int ifield = 0, max = Integer.MAX_VALUE;
 	   try {
 		  ifield = Integer.parseInt(field);
 
-		  if (ifield <= 0) {
-			 throw new WizardValidationException(null, desc + " must be bigger than zero", null);
+		  if (ifield < min || ifield > max) {
+			 throw new WizardValidationException(null, desc + " must be between [" + min + "," + max + "]", null);
 		  }
 	   } catch (NumberFormatException e) {
 		  throw new WizardValidationException(null, desc + " is not a number", null);

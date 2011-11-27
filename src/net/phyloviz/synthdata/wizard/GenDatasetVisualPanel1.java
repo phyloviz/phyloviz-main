@@ -49,30 +49,22 @@ public final class GenDatasetVisualPanel1 extends JPanel {
     private void initComponents() {
 
         jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
         jEditorPane1 = new javax.swing.JEditorPane();
 
         setLayout(new java.awt.BorderLayout());
 
+        jPanel2.setMinimumSize(new java.awt.Dimension(130, 25));
+        jPanel2.setPreferredSize(new java.awt.Dimension(130, 25));
         jPanel2.setLayout(new java.awt.BorderLayout());
-
-        jPanel3.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
 
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(GenDatasetVisualPanel1.class, "GenDatasetVisualPanel1.jLabel1.text")); // NOI18N
         jLabel1.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
-        jPanel3.add(jLabel1);
-
-        jPanel2.add(jPanel3, java.awt.BorderLayout.WEST);
-
-        jPanel4.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
+        jPanel2.add(jLabel1, java.awt.BorderLayout.WEST);
 
         jTextField1.setText(org.openide.util.NbBundle.getMessage(GenDatasetVisualPanel1.class, "GenDatasetVisualPanel1.jTextField1.text")); // NOI18N
-        jPanel4.add(jTextField1);
-
-        jPanel2.add(jPanel4, java.awt.BorderLayout.CENTER);
+        jPanel2.add(jTextField1, java.awt.BorderLayout.CENTER);
 
         add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
@@ -87,8 +79,6 @@ public final class GenDatasetVisualPanel1 extends JPanel {
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 }
