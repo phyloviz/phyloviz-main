@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.2//EN" "http://www.netbeans.org/dtds/filesystem-1_2.dtd">
+<filesystem>
+    <folder name="Actions">
+        <folder name="File">
+            <file name="net-phyloviz-synthdata-wizard-GenDatasetWizardAction.instance">
+                <attr name="delegate" newvalue="net.phyloviz.synthdata.wizard.GenDatasetWizardAction"/>
+                <attr name="iconBase" stringvalue="net/phyloviz/synthdata/GenDataset-icon.png"/>
+                <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
+                <attr name="noIconInMenu" stringvalue="false"/>
+                <attr name="displayName" bundlevalue="net.phyloviz.synthdata.Bundle#CTL_SynthDataAction"/>
+            </file>
+        </folder>
+    </folder>
+    <folder name="Menu">
+        <folder name="File">
+            <file name="net-phyloviz-synthdata-wizard-GenDatasetWizardAction.shadow">
+                <attr name="originalFile" stringvalue="Actions/File/net-phyloviz-synthdata-wizard-GenDatasetWizardAction.instance"/>
+                <attr name="position" intvalue="3"/>
+            </file>
+        </folder>
+    </folder>
+</filesystem>
