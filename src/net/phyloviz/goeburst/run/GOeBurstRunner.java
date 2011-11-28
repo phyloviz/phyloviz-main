@@ -155,6 +155,13 @@ public class GOeBurstRunner implements Runnable {
 						op.append(" (" + ad.info(e) + ")\n");
 					else
 						op.append("\n");
+				} else {
+					op.append(e.getU().getID() + " - " + e.getV().getID());
+					String einfo = ad.info(e);
+					if (einfo != null)
+						op.append(" (" + ad.info(e) + ") -\n");
+					else
+						op.append(" -\n");
 				}
 			}
 			op.append("\n");

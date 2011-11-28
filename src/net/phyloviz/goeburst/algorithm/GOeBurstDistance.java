@@ -195,9 +195,30 @@ public class GOeBurstDistance implements AbstractDistance<GOeBurstNode> {
 
 			/* Last chance... */
 			if (ret == 0) {
-				ret = cmp.compare(f.getU().getID(), f.getV().getID())
-					- cmp.compare(e.getU().getID(), e.getV().getID());
 
+				String fMinId, fMaxId, eMinId, eMaxId;
+				
+				if (cmp.compare(f.getU().getID(), f.getV().getID()) < 0) {
+					fMinId = f.getU().getID();
+					fMaxId = f.getV().getID();
+				} else {
+					fMinId = f.getV().getID();
+					fMaxId = f.getU().getID();
+				}
+					
+				if (cmp.compare(e.getU().getID(), e.getV().getID()) < 0) {
+					eMinId = e.getU().getID();
+					eMaxId = e.getV().getID();
+				} else {
+					eMinId = e.getV().getID();
+					eMaxId = e.getU().getID();
+				}
+
+				ret = fMinId.compareTo(eMinId);
+
+				if (ret == 0)	
+					ret = fMaxId.compareTo(eMaxId);
+				
 				lv += 2;
 			}
 
