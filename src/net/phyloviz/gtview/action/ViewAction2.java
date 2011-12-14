@@ -37,7 +37,6 @@ package net.phyloviz.gtview.action;
 
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
-import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
@@ -74,7 +73,7 @@ public class ViewAction2 extends NodeAction {
 		tvp.open();
 		tvp.requestActive();
 
-		nodes[0].addNodeListener(new LocalNodeListener(tvp));
+		nodes[0].getParentNode().addNodeListener(new LocalNodeListener(tvp));
 	
 	}
 

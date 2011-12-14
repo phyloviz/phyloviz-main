@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.gtview.ui;
 
 import java.awt.BorderLayout;
@@ -48,6 +47,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,14 +67,17 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -81,6 +85,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.Edge;
 import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.category.CategoryProvider;
@@ -140,6 +145,7 @@ import prefuse.util.ui.JSearchPanel;
 import prefuse.util.ui.JValueSlider;
 import prefuse.visual.EdgeItem;
 import prefuse.visual.NodeItem;
+import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 
 public class GraphView2 extends GView {
@@ -147,17 +153,16 @@ public class GraphView2 extends GView {
 	private static final long serialVersionUID = 1L;
 	private static final String SRC = Graph.DEFAULT_SOURCE_KEY;
 	private static final String TRG = Graph.DEFAULT_TARGET_KEY;
-
 	private String name;
-
 	private Table nodeTable;
 	private Table edgeTable;
-	private TreeMap<Integer, Integer> uid2rowid;
 	private Graph graph;
+	private VisualGraph vg;
 	private GOeBurstMSTResult er;
-	private Visualization view;
+	private final Visualization view;
 	private Display display;
 	private JSearchPanel searchPanel;
+	private JProgressBar pbar;
 	private boolean searchMatch = false;
 	private JPanel groupPanel;
 	private boolean groupPanelStatus;
@@ -172,6 +177,9 @@ public class GraphView2 extends GView {
 	private boolean linear;
 	private boolean label = true;
 	private int level;
+	private JSpinner sp;
+	private JMenuItem groupMenuItem;
+	private Box box;
 	// Data analysis info...
 	private CategoryProvider cp;
 
@@ -204,7 +212,7 @@ public class GraphView2 extends GView {
 				@Override
 				public Font getFont(VisualItem item) {
 					Profile st = (Profile) item.getSourceTuple().get("st_ref");
-					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11*st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
 				}
 			};
 
@@ -219,6 +227,9 @@ public class GraphView2 extends GView {
 		ActionList layout = new ActionList(Activity.INFINITY);
 		layout.add(fdl);
 		layout.add(fill);
+		layout.add(text);
+		layout.add(nfont);
+		layout.add(edge);
 		layout.add(new RepaintAction());
 
 		ActionList staticLayout = new ActionList();
@@ -230,8 +241,8 @@ public class GraphView2 extends GView {
 		view.putAction("layout", layout);
 		view.putAction("static", staticLayout);
 
-		view.runAfter("draw", "layout");
-		view.runAfter("draw", "static");
+		//view.runAfter("draw", "layout");
+		//view.runAfter("draw", "static");
 
 		// Setup the display.
 		display = new Display(view);
@@ -277,76 +288,6 @@ public class GraphView2 extends GView {
 		nodeTable = nodeSchema.instantiate();
 		edgeTable = edgeSchema.instantiate();
 
-		// Create initial group.
-		Group g = new Group();
-		g.setID(1);
-
-		// Fill tables.
-		uid2rowid = new TreeMap<Integer, Integer>();
-
-		int maxlv = 0;
-		Iterator<Edge<GOeBurstNode>> eIter = er.getEdges().iterator();
-		while (eIter.hasNext()) {
-			Edge<GOeBurstNode> e = eIter.next();
-
-			int uRowNb = -1;
-			Profile st = e.getU();
-			if (!uid2rowid.containsKey(st.getUID())) {
-
-				uRowNb = nodeTable.addRow();
-				uid2rowid.put(st.getUID(), uRowNb);
-				nodeTable.setString(uRowNb, "st_id", st.getID());
-				nodeTable.set(uRowNb, "st_ref", st);
-				nodeTable.setInt(uRowNb, "w", 0);
-				nodeTable.setInt(uRowNb, "g", 1);
-
-				g.add(st.getUID());
-			} else {
-				uRowNb = uid2rowid.get(st.getUID());
-			}
-
-			int vRowNb = -1;
-			st = e.getV();
-			if (!uid2rowid.containsKey(st.getUID())) {
-
-				vRowNb = nodeTable.addRow();
-				uid2rowid.put(st.getUID(), vRowNb);
-				nodeTable.setString(vRowNb, "st_id", st.getID());
-				nodeTable.set(vRowNb, "st_ref", st);
-				nodeTable.setInt(vRowNb, "w", 0);
-				nodeTable.setInt(vRowNb, "g", 1);
-
-				g.add(st.getUID());
-			} else {
-				vRowNb = uid2rowid.get(st.getUID());
-			}
-
-			int rowNb = edgeTable.addRow();
-			edgeTable.setInt(rowNb, SRC, uRowNb);
-			edgeTable.setInt(rowNb, TRG, vRowNb);
-			edgeTable.set(rowNb, "edge_ref", e);
-
-			int lv = er.getDistance().level(e.getU(), e.getV());
-			if (lv > maxlv) {
-				maxlv = lv;
-			}
-
-			g.edgeAtLevel(lv);
-
-			edgeTable.set(rowNb, "w", lv);
-			edgeTable.set(rowNb, "g", 1);
-		}
-		level = maxlv;
-
-		// Create the graph.
-		graph = new Graph(nodeTable, edgeTable, false);
-
-		view.add("graph", graph);
-		view.setVisible("graph", null, true);
-
-		running = true;
-		linear = false;
-
 		// Group panel.
 		groupList = new JList();
 		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -358,9 +299,9 @@ public class GraphView2 extends GView {
 					return;
 				}
 
-				view.setVisible("graph", null, false);
 				int[] selectedIndices = groupList.getSelectedIndices();
 				ArrayList<Group> gList = new ArrayList<Group>(selectedIndices.length);
+				view.setVisible("graph", null, false);
 				for (int i = 0; i < selectedIndices.length; i++) {
 					Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
 					view.setVisible("graph",
@@ -377,21 +318,26 @@ public class GraphView2 extends GView {
 				}
 				appendTextToInfoPanel("\n");
 
-				double x = display.getDisplayX();
-				double y = display.getDisplayY();
-				double dx = display.getWidth();
-				double dy = display.getHeight();
-				display.panAbs(x + dx / 2, y + dy / 2);
+				SwingWorker job = new SwingWorker() {
 
-				if (!display.isTranformInProgress()) {
-					Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
-					GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
-					DisplayLib.fitViewToBounds(display, bounds, 5);
-				}
+					@Override
+					protected Object doInBackground() throws Exception {
+
+						Thread.sleep(100);
+						
+						Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
+						GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
+						DisplayLib.fitViewToBounds(display, bounds, 1000);
+
+						return null;
+					}
+				};
+
+				job.execute();
+				
 			}
 		});
 		groupList.setCellRenderer(new GroupCellRenderer());
-		groupList.setListData(new Group[]{g});
 
 		groupPanel = new JPanel();
 		groupPanel.setLayout(new BorderLayout());
@@ -413,28 +359,10 @@ public class GraphView2 extends GView {
 		//ll.setMargin( new Insets(1, 1, 1, 1));
 		ll.setBackground(Color.WHITE);
 
-		final SpinnerNumberModel model = new SpinnerNumberModel(maxlv, 1, maxlv, 1);
-		JSpinner sp = new JSpinner(model);
+		sp = new JSpinner();
 		sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		sp.setBackground(Color.WHITE);
-		sp.setValue(maxlv);
 
-		model.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				view.setVisible("graph", null, false);
-				level = model.getNumber().intValue();
-
-				int[] selectedIndices = groupList.getSelectedIndices();
-				for (int i = 0; i < selectedIndices.length; i++) {
-					Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
-					view.setVisible("graph",
-						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + level), true);
-				}
-				view.run("draw");
-			}
-		});
 
 		top.add(ll, BorderLayout.WEST);
 		top.add(sp, BorderLayout.CENTER);
@@ -476,10 +404,11 @@ public class GraphView2 extends GView {
 				});
 				int gc = 0;
 				for (int i = 0; i < ga.length; i++) {
-					ga[i].setID(i+1);
+					ga[i].setID(i + 1);
 
-					if (ga[i].size() == 1)
+					if (ga[i].size() == 1) {
 						nodeTable.setInt(ga[i].getItems().get(0), "g", ga[i].getID());
+					}
 				}
 
 				for (int i = 0; i < graph.getEdgeCount(); i++) {
@@ -546,43 +475,25 @@ public class GraphView2 extends GView {
 
 		bs.add(Box.createVerticalStrut(3), BorderLayout.CENTER);
 
-                top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 3, 2, 3));
+		top.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 3, 2, 3));
 		top.add(bs, BorderLayout.SOUTH);
 
 		groupPanel.add(top, BorderLayout.SOUTH);
 		groupPanel.add(groupListPanel, BorderLayout.CENTER);
 		groupPanel.setPreferredSize(new Dimension(90, 600));
-		add(groupPanel, BorderLayout.WEST);
-		groupPanelStatus = true;
+		//add(groupPanel, BorderLayout.WEST);
+		groupPanelStatus = false;
 
 		infoPanel = new InfoPanel(name + " Info");
 		infoPanel.open();
 		infoPanel.requestActive();
 
-		// Search stuff.
-		TupleSet search = new PrefixSearchTupleSet();
-		search.addTupleSetListener(new TupleSetListener() {
-
-			@Override
-			public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
-				view.run("static");
-				searchMatch = true;
-
-				itemFound = -1;
-				if (t.getTupleCount() >= 1) {
-					String ss = searchPanel.getQuery();
-					CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
-					if (tableView.getRowCount() > 0) {
-						int gid = tableView.getInt(0, "g");
-						itemFound = gid;
-					}
-				}
-				groupList.repaint();
-			}
-		});
-		view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
-		searchPanel = new NodeSearchPanel(view);
-		searchPanel.setShowResultCount(true);
+		pbar = new JProgressBar();
+		pbar.setMinimum(0);
+		pbar.setMaximum(100);
+		pbar.setStringPainted(true);
+		pbar.setString(null);
+		pbar.setValue(0);
 
 		// Animation speed control.
 		final JValueSlider animCtl = new JValueSlider("animation speed >>", 1, 100, 50);
@@ -616,7 +527,9 @@ public class GraphView2 extends GView {
 		});
 
 		popupMenu = new JPopupMenu();
-		popupMenu.add(new GroupControlAction(this).getMenuItem());
+		groupMenuItem = new GroupControlAction(this).getMenuItem();
+		groupMenuItem.setEnabled(false);
+		popupMenu.add(groupMenuItem);
 		popupMenu.add(new InfoControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
@@ -637,7 +550,7 @@ public class GraphView2 extends GView {
 		});
 
 		// Bottom box.
-		Box box = new Box(BoxLayout.X_AXIS);
+		box = new Box(BoxLayout.X_AXIS);
 		box.add(Box.createHorizontalStrut(3));
 		box.add(optionsButton);
 		box.add(Box.createHorizontalStrut(8));
@@ -647,12 +560,246 @@ public class GraphView2 extends GView {
 		box.add(Box.createHorizontalStrut(5));
 		box.add(animCtl);
 		box.add(Box.createHorizontalGlue());
-		box.add(searchPanel);
+		//box.add(searchPanel);
+		box.add(pbar);
 		box.add(Box.createHorizontalStrut(3));
 		box.setOpaque(true);
 		box.setBackground(Color.WHITE);
 		box.updateUI();
 		add(box, BorderLayout.SOUTH);
+	}
+
+	public void loadGraph(final Collection<Edge<GOeBurstNode>> edges, final AbstractDistance ad) {
+		final HashMap<Integer, Integer> uid2rowid = new HashMap<Integer, Integer>();
+
+		// Create and register the graph.
+		graph = new Graph(nodeTable, edgeTable, false);
+		vg = view.addGraph("graph", graph);
+
+		running = true;
+		linear = false;
+		view.setVisible("graph", null, false);
+		view.runAfter("draw", "layout");
+		view.run("draw");
+
+		SwingWorker job = new SwingWorker() {
+
+			@Override
+			protected Object doInBackground() throws Exception {
+
+				// Create initial group.
+				Group g = new Group();
+				g.setID(1);
+
+				int maxlv = 0;
+				int nedges = edges.size();
+
+				Profile st = null;
+				Iterator<Edge<GOeBurstNode>> eIter = edges.iterator();
+				HashMap<Integer, LinkedList<Edge<GOeBurstNode>>> adjList = new HashMap<Integer, LinkedList<Edge<GOeBurstNode>>>();
+				while (eIter.hasNext()) {
+					Edge<GOeBurstNode> e = eIter.next();
+
+					if (st == null) {
+						st = e.getU();
+					}
+
+					int u = e.getU().getUID();
+					int v = e.getV().getUID();
+
+
+					if (adjList.get(u) == null) {
+						adjList.put(u, new LinkedList<Edge<GOeBurstNode>>());
+					}
+					if (adjList.get(v) == null) {
+						adjList.put(v, new LinkedList<Edge<GOeBurstNode>>());
+					}
+					adjList.get(u).add(e);
+					adjList.get(v).add(e);
+				}
+
+				SwingWorker job = new SwingWorker() {
+
+					@Override
+					protected Object doInBackground() throws Exception {
+
+						Thread.sleep(500);
+						
+						Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
+						GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
+						DisplayLib.fitViewToBounds(display, bounds, 2000);
+
+						return null;
+					}
+				};
+
+				job.execute();
+
+				
+				// Fill tables.
+				LinkedList<Integer> q = new LinkedList<Integer>();
+				q.add(st.getUID());
+				int uRowNb = -1;
+				synchronized (view) {
+					uRowNb = nodeTable.addRow();
+					uid2rowid.put(st.getUID(), uRowNb);
+					nodeTable.setString(uRowNb, "st_id", st.getID());
+					nodeTable.set(uRowNb, "st_ref", st);
+					nodeTable.setInt(uRowNb, "w", 0);
+					nodeTable.setInt(uRowNb, "g", 1);
+
+					VisualItem vu = (VisualItem) vg.getNode(uRowNb);
+					vu.setVisible(true);
+				}
+
+				int ec = 0;
+				while (!q.isEmpty()) {
+
+					int u = q.pop();
+					uRowNb = uid2rowid.get(u);
+					VisualItem vu = (VisualItem) vg.getNode(uRowNb);
+					vu.setFixed(true);
+
+					eIter = adjList.get(u).iterator();
+					while (eIter.hasNext()) {
+
+						Edge<GOeBurstNode> e = eIter.next();
+
+						st = e.getV();
+						if (st.getUID() == u) {
+							st = e.getU();
+						}
+
+						// Let us check if this edge and vertex were already added...
+						if (uid2rowid.containsKey(st.getUID())) {
+							continue;
+						}
+
+						q.add(st.getUID());
+
+						int lv = ad.level(e.getU(), e.getV());
+						if (lv > maxlv) {
+							maxlv = lv;
+						}
+						g.edgeAtLevel(lv);
+
+						synchronized (view) {
+
+							int vRowNb = nodeTable.addRow();
+							uid2rowid.put(st.getUID(), vRowNb);
+							nodeTable.setString(vRowNb, "st_id", st.getID());
+							nodeTable.set(vRowNb, "st_ref", st);
+							nodeTable.setInt(vRowNb, "w", 0);
+							nodeTable.setInt(vRowNb, "g", 1);
+
+							int rowNb = edgeTable.addRow();
+							edgeTable.setInt(rowNb, SRC, uRowNb);
+							edgeTable.setInt(rowNb, TRG, vRowNb);
+							edgeTable.set(rowNb, "edge_ref", e);
+							edgeTable.set(rowNb, "w", lv);
+							edgeTable.set(rowNb, "g", 1);
+
+							VisualItem vv = (VisualItem) vg.getNode(vRowNb);
+							prefuse.data.Edge ve = vg.getEdge(rowNb);
+
+							vv.setStartX(vu.getEndX());
+							vv.setStartX(vu.getEndX());
+							vv.setX(vu.getEndX());
+							vv.setY(vu.getEndY());
+							vv.setEndX(vu.getEndX());
+							vv.setEndY(vu.getEndY());
+
+							vv.setVisible(true);
+							((VisualItem) ve).setVisible(true);
+
+
+							view.wait(20);
+						}
+
+						//Thread.sleep(5);
+
+						ec++;
+						int perc = ec * 100 / nedges;
+						setProgress(perc);
+					}
+
+					vu.setFixed(false);
+				}
+				level = maxlv;
+
+				groupList.setListData(new Group[]{g});
+				final SpinnerNumberModel model = new SpinnerNumberModel(maxlv, 1, maxlv, 1);
+				model.addChangeListener(new ChangeListener() {
+
+					@Override
+					public void stateChanged(ChangeEvent e) {
+						view.setVisible("graph", null, false);
+						level = model.getNumber().intValue();
+
+						int[] selectedIndices = groupList.getSelectedIndices();
+						for (int i = 0; i < selectedIndices.length; i++) {
+							Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
+							view.setVisible("graph",
+								(Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + level), true);
+						}
+
+						view.run("draw");
+
+					}
+				});
+				sp.setModel(model);
+				sp.setValue(maxlv);
+
+				showGroupPanel(true);
+				groupMenuItem.setEnabled(true);
+
+				// Search stuff.
+				TupleSet search = new PrefixSearchTupleSet();
+				search.addTupleSetListener(new TupleSetListener() {
+
+					@Override
+					public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
+						view.run("static");
+						searchMatch = true;
+
+						itemFound = -1;
+						if (t.getTupleCount() >= 1) {
+							String ss = searchPanel.getQuery();
+							CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
+							if (tableView.getRowCount() > 0) {
+								int gid = tableView.getInt(0, "g");
+								itemFound = gid;
+							}
+						}
+						groupList.repaint();
+					}
+				});
+				view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
+				searchPanel = new NodeSearchPanel(view);
+				searchPanel.setShowResultCount(true);
+				box.remove(9);
+				box.add(searchPanel, 9);
+				box.validate();
+
+				groupList.setSelectedIndex(0);
+				groupList.repaint();
+
+				return null;
+			}
+		};
+
+		job.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent pce) {
+				if (pce.getPropertyName().equals("progress")) {
+					int progress = (Integer) pce.getNewValue();
+					pbar.setValue(progress);
+				}
+			}
+		});
+
+		job.execute();
 	}
 
 	public void startAnimation() {
@@ -718,11 +865,13 @@ public class GraphView2 extends GView {
 
 	@Override
 	public void showInfoPanel() {
-		if (infoPanel == null)
+		if (infoPanel == null) {
 			infoPanel = new InfoPanel(name + " Info");
-		
-		if (! infoPanel.isOpened())
+		}
+
+		if (!infoPanel.isOpened()) {
 			infoPanel.open();
+		}
 
 		infoPanel.requestActive();
 	}
@@ -951,10 +1100,11 @@ public class GraphView2 extends GView {
 					+ item.getSourceTuple().getString("w"));
 
 				String einfo = er.getDistance().info(edge);
-				if (einfo != null)
+				if (einfo != null) {
 					appendTextToInfoPanel("; " + einfo + ")\n\n");
-				else
+				} else {
 					appendTextToInfoPanel(")\n\n");
+				}
 
 			}
 			if (item instanceof NodeItem) {
@@ -991,7 +1141,7 @@ public class GraphView2 extends GView {
 
 		private int id;
 		private LinkedList<Integer> list;
-		private TreeMap<Integer,Integer> levelStat;
+		private TreeMap<Integer, Integer> levelStat;
 
 		Group() {
 			this.id = 0;

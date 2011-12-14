@@ -40,10 +40,11 @@ import java.util.Iterator;
 import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
-import net.phyloviz.core.data.DataSet;
+//import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
+//import net.phyloviz.gtview.render.ChartRenderer;
 import net.phyloviz.gtview.render.ChartRenderer;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
@@ -59,14 +60,16 @@ public class GTPanel2 extends TopComponent {
 	private CategoryChangeListener gvCatListen;
 
 	/** Creates new form GTPanel */
-	public GTPanel2(String name, GOeBurstMSTResult gr, TypingData<? extends Profile> ds) {
+	public GTPanel2(String name, final GOeBurstMSTResult gr, TypingData<? extends Profile> ds) {
 		super(Lookups.singleton(gr));
 		initComponents();
 		this.setName(name);
 		gv = new GraphView2(name, gr);
 		this.add(gv);
-		gv.startAnimation();
+		//gv.run();
+		//gv.startAnimation();
 
+		
 		gvCatListen = new CategoryChangeListener() {
 
 			@Override
@@ -103,6 +106,8 @@ public class GTPanel2 extends TopComponent {
 				}
 			}
 		});
+		gv.loadGraph(gr.getEdges(), gr.getDistance());
+
 	}
 
 	@Override

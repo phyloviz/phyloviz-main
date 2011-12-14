@@ -74,7 +74,7 @@ public class ViewAction extends NodeAction {
 		tvp.open();
 		tvp.requestActive();
 
-		nodes[0].addNodeListener(new LocalNodeListener(tvp));
+		nodes[0].getParentNode().addNodeListener(new LocalNodeListener(tvp));
 	
 	}
 
