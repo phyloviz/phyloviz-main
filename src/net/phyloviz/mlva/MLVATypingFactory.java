@@ -48,6 +48,8 @@ import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = TypingFactory.class)
@@ -65,6 +67,7 @@ public class MLVATypingFactory implements TypingFactory {
 
 		BufferedReader in = new BufferedReader(r);
 		int uid = 0;
+		boolean error = false;
 
 		TypingData<MLVAType> td = null;
 
@@ -92,6 +95,7 @@ public class MLVATypingFactory implements TypingFactory {
 				if (!profile.getID().equals(oldProfile.getID())) {
 					Logger.getLogger(MLVATypingFactory.class.getName()).log(Level.WARNING,
 						"Duplicated profile: {0} aka {1} (frequency updated)", new Object[]{profile.getID(), oldProfile.getID()});
+					error = true;
 				}
 			} else {
 				try {
@@ -99,10 +103,16 @@ public class MLVATypingFactory implements TypingFactory {
 				} catch(Exception e) {
 					Logger.getLogger(MLVATypingFactory.class.getName()).log(Level.WARNING,
 						e.getMessage());
+					error = true;
 				}
 			}
 		}
 		in.close();
+
+		if (error) {
+			String failMsg = "Some profiles may have been discarded! Check the log (View->Log).";
+			DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+		}
 
 		return td;
 	}
