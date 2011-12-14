@@ -43,6 +43,8 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
@@ -73,14 +75,22 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 
 			String[] STvec = new String[2];
 			String header = s;
-			STvec[0] = String.valueOf(uid + 1); // s.substring(2, Math.min(8, s.length()));
+			Pattern pat = Pattern.compile("id[|=]\\w+[|;\\s]");
+			Matcher m = pat.matcher(s);
+			if (m.find()) {
+				STvec[0] = s.substring(m.start()+3, m.end()-1);
+			} else {
+				STvec[0] = "#" + String.valueOf(uid + 1);
+			}	
 			STvec[1] = "";
 			s = in.readLine();
-			while (s != null && s.charAt(0) != '>') {
-				STvec[1] += s;
+			StringBuilder sb = new StringBuilder();
+			while (s != null && (s.equals("") || s.charAt(0) != '>')) {
+				sb.append(s);
 				s = in.readLine();	
 			}
-			
+			STvec[1] = sb.toString();
+		
 			if (STvec[1] == null || STvec[1].equals(""))
 				continue;
 
