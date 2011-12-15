@@ -80,8 +80,15 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 			String header = s;
 			Pattern pat = Pattern.compile("id[|=]\\w+[|;]");
 			Matcher m = pat.matcher(s);
+			Pattern pat2 = Pattern.compile("> ?.{1,15}");
+			Matcher m2 = pat2.matcher(s);
 			if (m.find()) {
 				STvec[0] = s.substring(m.start()+3, m.end()-1);
+			} if (m2.matches()) {
+				if (s.charAt(1) == ' ')
+					STvec[0] = s.substring(2);
+				else
+					STvec[0] = s.substring(1);
 			} else {
 				STvec[0] = "#" + String.valueOf(uid + 1);
 			}	
