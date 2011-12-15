@@ -78,7 +78,7 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 
 			String[] STvec = new String[2];
 			String header = s;
-			Pattern pat = Pattern.compile("id[|=]\\w+[|;\\s]");
+			Pattern pat = Pattern.compile("id[|=]\\w+[|;]");
 			Matcher m = pat.matcher(s);
 			if (m.find()) {
 				STvec[0] = s.substring(m.start()+3, m.end()-1);
