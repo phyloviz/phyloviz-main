@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module: net.phyloviz.alseq/1
-OpenIDE-Module-Implementation-Version: 6
+OpenIDE-Module-Implementation-Version: 7
 OpenIDE-Module-Layer: net/phyloviz/alseq/layer.xml
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/alseq/Bundle.properties
 
