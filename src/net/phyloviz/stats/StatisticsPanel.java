@@ -10,14 +10,15 @@ import javax.swing.text.html.HTMLDocument;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.stats.util.HTMLCache;
+import net.phyloviz.stats.util.Cache;
+import net.phyloviz.stats.util.Compute;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
 public class StatisticsPanel extends TopComponent {
 
     private final AbstractTableModel atm;
-    private HTMLCache htmlCache;
+    private Cache htmlCache;
 
     public StatisticsPanel(String name, DataModel dm, DataSet _ds) {
 	   super(Lookups.singleton(dm));
@@ -31,7 +32,7 @@ public class StatisticsPanel extends TopComponent {
 	   }
 	   jLabel5.setText((atm.getColumnCount() - 1) + "");
 
-	   htmlCache = new HTMLCache();
+	   htmlCache = new Cache();
 
 	   jcbColumns.addItem("-- none selected --");
 	   for (int c = 0; c < atm.getColumnCount(); c++) {
@@ -46,11 +47,11 @@ public class StatisticsPanel extends TopComponent {
 			 if (iIndex > 0) {
 				iIndex--;
 				if (!htmlCache.hasBody(iIndex)) {
-				    htmlCache.bodyInit();
+				    Compute comp = new Compute();
 				    for (int i = 0; i < atm.getRowCount(); i++) {
-					   htmlCache.bodyAddValue((String) atm.getValueAt(i, iIndex));
+					   comp.add((String) atm.getValueAt(i, iIndex));
 				    }
-				    htmlCache.bodyFinish(iIndex, (String) jcb.getSelectedItem());
+				    htmlCache.put(iIndex, comp.getHTML((String) jcb.getSelectedItem()));
 				}
 				jEditorPane1.setText(htmlCache.getBody(iIndex));
 				jEditorPane1.setVisible(true);
@@ -134,6 +135,8 @@ public class StatisticsPanel extends TopComponent {
 
         jPanel2.add(jPanel3, java.awt.BorderLayout.WEST);
 
+        jPanel4.setMinimumSize(new java.awt.Dimension(32, 80));
+        jPanel4.setPreferredSize(new java.awt.Dimension(32, 80));
         jPanel4.setLayout(new java.awt.GridLayout(3, 0, 0, 8));
 
         jlDatasetSize.setText(org.openide.util.NbBundle.getMessage(StatisticsPanel.class, "StatisticsPanel.jlDatasetSize.text")); // NOI18N
