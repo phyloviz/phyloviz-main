@@ -68,6 +68,7 @@ public class AlignedSequenceFactory implements TypingFactory {
 		BufferedReader in = new BufferedReader(r);
 		int uid = 0;
 		boolean error = false;
+		StringBuilder msg = new StringBuilder();
 
 		TypingData<AlignedSequence> td = null;
 
@@ -101,6 +102,7 @@ public class AlignedSequenceFactory implements TypingFactory {
 					Logger.getLogger(AlignedSequenceFactory.class.getName()).log(Level.WARNING,
 						"Duplicated profile: {0} aka {1} (frequency updated)", 
 						new Object[]{profile.getID(), oldProfile.getID()});
+					msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
 					error = true;
 				}
 			} else {
@@ -109,6 +111,7 @@ public class AlignedSequenceFactory implements TypingFactory {
 				} catch(Exception e) {
 					Logger.getLogger(AlignedSequenceFactory.class.getName()).log(Level.WARNING,
 						e.getLocalizedMessage());
+					msg.append("   ").append(profile.getID()).append("\n");
 					error = true;
 				}
 			}
@@ -116,7 +119,8 @@ public class AlignedSequenceFactory implements TypingFactory {
 		in.close();
 
 		if (error) {
-			String failMsg = "Some profiles may have been discarded! Check the log (View->Log).";
+			String failMsg = "Some profiles may have been discarded:\n"+
+				msg.toString() + "Check the log (View->Log) for more details.";
 			DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
 		}
 
