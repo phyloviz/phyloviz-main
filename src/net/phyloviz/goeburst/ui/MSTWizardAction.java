@@ -64,7 +64,7 @@ public final class MSTWizardAction extends NodeAction {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void performAction(Node[] nodes) {
-		
+
 		WizardDescriptor wizardDescriptor = new WizardDescriptor(getPanels(nodes[0]));
 		// {0} will be replaced by WizardDesriptor.Panel.getComponent().getName()
 		wizardDescriptor.setTitleFormat(new MessageFormat("{0}"));
@@ -103,8 +103,8 @@ public final class MSTWizardAction extends NodeAction {
 	private WizardDescriptor.Panel[] getPanels(Node node) {
 		if (panels == null) {
 			panels = new WizardDescriptor.Panel[]{
-					new MSTWizardPanel1(node)
-				};
+				new MSTWizardPanel1(node)
+			};
 			String[] steps = new String[panels.length];
 			for (int i = 0; i < panels.length; i++) {
 				Component c = panels[i].getComponent();
@@ -180,6 +180,7 @@ public final class MSTWizardAction extends NodeAction {
 		public void nodeDestroyed(NodeEvent ne) {
 
 			SwingUtilities.invokeLater(new Runnable() {
+
 				@Override
 				public void run() {
 					tvp.close();
@@ -191,5 +192,4 @@ public final class MSTWizardAction extends NodeAction {
 		public void propertyChange(PropertyChangeEvent evt) {
 		}
 	}
-
 }
