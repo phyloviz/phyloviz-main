@@ -87,9 +87,9 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 				STvec[0] = s.substring(m.start()+3, m.end()-1);
 			} else if (m2.matches()) {
 				if (s.charAt(1) == ' ')
-					STvec[0] = s.substring(2);
+					STvec[0] = s.substring(2).trim();
 				else
-					STvec[0] = s.substring(1);
+					STvec[0] = s.substring(1).trim();
 			} else {
 				STvec[0] = "#" + String.valueOf(uid + 1);
 			}	
