@@ -60,24 +60,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
@@ -537,7 +520,7 @@ public class GraphView2 extends GView {
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
-		popupMenu.add(new ExportAction(this).getMenuItem());
+		//popupMenu.add(new ExportAction(this).getMenuItem());
 
 		JButton optionsButton = new JButton("Options");
 		optionsButton.setMargin(new Insets(1, 1, 1, 1));
@@ -549,10 +532,17 @@ public class GraphView2 extends GView {
 			}
 		});
 
+		JButton exportButton = new JButton();
+		exportButton.setIcon(new ImageIcon(GraphView2.class.getResource("export.png")));
+		exportButton.setMargin( new Insets(0, 0, 0, 0));
+		exportButton.addActionListener(new ExportAction(this));
+	
 		// Bottom box.
 		box = new Box(BoxLayout.X_AXIS);
 		box.add(Box.createHorizontalStrut(3));
 		box.add(optionsButton);
+		box.add(Box.createHorizontalStrut(5));
+		box.add(exportButton);
 		box.add(Box.createHorizontalStrut(8));
 		box.add(playButton);
 		box.add(Box.createHorizontalStrut(1));
@@ -777,8 +767,8 @@ public class GraphView2 extends GView {
 				view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
 				searchPanel = new NodeSearchPanel(view);
 				searchPanel.setShowResultCount(true);
-				box.remove(9);
-				box.add(searchPanel, 9);
+				box.remove(11);
+				box.add(searchPanel, 11);
 				box.validate();
 
 				groupList.setSelectedIndex(0);
