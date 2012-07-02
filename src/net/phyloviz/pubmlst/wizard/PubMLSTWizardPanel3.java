@@ -71,7 +71,7 @@ public class PubMLSTWizardPanel3 implements WizardDescriptor.ValidatingPanel {
 		td = (TypingData<AbstractProfile>) ((WizardDescriptor) settings).getProperty("typing_data");
 		tf = (TypingFactory) ((WizardDescriptor) settings).getProperty("typing_factory");
 		dataSetName = (String) ((WizardDescriptor) settings).getProperty("name");
-		sDBShort = (String) ((WizardDescriptor) settings).getProperty("dbShort");
+		sDBShort = (String) ((WizardDescriptor) settings).getProperty("dbNameShort");
 		((PubMLSTVisualPanel3) getComponent()).setDatabase(sDBShort);
 	}
 

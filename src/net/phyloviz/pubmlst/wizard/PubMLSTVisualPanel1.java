@@ -1,13 +1,11 @@
 package net.phyloviz.pubmlst.wizard;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Vector;
+import javax.swing.SwingWorker;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
@@ -17,8 +15,9 @@ import net.phyloviz.pubmlst.soap.PubmlstSOAP;
 public final class PubMLSTVisualPanel1 extends JPanel {
 
 	private DefaultComboBoxModel datasetListModel;
+	private Task task;
+
 	private Vector vDatabases;
-	private int iSelected;
 	private String sPubMLSTDB;
 	private PubmlstSOAP soapClient;
 
@@ -28,21 +27,7 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 		datasetListModel = new DefaultComboBoxModel();
 
 		initComponents();
-		jComboBox1.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				JComboBox cb = (JComboBox) ae.getSource();
-				int i = cb.getSelectedIndex();
-				if (i >= 0) {
-					Vector vElem = (Vector) vDatabases.get(i);
-					sPubMLSTDB = (String) vElem.get(0);
-				}
-			}
-		});
-
-
-		updateKeyList(true);
+		updateKeyList();
 
 		try {
 			URL url = PubMLSTVisualPanel1.class.getResource("PubMLSTVisualPanel1.html");
@@ -58,30 +43,14 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 		}
 	}
 
-	private PubmlstSOAP getSOAPClient() {
-		if (soapClient == null) {
-			soapClient = new PubmlstSOAP();
-		}
-		return soapClient;
-	}
-
-	private void updateKeyList(boolean fetch) {
-		datasetListModel.removeAllElements();
-		if (fetch) {
-			vDatabases = getSOAPClient().getDatabaseList();
-		}
-		if (vDatabases == null || vDatabases.isEmpty()) {
-			datasetListModel.addElement(org.openide.util.NbBundle.getMessage(
-					PubMLSTVisualPanel1.class, "PubmlstSOAP.offline"));
-			jComboBox1.setEnabled(false);
-		} else {
-			for (int i = 0; i < vDatabases.size(); i++) {
-				Vector db = (Vector) vDatabases.get(i);
-				datasetListModel.addElement(db.get(1));
-			}
-			jComboBox1.setEnabled(true);
-		}
-	}
+	private void updateKeyList() {
+	   datasetListModel.removeAllElements();
+	   datasetListModel.addElement(org.openide.util.NbBundle.getMessage(
+			 PubMLSTVisualPanel1.class, "Connection.loading"));
+	   jComboBox1.setEnabled(false);
+	   task = new Task();
+	   task.execute();
+    }
 
 	@Override
 	public String getName() {
@@ -92,17 +61,31 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 		return jTextField1.getText();
 	}
 
-	public String getSelectedDBShort() {
-		return sPubMLSTDB;
-	}
+	public int getSelectedIndex() {
+	   if (((String) jComboBox1.getSelectedItem()).equals(
+			 org.openide.util.NbBundle.getMessage(
+			 PubMLSTVisualPanel1.class, "Connection.offline"))) {
+		  return -1;
+	   }
+	   return jComboBox1.getSelectedIndex();
+     }
 
-	public String getSelectedDBFull() {
-		int i = jComboBox1.getSelectedIndex();
+	public String getSelectedName() {
+		int i = this.getSelectedIndex();
 		if (i < 0) {
 			return "";
 		}
-		Vector v = (Vector) vDatabases.get(jComboBox1.getSelectedIndex());
+		Vector v = (Vector) vDatabases.get(i);
 		return (String) v.get(1);
+	}
+	
+	public String getSelectedNameShort() {
+		int i = this.getSelectedIndex();
+		if (i < 0) {
+			return "";
+		}
+		Vector v = (Vector) vDatabases.get(i);
+		return (String) v.get(0);
 	}
 
 	/** This method is called from within the constructor to
@@ -172,7 +155,7 @@ public final class PubMLSTVisualPanel1 extends JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
 private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-	updateKeyList(true);
+	updateKeyList();
 }//GEN-LAST:event_jButton1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -186,4 +169,34 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JPanel jPanel4;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+
+    class Task extends SwingWorker<Void, Void> {
+
+		@Override
+		public Void doInBackground() {
+			if (soapClient == null) {
+				soapClient = new PubmlstSOAP();
+			}
+			datasetListModel.removeAllElements();
+			vDatabases = soapClient.getDatabaseList();
+			
+			if (vDatabases == null || vDatabases.isEmpty()) {
+				datasetListModel.addElement(org.openide.util.NbBundle.getMessage(
+						PubMLSTVisualPanel1.class, "Connection.offline"));
+				jComboBox1.setEnabled(false);
+			} else {
+				for (int i = 0; i < vDatabases.size(); i++) {
+					Vector db = (Vector) vDatabases.get(i);
+					datasetListModel.addElement(db.get(1));
+				}
+				jComboBox1.setEnabled(true);
+			}
+			return null;
+	   }
+
+	   @Override
+	   public void done() {
+		  setCursor(null); //turn off the wait cursor
+	   }
+    }
 }

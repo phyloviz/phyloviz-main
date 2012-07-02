@@ -58,19 +58,19 @@ public class PubMLSTWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 	@Override
 	public void storeSettings(Object settings) {
 		((WizardDescriptor) settings).putProperty("name", ((PubMLSTVisualPanel1) getComponent()).getDatasetName());
-		((WizardDescriptor) settings).putProperty("dbShort", ((PubMLSTVisualPanel1) getComponent()).getSelectedDBShort());
-		((WizardDescriptor) settings).putProperty("dbFull", ((PubMLSTVisualPanel1) getComponent()).getSelectedDBFull());
+		((WizardDescriptor) settings).putProperty("dbName", ((PubMLSTVisualPanel1) getComponent()).getSelectedName());
+		((WizardDescriptor) settings).putProperty("dbNameShort", ((PubMLSTVisualPanel1) getComponent()).getSelectedNameShort());
 	}
 
 	@Override
 	public void validate() throws WizardValidationException {
 		String name = component.getDatasetName();
-		String database = component.getSelectedDBShort();
+		int index = component.getSelectedIndex();
 
 		if (name.trim().equals(""))
-			throw new WizardValidationException(null, "Invalid name", null);
+			throw new WizardValidationException(null, "Invalid dataset name", null);
 
-		if (database == null)
-			throw new WizardValidationException(null, "Invalid database", null);
+		if (index < 0)
+			throw new WizardValidationException(null, "Please select a valid database", null);
 	}
 }

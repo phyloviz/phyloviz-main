@@ -17,8 +17,8 @@ public class PubMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private String sDBShort;
-    private String sDBFull;
+    private String sDBName;
+    private String sDBNameShort;
     private Component component;
     private MLSTypingFactory tf;
     private TypingData<? extends AbstractProfile> td;
@@ -61,9 +61,9 @@ public class PubMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
     @Override
     public void readSettings(Object settings) {
         ((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/TypingImage.png", true));
-        sDBShort = (String) ((WizardDescriptor) settings).getProperty("dbShort");
-        sDBFull = (String) ((WizardDescriptor) settings).getProperty("dbFull");
-        ((PubMLSTVisualPanel2) getComponent()).setDatabase(sDBShort, sDBFull);
+        sDBName = (String) ((WizardDescriptor) settings).getProperty("dbName");
+	   sDBNameShort = (String) ((WizardDescriptor) settings).getProperty("dbNameShort");
+        ((PubMLSTVisualPanel2) getComponent()).setDatabase(sDBNameShort, sDBName);
         tf = new MLSTypingFactory();
     }
 

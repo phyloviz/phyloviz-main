@@ -77,12 +77,11 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 		return soapClient;
 	}
 
-	public void setDatabase(String sDBShort, String sDBFull) {
+	public void setDatabase(String sDBNameShort, String sDBName) {
 		// Form initialization
-		jlPubMLST.setText(sDBFull);
-		sPubMLSTDB = sDBShort;
+		sPubMLSTDB = sDBNameShort;
 		iMaxST = getSOAPClient().getProfileCount(sPubMLSTDB);
-		jlPubMLST.setText(sDBFull + " (n=" + iMaxST + ")");
+		jlPubMLST.setText(sDBName + " (n=" + iMaxST + ")");
 		ArrayList<String> alLocus = getSOAPClient().getLocusList(sPubMLSTDB);
 		sData = "st";
 		String sProfile = "";
