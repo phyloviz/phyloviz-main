@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingWorker;
@@ -64,8 +66,8 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 					+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
-			// Do nothing...
-			System.err.println(e.getMessage());
+			Logger.getLogger(PubMLSTVisualPanel2.class.getName()).log(Level.WARNING,
+				e.getLocalizedMessage());
 		}
 
 	}
@@ -193,6 +195,14 @@ public final class PubMLSTVisualPanel2 extends JPanel {
 
 		@Override
 		public Void doInBackground() {
+		    if (!getSOAPClient().hasConnection()) {
+			   bEmpty = true;
+			   jProgressBar1.setString(org.openide.util.NbBundle.getMessage(
+			 PubMLSTVisualPanel2.class, "Connection.offline"));
+			 jToggleButton1.setSelected(false);
+			 jToggleButton1.setEnabled(true);
+			   return null;
+		    }
 			for (int st = 1, i = 1; st <= iMaxST; i++) {
 				if (isCancelled()) {
 					bEmpty = true;

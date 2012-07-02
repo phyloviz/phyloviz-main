@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
@@ -38,8 +40,8 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 					+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
-			// Do nothing...
-			System.err.println(e.getMessage());
+			Logger.getLogger(PubMLSTVisualPanel1.class.getName()).log(Level.WARNING,
+				e.getLocalizedMessage());
 		}
 	}
 
@@ -62,7 +64,8 @@ public final class PubMLSTVisualPanel1 extends JPanel {
 	}
 
 	public int getSelectedIndex() {
-	   if (((String) jComboBox1.getSelectedItem()).equals(
+	   if (jComboBox1.getSelectedItem() == null || 
+			 ((String) jComboBox1.getSelectedItem()).equals(
 			 org.openide.util.NbBundle.getMessage(
 			 PubMLSTVisualPanel1.class, "Connection.offline"))) {
 		  return -1;
@@ -177,9 +180,9 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 			if (soapClient == null) {
 				soapClient = new PubmlstSOAP();
 			}
-			datasetListModel.removeAllElements();
 			vDatabases = soapClient.getDatabaseList();
-			
+			datasetListModel.removeAllElements();
+
 			if (vDatabases == null || vDatabases.isEmpty()) {
 				datasetListModel.addElement(org.openide.util.NbBundle.getMessage(
 						PubMLSTVisualPanel1.class, "Connection.offline"));

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -57,8 +59,8 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 					+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
-			// Do nothing...
-			System.err.println(e.getMessage());
+			Logger.getLogger(PubMLSTVisualPanel3.class.getName()).log(Level.WARNING,
+				e.getLocalizedMessage());
 		}
 	}
 
@@ -140,6 +142,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
         jLabel2 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 1), new java.awt.Dimension(0, 1), new java.awt.Dimension(32767, 1));
         jSeparator1 = new javax.swing.JSeparator();
         jPanel4 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -149,7 +152,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 
         setLayout(new java.awt.BorderLayout());
 
-        jPanel2.setLayout(new java.awt.GridLayout(7, 0));
+        jPanel2.setLayout(new java.awt.GridLayout(8, 0));
 
         buttonGroup1.add(jRadioButton1);
         jRadioButton1.setSelected(true);
@@ -221,6 +224,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
         jPanel3.add(jButton1, java.awt.BorderLayout.EAST);
 
         jPanel2.add(jPanel3);
+        jPanel2.add(filler1);
         jPanel2.add(jSeparator1);
 
         jPanel4.setLayout(new java.awt.BorderLayout());
@@ -357,6 +361,7 @@ public final class PubMLSTVisualPanel3 extends JPanel {
 	}//GEN-LAST:event_jToggleButton1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JComboBox jComboBox1;

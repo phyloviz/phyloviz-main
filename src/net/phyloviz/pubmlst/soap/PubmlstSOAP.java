@@ -1,6 +1,8 @@
 package net.phyloviz.pubmlst.soap;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
@@ -9,14 +11,14 @@ import org.apache.axis.description.ParameterDesc;
 import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
 
-import javax.xml.namespace.QName;
-
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 
 public class PubmlstSOAP {
@@ -263,5 +265,21 @@ public class PubmlstSOAP {
 					"Exception: " + e.toString());
 		}
 		return saRet;
+	}
+	
+	public boolean hasConnection() {
+		boolean bHas = false;
+		String url = org.openide.util.NbBundle.getMessage(
+				PubmlstSOAP.class, "Connection.defaultURL");
+		try {
+			URL newURL = new URL(url);
+			InputStream is = newURL.openStream();
+			is.close();
+			bHas = true;
+		} catch (IOException e) {
+			Logger.getLogger(PubmlstSOAP.class.getName()).log(Level.WARNING,
+					e.getLocalizedMessage());
+		}
+		return bHas;
 	}
 }
