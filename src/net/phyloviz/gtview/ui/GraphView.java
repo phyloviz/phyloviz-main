@@ -79,6 +79,7 @@ import net.phyloviz.gtview.action.InfoControlAction;
 import net.phyloviz.gtview.action.LinearSizeControlAction;
 import net.phyloviz.gtview.action.ShowLabelControlAction;
 import net.phyloviz.gtview.action.ViewControlAction;
+import net.phyloviz.gtview.render.LabeledEdgeRenderer;
 import prefuse.Display;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
@@ -182,6 +183,7 @@ public class GraphView extends GView {
 		lr = new LabelRenderer("st_id");
 		lr.setRoundedCorner(10,10);
 		rf.setDefaultRenderer(lr);
+		rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer());
 		view.setRendererFactory(rf);
 
 		// Setup actions to process the visual data.
