@@ -266,7 +266,8 @@ public class TablePanel extends JTable {
 
 		for (int i = 0; i < colIdx.length; i++) {
 			for (int j = 0; j < rowIdx.length; j++) {
-				filterSet[colIdx[i]].add(this.getValueAt(rowIdx[j], colIdx[i]).toString());
+				if (this.getValueAt(rowIdx[j], colIdx[i]) != null )
+					filterSet[colIdx[i]].add(this.getValueAt(rowIdx[j], colIdx[i]).toString());
 			}
 		}
 
