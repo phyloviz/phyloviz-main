@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2011, PHYLOViZ Team <phyloviz@gmail.com>
+ * Copyright (c) 2012, PHYLOViZ Team <phyloviz@gmail.com>
  * All rights reserved.
  * 
  * This file is part of PHYLOViZ <http://www.phyloviz.net>.
@@ -33,44 +33,43 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.gtview.ui;
+package net.phyloviz.gtview.action;
 
-import java.util.ArrayList;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import prefuse.Visualization;
-import prefuse.action.layout.graph.ForceDirectedLayout;
-import prefuse.util.ui.JForcePanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import net.phyloviz.gtview.ui.GView;
 
-public abstract class GView extends JPanel {
+public class EdgeLevelLabelAction extends AbstractAction {
 
-	public abstract JComponent getDisplay();
+	private GView gv;
 
-	public abstract Visualization getVisualization();
+	public EdgeLevelLabelAction(GView gv) {
+		this.gv = gv;
+	}
 
-	public abstract boolean getLinearSize();
+	public JMenuItem getMenuItem() {
 
-	public abstract void setLinearSize(boolean status);
-	
-	public abstract void setLevelLabel(boolean status);
+		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Level labels");
+		mi.setToolTipText("Label edges with level value");
+		mi.setMnemonic(KeyEvent.VK_V);
+		mi.setSelected(false);
+		mi.addActionListener(this);
+		return mi;
+	}
 
-	public abstract boolean showLabel();
+	@Override
+	public void actionPerformed(ActionEvent e) {
 
-	public abstract void setShowLabel(boolean status);
+		if (gv == null) {
+			((JCheckBoxMenuItem) e.getSource()).setSelected(false);
+			return;
+		}
 
-	public abstract void setHighQuality(boolean status);
+		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+		gv.setLevelLabel(status);
+	}
 
-	public abstract JForcePanel getForcePanel();
-
-	public abstract ForceDirectedLayout getForceLayout();
-
-        public abstract ArrayList<ForcePair> getForces();
-
-	public abstract void showGroupPanel(boolean status);
-
-	public abstract void showInfoPanel();
-
-	public abstract void closeInfoPanel();
-
-	public abstract InfoPanel getInfoPanel();
 }

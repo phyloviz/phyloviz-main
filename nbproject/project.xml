@@ -122,10 +122,6 @@
                 <binary-origin>release/modules/ext/freehep-graphicsio-ps-2.1.1.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/freehep-swing-2.0.3.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-swing-2.0.3.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
                 <runtime-relative-path>ext/jdom-1.0.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/jdom-1.0.jar</binary-origin>
             </class-path-extension>
@@ -136,6 +132,10 @@
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-export-2.1.1.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-export-2.1.1.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/freehep-swing-2.0.5.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-swing-2.0.5.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-io-2.0.2.jar</runtime-relative-path>

@@ -42,6 +42,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import prefuse.render.EdgeRenderer;
+import prefuse.util.FontLib;
 import prefuse.visual.EdgeItem;
 import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
@@ -72,7 +73,8 @@ public class LabeledEdgeRenderer extends EdgeRenderer {
 
 		double x = (u.getX() + v.getX())/2;
 		double y = (u.getY() + v.getY())/2;
-		Font df = g.getFont();
+		Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
+		//Font df = g.getFont(); // TODO: returns null to freehep
 		Color dc = g.getColor();
 
 		Font mf = df.deriveFont(Font.BOLD);

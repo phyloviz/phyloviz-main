@@ -79,13 +79,7 @@ import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
 import net.phyloviz.goeburst.tree.GOeBurstNode;
-import net.phyloviz.gtview.action.ExportAction;
-import net.phyloviz.gtview.action.GroupControlAction;
-import net.phyloviz.gtview.action.HighQualityAction;
-import net.phyloviz.gtview.action.InfoControlAction;
-import net.phyloviz.gtview.action.LinearSizeControlAction;
-import net.phyloviz.gtview.action.ShowLabelControlAction;
-import net.phyloviz.gtview.action.ViewControlAction;
+import net.phyloviz.gtview.action.*;
 import net.phyloviz.gtview.render.LabeledEdgeRenderer;
 
 import prefuse.Display;
@@ -117,6 +111,7 @@ import prefuse.data.search.PrefixSearchTupleSet;
 import prefuse.data.tuple.TupleSet;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.DefaultRendererFactory;
+import prefuse.render.EdgeRenderer;
 import prefuse.render.LabelRenderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
@@ -184,7 +179,6 @@ public class GraphView2 extends GView {
 		lr = new LabelRenderer("st_id");
 		lr.setRoundedCorner(10, 10);
 		rf.setDefaultRenderer(lr);
-		rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("w"));
 		view.setRendererFactory(rf);
 
 		// Setup actions to process the visual data.
@@ -519,6 +513,7 @@ public class GraphView2 extends GView {
 		//popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
 		popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
+		popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
@@ -884,6 +879,14 @@ public class GraphView2 extends GView {
 			linear = status;
 			view.run("draw");
 		}
+	}
+
+	@Override
+	public void setLevelLabel(boolean status) {
+		if (status)
+			rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("w"));
+		else
+			rf.setDefaultEdgeRenderer(new EdgeRenderer());
 	}
 
 	@Override
