@@ -42,7 +42,7 @@ public class SimpleFilter implements Filter {
 		while (iter.hasNext()) {
 			DataItem l = iter.next();
 			String key = l.get(index);
-			if (this.getFilter().contains(key)) {
+			if (key != null && this.getFilter().contains(key)) {
 				Category g = map.get(key);
 				if (g == null) {
 					g = new Category(list.getName() + " " + name + ":" + key);
