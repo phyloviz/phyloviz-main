@@ -42,18 +42,14 @@ import java.text.MessageFormat;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.goeburst.run.GOeBurstRunner;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
-import org.openide.nodes.Node;
-import org.openide.nodes.NodeEvent;
-import org.openide.nodes.NodeListener;
-import org.openide.nodes.NodeMemberEvent;
-import org.openide.nodes.NodeReorderEvent;
+import org.openide.nodes.*;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 
@@ -90,6 +86,10 @@ public final class GOeBurstWizardAction extends NodeAction {
 				return;
 			}
 
+			if (ad.configurable()) {
+				ad.configure();
+			}
+			
 			OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": goeBURST (Level " + level + "; " + ad.toString() + ") Output");
 			Runnable job = new GOeBurstRunner(nodes[0], op, level, ad);
 

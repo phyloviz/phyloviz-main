@@ -36,6 +36,7 @@ package net.phyloviz.goeburst.algorithm;
 
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.tree.GOeBurstNode;
 import org.openide.util.lookup.ServiceProvider;
@@ -48,7 +49,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class GOeBurstDistanceProvider implements DistanceProvider<GOeBurstNode> {
 
 	@Override
-	public AbstractDistance<GOeBurstNode> getDistance(TypingData td) {
+	public AbstractDistance<GOeBurstNode> getDistance(TypingData<? extends Profile> td) {
 		return new GOeBurstDistance(td);
 	}
 
@@ -58,7 +59,7 @@ public class GOeBurstDistanceProvider implements DistanceProvider<GOeBurstNode> 
 	}
 
 	@Override
-	public AbstractDistance<GOeBurstNode> getDistance(TypingData td, int maxLevel) {
+	public AbstractDistance<GOeBurstNode> getDistance(TypingData<? extends Profile> td, int maxLevel) {
 		return new GOeBurstDistance(td, maxLevel);
 	}
 }
