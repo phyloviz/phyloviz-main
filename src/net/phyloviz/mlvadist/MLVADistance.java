@@ -37,6 +37,7 @@ package net.phyloviz.mlvadist;
 import java.util.Comparator;
 import net.phyloviz.algo.Edge;
 import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.tree.GOeBurstNode;
 import net.phyloviz.mlva.MLVAType;
@@ -47,14 +48,14 @@ public class MLVADistance implements AbstractDistance<GOeBurstNode> {
 	private Comparator<Edge<GOeBurstNode>> ecmp;
 	private Comparator<GOeBurstNode> pcmp;
 
-	public MLVADistance(TypingData td, int maxLevel) {
+	public MLVADistance(TypingData<? extends Profile> td, int maxLevel) {
 		// -1 because of the id...
 		maxLV = maxLevel;
 		ecmp = new EdgeComparator();
 		pcmp = new ProfileComparator();
 	}
 
-	public MLVADistance(TypingData td) {
+	public MLVADistance(TypingData<? extends Profile> td) {
 		this(td, td.getHeaders().size() - 1);
 	}
 
@@ -127,6 +128,16 @@ public class MLVADistance implements AbstractDistance<GOeBurstNode> {
 		return info(e.getU(), e.getV());
 	}
 
+	@Override
+	public boolean configurable() {
+		return false;
+	}
+
+	@Override
+	public void configure() {
+		// Do nothing
+	}
+	
 	private class ProfileComparator implements Comparator<GOeBurstNode> {
 
 		@Override
