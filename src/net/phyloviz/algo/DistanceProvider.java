@@ -35,12 +35,15 @@
 
 package net.phyloviz.algo;
 
+import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 
 public interface DistanceProvider<T extends Profile> {
 
-	public AbstractDistance<T> getDistance(TypingData td);
+	public AbstractDistance<T> getDistance(TypingData<? extends Profile> td);
 
-	public AbstractDistance<T> getDistance(TypingData td, int maxLevel);
+	public AbstractDistance<T> getDistance(TypingData<? extends Profile> td, int maxLevel);
+        
+
 }

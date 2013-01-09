@@ -57,4 +57,8 @@ public interface AbstractDistance<T extends Profile> {
 	public Comparator<T> getProfileComparator();
 
 	public Comparator<Edge<T>> getEdgeComparator();
+        
+        public boolean configurable();
+        
+        public void configure();
 }
