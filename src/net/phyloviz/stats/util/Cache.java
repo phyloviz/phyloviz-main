@@ -12,23 +12,23 @@ import java.util.TreeMap;
  */
 public class Cache {
 
-    private TreeMap<Integer, StringBuffer> tmBodyCache;
+    private TreeMap<String, StringBuffer> tmBodyCache;
 
     public Cache() {
-	   tmBodyCache = new TreeMap<Integer, StringBuffer>();
+	   tmBodyCache = new TreeMap<String, StringBuffer>();
     }
 
-    public void put(int index, StringBuffer sbContent) {
+    public void put(String index, StringBuffer sbContent) {
 	   tmBodyCache.put(index, sbContent);
     }
 
-    public boolean hasBody(int i) {
-	   return tmBodyCache.containsKey(i);
+    public boolean hasBody(String key) {
+	   return tmBodyCache.containsKey(key);
     }
 
-    public String getBody(int i) {
-	   if (hasBody(i)) {
-		  return tmBodyCache.get(i).toString();
+    public String getBody(String key) {
+	   if (hasBody(key)) {
+		  return tmBodyCache.get(key).toString();
 	   }
 	   return "Not found!";
     }

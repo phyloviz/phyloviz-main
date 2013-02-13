@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 import javax.swing.UIManager;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.html.HTMLDocument;
 import net.phyloviz.core.data.DataModel;
@@ -17,7 +19,7 @@ import org.openide.windows.TopComponent;
 
 public class StatisticsPanel extends TopComponent {
 
-    private final AbstractTableModel atm;
+    private AbstractTableModel atm;
     private Cache htmlCache;
 
     public StatisticsPanel(String name, DataModel dm, DataSet _ds) {
@@ -30,14 +32,19 @@ public class StatisticsPanel extends TopComponent {
 	   if (dm instanceof TypingData) {
 		  jLabel4.setText("Profile size:");
 	   }
-	   jLabel5.setText((atm.getColumnCount() - 1) + "");
-
+           
+           dm.tableModel().addTableModelListener(new TableModelListener() {
+               @Override
+               public void tableChanged(TableModelEvent e) {
+                   atm = (AbstractTableModel) e.getSource();
+                   jcbColumns.removeAllItems();
+                   populateCombobox();
+               }
+           });
+           
 	   htmlCache = new Cache();
-
-	   jcbColumns.addItem("-- none selected --");
-	   for (int c = 0; c < atm.getColumnCount(); c++) {
-		  jcbColumns.addItem(atm.getColumnName(c));
-	   }
+           
+	   populateCombobox();
 	   jcbColumns.addActionListener(new ActionListener() {
 
 		  @Override
@@ -45,20 +52,20 @@ public class StatisticsPanel extends TopComponent {
 			 JComboBox jcb = (JComboBox) ae.getSource();
 			 int iIndex = (Integer) jcb.getSelectedIndex();
 			 if (iIndex > 0) {
-				iIndex--;
-				if (!htmlCache.hasBody(iIndex)) {
-				    Compute comp = new Compute();
-				    for (int i = 0; i < atm.getRowCount(); i++) {
-					   comp.add((String) atm.getValueAt(i, iIndex));
-				    }
-				    htmlCache.put(iIndex, comp.getHTML((String) jcb.getSelectedItem()));
-				}
-				jEditorPane1.setText(htmlCache.getBody(iIndex));
-				jEditorPane1.setVisible(true);
-				jEditorPane1.setCaretPosition(0);
+                             String key = (String) jcb.getSelectedItem();
+                             if (!htmlCache.hasBody(key)) {
+                                 Compute comp = new Compute();
+                                 for (int i = 0; i < atm.getRowCount(); i++) {
+                                     comp.add((String) atm.getValueAt(i, iIndex-1));
+                                 }
+                                 htmlCache.put(key, comp.getHTML(key));
+                             }
+                             jEditorPane1.setText(htmlCache.getBody(key));
+                             jEditorPane1.setVisible(true);
+                             jEditorPane1.setCaretPosition(0);
 			 } else {
-				jEditorPane1.setText("&nbsp;");
-				jEditorPane1.setVisible(false);
+                             jEditorPane1.setText("&nbsp;");
+                             jEditorPane1.setVisible(false);
 			 }
 			 jEditorPane1.repaint();
 		  }
@@ -71,7 +78,15 @@ public class StatisticsPanel extends TopComponent {
 			 + "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 	   ((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
     }
-
+    
+    private void populateCombobox() {
+        jLabel5.setText((atm.getColumnCount() - 1) + "");
+        jcbColumns.addItem("-- none selected --");
+        for (int c = 0; c < atm.getColumnCount(); c++) {
+            jcbColumns.addItem(atm.getColumnName(c));
+        }
+    }
+    
     @Override
     protected void componentOpened() {
 	   super.componentOpened();
