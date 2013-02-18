@@ -39,60 +39,49 @@ import cern.colt.matrix.linalg.Algebra;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import net.phyloviz.algo.Edge;
 import net.phyloviz.algo.util.DisjointSet;
-import net.phyloviz.goeburst.GOeBurstResult;
-import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
+import net.phyloviz.goeburst.tree.GOeBurstMSTResult;
+import net.phyloviz.goeburst.tree.GOeBurstNode;
 import net.phyloviz.mstsstatistics.EdgeMST;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
 
-public class ViewAction extends NodeAction {
+public class MSTViewAction extends NodeAction {
 
     @Override
     protected void performAction(Node[] nodes) {
-        GOeBurstResult gr = nodes[0].getLookup().lookup(GOeBurstResult.class);
+        GOeBurstMSTResult gr = nodes[0].getLookup().lookup(GOeBurstMSTResult.class);
         gr.getPanel().append("MSTsViewAction\n");
         
         List<EdgeMST> edgesList = new ArrayList<EdgeMST>();
-        Collection<GOeBurstClusterWithStats> groups = gr.getClustering();
-        Iterator<GOeBurstClusterWithStats> gIter = groups.iterator();
-        
-        while(gIter.hasNext()){
-            
-            GOeBurstClusterWithStats g = gIter.next();
-            ArrayList<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> gEdges = g.getEdges();
-            Iterator<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> geIter = gEdges.iterator();
-            while (geIter.hasNext()) {
-                Edge<GOeBurstNodeExtended> e = geIter.next();
-                int source = e.getU().getUID();
-                int dest = e.getV().getUID();
-                int level = gr.getDistance().level(e);
-                EdgeMST ne = new EdgeMST(source, dest, level);
-                edgesList.add(ne);
-            }
-            if(edgesList.isEmpty()) {
-                continue;
-	    }
-            double nmsts = calcNumberMSTs(edgesList);
-            edgesList.clear();
-            if (!gr.getPanel().isOpened()) {
-                gr.getPanel().open();
-            }
-            gr.getPanel().requestActive();
-            
-            gr.getPanel().append("Numero de MSTs do Cluster " + g.getID() + " = " + Double.toString(nmsts) + "\n");
-            gr.getPanel().flush();
-            
-            
+        Collection<Edge<GOeBurstNode>> gEdges = gr.getEdges();
 
+        Iterator<Edge<GOeBurstNode>> geIter = gEdges.iterator();
+        while (geIter.hasNext()) {
+            Edge<GOeBurstNode> e = geIter.next();
+            int source = e.getU().getUID();
+            int dest = e.getV().getUID();
+            int level = gr.getDistance().level(e);
+            EdgeMST ne = new EdgeMST(source, dest, level);
+            edgesList.add(ne);
         }
+        double nmsts = calcNumberMSTs(edgesList);
+        edgesList.clear();
+        if (!gr.getPanel().isOpened()) {
+            gr.getPanel().open();
+        }
+        gr.getPanel().requestActive();
+            
+        gr.getPanel().append("Numero de MSTs: " + Double.toString(nmsts) + "\n");
+        gr.getPanel().flush();
     }
 
     private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {

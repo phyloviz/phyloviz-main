@@ -9,6 +9,14 @@
 					<attr name="position" intvalue="10"/>
 				</file>
 			</folder>
+<!--
+			<folder name="GOeBurstMST">
+				<file name="net-phyloviz-mstsstatistics-ui-MSTViewAction.instance">
+					<attr name="instanceClass" stringvalue="net.phyloviz.mstsstatistics.ui.MSTViewAction"/>
+					<attr name="position" intvalue="10"/>
+				</file>
+			</folder>
+-->
 		</folder>
 	</folder>
 </filesystem>
