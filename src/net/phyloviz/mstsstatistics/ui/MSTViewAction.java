@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2011, PHYLOViZ Team <phyloviz@gmail.com>
+ * Copyright (c) 2013, PHYLOViZ Team <phyloviz@gmail.com>
  * All rights reserved.
  * 
  * This file is part of PHYLOViZ <http://www.phyloviz.net>.
@@ -67,10 +67,8 @@ public class MSTViewAction extends NodeAction {
         Iterator<Edge<GOeBurstNode>> geIter = gEdges.iterator();
         while (geIter.hasNext()) {
             Edge<GOeBurstNode> e = geIter.next();
-            int source = e.getU().getUID();
-            int dest = e.getV().getUID();
             int level = gr.getDistance().level(e);
-            EdgeMST ne = new EdgeMST(source, dest, level);
+            EdgeMST ne = new EdgeMST(e.getU(), e.getV(), level);
             edgesList.add(ne);
         }
         double nmsts = calcNumberMSTs(edgesList);

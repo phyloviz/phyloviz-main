@@ -1,6 +1,36 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/*-
+ * Copyright (c) 2013, PHYLOViZ Team <phyloviz@gmail.com>
+ * All rights reserved.
+ * 
+ * This file is part of PHYLOViZ <http://www.phyloviz.net>.
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+ * for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Linking this library statically or dynamically with other modules is
+ * making a combined work based on this library.  Thus, the terms and
+ * conditions of the GNU General Public License cover the whole combination.
+ * 
+ * As a special exception, the copyright holders of this library give you
+ * permission to link this library with independent modules to produce an
+ * executable, regardless of the license terms of these independent modules,
+ * and to copy and distribute the resulting executable under terms of your
+ * choice, provided that you also meet, for each linked independent module,
+ * the terms and conditions of the license of that module.  An independent
+ * module is a module which is not derived from or based on this library.
+ * If you modify this library, you may extend this exception to your version
+ * of the library, but you are not obligated to do so.  If you do not wish
+ * to do so, delete this exception statement from your version.
  */
 package net.phyloviz.mstsstatistics;
 
@@ -8,6 +38,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import java.util.ArrayList;
 import java.util.Iterator;
+import net.phyloviz.goeburst.tree.GOeBurstNode;
 
 /**
  *
@@ -15,12 +46,12 @@ import java.util.Iterator;
  */
 public class EdgeMST implements Comparable<EdgeMST> {
     
-private int _source;
-    private int _dest;
+    private GOeBurstNode _source;
+    private GOeBurstNode _dest;
     private int _level;
     private double _rationmsts;
     
-    public EdgeMST (int source, int dest, int level){
+    public EdgeMST (GOeBurstNode source, GOeBurstNode dest, int level){
         _source = source;
         _dest = dest;
         _level = level;
@@ -34,13 +65,12 @@ private int _source;
         int s = map[u];
         int d = map[v];
         
-        int dif = 2;
-        
         if(s==d) {
-            dif = 1;
+	    _rationmsts = 0;
+	    return ;
         }
         
-        int[] array = new int[calcDet[mapaux[u]].size()-dif];
+        int[] array = new int[calcDet[mapaux[u]].size()-2];
         int index = 0;
         Iterator<Integer> it = ((ArrayList<Integer>) calcDet[mapaux[u]]).iterator();
         
@@ -51,10 +81,10 @@ private int _source;
             }
         }
         
+        double det = 1;
         Algebra a = new Algebra();
-        double det = a.det(m.viewSelection(array, array));
-        if (det == 0) {
-            det = 1;
+        if (index != 0) {
+            det = a.det(m.viewSelection(array, array));
         }
         _rationmsts = det/calcnmsts[mapaux[u]];
         
@@ -80,18 +110,26 @@ private int _source;
     }
 
     public int getSource() {
-        return _source;
+        return _source.getUID();
     }
 
-    public void setSource(int source) {
+    public GOeBurstNode getSourceNode() {
+	return _source;
+    }
+    
+    public void setSource(GOeBurstNode source) {
         this._source = source;
     }
 
     public int getDest() {
-        return _dest;
+        return _dest.getUID();
     }
 
-    public void setDest(int dest) {
+    public GOeBurstNode getDestNode() {
+	return _dest;
+    }
+    
+    public void setDest(GOeBurstNode dest) {
         this._dest = dest;
     }
 

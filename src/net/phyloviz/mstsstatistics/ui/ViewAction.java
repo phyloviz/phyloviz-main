@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2011, PHYLOViZ Team <phyloviz@gmail.com>
+ * Copyright (c) 2013, PHYLOViZ Team <phyloviz@gmail.com>
  * All rights reserved.
  * 
  * This file is part of PHYLOViZ <http://www.phyloviz.net>.
@@ -34,21 +34,8 @@
  */
 package net.phyloviz.mstsstatistics.ui;
 
-import cern.colt.matrix.impl.SparseDoubleMatrix2D;
-import cern.colt.matrix.linalg.Algebra;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import net.phyloviz.algo.Edge;
-import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.goeburst.GOeBurstResult;
-import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
-import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
-import net.phyloviz.mstsstatistics.EdgeMST;
-import org.apache.commons.lang3.ArrayUtils;
+import net.phyloviz.mstsstatistics.Runner;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
@@ -57,201 +44,18 @@ public class ViewAction extends NodeAction {
 
     @Override
     protected void performAction(Node[] nodes) {
-        GOeBurstResult gr = nodes[0].getLookup().lookup(GOeBurstResult.class);
-        gr.getPanel().append("MSTsViewAction\n");
-        
-        List<EdgeMST> edgesList = new ArrayList<EdgeMST>();
-        Collection<GOeBurstClusterWithStats> groups = gr.getClustering();
-        Iterator<GOeBurstClusterWithStats> gIter = groups.iterator();
-        
-        while(gIter.hasNext()){
-            
-            GOeBurstClusterWithStats g = gIter.next();
-            ArrayList<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> gEdges = g.getEdges();
-            Iterator<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> geIter = gEdges.iterator();
-            while (geIter.hasNext()) {
-                Edge<GOeBurstNodeExtended> e = geIter.next();
-                int source = e.getU().getUID();
-                int dest = e.getV().getUID();
-                int level = gr.getDistance().level(e);
-                EdgeMST ne = new EdgeMST(source, dest, level);
-                edgesList.add(ne);
-            }
-            if(edgesList.isEmpty()) {
-                continue;
-	    }
-            double nmsts = calcNumberMSTs(edgesList);
-            edgesList.clear();
-            if (!gr.getPanel().isOpened()) {
-                gr.getPanel().open();
-            }
-            gr.getPanel().requestActive();
-            
-            gr.getPanel().append("Numero de MSTs do Cluster " + g.getID() + " = " + Double.toString(nmsts) + "\n");
-            gr.getPanel().flush();
-            
-            
 
-        }
-    }
+	GOeBurstResult gr = nodes[0].getLookup().lookup(GOeBurstResult.class);
+	if (!gr.getPanel().isOpened()) {
+		gr.getPanel().open();
+	}
+	gr.getPanel().requestActive();
+	
+	Runnable job = new Runner(gr);
 
-    private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
-        for(int i = prev; i < now; i++){
-            EdgeMST e = (EdgeMST) edgesList.get(i);
-            e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
-        }
-            
-
-    }
-
-    private static int findMaxId(List edgesList) {
-        int id = 0;
-        Iterator<EdgeMST> eIter = edgesList.iterator();
-        while (eIter.hasNext()) {
-           EdgeMST e = (EdgeMST) eIter.next();
-           id = Math.max(id, e.getSource());
-           id = Math.max(id, e.getDest());
-        }
-
-        
-        return id;
-    }
-
-    private static double calcNumberMSTs(List edgesList) {
-
-        Collections.sort(edgesList);
-
-        double nmsts = 1;
-
-        int mapid;
-
-        //Passo 1 - Descobrir o MaxId Inicial
-        int maxid = findMaxId(edgesList);
-        SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(maxid + 1, maxid + 1);
-        matrix.assign(0);
-
-        DisjointSet ds = new DisjointSet(maxid);
-
-        int[] map = new int[maxid + 1];
-        for (int i = 0; i <= maxid; i++) {
-            map[i] = i;
-        }
-
-        int[] mapaux = new int[maxid + 1];
-        for (int i = 0; i <= maxid; i++) {
-            mapaux[i] = -1;
-        }
-
-
-        //Passo 2 - Varrer arcos do nivel L, preenchendo a matriz
-        int level = 1;
-        Iterator<EdgeMST> eIter = edgesList.iterator();
-
-        EdgeMST e = eIter.next();
-
-
-        ArrayList<Integer> vaux = new ArrayList<Integer>(maxid + 1);
-
-        int prev = 0;
-        int now = 0;
-
-        while (true) {
-            if (e != null && e.getLevel() == level) {
-                int u = e.getSource();
-                int v = e.getDest();
-                if (!vaux.contains(u)) {
-                    vaux.add(u);
-                }
-                if (!vaux.contains(v)) {
-                    vaux.add(v);
-                }
-                //Preenchimento da Matriz
-                int s = map[u];
-                int d = map[v];
-
-                matrix.setQuick(s, d, matrix.getQuick(s, d) - 1);
-                matrix.setQuick(d, s, matrix.getQuick(d, s) - 1);
-                matrix.setQuick(s, s, matrix.getQuick(s, s) + 1);
-                matrix.setQuick(d, d, matrix.getQuick(d, d) + 1);
-
-                if (!ds.sameSet(u, v)) {
-                    ds.unionSet(u, v);
-                }
-
-                now++;
-
-                try {
-                    e = eIter.next();
-                } catch (NoSuchElementException ex) {
-                    e = null;
-                }
-
-            } else {
-                mapid = 0;
-                for (int i = 0; i <= maxid; i++) {
-                    int setid = ds.findSet(i);
-                    if (mapaux[setid] == -1) {
-                        mapaux[setid] = mapid;
-                        mapaux[i] = mapid;
-                        mapid++;
-                    } else {
-                        mapaux[i] = mapaux[setid];
-                    }
-                }
-
-
-                ArrayList[] calcDet = new ArrayList[mapid];
-                for (int i = 0; i < calcDet.length; i++) {
-                    calcDet[i] = new ArrayList<Integer>();
-                }
-
-
-                for (int i = 0; i < vaux.size(); i++) {
-                    if (!calcDet[mapaux[vaux.get(i)]].contains(map[vaux.get(i)])) {
-                        calcDet[mapaux[vaux.get(i)]].add(map[vaux.get(i)]);
-                    }
-                }
-                
-                double[] calcNMstsDet = new double[mapid];
-                for (int i = 0; i < calcDet.length; i++) {
-                    int[] vgraph = new int[calcDet[i].size()];
-                    ArrayList<Integer> graph = (ArrayList<Integer>) calcDet[i];
-                    Iterator<Integer> gIter = graph.iterator();
-                    int index = 0;
-                    while (gIter.hasNext()) {
-                        vgraph[index++] = gIter.next();
-                    }
-                    Algebra a = new Algebra();
-                    double det = a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 0, vgraph.length - 1), ArrayUtils.subarray(vgraph, 0, vgraph.length - 1)));
-
-                    if (det == 0) {
-                        det = 1;
-                    }
-                    nmsts = nmsts * det;
-                }
-
-                calcEdgesNMSTs(edgesList, prev, now, map, mapaux, calcDet, matrix, calcNMstsDet);
-                prev = now;
-                if (e == null) {
-                    break;
-                }
-
-                matrix = new SparseDoubleMatrix2D(mapid, mapid);
-                matrix.assign(0);
-                map = mapaux;
-                mapaux = new int[maxid + 1];
-                for (int i = 0; i <= maxid; i++) {
-                    mapaux[i] = -1;
-                }
-                //Passa para o nível seguinte
-                level++;
-                vaux = new ArrayList<Integer>(mapid);
-            }
-        }
-        
-        
-        
-        return nmsts;
+	Thread thread = new Thread(job);
+	thread.setDaemon(true);
+	thread.start();
     }
 
     @Override
