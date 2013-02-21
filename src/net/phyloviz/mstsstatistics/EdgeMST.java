@@ -87,7 +87,6 @@ public class EdgeMST implements Comparable<EdgeMST> {
             det = a.det(m.viewSelection(array, array));
         }
         _rationmsts = det/calcnmsts[mapaux[u]];
-        
     }
 
     public double getNmsts() {

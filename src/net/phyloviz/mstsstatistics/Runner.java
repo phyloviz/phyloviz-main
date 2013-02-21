@@ -36,6 +36,7 @@ package net.phyloviz.mstsstatistics;
 
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,7 +62,7 @@ public class Runner implements Runnable {
 	@Override
 	public void run() {
 
-		gr.getPanel().appendWithDate("\nMST Statistics started...\n");
+		gr.getPanel().appendWithDate("MST Statistics started...\n");
 		gr.getPanel().flush();
 
 		List<EdgeMST> edgesList = new ArrayList<EdgeMST>();
@@ -85,18 +86,23 @@ public class Runner implements Runnable {
 
 			double nmsts = calcNumberMSTs(edgesList);
 
-			gr.getPanel().append("CC " + g.getID() + " has " + Math.round(nmsts) + " MSTs\nEdge stats:\n");
+			DecimalFormat df = new DecimalFormat("0.######E0");
+			DecimalFormat pf = new DecimalFormat("#.##");
+			gr.getPanel().append("CC " + g.getID() + " has " + df.format(nmsts) + " MSTs\nEdge stats:\n");
 			Iterator<EdgeMST> ei = edgesList.iterator();
 			while (ei.hasNext()) {
 				EdgeMST e = ei.next();
 				gr.getPanel().append(e.getSourceNode().getID() + " - " + e.getDestNode().getID()
-					+ ", level: " + e.getLevel() + ", freq: " + Math.round(e.getNmsts() * 10000) / 100.0 + "%\n");
+					+ ", level: " + e.getLevel() + ", freq: " + pf.format(e.getNmsts() * 100.0) 
+					+ "% (" + df.format(e.getNmsts()) + ")\n");
 			}
 			gr.getPanel().append("\n");
 			gr.getPanel().flush();
 
 			edgesList.clear();
 		}
+		gr.getPanel().appendWithDate("MST Statistics done.\n");
+		gr.getPanel().flush();
 	}
 
 	private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
@@ -104,8 +110,6 @@ public class Runner implements Runnable {
 			EdgeMST e = (EdgeMST) edgesList.get(i);
 			e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
 		}
-
-
 	}
 
 	private static int findMaxId(List edgesList) {
@@ -190,7 +194,7 @@ public class Runner implements Runnable {
 					e = null;
 				}
 
-			} else {
+			} else if (prev != now ) {
 				mapid = 0;
 				for (int i = 0; i <= maxid; i++) {
 					int setid = ds.findSet(i);
@@ -203,12 +207,15 @@ public class Runner implements Runnable {
 					}
 				}
 
-
+				int[] invmap = new int[maxid + 1];
+				for (int i = 0; i <= maxid; i++) {
+					invmap[map[i]] = i;
+				}
+				
 				ArrayList[] calcDet = new ArrayList[mapid];
 				for (int i = 0; i < calcDet.length; i++) {
 					calcDet[i] = new ArrayList<Integer>();
 				}
-
 
 				for (int i = 0; i < vaux.size(); i++) {
 					if (!calcDet[mapaux[vaux.get(i)]].contains(map[vaux.get(i)])) {
@@ -218,23 +225,27 @@ public class Runner implements Runnable {
 
 				double[] calcNMstsDet = new double[mapid];
 				for (int i = 0; i < calcDet.length; i++) {
-					int[] vgraph = new int[calcDet[i].size()];
-					ArrayList<Integer> graph = (ArrayList<Integer>) calcDet[i];
-					Iterator<Integer> gIter = graph.iterator();
-					int index = 0;
-					while (gIter.hasNext()) {
-						vgraph[index++] = gIter.next();
-					}
-					Algebra a = new Algebra();
-					double det = a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 0, vgraph.length - 1), ArrayUtils.subarray(vgraph, 0, vgraph.length - 1)));
 
-					if (det == 0) {
-						det = 1;
+					if (!calcDet[i].isEmpty()) {
+
+						int[] vgraph = new int[calcDet[i].size()];
+						ArrayList<Integer> graph = (ArrayList<Integer>) calcDet[i];
+						Iterator<Integer> gIter = graph.iterator();
+						int index = 0;
+						while (gIter.hasNext()) {
+							vgraph[index++] = gIter.next();
+						}
+
+						Algebra a = new Algebra();
+						double det = a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 1, vgraph.length), 
+							                                ArrayUtils.subarray(vgraph, 1, vgraph.length)));
+						if (det <= Double.MIN_VALUE) {
+							det = 1;
+						}
+
+						calcNMstsDet[mapaux[invmap[vgraph[0]]]] = det;
+						nmsts = nmsts * det;
 					}
-					if (index > 0) {
-						calcNMstsDet[mapaux[vgraph[0]]] = det;
-					}
-					nmsts = nmsts * det;
 				}
 
 				calcEdgesNMSTs(edgesList, prev, now, map, mapaux, calcDet, matrix, calcNMstsDet);
