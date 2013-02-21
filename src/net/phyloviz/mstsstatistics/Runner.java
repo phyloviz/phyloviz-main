@@ -87,14 +87,23 @@ public class Runner implements Runnable {
 
 			DecimalFormat df = new DecimalFormat("0.######E0");
 			DecimalFormat pf = new DecimalFormat("#.##");
-			gr.getPanel().append("CC " + g.getID() + " has " + df.format(nmsts) + " MSTs\nEdge stats:\n");
-			Iterator<EdgeMST> ei = edgesList.iterator();
-			while (ei.hasNext()) {
-				EdgeMST e = ei.next();
-				gr.getPanel().append(e.getSourceNode().getID() + " - " + e.getDestNode().getID()
-					+ ", level: " + e.getLevel() + ", freq: " + pf.format(e.getNmsts() * 100.0) 
-					+ "% (" + df.format(e.getNmsts()) + ")\n");
+			
+			if (nmsts < Double.POSITIVE_INFINITY) {
+				gr.getPanel().append("CC " + g.getID() + " has " + df.format(nmsts) + " MSTs\nEdge stats:\n");
+			
+				Iterator<EdgeMST> ei = edgesList.iterator();
+				while (ei.hasNext()) {
+					EdgeMST e = ei.next();
+					if (e.getNmsts() > Double.MIN_VALUE) {
+						gr.getPanel().append(e.getSourceNode().getID() + " - " + e.getDestNode().getID()
+						+ ", level: " + e.getLevel() + ", freq: " + pf.format(e.getNmsts() * 100.0) 
+							+ "% (" + df.format(e.getNmsts()) + ")\n");
+					}
+				}
+			} else {
+				gr.getPanel().append("CC " + g.getID() + " has more than 1E80 MSTs\nSkipping edge stats.\n");	
 			}
+
 			gr.getPanel().append("\n");
 			gr.getPanel().flush();
 
@@ -233,12 +242,21 @@ public class Runner implements Runnable {
 						Algebra a = new Algebra();
 						double det = a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 1, vgraph.length), 
 							                                ArrayUtils.subarray(vgraph, 1, vgraph.length)));
+
 						if (det <= Double.MIN_VALUE) {
 							det = 1;
+						} else if (det > 1E80) {
+							det = Double.POSITIVE_INFINITY;
 						}
 
 						calcNMstsDet[i] = det;
-						nmsts = nmsts * det;
+
+						if (det < Double.POSITIVE_INFINITY) {
+							nmsts = nmsts * det;
+						} else {
+							nmsts = Double.POSITIVE_INFINITY;
+						}
+							
 					}
 				}
 

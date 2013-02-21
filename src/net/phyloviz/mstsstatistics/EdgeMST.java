@@ -61,7 +61,12 @@ public class EdgeMST implements Comparable<EdgeMST> {
     public void setNmsts(int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D m, double[] calcnmsts) {
         int u = this.getSource();
         int v = this.getDest();
-        
+       
+	if (calcnmsts[mapaux[u]] >= Double.POSITIVE_INFINITY) {
+		_rationmsts = Double.NaN;
+		return ;
+	}
+	
         int s = map[u];
         int d = map[v];
         
