@@ -160,11 +160,10 @@ public class Runner implements Runnable {
 
 
 		//Passo 2 - Varrer arcos do nivel L, preenchendo a matriz
-		int level = 1;
 		Iterator<EdgeMST> eIter = edgesList.iterator();
 
 		EdgeMST e = eIter.next();
-
+		int level = (e != null) ? e.getLevel() : 1;
 
 		ArrayList<Integer> vaux = new ArrayList<Integer>(maxid + 1);
 
