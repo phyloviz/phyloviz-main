@@ -49,7 +49,6 @@ import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import org.apache.commons.lang3.ArrayUtils;
-import org.openide.nodes.Node;
 
 public class Runner implements Runnable {
 
@@ -207,11 +206,6 @@ public class Runner implements Runnable {
 					}
 				}
 
-				int[] invmap = new int[maxid + 1];
-				for (int i = 0; i <= maxid; i++) {
-					invmap[map[i]] = i;
-				}
-				
 				ArrayList[] calcDet = new ArrayList[mapid];
 				for (int i = 0; i < calcDet.length; i++) {
 					calcDet[i] = new ArrayList<Integer>();
@@ -243,7 +237,7 @@ public class Runner implements Runnable {
 							det = 1;
 						}
 
-						calcNMstsDet[mapaux[invmap[vgraph[0]]]] = det;
+						calcNMstsDet[i] = det;
 						nmsts = nmsts * det;
 					}
 				}
