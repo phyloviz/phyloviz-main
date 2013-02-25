@@ -38,6 +38,7 @@ import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -83,7 +84,8 @@ public class Runner implements Runnable {
 				continue;
 			}
 
-			double nmsts = calcNumberMSTs(edgesList);
+			gr.getPanel().appendWithDate("Processing CC " + g.getID() + "\n");
+			double nmsts = calcNumberMSTs(edgesList, gr);
 
 			DecimalFormat df = new DecimalFormat("0.######E0");
 			DecimalFormat pf = new DecimalFormat("#.##");
@@ -101,7 +103,7 @@ public class Runner implements Runnable {
 					}
 				}
 			} else {
-				gr.getPanel().append("CC " + g.getID() + " has more than 1E80 MSTs\nSkipping edge stats.\n");	
+				gr.getPanel().append("CC " + g.getID() + " has more than 1E100 MSTs\nSkipping edge stats.\n");	
 			}
 
 			gr.getPanel().append("\n");
@@ -133,7 +135,7 @@ public class Runner implements Runnable {
 		return id;
 	}
 
-	private static double calcNumberMSTs(List edgesList) {
+	private static double calcNumberMSTs(List edgesList, GOeBurstResult sgr) {
 
 		Collections.sort(edgesList);
 
@@ -225,6 +227,8 @@ public class Runner implements Runnable {
 					}
 				}
 
+				sgr.getPanel().appendWithDate("Level " + level + "\n");
+
 				double[] calcNMstsDet = new double[mapid];
 				for (int i = 0; i < calcDet.length; i++) {
 
@@ -237,18 +241,25 @@ public class Runner implements Runnable {
 						while (gIter.hasNext()) {
 							vgraph[index++] = gIter.next();
 						}
+						
+						sgr.getPanel().append("View: " + Arrays.toString(vgraph) + "\n");
+						sgr.getPanel().append(matrix.viewSelection(vgraph,vgraph).toString() + "\n");	
+						sgr.getPanel().flush();
 
 						Algebra a = new Algebra();
 						double det = a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 1, vgraph.length), 
 							                                ArrayUtils.subarray(vgraph, 1, vgraph.length)));
 
+						
 						if (det <= Double.MIN_VALUE) {
 							det = 1;
-						} else if (det > 1E80) {
+						} else if (det > 1E100) {
 							det = Double.POSITIVE_INFINITY;
 						}
 
 						calcNMstsDet[i] = det;
+
+						sgr.getPanel().append("Det: " + det + "\n");	
 
 						if (det < Double.POSITIVE_INFINITY) {
 							nmsts = nmsts * det;
@@ -275,6 +286,8 @@ public class Runner implements Runnable {
 				//Passa para o nível seguinte
 				level++;
 				vaux = new ArrayList<Integer>(mapid);
+			} else { // Se prev==now a lista é vazia e passamos para o nível seguinte
+				level++;
 			}
 		}
 
