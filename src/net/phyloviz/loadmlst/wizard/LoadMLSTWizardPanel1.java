@@ -68,9 +68,9 @@ public class LoadMLSTWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 		int index = component.getSelectedIndex();
 
 		if (name.trim().equals(""))
-			throw new WizardValidationException(null, "Invalid name", null);
+			throw new WizardValidationException(null, "Invalid dataset name", null);
 
 		if (index < 0)
-			throw new WizardValidationException(null, "Invalid database", null);
+			throw new WizardValidationException(null, "Please select a valid database", null);
 	}
 }

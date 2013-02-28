@@ -20,7 +20,6 @@ public class LoadMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
      */
     private int iDBIndex;
     private String sDBName;
-    private String dataSetName;
     private Component component;
     private MLSTypingFactory tf;
     private TypingData<? extends AbstractProfile> td;
@@ -64,7 +63,6 @@ public class LoadMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
     @Override
     public void readSettings(Object settings) {
         ((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/core/TypingImage.png", true));
-        dataSetName = (String) ((WizardDescriptor) settings).getProperty("name");
         iDBIndex = (Integer) ((WizardDescriptor) settings).getProperty("dbIndex");
         sDBName = (String) ((WizardDescriptor) settings).getProperty("dbName");
         ((LoadMLSTVisualPanel2) getComponent()).setDatabase(iDBIndex, sDBName);
