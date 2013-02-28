@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -33,8 +35,8 @@ public final class LoadMLSTVisualPanel3 extends JPanel {
 				+ "font-size: " + font.getSize() + "pt; width: " + jEditorPane1.getSize().width + "px;}";
 			((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 		} catch (IOException e) {
-			// Do nothing...
-			System.err.println(e.getMessage());
+			Logger.getLogger(LoadMLSTVisualPanel3.class.getName()).log(Level.WARNING,
+					e.getLocalizedMessage());
 		}
 	}
 

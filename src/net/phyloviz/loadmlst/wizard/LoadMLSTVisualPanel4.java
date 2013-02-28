@@ -274,7 +274,6 @@ public final class LoadMLSTVisualPanel4 extends JPanel {
 			javax.swing.JButton jb = (javax.swing.JButton) evt.getSource();
 			for (int i = 0; i < alLoci.size(); i++) {
 				if (jbLocusBrowse[i].equals(jb)) {
-					System.out.println("Found him!!!!");
 					jtfFile[i].setText(fc.getSelectedFile().getAbsolutePath());
 					NbPreferences.forModule(LoadMLSTWizardAction.class).put("LAST_DIR", fc.getCurrentDirectory().getPath());
 					break;
