@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+	<body>
+This distance builds upon the rules defined in the article by Feil <i>et al</i> to select if a link should be drawn.
+In order to provide an unique minimum spanning tree(MST) like structure, this option can also expand goeBURST rules 
+to the number of loci used in a typing schema.
+<br/>
+<br/>
+Let n be the number of differences, which is always less than the number of loci.
+The implemented rules are (by order):
+<ul>
+  <li><b>1</b>: #SLVs</li>
+  <li><b>2</b>: #DLVs</li>
+  <li><b>3</b>: #TLVs</li>
+  <li><b>4 to n</b>: #(4 to n)LVs</li>
+  <li><b>n+1</b>: Frequency of an ST</li>
+  <li><b>n+2</b>: STID</li>
+</ul>
+The last rule was added in goeBURST to ensure that the represented tree is unique. 
+This rule is that the lower ST id should be selected in case of tie at this level.
+<br/>
+<br/>
+Feil, E., Li, B., Aanensen, D., Hanage, W., & Spratt, B. (2004). eBURST: inferring patterns of evolutionary descent among clusters of related bacterial genotypes from multilocus sequence typing data. Journal of Bacteriology, 186(5), 1518-1530.
+<br/>
+<br/>
+Francisco, A. P., Bugalho, M., Ramirez, M., & Carriço, J. A. (2009). Global optimal eBURST analysis of multilocus typing data using a graphic matroid approach. BMC Bioinformatics, 10, 152. doi:10.1186/1471-2105-10-152
+	</body>
+</html>
