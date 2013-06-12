@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module: net.phyloviz.slvgraph/1
+OpenIDE-Module-Implementation-Version: 0
+OpenIDE-Module-Layer: net/phyloviz/slvgraph/layer.xml
+OpenIDE-Module-Localizing-Bundle: net/phyloviz/slvgraph/Bundle.properties
+
