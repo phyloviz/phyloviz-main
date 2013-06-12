@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+	<body>
+This distance adds a first tiebreak rule to the goeBURST rules based on the Euclidean distance between two profiles.
+It assumes that the genetic distance between two MLVA profiles is proportional to the difference in the number of 
+repeats at each locus. 
+<br/>
+<br/>
+For goeBURST algorithm, it will still link only two Sequence Types only if they are SLVs.
+<br/>
+<br/>
+The complete list of rules used to create the trees are:
+<ul>
+  <li><b>1</b>: Euclidean distance between profiles</li>
+  <li><b>2</b>: #SLVs</li>
+  <li><b>3</b>: #DLVs</li>
+  <li><b>4</b>: #TLVs</li>
+  <li><b>5 to (n+1)</b>: #(4 to n)LVs</li>
+  <li><b>n+2</b>: Frequency of an ST</li>
+  <li><b>n+3</b>: STID</li>
+</ul>
+	</body>
+</html>
