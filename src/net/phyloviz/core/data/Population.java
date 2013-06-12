@@ -314,6 +314,7 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	@Override
 	public boolean addColumn(String header, ColumnFiller cf) {
 		if (h2idx.containsKey(header)) {
+			System.err.println(header);
 			return false;
 		}
 
