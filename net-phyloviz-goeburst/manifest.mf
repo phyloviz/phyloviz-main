@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module: net.phyloviz.goeburst/1
-OpenIDE-Module-Implementation-Version: 8
+OpenIDE-Module-Implementation-Version: 9
 OpenIDE-Module-Layer: net/phyloviz/goeburst/layer.xml
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/goeburst/Bundle.properties
 

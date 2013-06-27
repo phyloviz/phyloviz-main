@@ -111,7 +111,7 @@ public class MSTRunner implements Runnable {
 		while (ei.hasNext()) {
 			Edge<GOeBurstNode> e = ei.next();
 
-			int diff = Math.abs(e.getU().diffLV(e.getV()));
+			int diff = ad.level(e);
 
 			op.append(e.getU().getID() + " -- " + e.getV().getID() + " (level: " + diff);
 			String einfo = ad.info(e);
