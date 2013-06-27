@@ -33,20 +33,13 @@
  * to do so, delete this exception statement from your version.
  */
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.phyloviz.core.wizard;
 
-import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.text.html.HTMLDocument;
 import org.openide.util.NbPreferences;
 
 public final class LoadDataSetVisualPanel2 extends JPanel {
@@ -66,10 +59,6 @@ public final class LoadDataSetVisualPanel2 extends JPanel {
 			// Do nothing...
 			System.err.println(e.getMessage());
 		}
-		Font font = UIManager.getFont("Label.font");
-		String bodyRule = "body { font-family: " + font.getFamily() + "; "
-			+ "font-size: " + font.getSize() + "pt; width: " + jPanel2.getSize().width + "px;}";
-		((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 	}
 	
 	@Override

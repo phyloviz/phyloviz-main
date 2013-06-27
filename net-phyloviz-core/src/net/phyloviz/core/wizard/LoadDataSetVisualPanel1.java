@@ -35,7 +35,6 @@
 
 package net.phyloviz.core.wizard;
 
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -46,8 +45,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.text.html.HTMLDocument;
 import net.phyloviz.core.util.TypingFactory;
 import org.openide.util.Lookup;
 
@@ -92,11 +89,6 @@ public final class LoadDataSetVisualPanel1 extends JPanel {
 			System.err.println(e.getMessage());
 		}
 
-		Font font = UIManager.getFont("Label.font");
-		String bodyRule = "body { font-family: " + font.getFamily() + "; "
-			+ "font-size: " + font.getSize() + "pt; width: " + jPanel2.getParent().getSize().width + "px;}";
-		((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
-
 		jComboBox1.addActionListener(new ActionListener() {
 
 			@Override
@@ -112,10 +104,6 @@ public final class LoadDataSetVisualPanel1 extends JPanel {
 					// Do nothing...
 					System.err.println(e.getMessage());
 				}
-				Font font = UIManager.getFont("Label.font");
-				String bodyRule = "body { font-family: " + font.getFamily() + "; "
-					+ "font-size: " + font.getSize() + "pt; width: " + jPanel2.getParent().getSize().width + "px;}";
-				((HTMLDocument) jEditorPane1.getDocument()).getStyleSheet().addRule(bodyRule);
 			}
 		});
 	}
