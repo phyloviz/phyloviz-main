@@ -187,13 +187,12 @@ public class GraphView2 extends GView {
 		ColorAction edge = new EdgeColorAction("graph.edges");
 		FontAction nfont =
 			new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
-
-				@Override
-				public Font getFont(VisualItem item) {
-					Profile st = (Profile) item.getSourceTuple().get("st_ref");
-					return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
-				}
-			};
+			@Override
+			public Font getFont(VisualItem item) {
+				Profile st = (Profile) item.getSourceTuple().get("st_ref");
+				return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+			}
+		};
 
 		ActionList draw = new ActionList();
 		draw.add(fill);
@@ -240,7 +239,6 @@ public class GraphView2 extends GView {
 		display.addControlListener((Control) new ItemInfoControl());
 
 		display.addMouseMotionListener(new MouseMotionAdapter() {
-
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				view.run("static");
@@ -271,7 +269,6 @@ public class GraphView2 extends GView {
 		groupList = new JList();
 		groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		groupList.addListSelectionListener(new ListSelectionListener() {
-
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting()) {
@@ -298,12 +295,11 @@ public class GraphView2 extends GView {
 				appendTextToInfoPanel("\n");
 
 				SwingWorker job = new SwingWorker() {
-
 					@Override
 					protected Object doInBackground() throws Exception {
 
 						Thread.sleep(100);
-						
+
 						Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
 						GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
 						DisplayLib.fitViewToBounds(display, bounds, 1000);
@@ -313,7 +309,7 @@ public class GraphView2 extends GView {
 				};
 
 				job.execute();
-				
+
 			}
 		});
 		groupList.setCellRenderer(new GroupCellRenderer());
@@ -352,7 +348,6 @@ public class GraphView2 extends GView {
 		JButton ub = new JButton("Get Groups");
 		ub.setMargin(new Insets(1, 1, 1, 1));
 		ub.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
@@ -375,7 +370,6 @@ public class GraphView2 extends GView {
 
 				Group[] ga = gmap.values().toArray(new Group[0]);
 				Arrays.sort(ga, new Comparator<Group>() {
-
 					@Override
 					public int compare(Group o1, Group o2) {
 						return o2.size() - o1.size();
@@ -413,11 +407,10 @@ public class GraphView2 extends GView {
 		});
 		bs.add(ub, BorderLayout.NORTH);
 
-		JButton sb = new JButton("Save Groups");
-		sb.setEnabled(er.getDataSet().getLookup().lookup(Population.class) != null);
-		sb.setMargin(new Insets(1, 1, 1, 1));
-		sb.addActionListener(new ActionListener() {
-
+		JButton sab = new JButton("Save Groups");
+		sab.setEnabled(er.getDataSet().getLookup().lookup(Population.class) != null);
+		sab.setMargin(new Insets(1, 1, 1, 1));
+		sab.addActionListener(new ActionListener() {
 			Population pop = er.getDataSet().getLookup().lookup(Population.class);
 
 			@Override
@@ -426,31 +419,122 @@ public class GraphView2 extends GView {
 				// Integrate with isolate data, if it exists.
 				if (pop != null) {
 
-					final HashMap<String, String> st2cl = new HashMap<String, String>();
-					for (int i = 0; i < nodeTable.getRowCount(); i++) {
-						st2cl.put(nodeTable.getString(i, "st_id"),
-							String.valueOf(nodeTable.getInt(i, "g")));
+					Object[] options = {"Yes", "No"};
+					int opt = JOptionPane.showOptionDialog(groupPanel,
+						"Do you want to save groups for all possible levels at once?\n"
+						+ "Note that it may take some time. Choose 'No' if you just want\n"
+						+ "to save current groups.",
+						"Save all groups",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE,
+						null, // No icon
+						options,
+						options[1]);
+
+					if (opt == 0) {
+
+						// Sort edges....
+						Integer[] eidx = new Integer[graph.getEdgeCount()];
+						for (int i = 0; i < graph.getEdgeCount(); i++) {
+							eidx[i] = i;
+						}
+						Arrays.sort(eidx, new Comparator<Integer>() {
+							@Override
+							public int compare(Integer o1, Integer o2) {
+								return edgeTable.getInt(o1, "w") - edgeTable.getInt(o2, "w");
+							}
+						});
+
+						DisjointSet ds = new DisjointSet(graph.getNodeCount());
+
+						// Initialize level
+						int lv = edgeTable.getInt(eidx[0], "w");
+
+						// Process edges
+						int i = 0;
+						while (i < graph.getEdgeCount()) {
+
+							int j = i;
+							while (i < graph.getEdgeCount() && edgeTable.getInt(eidx[i], "w") == lv) {
+								ds.unionSet(edgeTable.getInt(eidx[i], SRC), edgeTable.getInt(eidx[i], TRG));
+								i++;
+							}
+
+							lv++;
+							if (j == i) {
+								continue;
+							}
+
+							HashMap<Integer, Group> gmap = new HashMap<Integer, Group>();
+							for (int k = 0; k < graph.getNodeCount(); k++) {
+								if (!gmap.containsKey(ds.findSet(k))) {
+									gmap.put(ds.findSet(k), new Group());
+								}
+
+								Group g = gmap.get(ds.findSet(k));
+								g.add(k);
+							}
+
+							Group[] ga = gmap.values().toArray(new Group[0]);
+							Arrays.sort(ga, new Comparator<Group>() {
+								@Override
+								public int compare(Group o1, Group o2) {
+									return o2.size() - o1.size();
+								}
+							});
+							for (int k = 0; k < ga.length; k++) {
+								ga[k].setID(k + 1);
+							}
+
+							final HashMap<String, String> st2cl = new HashMap<String, String>();
+							for (int k = 0; k < nodeTable.getRowCount(); k++) {
+								st2cl.put(nodeTable.getString(k, "st_id"),
+									Integer.toString(gmap.get(ds.findSet(k)).getID()));
+							}
+
+							pop.addColumn("goeBURST MST[" + (lv - 1) + "]", new DataModel.ColumnFiller() {
+								@Override
+								public String getValue(DataItem i) {
+									return st2cl.get(i.get(er.getDataSet().getPopKey()));
+								}
+							});
+
+							SwingUtilities.invokeLater(new Runnable() {
+								@Override
+								public void run() {
+									pop.tableModel().fireTableStructureChanged();
+								}
+							});
+
+						}
+
+					} else {
+
+						final HashMap<String, String> st2cl = new HashMap<String, String>();
+						for (int i = 0; i < nodeTable.getRowCount(); i++) {
+							st2cl.put(nodeTable.getString(i, "st_id"),
+								String.valueOf(nodeTable.getInt(i, "g")));
+						}
+
+						pop.addColumn("goeBURST MST[" + level + "]", new DataModel.ColumnFiller() {
+							@Override
+							public String getValue(DataItem i) {
+								return st2cl.get(i.get(er.getDataSet().getPopKey()));
+							}
+						});
+
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								pop.tableModel().fireTableStructureChanged();
+							}
+						});
 					}
 
-					pop.addColumn("goeBURST MST[" + level + "]", new DataModel.ColumnFiller() {
-
-						@Override
-						public String getValue(DataItem i) {
-							return st2cl.get(i.get(er.getDataSet().getPopKey()));
-						}
-					});
-
-					SwingUtilities.invokeLater(new Runnable() {
-
-						@Override
-						public void run() {
-							pop.tableModel().fireTableStructureChanged();
-						}
-					});
 				}
 			}
 		});
-		bs.add(sb, BorderLayout.SOUTH);
+		bs.add(sab, BorderLayout.SOUTH);
 
 		bs.add(Box.createVerticalStrut(3), BorderLayout.CENTER);
 
@@ -478,7 +562,6 @@ public class GraphView2 extends GView {
 		final JValueSlider animCtl = new JValueSlider("animation speed >>", 1, 100, 50);
 		animCtl.setBackground(Color.WHITE);
 		animCtl.addChangeListener(new ChangeListener() {
-
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				fdl.setMaxTimeStep(animCtl.getValue().longValue());
@@ -488,7 +571,6 @@ public class GraphView2 extends GView {
 		JButton playButton = new JButton(">");
 		playButton.setMargin(new Insets(1, 1, 1, 1));
 		playButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				restartAnimation();
@@ -498,7 +580,6 @@ public class GraphView2 extends GView {
 		JButton pauseButton = new JButton("||");
 		pauseButton.setMargin(new Insets(1, 1, 1, 1));
 		pauseButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				stopAnimation();
@@ -522,7 +603,6 @@ public class GraphView2 extends GView {
 		JButton optionsButton = new JButton("Options");
 		optionsButton.setMargin(new Insets(1, 1, 1, 1));
 		optionsButton.addMouseListener(new MouseAdapter() {
-
 			@Override
 			public void mousePressed(MouseEvent e) {
 				popupMenu.show(e.getComponent(), e.getX(), e.getY());
@@ -531,9 +611,9 @@ public class GraphView2 extends GView {
 
 		JButton exportButton = new JButton();
 		exportButton.setIcon(new ImageIcon(GraphView2.class.getResource("export.png")));
-		exportButton.setMargin( new Insets(0, 0, 0, 0));
+		exportButton.setMargin(new Insets(0, 0, 0, 0));
 		exportButton.addActionListener(new ExportAction(this));
-	
+
 		// Bottom box.
 		box = new Box(BoxLayout.X_AXIS);
 		box.add(Box.createHorizontalStrut(3));
@@ -570,7 +650,6 @@ public class GraphView2 extends GView {
 		view.run("draw");
 
 		SwingWorker job = new SwingWorker() {
-
 			@Override
 			protected Object doInBackground() throws Exception {
 
@@ -606,12 +685,11 @@ public class GraphView2 extends GView {
 				}
 
 				SwingWorker job = new SwingWorker() {
-
 					@Override
 					protected Object doInBackground() throws Exception {
 
 						Thread.sleep(500);
-						
+
 						Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
 						GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
 						DisplayLib.fitViewToBounds(display, bounds, 2000);
@@ -622,7 +700,7 @@ public class GraphView2 extends GView {
 
 				job.execute();
 
-				
+
 				// Fill tables.
 				LinkedList<Integer> q = new LinkedList<Integer>();
 				q.add(st.getUID());
@@ -717,7 +795,6 @@ public class GraphView2 extends GView {
 				groupList.setListData(new Group[]{g});
 				final SpinnerNumberModel model = new SpinnerNumberModel(maxlv, 1, maxlv, 1);
 				model.addChangeListener(new ChangeListener() {
-
 					@Override
 					public void stateChanged(ChangeEvent e) {
 						view.setVisible("graph", null, false);
@@ -743,7 +820,6 @@ public class GraphView2 extends GView {
 				// Search stuff.
 				TupleSet search = new PrefixSearchTupleSet();
 				search.addTupleSetListener(new TupleSetListener() {
-
 					@Override
 					public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
 						view.run("static");
@@ -776,7 +852,6 @@ public class GraphView2 extends GView {
 		};
 
 		job.addPropertyChangeListener(new PropertyChangeListener() {
-
 			@Override
 			public void propertyChange(PropertyChangeEvent pce) {
 				if (pce.getPropertyName().equals("progress")) {
@@ -883,10 +958,11 @@ public class GraphView2 extends GView {
 
 	@Override
 	public void setLevelLabel(boolean status) {
-		if (status)
+		if (status) {
 			rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("w"));
-		else
+		} else {
 			rf.setDefaultEdgeRenderer(new EdgeRenderer());
+		}
 	}
 
 	@Override
