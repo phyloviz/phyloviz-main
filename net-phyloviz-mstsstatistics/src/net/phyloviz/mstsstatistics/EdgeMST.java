@@ -53,12 +53,22 @@ public class EdgeMST implements Comparable<EdgeMST> {
     private GOeBurstNode _dest;
     private int _level;
     private double _rationmsts;
+    private boolean _visible; 
 
-    public EdgeMST(GOeBurstNode source, GOeBurstNode dest, int level) {
+    public EdgeMST(GOeBurstNode source, GOeBurstNode dest, int level, boolean visible) {
         _source = source;
         _dest = dest;
         _level = level;
         _rationmsts = 0;
+        _visible = visible;
+    }
+
+    public boolean isVisible() {
+        return _visible;
+    }
+
+    public void setVisible(boolean _visible) {
+        this._visible = _visible;
     }
 
     public void setNmsts(int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D m, double[] calcnmsts) {
@@ -84,7 +94,7 @@ public class EdgeMST implements Comparable<EdgeMST> {
                 array[index++] = el;
             }
         }
-
+        
         LUDecomposition tempMax = new LUDecomposition(m.viewSelection(array, array));
         DoubleMatrix2D max = tempMax.getU();
         double det = 0.0;

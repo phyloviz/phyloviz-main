@@ -46,7 +46,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import net.phyloviz.algo.Edge;
+import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
@@ -66,9 +66,8 @@ public class Runner implements Runnable {
 
         gr.getPanel().appendWithDate("MST Statistics started...\n");
         gr.getPanel().flush();
-        
+
         System.out.println("MST Statistics started... \n");
-        
 
         List<EdgeMST> edgesList = new ArrayList<EdgeMST>();
         Collection<GOeBurstClusterWithStats> groups = gr.getClustering();
@@ -82,14 +81,13 @@ public class Runner implements Runnable {
             while (geIter.hasNext()) {
                 Edge<GOeBurstNodeExtended> e = geIter.next();
                 int level = gr.getDistance().level(e);
-                EdgeMST ne = new EdgeMST(e.getU(), e.getV(), level);
+                EdgeMST ne = new EdgeMST(e.getU(), e.getV(), level, e.visible());
                 edgesList.add(ne);
             }
             if (edgesList.isEmpty()) {
                 continue;
             }
 
-           
             gr.getPanel().appendWithDate("Processing CC " + g.getID() + "\n");
             double nmsts = calcNumberMSTs(edgesList, gr);
 
@@ -98,18 +96,17 @@ public class Runner implements Runnable {
 //			if (nmsts < Double.POSITIVE_INFINITY) {
             gr.getPanel().append("CC " + g.getID() + " has 10^ " + nmsts + " MSTs\nEdge stats:\n");
 
-            
-            
-            
             Iterator<EdgeMST> ei = edgesList.iterator();
             while (ei.hasNext()) {
                 EdgeMST e = ei.next();
-                gr.getPanel().append(e.getSourceNode().getID() + " - " + e.getDestNode().getID()
-                    + ", level: " + e.getLevel() + ", freq: " + (Math.pow(10, e.getNmsts()) * 100.0)
-                    + "% (" + e.getNmsts() + ")\n");
-                gr.getPanel().flush();
-                
-              
+                if (e.isVisible()) {
+                    gr.getPanel().append(e.getSourceNode().getID() + " - " + e.getDestNode().getID()
+                        + ", level: " + e.getLevel() + ", freq: " + (Math.pow(10, e.getNmsts()) * 100.0)
+                        + "% (" + e.getNmsts() + ")\n");
+                    gr.getPanel().flush();
+
+                }
+
             }
             /*	} else {
              gr.getPanel().append("CC " + g.getID() + " has more than 1E100 MSTs\nSkipping edge stats.\n");	
@@ -127,7 +124,9 @@ public class Runner implements Runnable {
     private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
         for (int i = prev; i < now; i++) {
             EdgeMST e = (EdgeMST) edgesList.get(i);
-            e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
+            if (e.isVisible()) {
+                e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
+            }
 
         }
     }
@@ -258,9 +257,10 @@ public class Runner implements Runnable {
                         for (int k = 0; k < max.rows(); k++) {
                             det += Math.log10(Math.abs(max.get(k, k)));
                         }
-                        
-                        if (det == 0)
+
+                        if (det == 0) {
                             det = 1;
+                        }
 
                         sgr.getPanel().append("View: " + Arrays.toString(vgraph) + "\n");
                         sgr.getPanel().append(matrix.viewSelection(vgraph, vgraph).toString() + "\n");
@@ -274,7 +274,7 @@ public class Runner implements Runnable {
                 }
 
                 calcEdgesNMSTs(edgesList, prev, now, map, mapaux, calcDet, matrix, calcNMstsDet);
-                
+
                 prev = now;
                 if (e == null) {
                     break;
