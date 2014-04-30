@@ -36,6 +36,8 @@ package net.phyloviz.mstsstatistics.ui;
 
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
+import cern.colt.matrix.linalg.LUDecomposition;
+import cern.colt.matrix.DoubleMatrix2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -108,7 +110,7 @@ public class MSTViewAction extends NodeAction {
 
         Collections.sort(edgesList);
 
-        double nmsts = 1;
+        double nmsts = 0;
 
         int mapid;
 
@@ -208,13 +210,23 @@ public class MSTViewAction extends NodeAction {
                     while (gIter.hasNext()) {
                         vgraph[index++] = gIter.next();
                     }
-                    Algebra a = new Algebra();
-                    double det = a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 0, vgraph.length - 1), ArrayUtils.subarray(vgraph, 0, vgraph.length - 1)));
-
-                    if (det == 0) {
+                    
+                    //Algebra a = new Algebra();
+                    double det = 0.0;
+                    LUDecomposition tempMax = new LUDecomposition((matrix.viewSelection
+                            (ArrayUtils.subarray(vgraph, 0, vgraph.length - 1), 
+                             ArrayUtils.subarray(vgraph, 0, vgraph.length - 1))));
+                    DoubleMatrix2D max = tempMax.getU();
+                    System.out.println(max.rows());
+                    for (int k = 0; k < max.rows(); k++)
+							det += Math.log10(Math.abs(max.get(k, k)));
+                    
+                    if(det == 0)
                         det = 1;
-                    }
-                    nmsts = nmsts * det;
+                    
+                   // double det = Math.log10(Math.abs(a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 0, vgraph.length - 1), ArrayUtils.subarray(vgraph, 0, vgraph.length - 1)))));
+                    calcNMstsDet[i] = det;
+                    nmsts = nmsts + det;
                 }
 
                 calcEdgesNMSTs(edgesList, prev, now, map, mapaux, calcDet, matrix, calcNMstsDet);

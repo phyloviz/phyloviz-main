@@ -34,24 +34,27 @@
  */
 package net.phyloviz.mstsstatistics;
 
+import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
+import cern.colt.matrix.linalg.LUDecomposition;
 import java.util.ArrayList;
 import java.util.Iterator;
 import net.phyloviz.goeburst.tree.GOeBurstNode;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
  * @author Morrighan
  */
 public class EdgeMST implements Comparable<EdgeMST> {
-    
+
     private GOeBurstNode _source;
     private GOeBurstNode _dest;
     private int _level;
     private double _rationmsts;
-    
-    public EdgeMST (GOeBurstNode source, GOeBurstNode dest, int level){
+
+    public EdgeMST(GOeBurstNode source, GOeBurstNode dest, int level) {
         _source = source;
         _dest = dest;
         _level = level;
@@ -61,56 +64,62 @@ public class EdgeMST implements Comparable<EdgeMST> {
     public void setNmsts(int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D m, double[] calcnmsts) {
         int u = this.getSource();
         int v = this.getDest();
-       
-	if (calcnmsts[mapaux[u]] >= Double.POSITIVE_INFINITY) {
-		_rationmsts = Double.NaN;
-		return ;
-	}
-	
+
         int s = map[u];
         int d = map[v];
-        
-        if(s==d) {
-	    _rationmsts = 0;
-	    return ;
+
+        if (s == d) {
+            _rationmsts = 0;
+            return;
         }
+
+        int[] array = new int[calcDet[mapaux[u]].size() - 2];
         
-        int[] array = new int[calcDet[mapaux[u]].size()-2];
         int index = 0;
         Iterator<Integer> it = ((ArrayList<Integer>) calcDet[mapaux[u]]).iterator();
-        
-        while (it.hasNext()){
+
+        while (it.hasNext()) {
             int el = it.next();
-            if(el!= s && el != d) {
+            if (el != s && el != d) {
                 array[index++] = el;
             }
         }
-        
-        double det = 1;
-        Algebra a = new Algebra();
+
+        LUDecomposition tempMax = new LUDecomposition(m.viewSelection(array, array));
+        DoubleMatrix2D max = tempMax.getU();
+        double det = 0.0;
         if (index != 0) {
-            det = a.det(m.viewSelection(array, array));
+            for (int k = 0; k < max.rows(); k++) {
+                det += Math.log10(Math.abs(max.get(k, k)));
+            }
         }
-        _rationmsts = det/calcnmsts[mapaux[u]];
+
+        if(det == 0.0)
+            det = 1.0;
+        
+        _rationmsts = det - calcnmsts[mapaux[u]];
+
+        //System.out.println(_rationmsts);
+        
     }
 
     public double getNmsts() {
         return _rationmsts;
     }
-    
-    public void calcMatrixUV(SparseDoubleMatrix2D m){
+
+    public void calcMatrixUV(SparseDoubleMatrix2D m) {
         double d;
         Algebra a = new Algebra();
         int size = m.size();
-        int[] members = new int[size-1];
+        int[] members = new int[size - 1];
         int index = 0;
-        for (int i = 0; i < size; i++){
-            if(i!=this.getSource() || i!= this.getDest()){
+        for (int i = 0; i < size; i++) {
+            if (i != this.getSource() || i != this.getDest()) {
                 members[index] = i;
                 index++;
             }
         }
-        _rationmsts = a.det(m.viewSelection(members, members)); 
+        _rationmsts = Math.log10(Math.abs(a.det(m.viewSelection(members, members))));
     }
 
     public int getSource() {
@@ -118,9 +127,9 @@ public class EdgeMST implements Comparable<EdgeMST> {
     }
 
     public GOeBurstNode getSourceNode() {
-	return _source;
+        return _source;
     }
-    
+
     public void setSource(GOeBurstNode source) {
         this._source = source;
     }
@@ -130,9 +139,9 @@ public class EdgeMST implements Comparable<EdgeMST> {
     }
 
     public GOeBurstNode getDestNode() {
-	return _dest;
+        return _dest;
     }
-    
+
     public void setDest(GOeBurstNode dest) {
         this._dest = dest;
     }
@@ -147,13 +156,13 @@ public class EdgeMST implements Comparable<EdgeMST> {
 
     @Override
     public int compareTo(EdgeMST o) {
-        if(o.getLevel()!=this.getLevel()) {
+        if (o.getLevel() != this.getLevel()) {
             return this.getLevel() - o.getLevel();
         }
-        if(o.getSource()!=this.getSource()) {
+        if (o.getSource() != this.getSource()) {
             return this.getSource() - o.getSource();
         }
         return this.getDest() - o.getDest();
     }
-    
+
 }

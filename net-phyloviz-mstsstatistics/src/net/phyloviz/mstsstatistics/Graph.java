@@ -155,7 +155,7 @@ public class Graph {
         }       
         
         Algebra a = new Algebra();
-        det = a.det(matrix.viewPart(1, 1, matrix.rows() - 1, matrix.columns() - 1));
+        det = Math.log10(Math.abs(a.det(matrix.viewPart(1, 1, matrix.rows() - 1, matrix.columns() - 1))));
         return det;
     }
         

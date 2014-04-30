@@ -34,8 +34,10 @@
  */
 package net.phyloviz.mstsstatistics;
 
+import cern.colt.matrix.DoubleMatrix2D;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
+import cern.colt.matrix.linalg.LUDecomposition;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,246 +55,246 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class Runner implements Runnable {
 
-	private GOeBurstResult gr;
+    private GOeBurstResult gr;
 
-	public Runner(GOeBurstResult gr) {
-		this.gr = gr;
-	}
+    public Runner(GOeBurstResult gr) {
+        this.gr = gr;
+    }
 
-	@Override
-	public void run() {
+    @Override
+    public void run() {
 
-		gr.getPanel().appendWithDate("MST Statistics started...\n");
-		gr.getPanel().flush();
+        gr.getPanel().appendWithDate("MST Statistics started...\n");
+        gr.getPanel().flush();
+        
+        System.out.println("MST Statistics started... \n");
+        
 
-		List<EdgeMST> edgesList = new ArrayList<EdgeMST>();
-		Collection<GOeBurstClusterWithStats> groups = gr.getClustering();
-		Iterator<GOeBurstClusterWithStats> gIter = groups.iterator();
+        List<EdgeMST> edgesList = new ArrayList<EdgeMST>();
+        Collection<GOeBurstClusterWithStats> groups = gr.getClustering();
+        Iterator<GOeBurstClusterWithStats> gIter = groups.iterator();
 
-		while (gIter.hasNext()) {
+        while (gIter.hasNext()) {
 
-			GOeBurstClusterWithStats g = gIter.next();
-			ArrayList<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> gEdges = g.getEdges();
-			Iterator<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> geIter = gEdges.iterator();
-			while (geIter.hasNext()) {
-				Edge<GOeBurstNodeExtended> e = geIter.next();
-				int level = gr.getDistance().level(e);
-				EdgeMST ne = new EdgeMST(e.getU(), e.getV(), level);
-				edgesList.add(ne);
-			}
-			if (edgesList.isEmpty()) {
-				continue;
-			}
+            GOeBurstClusterWithStats g = gIter.next();
+            ArrayList<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> gEdges = g.getEdges();
+            Iterator<net.phyloviz.goeburst.cluster.Edge<GOeBurstNodeExtended>> geIter = gEdges.iterator();
+            while (geIter.hasNext()) {
+                Edge<GOeBurstNodeExtended> e = geIter.next();
+                int level = gr.getDistance().level(e);
+                EdgeMST ne = new EdgeMST(e.getU(), e.getV(), level);
+                edgesList.add(ne);
+            }
+            if (edgesList.isEmpty()) {
+                continue;
+            }
 
-			gr.getPanel().appendWithDate("Processing CC " + g.getID() + "\n");
-			double nmsts = calcNumberMSTs(edgesList, gr);
+           
+            gr.getPanel().appendWithDate("Processing CC " + g.getID() + "\n");
+            double nmsts = calcNumberMSTs(edgesList, gr);
 
-			DecimalFormat df = new DecimalFormat("0.######E0");
-			DecimalFormat pf = new DecimalFormat("#.##");
-			
-			if (nmsts < Double.POSITIVE_INFINITY) {
-				gr.getPanel().append("CC " + g.getID() + " has " + df.format(nmsts) + " MSTs\nEdge stats:\n");
-			
-				Iterator<EdgeMST> ei = edgesList.iterator();
-				while (ei.hasNext()) {
-					EdgeMST e = ei.next();
-					if (e.getNmsts() > Double.MIN_VALUE) {
-						gr.getPanel().append(e.getSourceNode().getID() + " - " + e.getDestNode().getID()
-						+ ", level: " + e.getLevel() + ", freq: " + pf.format(e.getNmsts() * 100.0) 
-							+ "% (" + df.format(e.getNmsts()) + ")\n");
-					}
-				}
-			} else {
-				gr.getPanel().append("CC " + g.getID() + " has more than 1E100 MSTs\nSkipping edge stats.\n");	
-			}
+            /*		DecimalFormat df = new DecimalFormat("0.######E0");
+             DecimalFormat pf = new DecimalFormat("#.##");*/
+//			if (nmsts < Double.POSITIVE_INFINITY) {
+            gr.getPanel().append("CC " + g.getID() + " has 10^ " + nmsts + " MSTs\nEdge stats:\n");
 
-			gr.getPanel().append("\n");
-			gr.getPanel().flush();
+            
+            
+            
+            Iterator<EdgeMST> ei = edgesList.iterator();
+            while (ei.hasNext()) {
+                EdgeMST e = ei.next();
+                gr.getPanel().append(e.getSourceNode().getID() + " - " + e.getDestNode().getID()
+                    + ", level: " + e.getLevel() + ", freq: " + (Math.pow(10, e.getNmsts()) * 100.0)
+                    + "% (" + e.getNmsts() + ")\n");
+                gr.getPanel().flush();
+                
+              
+            }
+            /*	} else {
+             gr.getPanel().append("CC " + g.getID() + " has more than 1E100 MSTs\nSkipping edge stats.\n");	
+             }*/
 
-			edgesList.clear();
-		}
-		gr.getPanel().appendWithDate("MST Statistics done.\n");
-		gr.getPanel().flush();
-	}
+            gr.getPanel().append("\n");
+            gr.getPanel().flush();
 
-	private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
-		for (int i = prev; i < now; i++) {
-			EdgeMST e = (EdgeMST) edgesList.get(i);
-			e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
-		}
-	}
+            edgesList.clear();
+        }
+        gr.getPanel().appendWithDate("MST Statistics done.\n");
+        gr.getPanel().flush();
+    }
 
-	private static int findMaxId(List edgesList) {
-		int id = 0;
-		Iterator<EdgeMST> eIter = edgesList.iterator();
-		while (eIter.hasNext()) {
-			EdgeMST e = (EdgeMST) eIter.next();
-			id = Math.max(id, e.getSource());
-			id = Math.max(id, e.getDest());
-		}
+    private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
+        for (int i = prev; i < now; i++) {
+            EdgeMST e = (EdgeMST) edgesList.get(i);
+            e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
 
+        }
+    }
 
-		return id;
-	}
+    private static int findMaxId(List edgesList) {
+        int id = 0;
+        Iterator<EdgeMST> eIter = edgesList.iterator();
+        while (eIter.hasNext()) {
+            EdgeMST e = (EdgeMST) eIter.next();
+            id = Math.max(id, e.getSource());
+            id = Math.max(id, e.getDest());
+        }
 
-	private static double calcNumberMSTs(List edgesList, GOeBurstResult sgr) {
+        return id;
+    }
 
-		Collections.sort(edgesList);
+    private static double calcNumberMSTs(List edgesList, GOeBurstResult sgr) {
 
-		double nmsts = 1;
+        Collections.sort(edgesList);
 
-		int mapid;
+        double nmsts = 0;
 
-		//Passo 1 - Descobrir o MaxId Inicial
-		int maxid = findMaxId(edgesList);
-		SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(maxid + 1, maxid + 1);
-		matrix.assign(0);
+        int mapid;
 
-		DisjointSet ds = new DisjointSet(maxid);
+        //Passo 1 - Descobrir o MaxId Inicial
+        int maxid = findMaxId(edgesList);
+        SparseDoubleMatrix2D matrix = new SparseDoubleMatrix2D(maxid + 1, maxid + 1);
+        matrix.assign(0);
 
-		int[] map = new int[maxid + 1];
-		for (int i = 0; i <= maxid; i++) {
-			map[i] = i;
-		}
+        DisjointSet ds = new DisjointSet(maxid);
 
-		int[] mapaux = new int[maxid + 1];
-		for (int i = 0; i <= maxid; i++) {
-			mapaux[i] = -1;
-		}
+        int[] map = new int[maxid + 1];
+        for (int i = 0; i <= maxid; i++) {
+            map[i] = i;
+        }
 
+        int[] mapaux = new int[maxid + 1];
+        for (int i = 0; i <= maxid; i++) {
+            mapaux[i] = -1;
+        }
 
-		//Passo 2 - Varrer arcos do nivel L, preenchendo a matriz
-		Iterator<EdgeMST> eIter = edgesList.iterator();
+        //Passo 2 - Varrer arcos do nivel L, preenchendo a matriz
+        Iterator<EdgeMST> eIter = edgesList.iterator();
 
-		EdgeMST e = eIter.next();
-		int level = (e != null) ? e.getLevel() : 1;
+        EdgeMST e = eIter.next();
+        int level = (e != null) ? e.getLevel() : 1;
 
-		ArrayList<Integer> vaux = new ArrayList<Integer>(maxid + 1);
+        ArrayList<Integer> vaux = new ArrayList<Integer>(maxid + 1);
 
-		int prev = 0;
-		int now = 0;
+        int prev = 0;
+        int now = 0;
 
-		while (true) {
-			if (e != null && e.getLevel() == level) {
-				int u = e.getSource();
-				int v = e.getDest();
-				if (!vaux.contains(u)) {
-					vaux.add(u);
-				}
-				if (!vaux.contains(v)) {
-					vaux.add(v);
-				}
-				//Preenchimento da Matriz
-				int s = map[u];
-				int d = map[v];
+        while (true) {
+            if (e != null && e.getLevel() == level) {
+                int u = e.getSource();
+                int v = e.getDest();
+                if (!vaux.contains(u)) {
+                    vaux.add(u);
+                }
+                if (!vaux.contains(v)) {
+                    vaux.add(v);
+                }
+                //Preenchimento da Matriz
+                int s = map[u];
+                int d = map[v];
 
-				matrix.setQuick(s, d, matrix.getQuick(s, d) - 1);
-				matrix.setQuick(d, s, matrix.getQuick(d, s) - 1);
-				matrix.setQuick(s, s, matrix.getQuick(s, s) + 1);
-				matrix.setQuick(d, d, matrix.getQuick(d, d) + 1);
+                matrix.setQuick(s, d, matrix.getQuick(s, d) - 1);
+                matrix.setQuick(d, s, matrix.getQuick(d, s) - 1);
+                matrix.setQuick(s, s, matrix.getQuick(s, s) + 1);
+                matrix.setQuick(d, d, matrix.getQuick(d, d) + 1);
 
-				if (!ds.sameSet(u, v)) {
-					ds.unionSet(u, v);
-				}
+                if (!ds.sameSet(u, v)) {
+                    ds.unionSet(u, v);
+                }
 
-				now++;
+                now++;
 
-				try {
-					e = eIter.next();
-				} catch (NoSuchElementException ex) {
-					e = null;
-				}
+                try {
+                    e = eIter.next();
+                } catch (NoSuchElementException ex) {
+                    e = null;
+                }
 
-			} else if (prev != now ) {
-				mapid = 0;
-				for (int i = 0; i <= maxid; i++) {
-					int setid = ds.findSet(i);
-					if (mapaux[setid] == -1) {
-						mapaux[setid] = mapid;
-						mapaux[i] = mapid;
-						mapid++;
-					} else {
-						mapaux[i] = mapaux[setid];
-					}
-				}
+            } else if (prev != now) {
+                mapid = 0;
+                for (int i = 0; i <= maxid; i++) {
+                    int setid = ds.findSet(i);
+                    if (mapaux[setid] == -1) {
+                        mapaux[setid] = mapid;
+                        mapaux[i] = mapid;
+                        mapid++;
+                    } else {
+                        mapaux[i] = mapaux[setid];
+                    }
+                }
 
-				ArrayList[] calcDet = new ArrayList[mapid];
-				for (int i = 0; i < calcDet.length; i++) {
-					calcDet[i] = new ArrayList<Integer>();
-				}
+                ArrayList[] calcDet = new ArrayList[mapid];
+                for (int i = 0; i < calcDet.length; i++) {
+                    calcDet[i] = new ArrayList<Integer>();
+                }
 
-				for (int i = 0; i < vaux.size(); i++) {
-					if (!calcDet[mapaux[vaux.get(i)]].contains(map[vaux.get(i)])) {
-						calcDet[mapaux[vaux.get(i)]].add(map[vaux.get(i)]);
-					}
-				}
+                for (int i = 0; i < vaux.size(); i++) {
+                    if (!calcDet[mapaux[vaux.get(i)]].contains(map[vaux.get(i)])) {
+                        calcDet[mapaux[vaux.get(i)]].add(map[vaux.get(i)]);
+                    }
+                }
 
-				sgr.getPanel().appendWithDate("Level " + level + "\n");
+                sgr.getPanel().appendWithDate("Level " + level + "\n");
 
-				double[] calcNMstsDet = new double[mapid];
-				for (int i = 0; i < calcDet.length; i++) {
+                double[] calcNMstsDet = new double[mapid];
+                for (int i = 0; i < calcDet.length; i++) {
 
-					if (!calcDet[i].isEmpty()) {
+                    if (!calcDet[i].isEmpty()) {
 
-						int[] vgraph = new int[calcDet[i].size()];
-						ArrayList<Integer> graph = (ArrayList<Integer>) calcDet[i];
-						Iterator<Integer> gIter = graph.iterator();
-						int index = 0;
-						while (gIter.hasNext()) {
-							vgraph[index++] = gIter.next();
-						}
-						
-						sgr.getPanel().append("View: " + Arrays.toString(vgraph) + "\n");
-						sgr.getPanel().append(matrix.viewSelection(vgraph,vgraph).toString() + "\n");	
-						sgr.getPanel().flush();
+                        int[] vgraph = new int[calcDet[i].size()];
+                        ArrayList<Integer> graph = (ArrayList<Integer>) calcDet[i];
+                        Iterator<Integer> gIter = graph.iterator();
+                        int index = 0;
+                        while (gIter.hasNext()) {
+                            vgraph[index++] = gIter.next();
+                        }
 
-						Algebra a = new Algebra();
-						double det = a.det(matrix.viewSelection(ArrayUtils.subarray(vgraph, 1, vgraph.length), 
-							                                ArrayUtils.subarray(vgraph, 1, vgraph.length)));
+                        double det = 0.0;
+                        LUDecomposition tempMax = new LUDecomposition((matrix.viewSelection(ArrayUtils.subarray(vgraph, 0, vgraph.length - 1),
+                            ArrayUtils.subarray(vgraph, 0, vgraph.length - 1))));
+                        DoubleMatrix2D max = tempMax.getU();
+                        System.out.println(max.rows());
+                        for (int k = 0; k < max.rows(); k++) {
+                            det += Math.log10(Math.abs(max.get(k, k)));
+                        }
+                        
+                        if (det == 0)
+                            det = 1;
 
-						
-						if (det <= Double.MIN_VALUE) {
-							det = 1;
-						} else if (det > 1E100) {
-							det = Double.POSITIVE_INFINITY;
-						}
+                        sgr.getPanel().append("View: " + Arrays.toString(vgraph) + "\n");
+                        sgr.getPanel().append(matrix.viewSelection(vgraph, vgraph).toString() + "\n");
+                        sgr.getPanel().append("Det: " + det + "\n");
+                        sgr.getPanel().flush();
 
-						calcNMstsDet[i] = det;
+                        calcNMstsDet[i] = det;
+                        nmsts = nmsts + det;
 
-						sgr.getPanel().append("Det: " + det + "\n");	
+                    }
+                }
 
-						if (det < Double.POSITIVE_INFINITY) {
-							nmsts = nmsts * det;
-						} else {
-							nmsts = Double.POSITIVE_INFINITY;
-						}
-							
-					}
-				}
+                calcEdgesNMSTs(edgesList, prev, now, map, mapaux, calcDet, matrix, calcNMstsDet);
+                
+                prev = now;
+                if (e == null) {
+                    break;
+                }
 
-				calcEdgesNMSTs(edgesList, prev, now, map, mapaux, calcDet, matrix, calcNMstsDet);
-				prev = now;
-				if (e == null) {
-					break;
-				}
+                matrix = new SparseDoubleMatrix2D(mapid, mapid);
+                matrix.assign(0);
+                map = mapaux;
+                mapaux = new int[maxid + 1];
+                for (int i = 0; i <= maxid; i++) {
+                    mapaux[i] = -1;
+                }
+                //Passa para o nível seguinte
+                level++;
+                vaux = new ArrayList<Integer>(mapid);
+            } else { // Se prev==now a lista é vazia e passamos para o nível seguinte
+                level++;
+            }
+        }
 
-				matrix = new SparseDoubleMatrix2D(mapid, mapid);
-				matrix.assign(0);
-				map = mapaux;
-				mapaux = new int[maxid + 1];
-				for (int i = 0; i <= maxid; i++) {
-					mapaux[i] = -1;
-				}
-				//Passa para o nível seguinte
-				level++;
-				vaux = new ArrayList<Integer>(mapid);
-			} else { // Se prev==now a lista é vazia e passamos para o nível seguinte
-				level++;
-			}
-		}
-
-
-
-		return nmsts;
-	}
+        return nmsts;
+    }
 }
