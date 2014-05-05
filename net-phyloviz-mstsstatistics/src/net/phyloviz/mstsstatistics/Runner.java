@@ -45,6 +45,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import net.phyloviz.goeburst.cluster.Edge;
 import net.phyloviz.algo.util.DisjointSet;
@@ -56,9 +58,11 @@ import org.apache.commons.lang3.ArrayUtils;
 public class Runner implements Runnable {
 
     private GOeBurstResult gr;
+    private static Map<Integer, Double> result;
 
     public Runner(GOeBurstResult gr) {
         this.gr = gr;
+        this.result = new HashMap<Integer,Double>();
     }
 
     @Override
@@ -104,6 +108,11 @@ public class Runner implements Runnable {
                         + ", level: " + e.getLevel() + ", freq: " + (Math.pow(10, e.getNmsts()) * 100.0)
                         + "% (" + e.getNmsts() + ")\n");
                     gr.getPanel().flush();
+                    
+                    String source = String.valueOf(e.getSourceNode().getID());
+                    String dest = String.valueOf(e.getDestNode().getID());
+                    String edge = source+dest;
+                    result.put(Integer.valueOf(edge), e.getNmsts());
 
                 }
 
@@ -119,6 +128,8 @@ public class Runner implements Runnable {
         }
         gr.getPanel().appendWithDate("MST Statistics done.\n");
         gr.getPanel().flush();
+        
+        gr.setEdgestats(result);
     }
 
     private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
@@ -126,6 +137,7 @@ public class Runner implements Runnable {
             EdgeMST e = (EdgeMST) edgesList.get(i);
             if (e.isVisible()) {
                 e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
+                               
             }
 
         }

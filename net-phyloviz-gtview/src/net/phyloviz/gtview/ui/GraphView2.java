@@ -595,6 +595,7 @@ public class GraphView2 extends GView {
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
 		popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
 		popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
+        //popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
 		popupMenu.add(new ViewControlAction(this).getMenuItem());
@@ -963,6 +964,15 @@ public class GraphView2 extends GView {
 		} else {
 			rf.setDefaultEdgeRenderer(new EdgeRenderer());
 		}
+	}
+   
+    //VERIFICAR
+    @Override
+	public void setEdgePercentageLabel(boolean status) {
+		if (status)
+			rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("edgep"));
+		else
+			rf.setDefaultEdgeRenderer(new EdgeRenderer());
 	}
 
 	@Override

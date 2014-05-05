@@ -37,6 +37,8 @@ package net.phyloviz.goeburst;
 
 import net.phyloviz.algo.AbstractDistance;
 import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
 import net.phyloviz.core.util.NodeFactory;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
@@ -50,12 +52,22 @@ public class GOeBurstResult implements NodeFactory, Result {
 	private OutputPanel op;
 	private AbstractDistance<GOeBurstNodeExtended> ad;
 	private int level;
+    private Map<Integer, Double> edgestats;
 
+    public Map<Integer, Double> getEdgestats() {
+        return edgestats;
+    }
+
+    public void setEdgestats(Map<Integer, Double> edgestats) {
+        this.edgestats = edgestats;
+    }
+    
 	public GOeBurstResult(Collection<GOeBurstClusterWithStats> clustering, AbstractDistance<GOeBurstNodeExtended> ad, int level, OutputPanel op) {
 		this.clustering = clustering;
 		this.op = op;
 		this.level = level;
 		this.ad = ad;
+        this.edgestats = new HashMap<Integer, Double>();
 	}
 
 	@Override
