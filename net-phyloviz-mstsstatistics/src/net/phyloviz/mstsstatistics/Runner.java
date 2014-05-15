@@ -132,12 +132,16 @@ public class Runner implements Runnable {
         gr.setEdgestats(result);
     }
 
-    private static void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
+    private void calcEdgesNMSTs(List edgesList, int prev, int now, int[] map, int[] mapaux, ArrayList[] calcDet, SparseDoubleMatrix2D matrix, double[] calcNMSTs) {
+        int size = now-prev;
+        gr.getPanel().appendWithDate("Calculating Edge Stats: \n");
         for (int i = prev; i < now; i++) {
             EdgeMST e = (EdgeMST) edgesList.get(i);
             if (e.isVisible()) {
+                gr.getPanel().appendWithDate(Integer.toString(i-prev+1) + "/" + Integer.toString(size) + "\n");
+                gr.getPanel().flush();
                 e.setNmsts(map, mapaux, calcDet, matrix, calcNMSTs);
-                               
+                
             }
 
         }
@@ -155,7 +159,7 @@ public class Runner implements Runnable {
         return id;
     }
 
-    private static double calcNumberMSTs(List edgesList, GOeBurstResult sgr) {
+    private double calcNumberMSTs(List edgesList, GOeBurstResult sgr) {
 
         Collections.sort(edgesList);
 
@@ -275,7 +279,6 @@ public class Runner implements Runnable {
                         }
 
                         sgr.getPanel().append("View: " + Arrays.toString(vgraph) + "\n");
-                        sgr.getPanel().append(matrix.viewSelection(vgraph, vgraph).toString() + "\n");
                         sgr.getPanel().append("Det: " + det + "\n");
                         sgr.getPanel().flush();
 
