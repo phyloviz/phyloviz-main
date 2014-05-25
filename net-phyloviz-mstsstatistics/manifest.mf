@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module: net.phyloviz.mstsstatistics/1
-OpenIDE-Module-Implementation-Version: 6
+OpenIDE-Module-Implementation-Version: 0
 OpenIDE-Module-Layer: net/phyloviz/mstsstatistics/layer.xml
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/mstsstatistics/Bundle.properties
 
