@@ -105,11 +105,11 @@ public class EdgeMST implements Comparable<EdgeMST> {
         }
 
         if(det == 0.0)
-            det = 1.0;
+            det = calcnmsts[mapaux[u]];
         
         _rationmsts = det - calcnmsts[mapaux[u]];
 
-        //System.out.println(_rationmsts);
+        
         
     }
 
