@@ -11,10 +11,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 public class XMLParser {
 
@@ -81,9 +81,17 @@ public class XMLParser {
 			Element species = (Element) o;
 			String[] sa = new String[2];
 			sa[0] = species.getChild("name").getText();
-			sa[1] = species.getChild("mlst").getChild("database").getChild("owner").getText();
-//			sa[2] = species.getChild("mlst").getChild("database").getChild("profiles").getText();
-//			sa[3] = species.getChild("mlst").getChild("database").getChild("profiles").getChild("count").getText();
+                        Element owner = species.getChild("mlst").getChild("database").getChild("owner");
+                        if (owner != null) {
+                            sa[1] = owner.getText();
+                        } else {
+                            String url = species.getChild("mlst").getChild("database").getChild("url").getText();
+                            if (url.endsWith("/"))
+                                url = url.substring(0, url.length()-1);
+                            String tmp = url.substring(url.indexOf('/')+2);
+                            int i = tmp.indexOf('/');
+                            sa[1] = (i==-1)?tmp.substring(tmp.indexOf(".")+1): tmp.substring(0, i);
+                        }
 			alDatabases.add(sa);
 		}
 		return alDatabases;

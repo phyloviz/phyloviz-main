@@ -68,8 +68,8 @@
             </module-dependencies>
             <public-packages/>
             <class-path-extension>
-                <runtime-relative-path>ext/jdom.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jdom.jar</binary-origin>
+                <runtime-relative-path>ext/jdom-2.0.5.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jdom-2.0.5.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>
