@@ -36,6 +36,8 @@ package net.phyloviz.mstsstatistics.ui;
 
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.mstsstatistics.Runner;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.nodes.Node;
 import org.openide.util.HelpCtx;
 import org.openide.util.actions.NodeAction;
@@ -50,6 +52,11 @@ public class ViewAction extends NodeAction {
 		gr.getPanel().open();
 	}
 	gr.getPanel().requestActive();
+    
+    String statsMsg = "Calculating the MST Statistics can take between "
+        + "a few seconds or a few hours depending on the size of the dataset.\n "
+        + "To visualize the statistics you must open a new visualization window.";
+	DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(statsMsg));
 	
 	Runnable job = new Runner(gr);
 
