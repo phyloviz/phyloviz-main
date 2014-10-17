@@ -57,12 +57,11 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class Runner implements Runnable {
 
-    private GOeBurstResult gr;
-    private static Map<Integer, Double> result;
+    private final GOeBurstResult gr;
+    private final static Map<String, Double> result = new HashMap<String,Double>();
 
     public Runner(GOeBurstResult gr) {
         this.gr = gr;
-        this.result = new HashMap<Integer,Double>();
     }
 
     @Override
@@ -112,7 +111,7 @@ public class Runner implements Runnable {
                     String source = String.valueOf(e.getSourceNode().getID());
                     String dest = String.valueOf(e.getDestNode().getID());
                     String edge = source+dest;
-                    result.put(Integer.valueOf(edge), e.getNmsts());
+                    result.put(edge, e.getNmsts());
 
                 }
 

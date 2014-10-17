@@ -52,13 +52,13 @@ public class GOeBurstResult implements NodeFactory, Result {
 	private OutputPanel op;
 	private AbstractDistance<GOeBurstNodeExtended> ad;
 	private int level;
-    private Map<Integer, Double> edgestats;
+    private Map<String, Double> edgestats;
 
-    public Map<Integer, Double> getEdgestats() {
+    public Map<String, Double> getEdgestats() {
         return edgestats;
     }
 
-    public void setEdgestats(Map<Integer, Double> edgestats) {
+    public void setEdgestats(Map<String, Double> edgestats) {
         this.edgestats = edgestats;
     }
     
@@ -67,7 +67,7 @@ public class GOeBurstResult implements NodeFactory, Result {
 		this.op = op;
 		this.level = level;
 		this.ad = ad;
-        this.edgestats = new HashMap<Integer, Double>();
+	        this.edgestats = new HashMap<String, Double>();
 	}
 
 	@Override
