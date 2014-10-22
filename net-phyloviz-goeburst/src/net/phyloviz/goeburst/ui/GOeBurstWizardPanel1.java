@@ -68,6 +68,7 @@ public class GOeBurstWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 			TypingData<? extends Profile> td = node.getLookup().lookup(TypingData.class);
 			component = new GOeBurstVisualPanel1(td);
 		}
+		component.setPreferredSize(new java.awt.Dimension(480,340));
 		return component;
 	}
 

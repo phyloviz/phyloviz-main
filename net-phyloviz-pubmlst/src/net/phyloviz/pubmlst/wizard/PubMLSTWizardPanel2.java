@@ -32,6 +32,7 @@ public class PubMLSTWizardPanel2 implements WizardDescriptor.ValidatingPanel {
         if (component == null) {
             component = new PubMLSTVisualPanel2();
         }
+        component.setPreferredSize(new java.awt.Dimension(480,340));
         return component;
     }
 

@@ -35,6 +35,7 @@ public class GenDatasetWizardPanel3 implements WizardDescriptor.ValidatingPanel 
 		if (component == null) {
 			component = new GenDatasetVisualPanel3();
 		}
+		component.setPreferredSize(new java.awt.Dimension(480,340));
 		return component;
 	}
 

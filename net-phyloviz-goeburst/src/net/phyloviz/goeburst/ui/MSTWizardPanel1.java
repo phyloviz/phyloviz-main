@@ -67,6 +67,7 @@ public class MSTWizardPanel1 implements WizardDescriptor.ValidatingPanel {
 			TypingData<? extends Profile> td = (TypingData<? extends Profile>) node.getLookup().lookup(TypingData.class);
 			component = new MSTVisualPanel1(td);
 		}
+		component.setPreferredSize(new java.awt.Dimension(480,340));
 		return component;
 	}
 

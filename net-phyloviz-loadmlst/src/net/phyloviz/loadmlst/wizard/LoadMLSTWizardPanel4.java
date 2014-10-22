@@ -37,6 +37,7 @@ public class LoadMLSTWizardPanel4 implements WizardDescriptor.ValidatingPanel {
 		if (component == null) {
 			component = new LoadMLSTVisualPanel4();
 		}
+		component.setPreferredSize(new java.awt.Dimension(480,340));
 		return component;
 	}
 

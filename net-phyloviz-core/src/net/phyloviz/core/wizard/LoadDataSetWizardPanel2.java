@@ -70,6 +70,7 @@ public class LoadDataSetWizardPanel2 implements WizardDescriptor.ValidatingPanel
 		if (component == null) {
 			component = new LoadDataSetVisualPanel2();
 		}
+		component.setPreferredSize(new java.awt.Dimension(480,340));
 		return component;
 	}
 

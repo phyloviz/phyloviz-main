@@ -60,6 +60,7 @@ public class GOeBurstWizardPanel2 implements WizardDescriptor.Panel {
 		if (component == null) {
 			component = new GOeBurstVisualPanel2();
 		}
+		component.setPreferredSize(new java.awt.Dimension(480,340));
 		return component;
 	}
 
