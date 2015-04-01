@@ -43,8 +43,8 @@ import java.io.IOException;
 import org.freehep.graphics2d.PrintColor;
 import org.freehep.graphics2d.VectorGraphics;
 
-import org.freehep.util.export.ExportDialog;
-import org.freehep.util.export.ExportFileType;
+import org.freehep.graphicsbase.util.export.ExportDialog;
+import org.freehep.graphicsbase.util.export.ExportFileType;
 import prefuse.Display;
 
 public class GTExportDialog extends ExportDialog {
