@@ -115,35 +115,35 @@
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphics2d-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphics2d-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphics2d-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsbase-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsbase-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsbase-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-svg-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsio-svg-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsio-svg-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-emf-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsio-emf-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsio-emf-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-pdf-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsio-pdf-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsio-pdf-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsio-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsio-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-ps-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsio-ps-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsio-ps-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-io-2.2.2.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-io-2.2.2.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-io-2.2.2.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/prefuse.jar</runtime-relative-path>
@@ -151,11 +151,11 @@
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-java-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsio-java-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsio-java-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-swf-2.4.jar</runtime-relative-path>
-                <binary-origin>/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-gtview/release/modules/ext/freehep-graphicsio-swf-2.4.jar</binary-origin>
+                <binary-origin>release/modules/ext/freehep-graphicsio-swf-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/openide-lookup-1.9-patched-1.0.jar</runtime-relative-path>
