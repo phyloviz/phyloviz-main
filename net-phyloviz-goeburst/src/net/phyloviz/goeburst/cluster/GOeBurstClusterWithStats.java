@@ -46,11 +46,11 @@ import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 
 public class GOeBurstClusterWithStats extends GOeBurstCluster {
 
-	private int[] maxLVs;
-	private TreeMap<Edge, EdgeInfo> eInfoMap;
-	private EdgeTieStats stat;
-	private ArrayList<Edge<GOeBurstNodeExtended>> SLVedges;
-	private GOeBurstWithStats mInstance;
+	private final int[] maxLVs;
+	private final TreeMap<Edge, EdgeInfo> eInfoMap;
+	private final EdgeTieStats stat;
+	private final ArrayList<Edge<GOeBurstNodeExtended>> SLVedges;
+	private final GOeBurstWithStats mInstance;
 	protected GOeBurstNodeExtended fakeRoot;
 
 	public GOeBurstClusterWithStats(GOeBurstWithStats algInstance, AbstractDistance<GOeBurstNodeExtended> ad) {
@@ -125,7 +125,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 
 	@Override
 	public String toString() {
-		return " " + new Integer(id).toString() + " ";
+		return " " + Integer.toString(id) + " ";
 	}
 
 	@Override
@@ -255,9 +255,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 			return "";
 		}
 
-		EdgeInfo info = eInfoMap.get(e);
-
-		info = new EdgeInfo();
+		EdgeInfo info = new EdgeInfo();
 		eInfoMap.put(e, info);
 
 		// Compute ties.
@@ -353,7 +351,7 @@ public class GOeBurstClusterWithStats extends GOeBurstCluster {
 		while (iter.hasNext()) {
 			GOeBurstClusterWithStats g = iter.next();
 
-			s += " " + new Integer(g.getID()).toString();
+			s += " " + Integer.toString(g.getID());
 			STs += g.getSTs().size();
 			isolates += g.getIsolates();
 

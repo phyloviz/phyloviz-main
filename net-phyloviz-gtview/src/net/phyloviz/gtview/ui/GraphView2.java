@@ -141,7 +141,7 @@ public class GraphView2 extends GView {
 	private final Visualization view;
 	private Display display;
 	private JSearchPanel searchPanel;
-	private JProgressBar pbar;
+	private final JProgressBar pbar;
 	private boolean searchMatch = false;
 	private JPanel groupPanel;
 	private boolean groupPanelStatus;
@@ -156,9 +156,9 @@ public class GraphView2 extends GView {
 	private boolean linear;
 	private boolean label = true;
 	private int level;
-	private JSpinner sp;
-	private JMenuItem groupMenuItem;
-	private Box box;
+	private final JSpinner sp;
+	private final JMenuItem groupMenuItem;
+	private final Box box;
 	// Data analysis info...
 	private CategoryProvider cp;
 
@@ -705,7 +705,7 @@ public class GraphView2 extends GView {
 				// Fill tables.
 				LinkedList<Integer> q = new LinkedList<Integer>();
 				q.add(st.getUID());
-				int uRowNb = -1;
+				int uRowNb;
 				synchronized (view) {
 					uRowNb = nodeTable.addRow();
 					uid2rowid.put(st.getUID(), uRowNb);
@@ -1071,11 +1071,10 @@ public class GraphView2 extends GView {
 		ForceSimulator fs = fdl.getForceSimulator();
 		Force[] farray = fs.getForces();
 		ArrayList<ForcePair> array = new ArrayList<ForcePair>();
-		for (int i = 0; i < farray.length; i++) {
-
-			int ni = farray[i].getParameterCount();
+		for (Force farray1 : farray) {
+			int ni = farray1.getParameterCount();
 			for (int j = 0; j < ni; j++) {
-				array.add(new ForcePair(farray[i].getParameterName(j), farray[i].getParameter(j)));
+				array.add(new ForcePair(farray1.getParameterName(j), farray1.getParameter(j)));
 			}
 		}
 		return array;
@@ -1221,8 +1220,8 @@ public class GraphView2 extends GView {
 	private class Group {
 
 		private int id;
-		private LinkedList<Integer> list;
-		private TreeMap<Integer, Integer> levelStat;
+		private final LinkedList<Integer> list;
+		private final TreeMap<Integer, Integer> levelStat;
 
 		Group() {
 			this.id = 0;

@@ -65,7 +65,7 @@ public class GOeBurstCluster extends Cluster<GOeBurstNodeExtended> {
 
 	@Override
 	public String toString() {
-		return " " + new Integer(id).toString() + " ";
+		return " " + Integer.toString(id) + " ";
 	}
 
 	public void updateVisibleEdges() {
