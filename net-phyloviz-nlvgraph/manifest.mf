@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: net.phyloviz.nlvgraph/1
+OpenIDE-Module-Implementation-Version: 0
+OpenIDE-Module-Localizing-Bundle: net/phyloviz/nlvgraph/Bundle.properties
+
