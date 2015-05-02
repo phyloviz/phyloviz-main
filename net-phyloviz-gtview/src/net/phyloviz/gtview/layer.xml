@@ -21,6 +21,13 @@
 					<attr name="position" intvalue="0"/>
 				</file>
 			</folder>
+			<folder name="nLVGraph">
+				<file name="net-phyloviz-gtview-action-NLVGraphViewAction.instance">
+					<attr name="instanceClass" stringvalue="net.phyloviz.gtview.action.NLVGraphViewAction"/>
+					<attr name="position" intvalue="0"/>
+				</file>
+			</folder>
+
 		</folder>
 	</folder>
 </filesystem>

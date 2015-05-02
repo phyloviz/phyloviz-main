@@ -3,8 +3,10 @@ package net.phyloviz.nlvgraph.run;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.Edge;
+import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
@@ -43,8 +45,13 @@ public class GraphBuilder implements Runnable {
 		ArrayList<GOeBurstNode> nlst = new ArrayList<GOeBurstNode>();
 
 		Iterator<? extends Profile> ip = td.iterator();
-		while (ip.hasNext())
-			nlst.add(new GOeBurstNode(ip.next()));
+		int maxUID = 0;
+		while (ip.hasNext()) {
+			Profile p = ip.next();
+			nlst.add(new GOeBurstNode(p));
+			if (p.getUID() > maxUID)
+				maxUID = p.getUID();
+		}
 
 		op.appendWithDate("\nnLV Graph: computing LVs...\n");
 		op.flush();
@@ -63,9 +70,9 @@ public class GraphBuilder implements Runnable {
 		op.appendWithDate("\nnLV Graph: computing edges...\n");
 		op.flush();
 
-		op.append("Min level: " + max + "\n");
+		op.append("Min level: " + min + "\n");
 		op.append("Max level: " + max + "\n");
-
+				
 		ArrayList<Edge<GOeBurstNode>> edges = new ArrayList<Edge<GOeBurstNode>>();
 		Iterator<GOeBurstNode> i = nlst.iterator();
 		while (i.hasNext()) {
@@ -84,7 +91,37 @@ public class GraphBuilder implements Runnable {
 
 		op.append("#Nodes: " + nlst.size() + "\n");
 		op.append("#Edges: " + edges.size() + "\n");
+
+		op.appendWithDate("\nnLV Graph: sorting edges...\n");
+		op.flush();
+
+		Collections.sort(edges, ad.getEdgeComparator());
 		
+		op.appendWithDate("\nnLV Graph: filtering edges...\n");
+		op.flush();
+
+		int level = 0;
+		DisjointSet set = new DisjointSet(maxUID);
+		
+		Iterator<Edge<GOeBurstNode>> ie = edges.iterator();
+		LinkedList<Edge<GOeBurstNode>> tmp = new LinkedList<Edge<GOeBurstNode>>();
+		while (ie.hasNext()) {
+			Edge<GOeBurstNode> e = ie.next();
+			int curr = ad.level(e.getU(), e.getV());
+
+			if (curr > level) {
+				for (Edge<GOeBurstNode> xe : tmp)
+					set.unionSet(xe.getU().getUID(), xe.getV().getUID());
+				level = curr;
+				tmp.clear();
+			}
+			
+			if (set.sameSet(e.getU().getUID(), e.getV().getUID()))
+				ie.remove();
+			tmp.add(e);
+		}
+		op.append("#Edges: " + edges.size() + "\n");
+
 		op.appendWithDate("nLV Graph done.\n");
 		op.flush();
 
