@@ -92,6 +92,7 @@ public class GraphBuilder implements Runnable {
 		op.append("#Nodes: " + nlst.size() + "\n");
 		op.append("#Edges: " + edges.size() + "\n");
 
+		/*
 		op.appendWithDate("\nnLV Graph: sorting edges...\n");
 		op.flush();
 
@@ -121,6 +122,7 @@ public class GraphBuilder implements Runnable {
 			tmp.add(e);
 		}
 		op.append("#Edges: " + edges.size() + "\n");
+		*/
 
 		op.appendWithDate("nLV Graph done.\n");
 		op.flush();
