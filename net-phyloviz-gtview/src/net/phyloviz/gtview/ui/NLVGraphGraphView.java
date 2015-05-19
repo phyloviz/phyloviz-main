@@ -34,6 +34,7 @@
  */
 package net.phyloviz.gtview.ui;
 
+import com.google.common.collect.Iterators;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -77,7 +78,6 @@ import net.phyloviz.core.data.DataItem;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
-import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.tree.GOeBurstNode;
 import net.phyloviz.gtview.action.*;
 import net.phyloviz.gtview.render.LabeledEdgeRenderer;
@@ -259,6 +259,7 @@ public class NLVGraphGraphView extends GView {
 		edgeSchema.addColumn("edge_ref", Edge.class);
 		edgeSchema.addColumn("w", int.class);
 		edgeSchema.addColumn("g", int.class);
+		edgeSchema.addColumn("tree", boolean.class);
 
 		// Create tables.
 		nodeSchema.lockSchema();
@@ -282,7 +283,7 @@ public class NLVGraphGraphView extends GView {
 				for (int i = 0; i < selectedIndices.length; i++) {
 					Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
 					view.setVisible("graph",
-						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + level), true);
+						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree)"), true);
 
 					gList.add(g);
 				}
@@ -638,7 +639,7 @@ public class NLVGraphGraphView extends GView {
 		add(box, BorderLayout.SOUTH);
 	}
 
-	public void loadGraph(final Collection<Edge<GOeBurstNode>> edges, final AbstractDistance ad) {
+	public void loadGraph(final Collection<Edge<GOeBurstNode>> edges, final Collection<Edge<GOeBurstNode>> tree, final AbstractDistance ad) {
 		final HashMap<Integer, Integer> uid2rowid = new HashMap<Integer, Integer>();
 
 		// Create and register the graph.
@@ -660,7 +661,7 @@ public class NLVGraphGraphView extends GView {
 				g.setID(1);
 
 				int maxlv = 0;
-				int nedges = edges.size();
+				int nedges = edges.size() + tree.size();
 				int ec = 0;
 
 				SwingWorker job = new SwingWorker() {
@@ -679,7 +680,7 @@ public class NLVGraphGraphView extends GView {
 
 				job.execute();
 
-				Iterator<Edge<GOeBurstNode>> eIter = edges.iterator();
+				Iterator<Edge<GOeBurstNode>> eIter = tree.iterator();
 				while (eIter.hasNext()) {
 					Edge<GOeBurstNode> e = eIter.next();
 
@@ -735,6 +736,76 @@ public class NLVGraphGraphView extends GView {
 						edgeTable.set(rowNb, "edge_ref", e);
 						edgeTable.set(rowNb, "w", lv);
 						edgeTable.set(rowNb, "g", 1);
+						edgeTable.set(rowNb, "tree", true);
+	
+						prefuse.data.Edge ve = vg.getEdge(rowNb);
+						((VisualItem) ve).setVisible(true);
+						//view.wait(1);
+					}
+
+					ec++;
+					int perc = ec * 100 / nedges;
+					setProgress(perc);
+				}
+
+				
+				eIter = edges.iterator();
+				while (eIter.hasNext()) {
+					Edge<GOeBurstNode> e = eIter.next();
+
+					Profile ust = e.getU();
+					Profile vst = e.getV();
+					int u = ust.getUID();
+					int v = vst.getUID();
+
+					int lv = ad.level(ust, vst);
+					if (lv > maxlv) {
+						maxlv = lv;
+					}
+					g.edgeAtLevel(lv);
+
+					int uRowNb;
+					if (! uid2rowid.containsKey(u)) {
+						synchronized (view) {
+							uRowNb = nodeTable.addRow();
+							uid2rowid.put(u, uRowNb);
+							nodeTable.setString(uRowNb, "st_id", ust.getID());
+							nodeTable.set(uRowNb, "st_ref", ust);
+							nodeTable.setInt(uRowNb, "w", 0);
+							nodeTable.setInt(uRowNb, "g", 1);
+	
+							VisualItem vu = (VisualItem) vg.getNode(uRowNb);
+							vu.setVisible(true);
+						}
+					} else {
+						uRowNb = uid2rowid.get(u);
+					}
+
+					int vRowNb;
+					if (! uid2rowid.containsKey(v)) {
+						synchronized (view) {
+							vRowNb = nodeTable.addRow();
+							uid2rowid.put(v, vRowNb);
+							nodeTable.setString(vRowNb, "st_id", vst.getID());
+							nodeTable.set(vRowNb, "st_ref", vst);
+							nodeTable.setInt(vRowNb, "w", 0);
+							nodeTable.setInt(vRowNb, "g", 1);
+
+							VisualItem vv = (VisualItem) vg.getNode(vRowNb);
+							vv.setVisible(true);
+						}
+					} else {
+						vRowNb = uid2rowid.get(v);
+					}
+						
+					synchronized (view) {
+						int rowNb = edgeTable.addRow();
+						edgeTable.setInt(rowNb, SRC, uRowNb);
+						edgeTable.setInt(rowNb, TRG, vRowNb);
+						edgeTable.set(rowNb, "edge_ref", e);
+						edgeTable.set(rowNb, "w", lv);
+						edgeTable.set(rowNb, "g", 1);
+						edgeTable.set(rowNb, "tree", false);
 	
 						prefuse.data.Edge ve = vg.getEdge(rowNb);
 						((VisualItem) ve).setVisible(true);
@@ -760,7 +831,7 @@ public class NLVGraphGraphView extends GView {
 						for (int i = 0; i < selectedIndices.length; i++) {
 							Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
 							view.setVisible("graph",
-								(Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + level), true);
+								(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree)"), true);
 						}
 
 						view.run("draw");

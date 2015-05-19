@@ -48,13 +48,19 @@ import org.openide.nodes.AbstractNode;
 public class Result  implements NodeFactory {
 	private final DataSet ds;
 	private final Collection<Edge<GOeBurstNode>> edges;
+	private final Collection<Edge<GOeBurstNode>> tree;
 	private final AbstractDistance<GOeBurstNode> ad;
 	private final OutputPanel op;
 	private final int min, max;
 
 	public Result(DataSet ds, Collection<Edge<GOeBurstNode>> edges, AbstractDistance<GOeBurstNode> ad, OutputPanel op, int min, int max) {
+		this(ds, edges, null, ad, op, min, max);
+	}
+
+	public Result(DataSet ds, Collection<Edge<GOeBurstNode>> edges, Collection<Edge<GOeBurstNode>> tree, AbstractDistance<GOeBurstNode> ad, OutputPanel op, int min, int max) {
 		this.ds = ds;
 		this.edges = edges;
+		this.tree = tree;
 		this.op = op;
 		this.ad = ad;
 		this.min = min;
@@ -67,6 +73,10 @@ public class Result  implements NodeFactory {
 
 	public Collection<Edge<GOeBurstNode>> getEdges() {
 		return edges;
+	}
+
+	public Collection<Edge<GOeBurstNode>> getTree() {
+		return tree;
 	}
 
 	public AbstractDistance<GOeBurstNode> getDistance() {

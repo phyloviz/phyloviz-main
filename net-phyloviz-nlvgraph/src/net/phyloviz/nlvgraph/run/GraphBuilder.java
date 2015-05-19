@@ -1,11 +1,13 @@
 package net.phyloviz.nlvgraph.run;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.Edge;
+import net.phyloviz.algo.tree.MSTAlgorithm;
 import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
@@ -127,7 +129,18 @@ public class GraphBuilder implements Runnable {
 		op.appendWithDate("nLV Graph done.\n");
 		op.flush();
 
-		td.add(new Result(ds, edges, ad, op, min, max));
+
+		Collection<Edge<GOeBurstNode>> tree = null;
+		if (nlst.size() > 2) {
+			MSTAlgorithm<GOeBurstNode> algorithm = new MSTAlgorithm<GOeBurstNode>(nlst, ad.getEdgeComparator());
+			tree = algorithm.getTree();
+		}
+
+		op.appendWithDate("nLV tree done.\n");
+		op.flush();
+
+		
+		td.add(new Result(ds, edges, tree, ad, op, min, max));
 	
 	}
 }

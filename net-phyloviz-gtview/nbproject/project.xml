@@ -159,6 +159,10 @@
                 <binary-origin>release/modules/ext/prefuse.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
+                <runtime-relative-path>ext/guava-18.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/guava-18.0.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-java-2.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-java-2.4.jar</binary-origin>
             </class-path-extension>

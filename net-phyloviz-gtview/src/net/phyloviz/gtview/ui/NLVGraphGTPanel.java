@@ -105,7 +105,7 @@ public class NLVGraphGTPanel extends TopComponent {
 				}
 			}
 		});
-		gv.loadGraph(gr.getEdges(), gr.getDistance());
+		gv.loadGraph(gr.getEdges(), gr.getTree(), gr.getDistance());
 
 	}
 
