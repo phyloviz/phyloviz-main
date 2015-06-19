@@ -1,3 +1,0 @@
-net.phyloviz.upgma.algorithm.completelinkage.CLDistanceProvider
-net.phyloviz.upgma.algorithm.singlelinkage.SLDistanceProvider
-net.phyloviz.upgma.algorithm.upgma.UPGMADistanceProvider
