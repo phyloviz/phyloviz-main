@@ -75,7 +75,7 @@ public class UPGMALeafNode extends NodeType implements Profile, Comparable<UPGMA
 
     @Override
     public void saveData(JsonSaver js) {
-        ((UPGMAJsonWriter)js.njtj).putLeaf(id, p.getUID() + "");
+        ((UPGMAJsonWriter)js.njtj).putLeaf(id, p.getID());
     }
 
     @Override
