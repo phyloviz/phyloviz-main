@@ -37,6 +37,7 @@ package net.phyloviz.core.explorer;
 
 import java.awt.Image;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Enumeration;
 import javax.swing.Action;
 import net.phyloviz.core.data.DataSet;
@@ -46,14 +47,19 @@ import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Node;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
+import org.openide.util.Utilities;
 import org.openide.util.actions.SystemAction;
 import org.openide.util.lookup.Lookups;
 
 public class DataSetNode extends AbstractNode {
 
+        private DataSet ds;
+    
 	public DataSetNode(DataSet ds) {
 		super(new ExplorerChildren(ds.getLookup()), Lookups.singleton(ds));
 		setDisplayName(ds.toString());
+                
+                this.ds = ds;
 	}
 
 	@Override
@@ -85,11 +91,12 @@ public class DataSetNode extends AbstractNode {
 	@Override
 	public Action[] getActions(boolean context) {
 
-		return new SystemAction[] {
-			SystemAction.get(DeleteAction.class),
-			//SystemAction.get(PropertiesAction.class)
-		};
-
+            Collection<? extends Action> a4p = Utilities.actionsForPath("Actions/PHYLOViZ/DataSet");                        
+            
+            Action[] actions = a4p.toArray(new Action[a4p.size() + 1]);
+            actions[a4p.size()] = SystemAction.get(DeleteAction.class);
+            
+            return actions;
 /*		Action[] actions = null;
 		try {
 			actions = new Action[]{(Action) DataObject.find(
