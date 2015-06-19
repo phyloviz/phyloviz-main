@@ -1,0 +1,47 @@
+{
+   "order": ["leaf", "union", "root"],
+   "type":"object",
+   "properties":{
+      "leaf":{
+         "type":"array",
+         "items":{
+            "properties":{
+               "id":{"type":"integer"},
+               "profile":{"type":"integer"}
+            },
+            "required":[ "id", "profile"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      },
+      "union":{
+         "type":"array",
+         "items":{
+            "properties":{
+               "id":{"type":"integer"},
+               "left":{"type":"integer"},
+               "distanceLeft":{"type":"number"},
+               "right":{"type":"integer"},
+               "distanceRight":{"type":"number"}
+            },
+            "required":["id", "left", "distanceLeft", "right", "distanceRight"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      },
+      "root":{
+         "type":"object",
+         "items":{
+            "properties":{
+               "distance":{"type":"number"},
+               "left":{"type":"integer"},
+               "right":{"type":"integer"}
+            },
+            "required":["distance", "left", "right"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      }
+   }
+}
+

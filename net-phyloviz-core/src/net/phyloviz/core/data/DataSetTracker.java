@@ -70,7 +70,7 @@ public class DataSetTracker implements Lookup.Provider {
 	 * @param o the object to register within this lookup.
 	 */
 	public void add(DataSet ds) {
-		ic.add(ds);
+            ic.add(ds);
 	}
 
 	/**
@@ -79,5 +79,6 @@ public class DataSetTracker implements Lookup.Provider {
 	 */
 	public void remove(DataSet ds) {
 		ic.remove(ds);
+                
 	}
 }

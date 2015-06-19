@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="Reverse engineered net.phyloviz.upgma.tree 2015.04.27 16-31-12-758">
+  <ClassDiagramComponents>
+    <Class xPosition="20.0" yPosition="20.0" package="net.phyloviz.upgma.tree" isAbstract="true" name="UPGMAAbstractNode" visibility="public">
+      <Constructors>
+        <Constructor name="UPGMAAbstractNode" visibility="public">
+          <Argument type="int" name="uid"/>
+          <Argument type="int" name="position"/>
+          <Argument type="double[]" name="dmat"/>
+        </Constructor>
+        <Constructor name="UPGMAAbstractNode" visibility="public">
+          <Argument type="int" name="uid"/>
+          <Argument type="int" name="size"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="uid" visibility="private" type="int" isFinal="true"/>
+        <Field name="position" visibility="private" type="int"/>
+        <Field name="distances" visibility="private" type="UPGMASparseDoubleMatrix1D"/>
+        <Field name="dSize" visibility="private" type="int"/>
+        <Field name="mini" visibility="private" type="int"/>
+        <Field name="mind" visibility="private" type="double"/>
+      </Fields>
+      <Methods>
+        <Method name="clean" visibility="public" returnType="void"/>
+        <Method name="getPosition" visibility="public" returnType="int"/>
+        <Method name="getdSize" visibility="public" returnType="int"/>
+        <Method name="setdSize" visibility="public" returnType="void">
+          <Argument type="int" name="val"/>
+        </Method>
+        <Method name="getDistances" visibility="public" returnType="UPGMASparseDoubleMatrix1D"/>
+        <Method name="getDistanceTo" visibility="public" returnType="double">
+          <Argument type="int" name="idx"/>
+        </Method>
+        <Method name="setDistance" visibility="public" returnType="void">
+          <Argument type="int" name="idx"/>
+          <Argument type="double" name="value"/>
+        </Method>
+        <Method name="setPosition" visibility="public" returnType="void">
+          <Argument type="int" name="ii"/>
+        </Method>
+        <Method name="setMinDistIdx" visibility="public" returnType="void">
+          <Argument type="int" name="min"/>
+        </Method>
+        <Method name="setMinD" visibility="public" returnType="void">
+          <Argument type="double" name="min"/>
+        </Method>
+        <Method name="getMinDistIdx" visibility="public" returnType="int"/>
+        <Method name="getMinD" visibility="public" returnType="double"/>
+        <Method name="getUID" visibility="public" returnType="int"/>
+        <Method name="removeDistance" visibility="public" returnType="void">
+          <Argument type="int" name="idx"/>
+        </Method>
+        <Method name="updateMinDist" visibility="public" returnType="void"/>
+        <Method name="toString" visibility="public" returnType="String"/>
+      </Methods>
+    </Class>
+    <Class xPosition="320.0" yPosition="20.0" package="net.phyloviz.upgma.tree" name="UPGMABlankNode" visibility="public">
+      <Constructors>
+        <Constructor name="UPGMABlankNode" visibility="public">
+          <Argument type="int" name="uid"/>
+          <Argument type="int" name="position"/>
+          <Argument type="UPGMANode" name="left"/>
+          <Argument type="UPGMANode" name="right"/>
+          <Argument type="double" name="distance"/>
+          <Argument type="double[]" name="dmat"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="distance" visibility="private" type="double" isFinal="true"/>
+        <Field name="left" visibility="private" type="UPGMANode" isFinal="true"/>
+      </Fields>
+      <Methods>
+        <Method name="getLeftNode" visibility="public" returnType="UPGMANode"/>
+        <Method name="getRightNode" visibility="public" returnType="UPGMANode"/>
+        <Method name="getDistance" visibility="public" returnType="double"/>
+      </Methods>
+    </Class>
+    <Class xPosition="620.0" yPosition="20.0" package="net.phyloviz.upgma.tree" name="UPGMALeafNode" visibility="public">
+      <Constructors>
+        <Constructor name="UPGMALeafNode" visibility="public">
+          <Argument type="Profile" name="p"/>
+          <Argument type="int" name="size"/>
+          <Argument type="int" name="id"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="p" visibility="private" type="Profile" isFinal="true"/>
+      </Fields>
+      <Methods>
+        <Method name="getProfile" visibility="public" returnType="Profile"/>
+        <Method name="getID" visibility="public" returnType="String"/>
+        <Method name="profileLength" visibility="public" returnType="int"/>
+        <Method name="getValue" visibility="public" returnType="String">
+          <Argument type="int" name="idx"/>
+        </Method>
+        <Method name="getFreq" visibility="public" returnType="int"/>
+        <Method name="setFreq" visibility="public" returnType="void">
+          <Argument type="int" name="freq"/>
+        </Method>
+        <Method name="get" visibility="public" returnType="String">
+          <Argument type="int" name="idx"/>
+        </Method>
+        <Method name="length" visibility="public" returnType="int"/>
+        <Method name="weight" visibility="public" returnType="int"/>
+        <Method name="compareTo" visibility="public" returnType="int">
+          <Argument type="UPGMALeafNode" name="o"/>
+        </Method>
+        <Method name="equals" visibility="public" returnType="boolean">
+          <Argument type="UPGMALeafNode" name="o"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Interface xPosition="920.0" yPosition="20.0" package="net.phyloviz.upgma.tree" name="UPGMANode" visibility="public">
+      <Methods>
+        <Method name="clean" visibility="public" returnType="void"/>
+        <Method name="getDistanceTo" visibility="public" returnType="double">
+          <Argument type="int" name="idx"/>
+        </Method>
+        <Method name="getDistances" visibility="public" returnType="UPGMASparseDoubleMatrix1D"/>
+        <Method name="setDistance" visibility="public" returnType="void">
+          <Argument type="int" name="idx"/>
+          <Argument type="double" name="value"/>
+        </Method>
+        <Method name="getdSize" visibility="public" returnType="int"/>
+        <Method name="setdSize" visibility="public" returnType="void">
+          <Argument type="int" name="val"/>
+        </Method>
+        <Method name="getUID" visibility="public" returnType="int"/>
+        <Method name="getPosition" visibility="public" returnType="int"/>
+        <Method name="setMinDistIdx" visibility="public" returnType="void">
+          <Argument type="int" name="min"/>
+        </Method>
+        <Method name="getMinDistIdx" visibility="public" returnType="int"/>
+        <Method name="setMinD" visibility="public" returnType="void">
+          <Argument type="double" name="min"/>
+        </Method>
+        <Method name="getMinD" visibility="public" returnType="double"/>
+        <Method name="setPosition" visibility="public" returnType="void">
+          <Argument type="int" name="idx"/>
+        </Method>
+        <Method name="removeDistance" visibility="public" returnType="void">
+          <Argument type="int" name="idx"/>
+        </Method>
+        <Method name="updateMinDist" visibility="public" returnType="void"/>
+      </Methods>
+    </Interface>
+    <Class xPosition="20.0" yPosition="420.0" package="net.phyloviz.upgma.tree" name="UPGMASparseDoubleMatrix1D" visibility="public">
+      <Constructors>
+        <Constructor name="UPGMASparseDoubleMatrix1D" visibility="public">
+          <Argument type="double[]" name="doubles"/>
+        </Constructor>
+        <Constructor name="UPGMASparseDoubleMatrix1D" visibility="public">
+          <Argument type="int" name="size"/>
+        </Constructor>
+      </Constructors>
+      <Fields/>
+      <Methods>
+        <Method name="getPositions" visibility="public" returnType="int[]"/>
+        <Method name="getDistances" visibility="public" returnType="double[]"/>
+      </Methods>
+    </Class>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <UseRelation source="UPGMANode" target="UPGMASparseDoubleMatrix1D" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="UPGMALeafNode" target="UPGMALeafNode" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <HasRelation name="left" source="UPGMABlankNode" target="UPGMANode" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <IsRelation name="is" source="UPGMALeafNode" target="UPGMAAbstractNode"/>
+    <HasRelation name="distances" source="UPGMAAbstractNode" target="UPGMASparseDoubleMatrix1D" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <IsRelation name="is" source="UPGMABlankNode" target="UPGMAAbstractNode"/>
+    <UseRelation source="UPGMAAbstractNode" target="UPGMASparseDoubleMatrix1D" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <UseRelation source="UPGMABlankNode" target="UPGMANode" sourceCardinality="1..1" targetCardinality="1..1"/>
+    <ImplementsRelation name="&lt;&lt;implements&gt;&gt;" source="UPGMAAbstractNode" target="UPGMANode"/>
+  </ClassDiagramRelations>
+</ClassDiagram>

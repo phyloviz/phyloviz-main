@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
+            <code-name-base>ant</code-name-base>
+            <standalone/>
+            <module-dependencies/>
+            <public-packages>
+                <package>org.apache.tools.ant</package>
+                <package>org.apache.tools.ant.filters</package>
+                <package>org.apache.tools.ant.filters.util</package>
+                <package>org.apache.tools.ant.helper</package>
+                <package>org.apache.tools.ant.input</package>
+                <package>org.apache.tools.ant.launch</package>
+                <package>org.apache.tools.ant.listener</package>
+                <package>org.apache.tools.ant.loader</package>
+                <package>org.apache.tools.ant.taskdefs</package>
+                <package>org.apache.tools.ant.taskdefs.compilers</package>
+                <package>org.apache.tools.ant.taskdefs.condition</package>
+                <package>org.apache.tools.ant.taskdefs.cvslib</package>
+                <package>org.apache.tools.ant.taskdefs.email</package>
+                <package>org.apache.tools.ant.taskdefs.rmic</package>
+                <package>org.apache.tools.ant.types</package>
+                <package>org.apache.tools.ant.types.resolver</package>
+                <package>org.apache.tools.ant.types.selectors</package>
+                <package>org.apache.tools.ant.types.selectors.modifiedselector</package>
+                <package>org.apache.tools.ant.util</package>
+                <package>org.apache.tools.ant.util.facade</package>
+                <package>org.apache.tools.ant.util.regexp</package>
+                <package>org.apache.tools.bzip2</package>
+                <package>org.apache.tools.mail</package>
+                <package>org.apache.tools.tar</package>
+                <package>org.apache.tools.zip</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/ant.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/ant.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

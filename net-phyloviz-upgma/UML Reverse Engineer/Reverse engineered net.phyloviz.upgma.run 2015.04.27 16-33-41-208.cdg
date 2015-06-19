@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="Reverse engineered net.phyloviz.upgma.run 2015.04.27 16-33-41-208">
+  <ClassDiagramComponents>
+    <Class xPosition="20.0" yPosition="20.0" package="net.phyloviz.upgma.run" name="UPGMARunner" visibility="public">
+      <Constructors>
+        <Constructor name="UPGMARunner" visibility="public">
+          <Argument type="Node" name="n"/>
+          <Argument type="OutputPanel" name="op"/>
+          <Argument type="AbstractDistance&lt;UPGMALeafNode&gt;" name="ad"/>
+        </Constructor>
+      </Constructors>
+      <Fields>
+        <Field name="n" visibility="private" type="Node"/>
+        <Field name="ds" visibility="private" type="DataSet"/>
+        <Field name="pop" visibility="private" type="Population"/>
+        <Field name="op" visibility="private" type="OutputPanel"/>
+        <Field name="ad" visibility="private" type="AbstractDistance&lt;UPGMALeafNode&gt;"/>
+      </Fields>
+      <Methods>
+        <Method name="run" visibility="public" returnType="void"/>
+      </Methods>
+    </Class>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations/>
+</ClassDiagram>

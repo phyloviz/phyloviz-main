@@ -4,7 +4,7 @@
     <folder name="Actions">
         <folder name="File">
             <file name="net-phyloviz-core-wizard-LoadDataSetWizardAction.instance">
-                <attr name="delegate" newvalue="net.phyloviz.core.wizard.LoadDataSetWizardAction"/>
+               <attr name="delegate" newvalue="net.phyloviz.core.wizard.LoadDataSetWizardAction"/>
                 <attr name="iconBase" stringvalue="net/phyloviz/core/DataSetIcon.png"/>
                 <attr name="instanceCreate" methodvalue="org.openide.awt.Actions.alwaysEnabled"/>
                 <attr name="noIconInMenu" stringvalue="false"/>

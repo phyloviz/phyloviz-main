@@ -53,6 +53,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public interface DataModel {
 
+    
 	/**
          * Returns a table model for the data model.
          * @return a table model for the data model.
