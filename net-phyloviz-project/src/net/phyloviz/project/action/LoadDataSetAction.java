@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Properties;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
@@ -53,6 +54,7 @@ public final class LoadDataSetAction extends AbstractAction {
             String dataSetName = prop.getProperty("dataset-name");
             if (dataSetAlreadyOpened(dataSetName)) {
                 WindowManager.getDefault().findTopComponent("DataSetExplorerTopComponent").requestActive();
+                JOptionPane.showMessageDialog(WindowManager.getDefault().findTopComponent("DataSetExplorerTopComponent"), "Eggs are not supposed to be green.");
                 return;
             }
 

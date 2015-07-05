@@ -17,6 +17,7 @@ import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.KeyStroke;
 import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.upgma.treeviewer.render.DistanceFilterEdgeRenderer;
 import net.phyloviz.upgma.treeviewer.render.LabeledEdgeRenderer;
 import net.phyloviz.upgma.treeviewer.render.NodeLinkLayout;
 import net.phyloviz.upgma.treeviewer.render.NodeRenderer;
@@ -34,6 +35,7 @@ import prefuse.action.animate.QualityControlAnimator;
 import prefuse.action.animate.VisibilityAnimator;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.FontAction;
+import prefuse.action.filter.GraphDistanceFilter;
 import prefuse.action.filter.VisibilityFilter;
 import prefuse.action.layout.CollapsedSubtreeLayout;
 import prefuse.activity.SlowInSlowOutPacer;
@@ -42,12 +44,9 @@ import prefuse.controls.PanControl;
 import prefuse.controls.WheelZoomControl;
 import prefuse.controls.ZoomControl;
 import prefuse.controls.ZoomToFitControl;
-import prefuse.data.CascadedTable;
 import prefuse.data.Tree;
 import prefuse.data.Tuple;
 import prefuse.data.event.TupleSetListener;
-import prefuse.data.expression.Predicate;
-import prefuse.data.expression.parser.ExpressionParser;
 import prefuse.data.search.PrefixSearchTupleSet;
 import prefuse.data.tuple.TupleSet;
 import prefuse.render.EdgeRenderer;
@@ -76,7 +75,7 @@ public final class TreeView extends Display {
 
     private AbstractShapeRenderer m_nodeRenderer;
     private EdgeRenderer m_edgeRenderer;
-
+    private ItemAction nodeColor;
     private String m_label = "label";
     private int m_orientation = Constants.ORIENT_LEFT_RIGHT;
     private ItemAction edgeColor;
@@ -88,6 +87,7 @@ public final class TreeView extends Display {
     private JSearchPanel searchPanel;
     
     private boolean searchMatch = false;
+    private double distance = 5;
             
     public TreeView(Tree t, String label) {
         super(new Visualization());
@@ -105,7 +105,7 @@ public final class TreeView extends Display {
         m_vis.setRendererFactory(rf);
 
         // colors
-        ItemAction nodeColor = new NodeColorAction(treeNodes);
+        nodeColor = new NodeColorAction(treeNodes);
         ItemAction textColor = new ColorAction(treeNodes,
                 VisualItem.TEXTCOLOR, ColorLib.rgb(0, 0, 0));
         m_vis.putAction("textColor", textColor);
@@ -143,8 +143,6 @@ public final class TreeView extends Display {
 
         // create the filtering and layout
         ActionList filter = new ActionList();
-        //filter.add(new FisheyeTreeFilter(tree, 5));
-        //filter.add(new prefuse.action.filter.GraphDistanceFilter(tree, 4));
         filter.add(new VisibilityFilter(tree, m_predicate));
         filter.add(new FontAction(treeNodes, FontLib.getFont("Tahoma", 16)));
         filter.add(treeLayout);
@@ -294,6 +292,28 @@ public final class TreeView extends Display {
         
     }
 
+    void cutDistance(double value) {
+        
+        m_vis.cancel("animatePaint");
+        
+        NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
+        m_edgeRenderer = new DistanceFilterEdgeRenderer(value, rtl.getScaleX());
+                
+        rf = new DefaultRendererFactory(m_nodeRenderer);
+        rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
+        
+        m_vis.setRendererFactory(rf);
+        m_vis.run("treeLayout");
+        m_vis.run("draw");
+        m_vis.run("fullPaint");
+        m_vis.run("animatePaint");
+        
+        m_vis.cancel("animatePaint");
+        m_vis.run("treeLayout");
+        m_vis.run("fullPaint");
+        m_vis.run("animatePaint");
+    }
+    
     void setDistanceLabel(boolean status) {
         labeledRender = status;
         m_vis.cancel("animatePaint");
@@ -433,11 +453,14 @@ public final class TreeView extends Display {
 
         @Override
         public int getColor(VisualItem item) {
+            double d =item.getDouble("distance");
             if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
                 return ColorLib.rgb(255, 190, 190);
             } else if (m_vis.isInGroup(item, Visualization.FOCUS_ITEMS)) {
                 return ColorLib.rgb(198, 229, 229);
             } else if (item.getDOI() > -1) {
+                if(item.getBoolean("hide"))
+                    return ColorLib.rgba(164, 193, 193, 0);
                 return ColorLib.rgb(164, 193, 193);
             } else {
                 return ColorLib.rgba(255, 255, 255, 0);

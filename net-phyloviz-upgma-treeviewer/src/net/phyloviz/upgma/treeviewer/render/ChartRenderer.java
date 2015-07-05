@@ -65,7 +65,7 @@ public class ChartRenderer extends AbstractShapeRenderer {
         this.uv = gv;
     }
 
-    public void drawHorizontalChart(Graphics2D g, Rectangle area, String stId, int freq, Color fillColor) {
+    public void drawHorizontalChart(Graphics2D g, Rectangle area, String stId, int freq, Color fillColor, boolean hide) {
         // Get total value of all slices
         double total = 0;
 
@@ -86,13 +86,15 @@ public class ChartRenderer extends AbstractShapeRenderer {
         }
 
         // Draw background pie...
+        if(hide)
+            fillColor = new Color(214, 214, 214);
         g.setColor(fillColor);
         g.fillRect(area.x, area.y, area.width, area.height);
 
         // Draw each pie slice
         int currAngle = Math.round((float) area.getMinX()) + 2;
         Color groupColor = fillColor;
-        if (glst != null) {
+        if (glst != null && !hide) {
             giter = glst.iterator();
             while (giter.hasNext()) {
                 // Compute the start and stop angles
@@ -213,7 +215,8 @@ public class ChartRenderer extends AbstractShapeRenderer {
                 Rectangle area = (Rectangle) shape;
                 if (item.get("profile") != null) {
                     int freq = ((Profile) item.get("profile")).getFreq();
-                    drawHorizontalChart(g, area, stId, freq, fillColor);
+                    boolean hide = item.getBoolean("hide");
+                    drawHorizontalChart(g, area, stId, freq, fillColor, hide);
                     //System.out.println("draw-pie: " + ((Profile) item.get("profile")).getID());
                 }
             }

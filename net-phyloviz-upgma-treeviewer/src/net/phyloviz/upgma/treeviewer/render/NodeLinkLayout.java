@@ -57,6 +57,12 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
     public void setScaleY(int y) {
         SCALE_Y = y;
     }
+    public int getScaleX(){
+        return SCALE_X;
+    }
+    public int getScaleY(){
+        return SCALE_Y;
+    }
 
     @Override
     public void run(double frac) {

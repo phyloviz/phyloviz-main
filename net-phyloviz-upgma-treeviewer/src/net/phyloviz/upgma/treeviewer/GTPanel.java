@@ -61,7 +61,7 @@ import org.openide.windows.TopComponent;
 public class GTPanel extends TopComponent {
 
 	private ArrayList<JMenuItem> al;
-	private org.openide.util.Lookup.Result<CategoryProvider> r;
+	private Result<CategoryProvider> r;
 	private CategoryChangeListener gvCatListen;
         private UPGMAViewer uv;
         private final JComponent tvc;

@@ -30,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -76,6 +77,9 @@ public final class UPGMAViewer extends GView{
     private final String idx = "idx";
     private final String profile = "profile";
     private final String p_id = "p_id";
+    private final String show = "hide";
+    
+    private double MAX_DISTANCE; 
     
     private TreeView tview;
     private boolean linear = false;
@@ -118,12 +122,14 @@ public final class UPGMAViewer extends GView{
         nodes.addColumn(position, double.class);
         nodes.addColumn(childrenSize, int.class);
         nodes.addColumn(idx, int.class);
+        nodes.addColumn(show, boolean.class);
         
         
         
         Node n = t.addRoot();
         n.set(label, null);
-        n.setDouble(distance, _root.getDistance());
+        MAX_DISTANCE = _root.getDistance();
+        n.setDouble(distance, MAX_DISTANCE);
         
         createTree(t, n, _root.getNodeLeft());
         createTree(t, n, _root.getNodeRight());
@@ -188,6 +194,7 @@ public final class UPGMAViewer extends GView{
                 } else if (item instanceof EdgeItem){
                     Double d = item.getDouble("distance");
                     appendLineToInfoPanel(d / horizontalSlider.getValue() + "");
+                    appendLineToInfoPanel(item.getBounds().getMinX()+"-"+item.getBounds().getMinX());
                 }
             }
 //            @Override
@@ -240,13 +247,8 @@ public final class UPGMAViewer extends GView{
         //ll.setMargin( new Insets(1, 1, 1, 1));
         ll.setBackground(Color.WHITE);
 
-        sp = new JSpinner();
-        sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        sp.setBackground(Color.WHITE);
-
-
         top.add(ll, BorderLayout.WEST);
-        top.add(sp, BorderLayout.CENTER);
+        //top.add(sp, BorderLayout.CENTER);
 
         JPanel bs = new JPanel(new BorderLayout());
         bs.setBackground(Color.WHITE);
@@ -299,7 +301,22 @@ public final class UPGMAViewer extends GView{
         verticalLabelPanel.add(tsv.getLabel());
         verticalLabelPanel.setBackground(BACKGROUND);
         
-        
+        sp = new JSpinner();
+        sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        sp.setBackground(Color.WHITE);
+        final SpinnerNumberModel model = new SpinnerNumberModel(MAX_DISTANCE, 0, MAX_DISTANCE, 0.001);
+        model.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {                
+                double distance = model.getNumber().floatValue();
+                tview.cutDistance(MAX_DISTANCE - distance);
+            }
+        });
+        sp.setModel(model);
+        sp.setValue(MAX_DISTANCE);
+        JPanel cutDistanceOption = new JPanel(new GridLayout(2, 1));
+        cutDistanceOption.add(emptyJPanel());
+        cutDistanceOption.add(sp);
         
         
         popupMenu = new JPopupMenu();
@@ -357,9 +374,10 @@ public final class UPGMAViewer extends GView{
         verticalBox.setOpaque(true);
         verticalBox.setBackground(BACKGROUND);
         
-        JPanel verticalPanel = new JPanel(new GridLayout(2, 1));
+        JPanel verticalPanel = new JPanel(new GridLayout(3, 1));
         verticalPanel.add(verticalBox);
-        verticalPanel.add(verticalLabelPanel);
+        verticalPanel.add(verticalLabelPanel);               
+        verticalPanel.add(cutDistanceOption);
         verticalPanel.setBackground(BACKGROUND);
                 
         

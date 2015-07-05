@@ -38,6 +38,9 @@ public class OrthogonalEdgeRenderer  extends EdgeRenderer {
         public OrthogonalEdgeRenderer() {
             this(Constants.EDGE_TYPE_LINE, Constants.EDGE_ARROW_NONE);
         }
+        public OrthogonalEdgeRenderer(double value) {
+            this(Constants.EDGE_TYPE_LINE, Constants.EDGE_ARROW_NONE);
+        }
 
         /**
          * Creates an orthogonal shape (an edge) to draw between two nodes.
@@ -64,6 +67,8 @@ public class OrthogonalEdgeRenderer  extends EdgeRenderer {
                 
                 result.lineTo(sx, ty);
                 result.lineTo(tx, ty);
+                
+                edge.setDouble("distance", tx-sx);
             }
 
             return result;
