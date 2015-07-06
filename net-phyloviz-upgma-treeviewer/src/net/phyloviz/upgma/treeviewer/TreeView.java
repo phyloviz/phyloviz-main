@@ -13,7 +13,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
-import java.io.Serializable;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.KeyStroke;
@@ -307,7 +306,7 @@ public final class TreeView extends Display{
         m_vis.cancel("animatePaint");
         
         NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
-        m_edgeRenderer = new DistanceFilterEdgeRenderer(value, rtl.getScaleX());
+        m_edgeRenderer = new DistanceFilterEdgeRenderer(value, rtl.getScaleX(), labeledRender);
                 
         rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);

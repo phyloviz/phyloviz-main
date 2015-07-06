@@ -318,7 +318,7 @@ public final class UPGMAViewer extends GView implements Serializable{
             }
         });
         sp.setModel(model);
-        sp.setValue(MAX_DISTANCE + DISTANCE_FILTER_STEP);
+        sp.setValue(MAX_DISTANCE-DISTANCE_FILTER_STEP);
         JPanel cutDistanceOption = new JPanel(new GridLayout(2, 1));
         cutDistanceOption.add(emptyJPanel());
         cutDistanceOption.add(sp);

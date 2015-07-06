@@ -50,12 +50,14 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
     private String m_key;
     private double m_distance;
     private final int m_scale;
+    private final boolean m_labeled;
 
-    public DistanceFilterEdgeRenderer(double distance, int scale) {
+    public DistanceFilterEdgeRenderer(double distance, int scale, boolean labeled) {
         super();
         m_key = "viz";
         m_distance = distance * scale;
         m_scale = scale;
+        m_labeled = labeled;
 
     }
 
@@ -64,6 +66,17 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
         super.render(g, item);
         VisualItem u = ((EdgeItem)item).getSourceItem();
         VisualItem v = ((EdgeItem)item).getTargetItem();
+        
+        String u_id = u.canGetString("p_id") ? u.getString("p_id") : null;
+        String v_id = v.canGetString("p_id") ? v.getString("p_id") : null;
+        
+        double d = -1;
+        if(u_id == null && v_id != null)
+            d = u.getDouble("distance");
+        if(v_id == null && u_id != null)
+            d = v.getDouble("distance");
+        
+        String distance = d == -1 ? "" : String.valueOf(d);
         
         Shape shape = getShape(item);
         if (shape == null) {
@@ -87,6 +100,20 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
                 u.setBoolean("hide", false);
             if(v.canGetString("p_id"))
                 v.setBoolean("hide", false);
+        }
+        
+        if(m_labeled){
+            double x = (u.getX() + v.getX()) / 2;
+            double y = v.getY() - 2;
+
+            Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
+            Color dc = g.getColor();
+
+            Font mf = df.deriveFont(Font.BOLD);
+
+            g.setFont(mf);
+            g.setColor(dc);
+            g.drawString(distance + "", (float) (x), (float) y);
         }
     }
 }
