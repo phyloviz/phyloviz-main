@@ -52,7 +52,7 @@ public class NJLeafNode extends NodeType{
 
     @Override
     public void saveData(JsonSaver js) {
-        ((NeighborJoiningToJson)js.njtj).putLeaf(id, p.getID(), x, y);
+        ((NeighborJoiningToJson)js.njtj).putLeaf(id, p.getUID() + "", x, y);
     }
     
 }

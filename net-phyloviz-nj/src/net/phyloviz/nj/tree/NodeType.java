@@ -7,7 +7,7 @@ import net.phyloviz.nj.json.NJToJSON.INodeJsonSaver;
 import net.phyloviz.nj.tree.IndexList.IndexNode;
 import net.phyloviz.nj.tree.IndexList.NodeIterator;
 
-public abstract class NodeType implements INodeJsonSaver, Profile, Comparable<NJLeafNode>{
+public abstract class NodeType implements INodeJsonSaver, Profile{
     
     public final String name;
     private final int nodeOffset;
@@ -106,11 +106,6 @@ public abstract class NodeType implements INodeJsonSaver, Profile, Comparable<NJ
      */
     public IndexNode getMinL(){
         return minL;
-    }
-
-    @Override
-    public int compareTo(NJLeafNode o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

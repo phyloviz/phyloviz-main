@@ -5,19 +5,20 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import net.phyloviz.njviewer.ui.GView;
+import net.phyloviz.njviewer.ui.GraphView;
+import net.phyloviz.upgmanjcore.visualization.GView;
 
-public class EdgeDistanceLabelAction extends AbstractAction {
+public class RoundDistanceAction extends AbstractAction {
 
-	private final GView gv;
+	private final GraphView gv;
 
-	public EdgeDistanceLabelAction(GView gv) {
-		this.gv = gv;
+	public RoundDistanceAction(GView gv) {
+		this.gv =(GraphView) gv;
 	}
 
 	public JMenuItem getMenuItem() {
-		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Distance labels");
-		mi.setToolTipText("Label edges with distance value");
+		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Round Distance Labels");
+		mi.setToolTipText("Round the label edges distance value");
 		mi.setMnemonic(KeyEvent.VK_V);
 		mi.setSelected(false);
 		mi.addActionListener(this);
@@ -31,7 +32,7 @@ public class EdgeDistanceLabelAction extends AbstractAction {
 			return;
 		}
 		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-		gv.setLevelLabel(status);
+		gv.setRoundDistance(status);
 	}
 
 }

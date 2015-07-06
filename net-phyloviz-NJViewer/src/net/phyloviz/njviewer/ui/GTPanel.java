@@ -9,17 +9,19 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.njviewer.render.ChartRenderer;
+import net.phyloviz.upgmanjcore.visualization.GView;
+import net.phyloviz.upgmanjcore.visualization.IGTPanel;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
-public class GTPanel extends TopComponent {
+public class GTPanel extends TopComponent  implements IGTPanel{
 
 	private GraphView gv;
 	private ArrayList<JMenuItem> al;
-	private Result<CategoryProvider> r;
+	private final Result<CategoryProvider> r;
 	private CategoryChangeListener gvCatListen;
 
 	/** Creates new form GTPanel */
@@ -87,6 +89,7 @@ public class GTPanel extends TopComponent {
 	protected void componentClosed() {
             gv.stopAnimation();
             super.componentClosed();
+            gv.closeInfoPanel();
 	}
 
 	/** This method is called from within the constructor to
@@ -104,4 +107,9 @@ public class GTPanel extends TopComponent {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public GView getGView() {
+        return gv;
+    }
 }

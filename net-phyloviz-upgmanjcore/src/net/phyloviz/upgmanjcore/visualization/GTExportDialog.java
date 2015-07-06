@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2012, PHYLOViZ Team <phyloviz@gmail.com>
+ * Copyright (c) 2011, PHYLOViZ Team <phyloviz@gmail.com>
  * All rights reserved.
  * 
  * This file is part of PHYLOViZ <http://www.phyloviz.net>.
@@ -33,43 +33,65 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.upgma.treeviewer.action;
+package net.phyloviz.upgmanjcore.visualization;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
-import net.phyloviz.upgma.treeviewer.GView;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.io.IOException;
+import net.phyloviz.upgmanjcore.visualization.GView;
+import org.freehep.graphics2d.PrintColor;
+import org.freehep.graphics2d.VectorGraphics;
 
-public class EdgeLevelLabelAction extends AbstractAction {
+import org.freehep.graphicsbase.util.export.ExportDialog;
+import org.freehep.graphicsbase.util.export.ExportFileType;
+import prefuse.Display;
+
+public class GTExportDialog extends ExportDialog {
+	private static final long serialVersionUID = 1L;
 
 	private GView gv;
 
-	public EdgeLevelLabelAction(GView gv) {
-		this.gv = gv;
-	}
-
-	public JMenuItem getMenuItem() {
-
-		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Distance labels");
-		mi.setToolTipText("Label edges with level value");
-		mi.setMnemonic(KeyEvent.VK_V);
-		mi.setSelected(false);
-		mi.addActionListener(this);
-		return mi;
+	public GTExportDialog(GView gv) {
+		this.gv =  gv;
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	protected boolean writeFile(Component component, ExportFileType t) throws IOException {
 
-		if (gv == null) {
-			((JCheckBoxMenuItem) e.getSource()).setSelected(false);
-			return;
+		DisplayImage comp = new DisplayImage((Display) component);
+		boolean r = super.writeFile(comp, t);
+		return r;
+	}
+
+	private class DisplayImage extends Component {
+
+		Display d;
+
+		public DisplayImage(Display d) {
+			this.d = d;
+			this.setSize(d.getSize());
+			this.setBackground(Color.WHITE);
+			this.setForeground(Color.BLACK);
 		}
 
-		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-		gv.setLevelLabel(status);
+		@Override
+		public void print(Graphics g) {
+
+			VectorGraphics vg = VectorGraphics.create(g);
+			vg.setColorMode(PrintColor.COLOR);
+			vg.setBackground(Color.WHITE);
+
+			// set up the display, render, then revert to normal settings
+			boolean q = d.isHighQuality();
+			d.setHighQuality(false);
+			gv.getVisualization().run("static");
+			d.setHighQuality(true);
+			d.paintDisplay(vg, d.getSize());
+			d.setHighQuality(q);
+
+			//vg.dispose();
+		}
 	}
 
 }

@@ -15,7 +15,6 @@ import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-import net.phyloviz.*;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
@@ -88,21 +87,42 @@ public final class SaveAsProjectAction extends NodeAction {
             }
 
             Collection<? extends ProjectItem> c = td.getLookup().lookupAll(ProjectItem.class);
-            if(c.size() > 0){
+            if (c.size() > 0) {
                 int algos = 1;
                 Collection<? extends ProjectItemFactory> pif = Lookup.getDefault().lookupAll(ProjectItemFactory.class);
                 StringBuilder algorithmsFactory = new StringBuilder(), algorithms = new StringBuilder();
                 for (ProjectItem item : c) {
-                    
+
                     for (ProjectItemFactory factory : pif) {
-                        
+
                         String itemFactory = factory.getClass().getName();
-                        
-                        if(itemFactory.contains(item.getMainName())){
-                            
-                            algorithmsFactory.append(itemFactory).append(",");                        
-                            
-                            String filename = dataSetName + ".output." + item.getName() +algos++ + ".json";
+
+                        if (itemFactory.contains(item.getMainName())) {
+
+//                            Class klass = item.getClass();
+//
+//                            for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
+//
+//                                if (tc.getLookup().lookup(klass) == item) {
+//
+//                                    GView view = ((IGTPanel) tc).getGView();
+//                                    try {
+//                                        FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Marta Nascimento\\Documents\\employee.ser");
+//                                        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+//                                        out.writeObject(view);
+//                                        out.close();
+//                                        fileOut.close();
+//                                        System.out.printf("Serialized data is saved in /tmp/employee.ser");
+//                                    } catch (IOException i) {
+//                                        Exceptions.printStackTrace(i);
+//                                    }
+//
+//                                }
+//                            }
+
+                            algorithmsFactory.append(itemFactory).append(",");
+
+                            String filename = dataSetName + ".output." + item.getName() + algos++ + ".json";
                             algorithms.append(filename).append(",");
                             save(directory, filename, item.getOutput());
 
@@ -110,10 +130,10 @@ public final class SaveAsProjectAction extends NodeAction {
                         }
                     }
                 }
-                
+
                 //removing last comma
-                algorithmsFactory.deleteCharAt(algorithmsFactory.length()-1);
-                algorithms.deleteCharAt(algorithms.length()-1);
+                algorithmsFactory.deleteCharAt(algorithmsFactory.length() - 1);
+                algorithms.deleteCharAt(algorithms.length() - 1);
                 //add props
                 props.put("algorithm-output", algorithms.toString());
                 props.put("algorithm-output-factory", algorithmsFactory.toString());

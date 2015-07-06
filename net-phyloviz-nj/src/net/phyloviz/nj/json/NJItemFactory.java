@@ -72,7 +72,7 @@ public class NJItemFactory implements ProjectItemFactory {
 
         for (Iterator<? extends AbstractProfile> it = td.iterator(); it.hasNext();) {
             Profile p = it.next();
-            profiles.put(Integer.parseInt(p.getID()), p);
+            profiles.put(p.getUID(), p);
         }
         for (Iterator<JSONObject> it = leafsArr.iterator(); it.hasNext();) {
             JSONObject l = it.next();

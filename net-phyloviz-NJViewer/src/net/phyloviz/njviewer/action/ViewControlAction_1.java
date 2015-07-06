@@ -21,8 +21,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import net.phyloviz.njviewer.ui.GView;
+import net.phyloviz.upgmanjcore.visualization.GView;
 import net.phyloviz.njviewer.ui.ForcePair;
+import net.phyloviz.njviewer.ui.GraphView;
 import org.openide.util.ImageUtilities;
 import org.openide.windows.TopComponent;
 import prefuse.util.force.Force;
@@ -30,11 +31,11 @@ import prefuse.util.force.ForceSimulator;
 
 public class ViewControlAction_1 implements ActionListener {
 
-	private GView gv;
+	private GraphView gv;
 	private JDialog forceDialog;
 
 	public ViewControlAction_1(GView gv) {
-		this.gv = gv;
+		this.gv =(GraphView) gv;
 		gv.addAncestorListener(new AncestorListener() {
 
 			@Override

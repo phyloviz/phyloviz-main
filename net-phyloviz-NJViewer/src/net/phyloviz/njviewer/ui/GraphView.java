@@ -1,9 +1,6 @@
 package net.phyloviz.njviewer.ui;
 
 import net.phyloviz.njviewer.Force.NJForceDirectLayout;
-import net.phyloviz.njviewer.action.InfoControlAction;
-import net.phyloviz.njviewer.action.EdgeDistanceLabelAction;
-import net.phyloviz.njviewer.action.ExportAction;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -42,7 +39,7 @@ import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.nj.tree.NJRoot.EdgeDistanceWrapper;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.njviewer.action.HighQualityAction;
-import net.phyloviz.njviewer.action.LinearSizeControlAction;
+import net.phyloviz.njviewer.action.RoundDistanceAction;
 import net.phyloviz.njviewer.action.ViewControlAction;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
 
@@ -89,6 +86,12 @@ import prefuse.visual.EdgeItem;
 import prefuse.visual.NodeItem;
 import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
+import net.phyloviz.upgmanjcore.visualization.GView;
+import net.phyloviz.upgmanjcore.visualization.InfoPanel;
+import net.phyloviz.upgmanjcore.visualization.actions.EdgeLevelLabelAction;
+import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
+import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
+import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 
 public class GraphView extends GView {
 
@@ -100,8 +103,8 @@ public class GraphView extends GView {
     private final Box bottomBox;
     private final Visualization view;
     private final JProgressBar pbar;
-    private final int scaleStart = 100;
     
+    private boolean hasDistanceLabel = false, isRound = false;
     private String name;
     private Table nodeTable, edgeTable;
     private Graph graph;
@@ -185,6 +188,7 @@ public class GraphView extends GView {
         nodeSchema.addColumn("st_ref", NodeType.class);
         nodeSchema.addColumn("w", int.class);
         nodeSchema.addColumn("g", int.class);
+        nodeSchema.addColumn("distance", float.class);
 
         Schema edgeSchema = new Schema();
         edgeSchema.addColumn(SRC, int.class);
@@ -280,13 +284,12 @@ public class GraphView extends GView {
         });
         popupMenu = new JPopupMenu();
         popupMenu.add(new InfoControlAction(this).getMenuItem());
-        popupMenu.add(new EdgeDistanceLabelAction(this).getMenuItem());
-
+        popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
+        popupMenu.add(new RoundDistanceAction(this).getMenuItem());
         popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
                 
-
         JButton optionsButton = new JButton("Options");
         optionsButton.setMargin(new Insets(1, 1, 1, 1));
         optionsButton.addMouseListener(new MouseAdapter() {
@@ -307,30 +310,7 @@ public class GraphView extends GView {
         sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         sp.setBackground(Color.WHITE);
         
-        //Create the vertical slider.
-        final JLabel scaleLabel = new JLabel(scaleStart + "");
-        final TreeSlider tsv = new TreeSlider(JSlider.VERTICAL, 25, 300, scaleStart);
-        final JSlider verticalSlider = tsv.getSlider();
-        verticalSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                fdl.changeScale(verticalSlider.getValue());
-                scaleLabel.setText(verticalSlider.getValue() + " ");
-            }
-        });
-        verticalSlider.setBackground(Color.WHITE);
-        scaleLabel.setBackground(Color.WHITE);
-        
-        // Right Box        
-        Box verticalBox = new Box(BoxLayout.Y_AXIS);
-        verticalBox.add(verticalSlider);  
-        verticalBox.setOpaque(true);
-        verticalBox.setBackground(Color.WHITE);
-        verticalBox.add(scaleLabel);
-        
         Box verticalPanel = new Box(BoxLayout.Y_AXIS);
-        verticalPanel.add(Box.createVerticalStrut(8));
-        verticalPanel.add(verticalBox);
         verticalPanel.add(Box.createVerticalStrut(3));
         verticalPanel.add(ll);
         verticalPanel.add(Box.createVerticalStrut(1));
@@ -347,7 +327,7 @@ public class GraphView extends GView {
         bottomBox.add(Box.createHorizontalStrut(1));
         bottomBox.add(pauseButton);
         bottomBox.add(Box.createHorizontalStrut(5));
-        bottomBox.add(animCtl);        
+        bottomBox.add(animCtl);         
         bottomBox.add(Box.createHorizontalGlue());
         bottomBox.add(pbar);
         bottomBox.add(Box.createHorizontalStrut(3));
@@ -357,7 +337,6 @@ public class GraphView extends GView {
         add(bottomBox, BorderLayout.SOUTH);
         add(verticalPanel, BorderLayout.EAST);
     }
-
     public void loadGraph(final NJRoot root, final AbstractDistance ad) {
         final HashMap<Integer, Integer> uid2rowid = new HashMap<>();
 
@@ -481,20 +460,21 @@ public class GraphView extends GView {
                     }
                     vu.setFixed(false);
             }
+            maxDistance += 0.001;
             distance = maxDistance;
             groupList.setListData(new Group[]{g});
             sp.setValue(maxDistance);
             
-            final SpinnerNumberModel model = new SpinnerNumberModel(maxDistance, minDistance, maxDistance, 0.1);
+            final SpinnerNumberModel model = new SpinnerNumberModel(maxDistance, minDistance, maxDistance, maxDistance / 20);
             model.addChangeListener(new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent e) {
                     view.setVisible("graph", null, false);
-                    distance = model.getNumber().intValue();
+                    distance = model.getNumber().floatValue();
                     int[] selectedIndices = groupList.getSelectedIndices();
                     for (int i = 0; i < selectedIndices.length; i++) {
                         Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
-                        view.setVisible("graph", (Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + distance), true);
+                        view.setVisible("graph", (Predicate) ExpressionParser.parse("g=" + g.getID() + "and distance <= " + distance), true);
                     }
                     view.run("draw");
                 }
@@ -574,7 +554,7 @@ public class GraphView extends GView {
         if (!infoPanel.isOpened()) infoPanel.open();
         infoPanel.requestActive();
     }
-    @Override public InfoPanel getInfoPanel() { return infoPanel; }
+    public InfoPanel getInfoPanel() { return infoPanel; }
     @Override public void closeInfoPanel() { infoPanel.close(); }
     @Override public boolean getLinearSize() { return linear; }
     @Override
@@ -584,16 +564,17 @@ public class GraphView extends GView {
             view.run("draw");
         }
     }
-    @Override
     public void setLevelLabel(boolean status) {
-        if (status) rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
-        else rf.setDefaultEdgeRenderer(new EdgeRenderer());
+        hasDistanceLabel = status;
+        setRenderer();
     }
-    //VERIFICAR
-    @Override
     public void setEdgePercentageLabel(boolean status) {
         if (status) rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("edgep"));
         else rf.setDefaultEdgeRenderer(new EdgeRenderer());
+    }
+    public void setRoundDistance(boolean status) {
+        isRound = status;
+        setRenderer();
     }
     @Override public void setHighQuality(boolean status) { display.setHighQuality(status);}
     public void setCategoryProvider(CategoryProvider cp) {this.cp = cp;}
@@ -601,6 +582,7 @@ public class GraphView extends GView {
         if (infoPanel != null) {
             infoPanel.append(text);
             infoPanel.flush();
+            infoPanel.requestFocus();
         }
     }
     @Override public JComponent getDisplay() { return display; }
@@ -621,9 +603,8 @@ public class GraphView extends GView {
         if (running) view.run("layout");
         else view.run("static");
     }
-    @Override public ForceDirectedLayout getForceLayout() { return fdl; }
-    @Override public JForcePanel getForcePanel() { return new JForcePanel(fdl.getForceSimulator());}
-    @Override
+    public ForceDirectedLayout getForceLayout() { return fdl; }
+    public JForcePanel getForcePanel() { return new JForcePanel(fdl.getForceSimulator());}
     public ArrayList<ForcePair> getForces() {
         ForceSimulator fs = fdl.getForceSimulator();
         Force[] farray = fs.getForces();
@@ -643,6 +624,11 @@ public class GraphView extends GView {
             label = status;
             view.run("draw");
         }
+    }
+
+    @Override
+    public void showGroupPanel(boolean status) {
+        
     }
     // Private classes.
     private class NodeColorAction extends ColorAction {
@@ -702,6 +688,7 @@ public class GraphView extends GView {
     private class ItemInfoControl extends ControlAdapter {
         @Override
         public void itemClicked(VisualItem item, MouseEvent e) {
+            showInfoPanel();
             if (item instanceof EdgeItem) {
                 Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
                 appendTextToInfoPanel(
@@ -734,6 +721,11 @@ public class GraphView extends GView {
             appendTextToInfoPanel("\n");
             }
         }
+    }
+    private void setRenderer(){
+        if (isRound && hasDistanceLabel) rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance", true));
+        else if(hasDistanceLabel)rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
+        else rf.setDefaultEdgeRenderer(new EdgeRenderer());   
     }
     private class Group {
         private int id;

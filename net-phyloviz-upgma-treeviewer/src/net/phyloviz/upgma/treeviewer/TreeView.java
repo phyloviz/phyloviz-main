@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.KeyStroke;
@@ -35,7 +36,6 @@ import prefuse.action.animate.QualityControlAnimator;
 import prefuse.action.animate.VisibilityAnimator;
 import prefuse.action.assignment.ColorAction;
 import prefuse.action.assignment.FontAction;
-import prefuse.action.filter.GraphDistanceFilter;
 import prefuse.action.filter.VisibilityFilter;
 import prefuse.action.layout.CollapsedSubtreeLayout;
 import prefuse.activity.SlowInSlowOutPacer;
@@ -52,6 +52,7 @@ import prefuse.data.tuple.TupleSet;
 import prefuse.render.EdgeRenderer;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.DefaultRendererFactory;
+import prefuse.render.Renderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
 import prefuse.util.ui.JSearchPanel;
@@ -65,7 +66,8 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  * @version 1.0
  * @author <a href="http://jheer.org">jeffrey heer</a>
  */
-public final class TreeView extends Display {
+
+public final class TreeView extends Display{
 
     public static final String TREE_CHI = "/chi-ontology.xml.gz";
 
@@ -80,11 +82,11 @@ public final class TreeView extends Display {
     private int m_orientation = Constants.ORIENT_LEFT_RIGHT;
     private ItemAction edgeColor;
     private DefaultRendererFactory rf;
-    public CategoryProvider cp;
+    public transient CategoryProvider cp;
     private boolean labeledRender = false;
     private boolean linear = false;
     
-    private JSearchPanel searchPanel;
+    private transient JSearchPanel searchPanel;
     
     private boolean searchMatch = false;
     private double distance = 5;
@@ -97,7 +99,7 @@ public final class TreeView extends Display {
         m_vis.add(tree, t);
 
         m_nodeRenderer = new NodeRenderer(m_label, this);//new LabelRenderer(m_label);
-        m_edgeRenderer = new OrthogonalEdgeRenderer(Constants.EDGE_TYPE_LINE, Constants.EDGE_ARROW_NONE);
+        m_edgeRenderer = new OrthogonalEdgeRenderer();
                          //new EdgeRenderer(Constants.EDGE_TYPE_LINE);
 
         rf = new DefaultRendererFactory(m_nodeRenderer);
@@ -221,7 +223,15 @@ public final class TreeView extends Display {
         
         //rotate(new Point(200,300), Math.PI);
     }
-
+    public Renderer getNodeRenderer() {
+        return m_nodeRenderer;
+    }
+    public Visualization getViz(){
+        return m_vis;
+    }
+    public Renderer getEdgeRenderer() {
+        return m_edgeRenderer;
+    }
     // ------------------------------------------------------------------------
     public void setOrientation(int orientation) {
         NodeLinkLayout  rtl

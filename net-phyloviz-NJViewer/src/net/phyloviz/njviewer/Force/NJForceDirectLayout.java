@@ -62,6 +62,7 @@ public class NJForceDirectLayout extends ForceDirectedLayout{
                 NodeItem  n2 = e.getTargetItem();
                 ForceItem f2 = (ForceItem)n2.get(FORCEITEM);
                 float dist = e.getFloat("distance");
+                if(dist < 0) dist = dist * -1;
                 fsim.addSpring(f1, f2, dist*scale);
             }
         }

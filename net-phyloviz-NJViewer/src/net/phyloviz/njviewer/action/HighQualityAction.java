@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import net.phyloviz.njviewer.ui.GView;
+import net.phyloviz.upgmanjcore.visualization.GView;
 
 public class HighQualityAction extends AbstractAction {
 

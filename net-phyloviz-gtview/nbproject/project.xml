@@ -109,37 +109,89 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
+                <package>net.phyloviz.gtview.action</package>
+                <package>net.phyloviz.gtview.render</package>
+                <package>net.phyloviz.gtview.ui</package>
                 <package>org.freehep.graphics2d</package>
+                <package>org.freehep.graphics2d.font</package>
+                <package>org.freehep.graphicsbase.swing</package>
+                <package>org.freehep.graphicsbase.swing.layout</package>
                 <package>org.freehep.graphicsbase.util</package>
                 <package>org.freehep.graphicsbase.util.export</package>
+                <package>org.freehep.graphicsbase.util.images</package>
+                <package>org.freehep.graphicsbase.xml.util</package>
+                <package>org.freehep.graphicsio</package>
+                <package>org.freehep.graphicsio.emf</package>
+                <package>org.freehep.graphicsio.emf.gdi</package>
+                <package>org.freehep.graphicsio.exportchooser</package>
+                <package>org.freehep.graphicsio.font</package>
+                <package>org.freehep.graphicsio.font.truetype</package>
+                <package>org.freehep.graphicsio.gif</package>
+                <package>org.freehep.graphicsio.java</package>
+                <package>org.freehep.graphicsio.pdf</package>
+                <package>org.freehep.graphicsio.png</package>
+                <package>org.freehep.graphicsio.ppm</package>
+                <package>org.freehep.graphicsio.ps</package>
+                <package>org.freehep.graphicsio.raw</package>
+                <package>org.freehep.graphicsio.svg</package>
+                <package>org.freehep.graphicsio.swf</package>
+                <package>org.freehep.util.io</package>
+                <package>org.jdom</package>
+                <package>org.jdom.adapters</package>
+                <package>org.jdom.filter</package>
+                <package>org.jdom.input</package>
+                <package>org.jdom.output</package>
+                <package>org.jdom.transform</package>
+                <package>org.jdom.xpath</package>
+                <package>prefuse</package>
+                <package>prefuse.action</package>
+                <package>prefuse.action.animate</package>
+                <package>prefuse.action.assignment</package>
+                <package>prefuse.action.distortion</package>
+                <package>prefuse.action.filter</package>
+                <package>prefuse.action.layout</package>
+                <package>prefuse.action.layout.graph</package>
+                <package>prefuse.activity</package>
+                <package>prefuse.controls</package>
+                <package>prefuse.data</package>
+                <package>prefuse.data.column</package>
+                <package>prefuse.data.event</package>
+                <package>prefuse.data.expression</package>
+                <package>prefuse.data.expression.parser</package>
+                <package>prefuse.data.io</package>
+                <package>prefuse.data.io.sql</package>
+                <package>prefuse.data.parser</package>
+                <package>prefuse.data.query</package>
+                <package>prefuse.data.search</package>
+                <package>prefuse.data.tuple</package>
+                <package>prefuse.data.util</package>
+                <package>prefuse.render</package>
+                <package>prefuse.util</package>
+                <package>prefuse.util.collections</package>
+                <package>prefuse.util.display</package>
+                <package>prefuse.util.force</package>
+                <package>prefuse.util.io</package>
+                <package>prefuse.util.ui</package>
+                <package>prefuse.visual</package>
+                <package>prefuse.visual.expression</package>
+                <package>prefuse.visual.sort</package>
+                <package>prefuse.visual.tuple</package>
             </public-packages>
             <class-path-extension>
-                <runtime-relative-path>ext/jdom-1.0.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jdom-1.0.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphics2d-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphics2d-2.4.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsbase-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsbase-2.4.jar</binary-origin>
+                <runtime-relative-path>ext/freehep-graphicsio-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphicsio-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-svg-2.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-svg-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
+                <runtime-relative-path>ext/freehep-graphicsio-java-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphicsio-java-2.4.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-emf-2.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-emf-2.4.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsio-pdf-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsio-pdf-2.4.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsio-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsio-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-ps-2.4.jar</runtime-relative-path>
@@ -150,20 +202,28 @@
                 <binary-origin>release/modules/ext/freehep-io-2.2.2.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/prefuse.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/prefuse.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsio-java-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsio-java-2.4.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-swf-2.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-swf-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/openide-lookup-1.9-patched-1.0.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/openide-lookup-1.9-patched-1.0.jar</binary-origin>
+                <runtime-relative-path>ext/prefuse.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/prefuse.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jdom-1.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jdom-1.0.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/freehep-graphicsbase-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphicsbase-2.4.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/freehep-graphicsio-pdf-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphicsio-pdf-2.4.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/freehep-graphics2d-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphics2d-2.4.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>

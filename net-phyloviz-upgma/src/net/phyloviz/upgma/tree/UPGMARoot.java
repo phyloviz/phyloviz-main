@@ -5,6 +5,7 @@
  */
 package net.phyloviz.upgma.tree;
 
+import java.io.Serializable;
 import net.phyloviz.upgma.json.UPGMAJsonWriter;
 import net.phyloviz.upgma.json.JsonSaver;
 import net.phyloviz.upgma.json.UPGMAToJSON.IEdgeJsonSaver;

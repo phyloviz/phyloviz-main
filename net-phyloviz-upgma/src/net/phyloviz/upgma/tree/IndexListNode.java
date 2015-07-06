@@ -5,6 +5,7 @@
  */
 package net.phyloviz.upgma.tree;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import net.phyloviz.upgma.tree.IndexListNode.IndexNode;
 

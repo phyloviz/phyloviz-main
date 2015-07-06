@@ -3,7 +3,7 @@
 // * To change this template file, choose Tools | Templates
 // * and open the template in the editor.
 // */
-package net.phyloviz.upgma.treeviewer;
+package net.phyloviz.upgmanjcore.visualization;
 //
 //import java.awt.Color;
 

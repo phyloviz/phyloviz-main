@@ -62,10 +62,16 @@ public final class LoadDataSetAction extends AbstractAction {
                     typingFile = prop.getProperty("typing-file"),
                     populationFactory = prop.getProperty("population-factory"),
                     populationFile = prop.getProperty("population-file"),
-                    populationFK = prop.getProperty("population-foreign-key");
+                    populationFK = prop.getProperty("population-foreign-key"),
+                    algorithmOutput = prop.getProperty("algorithm-output"),
+                    algorithmOutputOutputFactory = prop.getProperty("algorithm-output-factory");
            
-            String[] algoOutput = prop.getProperty("algorithm-output").split(","),
-                     algoOutputFactory = prop.getProperty("algorithm-output-factory").split(",");
+            String[] algoOutput = algorithmOutput != null ? 
+                    algorithmOutput.split(",") :
+                    new String[]{""};
+            String[] algoOutputFactory = algorithmOutputOutputFactory != null ? 
+                    algorithmOutputOutputFactory.split(",") :  
+                    new String[]{""};
 
             if (dataSetName != null && (!dataSetName.equals(""))) {
 

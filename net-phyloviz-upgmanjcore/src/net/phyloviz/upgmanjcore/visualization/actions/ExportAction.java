@@ -33,43 +33,38 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.njviewer.action;
+package net.phyloviz.upgmanjcore.visualization.actions;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import net.phyloviz.njviewer.ui.GView;
+import net.phyloviz.upgmanjcore.visualization.GTExportDialog;
+import net.phyloviz.upgmanjcore.visualization.GView;
 
-public class LinearSizeControlAction extends AbstractAction {
+public class ExportAction implements ActionListener {
 
 	private GView gv;
 
-	public LinearSizeControlAction(GView gv) {
+	public ExportAction(GView gv) {
 		this.gv = gv;
 	}
 
 	public JMenuItem getMenuItem() {
-
-		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Linear Nodes");
-		mi.setToolTipText("Linear size for nodes");
-		mi.setMnemonic(KeyEvent.VK_L);
-		mi.setSelected(false);
+		JMenuItem mi = new JMenuItem("Export");
+		mi.setToolTipText("Export display as image");
+		mi.setMnemonic(KeyEvent.VK_E);
 		mi.addActionListener(this);
 		return mi;
 	}
 
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		if (gv == null) {
-			((JCheckBoxMenuItem) e.getSource()).setSelected(false);
-			return;
-		}
-
-		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-		gv.setLinearSize(status);
+		GTExportDialog export = new GTExportDialog(gv);
+		export.showExportDialog(gv, "Export view as ...", gv.getDisplay(), "export");
+		
 	}
 
 }

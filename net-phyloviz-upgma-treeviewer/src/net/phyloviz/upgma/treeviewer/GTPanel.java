@@ -49,6 +49,8 @@ import net.phyloviz.upgma.UPGMAItem;
 import net.phyloviz.upgma.treeviewer.render.ChartRenderer;
 import org.openide.util.Lookup.Result;
 import net.phyloviz.upgma.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.visualization.GView;
+import net.phyloviz.upgmanjcore.visualization.IGTPanel;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
@@ -58,7 +60,7 @@ import org.openide.util.LookupListener;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
-public class GTPanel extends TopComponent {
+public class GTPanel extends TopComponent implements IGTPanel{
 
 	private ArrayList<JMenuItem> al;
 	private Result<CategoryProvider> r;
@@ -114,7 +116,11 @@ public class GTPanel extends TopComponent {
 			}
 		});
 	}
-
+        @Override
+        public GView getGView() {
+            return uv;
+        }
+        
 	@Override
 	public int getPersistenceType() {
 		return PERSISTENCE_NEVER;
@@ -130,6 +136,8 @@ public class GTPanel extends TopComponent {
                 uv.closeInfoPanel();
 		super.componentClosed();
 	}
+        
+        
 
 	/** This method is called from within the constructor to
 	 * initialize the form.
@@ -146,6 +154,8 @@ public class GTPanel extends TopComponent {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+   
 }
 
 class LocalNodeListener implements NodeListener {

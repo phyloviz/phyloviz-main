@@ -33,14 +33,14 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.upgma.treeviewer.action;
+package net.phyloviz.upgmanjcore.visualization.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 
 import javax.swing.JMenuItem;
-import net.phyloviz.upgma.treeviewer.GView;
+import net.phyloviz.upgmanjcore.visualization.GView;
 
 public class InfoControlAction extends AbstractAction {
 

@@ -52,7 +52,7 @@ public abstract class NJ {
             NodeType oldNtLeft = nodeArray[w.c];
             NodeType oldNtRight = nodeArray[w.l];
             float dst = nodeArray[w.c].getPositionDistanceLine(w.l);
-            //op.append("Created " + oldNtLeft.getID() + " -> " + oldNtRight.getID() + "\n");
+            op.append("Created " + oldNtLeft.getID() + " -> " + oldNtRight.getID() + "\n");
             
             calculateNewDistances(oldNtLeft, oldNtRight, union, dst, w.c, w.l);
             

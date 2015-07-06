@@ -32,7 +32,7 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-package net.phyloviz.upgma.treeviewer;
+package net.phyloviz.upgmanjcore.visualization;
 
 import java.io.BufferedWriter;
 import java.io.File;

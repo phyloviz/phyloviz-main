@@ -5,6 +5,8 @@
  */
 package net.phyloviz.upgma.treeviewer;
 
+import net.phyloviz.upgmanjcore.visualization.InfoPanel;
+import net.phyloviz.upgmanjcore.visualization.TreeSlider;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,6 +15,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -45,31 +48,31 @@ import net.phyloviz.upgma.tree.NodeType;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.tree.UPGMAUnionNode;
-import net.phyloviz.upgma.treeviewer.action.EdgeLevelLabelAction;
-import net.phyloviz.upgma.treeviewer.action.ExportAction;
-import net.phyloviz.upgma.treeviewer.action.InfoControlAction;
-import net.phyloviz.upgma.treeviewer.action.LinearSizeControlAction;
-import prefuse.Visualization;
+import net.phyloviz.upgmanjcore.visualization.actions.EdgeLevelLabelAction;
+import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
+import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
+import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 import prefuse.controls.ControlAdapter;
 import prefuse.data.Node;
 import prefuse.data.Table;
 import prefuse.data.Tree;
 import prefuse.render.AbstractShapeRenderer;
-import prefuse.render.LabelRenderer;
 import prefuse.util.FontLib;
 import prefuse.util.ui.JFastLabel;
 import prefuse.util.ui.JSearchPanel;
 import prefuse.visual.EdgeItem;
 import prefuse.visual.VisualItem;
-
+import net.phyloviz.upgmanjcore.visualization.GView;
+import prefuse.Visualization;
+import prefuse.render.Renderer;
 /**
  *
  * @author Marta Nascimento
  */
-public final class UPGMAViewer extends GView{
+public final class UPGMAViewer extends GView implements Serializable{
     
-    private JComponent _treeview;
-    private UPGMARoot _root;
+    private final JComponent _treeview;
+    private final transient UPGMARoot _root;
     private final String label = "node";
     private final String distance = "distance";
     private final String position = "position";
@@ -87,16 +90,15 @@ public final class UPGMAViewer extends GView{
     
     private JPanel groupPanel;
     private boolean groupPanelStatus;
-    private JList groupList;
-    private int itemFound = -1;
+    private JList groupList;    
     private InfoPanel infoPanel;
     private JPopupMenu popupMenu;
-    private LabelRenderer lr;
     private JSpinner sp;
     private final String _name;
     private Color BACKGROUND, FOREGROUND;
     
     private JSlider horizontalSlider;
+    private final double DISTANCE_FILTER_STEP = 0.001;
    
     public UPGMAViewer(String name, UPGMARoot root){
         _name = name;
@@ -171,6 +173,7 @@ public final class UPGMAViewer extends GView{
                         appendLineToInfoPanel("Chart details:");
                         int total = 0;
                         Profile st = (Profile)item.get("profile");
+                        appendLineToInfoPanel(st.toString());
                         DecimalFormat df = new DecimalFormat("#.##");
                         Collection<Category> groupsList = tview.cp.getCategories(st.getID());
                         if (groupsList != null) {
@@ -178,7 +181,7 @@ public final class UPGMAViewer extends GView{
                             while (groups.hasNext()) {
                                 Category group = groups.next();
                                 double percent = (((double) group.weight() * 100) / st.getFreq());
-                                appendLineToInfoPanel(" +" + group.getName() + " " + df.format(percent) + "%");
+                                appendLineToInfoPanel(" +" + group.getName() + " " + df.format(percent) + "% " + group.weight());
                                 total += group.weight();
                             }
                         }
@@ -188,13 +191,15 @@ public final class UPGMAViewer extends GView{
                         }
                     } 
 
-                    else
-                        appendLineToInfoPanel(((Profile)item.get("profile")).toString());
+                    else{
+                        Profile p = (Profile)item.get("profile");
+                        appendLineToInfoPanel(p.toString());
+                        appendLineToInfoPanel("# isolates = " + p.getFreq());
+                    }
                     
                 } else if (item instanceof EdgeItem){
                     Double d = item.getDouble("distance");
                     appendLineToInfoPanel(d / horizontalSlider.getValue() + "");
-                    appendLineToInfoPanel(item.getBounds().getMinX()+"-"+item.getBounds().getMinX());
                 }
             }
 //            @Override
@@ -304,7 +309,7 @@ public final class UPGMAViewer extends GView{
         sp = new JSpinner();
         sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         sp.setBackground(Color.WHITE);
-        final SpinnerNumberModel model = new SpinnerNumberModel(MAX_DISTANCE, 0, MAX_DISTANCE, 0.001);
+        final SpinnerNumberModel model = new SpinnerNumberModel(MAX_DISTANCE+DISTANCE_FILTER_STEP, 0, MAX_DISTANCE+DISTANCE_FILTER_STEP, DISTANCE_FILTER_STEP);
         model.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {                
@@ -313,7 +318,7 @@ public final class UPGMAViewer extends GView{
             }
         });
         sp.setModel(model);
-        sp.setValue(MAX_DISTANCE);
+        sp.setValue(MAX_DISTANCE + DISTANCE_FILTER_STEP);
         JPanel cutDistanceOption = new JPanel(new GridLayout(2, 1));
         cutDistanceOption.add(emptyJPanel());
         cutDistanceOption.add(sp);
@@ -434,7 +439,7 @@ public final class UPGMAViewer extends GView{
         return tview;
     }
 
-    @Override
+    
     public Visualization getVisualization() {
         return tview.getVisualization();
     }
@@ -503,7 +508,7 @@ public final class UPGMAViewer extends GView{
         infoPanel.close();
     }
 
-    @Override
+    
     public InfoPanel getInfoPanel() {
         return infoPanel;
     }
@@ -532,6 +537,16 @@ public final class UPGMAViewer extends GView{
     
     public void setCategoryProvider(CategoryProvider cp) {
         tview.setCategoryProvider(cp);
+    }
+
+    
+    public Renderer getNodeRenderer() {
+        return tview.getNodeRenderer();
+    }
+
+    
+    public Renderer getEdgeRenderer() {
+        return tview.getEdgeRenderer();
     }
     
 }

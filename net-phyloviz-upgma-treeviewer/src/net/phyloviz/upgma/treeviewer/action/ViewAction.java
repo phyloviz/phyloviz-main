@@ -38,7 +38,6 @@ import net.phyloviz.upgma.treeviewer.*;
 import java.beans.PropertyChangeEvent;
 import javax.swing.SwingUtilities;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.project.ProjectItem;
 import net.phyloviz.upgma.*;
 import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Node;

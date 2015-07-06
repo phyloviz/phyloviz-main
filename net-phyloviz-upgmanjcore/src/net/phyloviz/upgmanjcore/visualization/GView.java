@@ -1,3 +1,5 @@
+package net.phyloviz.upgmanjcore.visualization;
+
 /*-
  * Copyright (c) 2011, PHYLOViZ Team <phyloviz@gmail.com>
  * All rights reserved.
@@ -33,43 +35,39 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.upgma.treeviewer.action;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import javax.swing.AbstractAction;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenuItem;
-import net.phyloviz.upgma.treeviewer.GView;
 
-public class LinearSizeControlAction extends AbstractAction {
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import prefuse.Visualization;
 
-	private GView gv;
 
-	public LinearSizeControlAction(GView gv) {
-		this.gv = gv;
-	}
+public abstract class GView extends JPanel {
 
-	public JMenuItem getMenuItem() {
+	public abstract JComponent getDisplay();
+        
+        public abstract Visualization getVisualization();
+        
+	public abstract boolean getLinearSize();
 
-		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Linear Nodes");
-		mi.setToolTipText("Linear size for nodes");
-		mi.setMnemonic(KeyEvent.VK_L);
-		mi.setSelected(false);
-		mi.addActionListener(this);
-		return mi;
-	}
+	public abstract void setLinearSize(boolean status);
+	
+	public abstract void setLevelLabel(boolean status);
+    
+	public abstract boolean showLabel();
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
+	public abstract void setShowLabel(boolean status);
 
-		if (gv == null) {
-			((JCheckBoxMenuItem) e.getSource()).setSelected(false);
-			return;
-		}
+	public abstract void setHighQuality(boolean status);
 
-		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-		gv.setLinearSize(status);
-	}
+	public abstract void showGroupPanel(boolean status);
+
+	public abstract void showInfoPanel();
+
+	public abstract void closeInfoPanel();
+        
+//        public abstract Renderer getNodeRenderer();
+//        public abstract Renderer getEdgeRenderer();
+
 
 }
