@@ -117,6 +117,7 @@ public final class UPGMAViewer extends GView implements Serializable{
         Table nodes = t.getNodeTable();
         Table edges = t.getEdgeTable();
         edges.addColumn(distance, double.class);
+        nodes.addColumn("isRuler", boolean.class);
         nodes.addColumn(label, String.class);
         nodes.addColumn(profile, Profile.class);
         nodes.addColumn(p_id, String.class);
@@ -137,6 +138,10 @@ public final class UPGMAViewer extends GView implements Serializable{
         createTree(t, n, _root.getNodeRight());
 
         setChildrenSize(n);
+        Node rulerNodeLeft = t.addChild(n);
+        rulerNodeLeft.setBoolean("isRuler", true);
+        Node rulerNodeRigth = t.addChild(rulerNodeLeft);
+        rulerNodeRigth.setBoolean("isRuler", true);
         
         // create a new treemap
         tview = new TreeView(t, label);

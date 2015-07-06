@@ -5,8 +5,10 @@
         <group>
             <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/UPGMAViewer.java</file>
             <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/TreeView.java</file>
-            <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/render/DistanceFilterEdgeRenderer.java</file>
-            <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/GTPanel.java</file>
+            <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/render/NodeLinkLayout.java</file>
+            <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/render/OrthogonalEdgeRenderer.java</file>
+            <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/render/LabeledEdgeRenderer.java</file>
+            <file>file:/C:/Users/Marta%20Nascimento/Documents/8ºSemestre-1415v/PFC/PHYLOViZ/phyloviz-main/net-phyloviz-upgma-treeviewer/src/net/phyloviz/upgma/treeviewer/render/NodeRenderer.java</file>
         </group>
     </open-files>
 </project-private>

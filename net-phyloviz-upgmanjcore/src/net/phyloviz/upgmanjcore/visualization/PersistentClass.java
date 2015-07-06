@@ -5,12 +5,16 @@
  */
 package net.phyloviz.upgmanjcore.visualization;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Marta Nascimento
  */
-public interface IGTPanel {
+public class PersistentClass implements Serializable{
     
-    public GView getGView();
-    public PersistentClass getPersistentClass();
+    public String nodeRenderer;
+    public String edgeRenderer;
+    
+    
 }

@@ -44,6 +44,7 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
     private int SCALE_Y = 40;
     private double maxDepth;
     private int orientation;
+    private double MAX_Y;
 
     public NodeLinkLayout(String group, int orientation, double dspace, double bspace, double tspace) {
         super(group, orientation, dspace, bspace, tspace);
@@ -73,7 +74,19 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
 
         maxDepth = root.getDouble("distance") * SCALE_X;
 
+        NodeItem n = (NodeItem) root.getFirstChild();
+        n = (NodeItem) n.getNextSibling();
+        NodeItem r = (NodeItem) n.getNextSibling();
+        NodeItem r2 = (NodeItem) r.getFirstChild();
+        setDepth(r, root,  root.getBounds().getMinX());
+        setDepth(r2, root,  maxDepth);
+        
         secondWalk(root, null, false);
+        
+        setBreadth(r, root, MAX_Y +  (SCALE_Y * 2));
+        setBreadth(r2, root, MAX_Y + (SCALE_Y * 2));
+        
+        
     }
 
     private double secondWalk(NodeItem n, NodeItem p, boolean up) {
@@ -84,6 +97,8 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
         if (left.getChildCount() == 0) { // is Leaf
             setDepth(left, n, maxDepth);
             int id = left.getInt("idx");
+            if(MAX_Y < id * SCALE_Y)
+                MAX_Y = id * SCALE_Y;
             setBreadth(left, p, id * SCALE_Y);
         } else {
             secondWalk(left, n, true);
@@ -92,6 +107,8 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
         if (right.getChildCount() == 0) { //is Leaf
             setDepth(right, n, maxDepth);
             int id = right.getInt("idx");
+            if(MAX_Y < id * SCALE_Y)
+                MAX_Y = id * SCALE_Y;
             setBreadth(right, p, id * SCALE_Y);
         } else {
             secondWalk(right, n, false);
@@ -104,6 +121,8 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
 
         setDepth(n, p, distance);
         double b = (left.getBounds().getMaxY() + right.getBounds().getMinY()) / 2; //(breadthL + breadthR) / 2;
+        if(MAX_Y < b)
+            MAX_Y = b;
         setBreadth(n, p, b);
         return b;
     }

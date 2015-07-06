@@ -98,7 +98,7 @@ public final class TreeView extends Display{
         m_vis.add(tree, t);
 
         m_nodeRenderer = new NodeRenderer(m_label, this);//new LabelRenderer(m_label);
-        m_edgeRenderer = new OrthogonalEdgeRenderer();
+        m_edgeRenderer = new OrthogonalEdgeRenderer(this);
                          //new EdgeRenderer(Constants.EDGE_TYPE_LINE);
 
         rf = new DefaultRendererFactory(m_nodeRenderer);
@@ -278,7 +278,9 @@ public final class TreeView extends Display{
     public int getOrientation() {
         return m_orientation;
     }
-
+   public double getScaleX(){
+        return ((NodeLinkLayout) m_vis.getAction("treeLayout")).getScaleX();
+    }
     void changeDistance(int d) {
         m_vis.cancel("animatePaint");
 
@@ -306,7 +308,7 @@ public final class TreeView extends Display{
         m_vis.cancel("animatePaint");
         
         NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
-        m_edgeRenderer = new DistanceFilterEdgeRenderer(value, rtl.getScaleX(), labeledRender);
+        m_edgeRenderer = new DistanceFilterEdgeRenderer(this, value, rtl.getScaleX(), labeledRender);
                 
         rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
@@ -330,9 +332,9 @@ public final class TreeView extends Display{
         rf = new DefaultRendererFactory(m_nodeRenderer);
     
         if (status) 
-            m_edgeRenderer = new LabeledEdgeRenderer();
+            m_edgeRenderer = new LabeledEdgeRenderer(this);
         else
-            m_edgeRenderer = new OrthogonalEdgeRenderer();
+            m_edgeRenderer = new OrthogonalEdgeRenderer(this);
         
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
         

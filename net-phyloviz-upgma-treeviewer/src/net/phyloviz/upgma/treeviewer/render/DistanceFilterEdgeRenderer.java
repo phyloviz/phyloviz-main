@@ -38,11 +38,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.Line2D;
+import net.phyloviz.upgma.treeviewer.TreeView;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
 import prefuse.visual.EdgeItem;
-import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
 
 public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
@@ -52,8 +51,8 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
     private final int m_scale;
     private final boolean m_labeled;
 
-    public DistanceFilterEdgeRenderer(double distance, int scale, boolean labeled) {
-        super();
+    public DistanceFilterEdgeRenderer(TreeView tv, double distance, int scale, boolean labeled) {
+        super(tv);
         m_key = "viz";
         m_distance = distance * scale;
         m_scale = scale;

@@ -8,6 +8,7 @@ package net.phyloviz.project.action;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Properties;
@@ -23,12 +24,14 @@ import net.phyloviz.core.util.PopulationFactory;
 import net.phyloviz.core.util.TypingFactory;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
+import net.phyloviz.upgmanjcore.visualization.*;
 import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 import org.openide.util.actions.NodeAction;
+import org.openide.windows.TopComponent;
 
 public final class SaveAsProjectAction extends NodeAction {
 
@@ -99,26 +102,27 @@ public final class SaveAsProjectAction extends NodeAction {
 
                         if (itemFactory.contains(item.getMainName())) {
 
-//                            Class klass = item.getClass();
-//
-//                            for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
-//
-//                                if (tc.getLookup().lookup(klass) == item) {
-//
-//                                    GView view = ((IGTPanel) tc).getGView();
-//                                    try {
-//                                        FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Marta Nascimento\\Documents\\employee.ser");
-//                                        ObjectOutputStream out = new ObjectOutputStream(fileOut);
-//                                        out.writeObject(view);
-//                                        out.close();
-//                                        fileOut.close();
-//                                        System.out.printf("Serialized data is saved in /tmp/employee.ser");
-//                                    } catch (IOException i) {
-//                                        Exceptions.printStackTrace(i);
-//                                    }
-//
-//                                }
-//                            }
+                            Class klass = item.getClass();
+
+                            for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
+
+                                if (tc.getLookup().lookup(klass) == item) {
+
+                                    try{
+                                        IGTPanel view = (IGTPanel) tc;
+                                        PersistentClass pc = view.getPersistentClass();
+                                        FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Marta Nascimento\\Documents\\employee.ser");
+                                        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                                        out.writeObject(pc);
+                                        out.close();
+                                        fileOut.close();
+                                        System.out.printf("Serialized data is saved in /tmp/employee.ser");
+                                    } catch (IOException i) {
+                                        Exceptions.printStackTrace(i);
+                                    }
+
+                                }
+                            }
 
                             algorithmsFactory.append(itemFactory).append(",");
 

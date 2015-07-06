@@ -38,6 +38,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import net.phyloviz.upgma.treeviewer.TreeView;
 import prefuse.util.FontLib;
 import prefuse.visual.EdgeItem;
 import prefuse.visual.NodeItem;
@@ -47,14 +48,14 @@ public class LabeledEdgeRenderer extends OrthogonalEdgeRenderer {
 
     private String m_key;
 
-    public LabeledEdgeRenderer() {
-        super();
+    public LabeledEdgeRenderer(TreeView tv) {
+        super(tv);
         m_key = "viz";
 
     }
 
-    public LabeledEdgeRenderer(String key) {
-        super();
+    public LabeledEdgeRenderer(String key, TreeView tv) {
+        super(tv);
         m_key = key;
     }
 

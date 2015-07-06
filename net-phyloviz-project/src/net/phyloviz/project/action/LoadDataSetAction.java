@@ -9,7 +9,9 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.Collection;
 import java.util.Properties;
 import javax.swing.AbstractAction;
@@ -24,6 +26,7 @@ import net.phyloviz.core.util.PopulationFactory;
 import net.phyloviz.core.util.TypingFactory;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
+import net.phyloviz.upgmanjcore.visualization.PersistentClass;
 import org.netbeans.api.project.Project;
 import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
@@ -58,20 +61,20 @@ public final class LoadDataSetAction extends AbstractAction {
                 return;
             }
 
-            String  typingFactory = prop.getProperty("typing-factory"),
+            String typingFactory = prop.getProperty("typing-factory"),
                     typingFile = prop.getProperty("typing-file"),
                     populationFactory = prop.getProperty("population-factory"),
                     populationFile = prop.getProperty("population-file"),
                     populationFK = prop.getProperty("population-foreign-key"),
                     algorithmOutput = prop.getProperty("algorithm-output"),
                     algorithmOutputOutputFactory = prop.getProperty("algorithm-output-factory");
-           
-            String[] algoOutput = algorithmOutput != null ? 
-                    algorithmOutput.split(",") :
-                    new String[]{""};
-            String[] algoOutputFactory = algorithmOutputOutputFactory != null ? 
-                    algorithmOutputOutputFactory.split(",") :  
-                    new String[]{""};
+
+            String[] algoOutput = algorithmOutput != null
+                    ? algorithmOutput.split(",")
+                    : new String[]{""};
+            String[] algoOutputFactory = algorithmOutputOutputFactory != null
+                    ? algorithmOutputOutputFactory.split(",")
+                    : new String[]{""};
 
             if (dataSetName != null && (!dataSetName.equals(""))) {
 
@@ -96,8 +99,8 @@ public final class LoadDataSetAction extends AbstractAction {
                 }
 
                 Collection<? extends ProjectItemFactory> pifactory = (Lookup.getDefault().lookupAll(ProjectItemFactory.class));
-                for(int i = 0; i < algoOutput.length; i++){
-                    
+                for (int i = 0; i < algoOutput.length; i++) {
+
                     for (ProjectItemFactory pif : pifactory) {
                         String pifName = pif.getClass().getName();
                         if (pifName.equals(algoOutputFactory[i])) {
@@ -109,6 +112,20 @@ public final class LoadDataSetAction extends AbstractAction {
                 }
 
                 ds.add(td);
+
+                PersistentClass pc = null;
+                try {
+                    FileInputStream fileIn = new FileInputStream("C:\\Users\\Marta Nascimento\\Documents\\employee.ser");
+                    ObjectInputStream in = new ObjectInputStream(fileIn);
+                    pc = (PersistentClass) in.readObject();
+                    in.close();
+                    fileIn.close();
+                } catch (IOException i) {
+                    Exceptions.printStackTrace(i);
+                } catch (ClassNotFoundException c) {
+                    System.out.println("PersistentClass class not found");
+                    Exceptions.printStackTrace(c);
+                }
 
                 Lookup.getDefault().lookup(DataSetTracker.class).add(ds);
                 StatusDisplayer.getDefault().setStatusText("Dataset loaded.");

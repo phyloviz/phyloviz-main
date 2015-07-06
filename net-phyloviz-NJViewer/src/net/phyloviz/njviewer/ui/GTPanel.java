@@ -11,6 +11,7 @@ import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.njviewer.render.ChartRenderer;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import net.phyloviz.upgmanjcore.visualization.IGTPanel;
+import net.phyloviz.upgmanjcore.visualization.PersistentClass;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -111,5 +112,14 @@ public class GTPanel extends TopComponent  implements IGTPanel{
     @Override
     public GView getGView() {
         return gv;
+    }
+        @Override
+    public PersistentClass getPersistentClass() {
+        PersistentClass pc = new PersistentClass();
+        
+        //pc.nodeRenderer = gv.getNodeRenderer();
+        //pc.edgeRenderer = gv.getEdgeRenderer();
+        
+        return pc;
     }
 }

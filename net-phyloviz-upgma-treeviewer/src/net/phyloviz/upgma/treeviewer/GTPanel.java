@@ -51,6 +51,7 @@ import org.openide.util.Lookup.Result;
 import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import net.phyloviz.upgmanjcore.visualization.IGTPanel;
+import net.phyloviz.upgmanjcore.visualization.PersistentClass;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
@@ -154,6 +155,16 @@ public class GTPanel extends TopComponent implements IGTPanel{
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public PersistentClass getPersistentClass() {
+        PersistentClass pc = new PersistentClass();
+        
+        pc.nodeRenderer = uv.getNodeRenderer().getClass().getCanonicalName();
+        pc.edgeRenderer = uv.getEdgeRenderer().getClass().getCanonicalName();
+        
+        return pc;
+    }
 
    
 }
