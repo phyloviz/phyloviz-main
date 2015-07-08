@@ -45,9 +45,11 @@ import net.phyloviz.upgmanjcore.visualization.GView;
 public class LinearSizeControlAction extends AbstractAction {
 
 	private GView gv;
+        private boolean selected;
 
-	public LinearSizeControlAction(GView gv) {
+	public LinearSizeControlAction(GView gv, boolean selected) {
 		this.gv = gv;
+                this.selected = selected;
 	}
 
 	public JMenuItem getMenuItem() {
@@ -55,7 +57,7 @@ public class LinearSizeControlAction extends AbstractAction {
 		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Linear Nodes");
 		mi.setToolTipText("Linear size for nodes");
 		mi.setMnemonic(KeyEvent.VK_L);
-		mi.setSelected(false);
+		mi.setSelected(selected);
 		mi.addActionListener(this);
 		return mi;
 	}

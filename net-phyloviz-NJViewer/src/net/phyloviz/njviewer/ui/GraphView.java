@@ -97,13 +97,13 @@ public class GraphView extends GView {
 
     private static final long serialVersionUID = 1L;
     private static final String SRC = Graph.DEFAULT_SOURCE_KEY, TRG = Graph.DEFAULT_TARGET_KEY;
-    
+
     private float distance;
     private final JSpinner sp;
     private final Box bottomBox;
     private final Visualization view;
     private final JProgressBar pbar;
-    
+
     private boolean hasDistanceLabel = false, isRound = false;
     private String name;
     private Table nodeTable, edgeTable;
@@ -140,7 +140,7 @@ public class GraphView extends GView {
         ColorAction fill = new NodeColorAction("graph.nodes");
         ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
         ColorAction edge = new EdgeColorAction("graph.edges");
-        
+
         ActionList draw = new ActionList();
         draw.add(fill);
         draw.add(text);
@@ -208,13 +208,15 @@ public class GraphView extends GView {
         groupList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting()) return;
+                if (e.getValueIsAdjusting()) {
+                    return;
+                }
                 int[] selectedIndices = groupList.getSelectedIndices();
                 view.setVisible("graph", null, false);
                 for (int i = 0; i < selectedIndices.length; i++) {
                     Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
                     view.setVisible("graph",
-                        (Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + distance), true);
+                            (Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + distance), true);
                 }
                 view.run("draw");
 
@@ -238,7 +240,7 @@ public class GraphView extends GView {
         top.setBackground(Color.WHITE);
 
         JPanel bs = new JPanel(new BorderLayout());
-        bs.setBackground(Color.WHITE);        
+        bs.setBackground(Color.WHITE);
 
         bs.add(Box.createVerticalStrut(3), BorderLayout.CENTER);
 
@@ -286,10 +288,10 @@ public class GraphView extends GView {
         popupMenu.add(new InfoControlAction(this).getMenuItem());
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         popupMenu.add(new RoundDistanceAction(this).getMenuItem());
-        popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
+        popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
-                
+
         JButton optionsButton = new JButton("Options");
         optionsButton.setMargin(new Insets(1, 1, 1, 1));
         optionsButton.addMouseListener(new MouseAdapter() {
@@ -303,13 +305,13 @@ public class GraphView extends GView {
         exportButton.setIcon(new ImageIcon(GraphView.class.getResource("export.png")));
         exportButton.setMargin(new Insets(0, 0, 0, 0));
         exportButton.addActionListener(new ExportAction(this));
-        
+
         JLabel ll = new JLabel("Distances: ");
         ll.setBackground(Color.WHITE);
         sp = new JSpinner();
         sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         sp.setBackground(Color.WHITE);
-        
+
         Box verticalPanel = new Box(BoxLayout.Y_AXIS);
         verticalPanel.add(Box.createVerticalStrut(3));
         verticalPanel.add(ll);
@@ -327,7 +329,7 @@ public class GraphView extends GView {
         bottomBox.add(Box.createHorizontalStrut(1));
         bottomBox.add(pauseButton);
         bottomBox.add(Box.createHorizontalStrut(5));
-        bottomBox.add(animCtl);         
+        bottomBox.add(animCtl);
         bottomBox.add(Box.createHorizontalGlue());
         bottomBox.add(pbar);
         bottomBox.add(Box.createHorizontalStrut(3));
@@ -337,7 +339,8 @@ public class GraphView extends GView {
         add(bottomBox, BorderLayout.SOUTH);
         add(verticalPanel, BorderLayout.EAST);
     }
-    public void loadGraph(final NJRoot root, final AbstractDistance ad) {
+
+    public void loadGraph(final NJRoot root, final AbstractDistance ad, final float distanceFilter) {
         final HashMap<Integer, Integer> uid2rowid = new HashMap<>();
 
         // Create and register the graph.
@@ -361,7 +364,7 @@ public class GraphView extends GView {
                 int nedges = root.size();
 
                 NodeType st = null;
-                Iterator<EdgeDistanceWrapper> eIter = root.getList().iterator(); 
+                Iterator<EdgeDistanceWrapper> eIter = root.getList().iterator();
                 HashMap<Integer, LinkedList<EdgeDistanceWrapper>> adjList = new HashMap<>();
                 while (eIter.hasNext()) {
                     EdgeDistanceWrapper edw = eIter.next();
@@ -398,7 +401,9 @@ public class GraphView extends GView {
                 synchronized (view) {
                     int uRowNb = nodeTable.addRow();
                     uid2rowid.put(st.getUID(), uRowNb);
-                    nodeTable.setString(uRowNb, "st_id", st.getID());
+                    if (st instanceof NJLeafNode) {
+                        nodeTable.setString(uRowNb, "st_id", st.getID());
+                    }
                     nodeTable.set(uRowNb, "st_ref", st);
                     nodeTable.setInt(uRowNb, "w", 0);
                     nodeTable.setInt(uRowNb, "g", 1);
@@ -417,17 +422,26 @@ public class GraphView extends GView {
                     while (eIter.hasNext()) {
                         EdgeDistanceWrapper edw = eIter.next();
                         st = edw.edge.getV();
-                        if (st.getUID() == u) st = edw.edge.getU();
+                        if (st.getUID() == u) {
+                            st = edw.edge.getU();
+                        }
                         // Let us check if this edge and vertex were already added...
-                        if (uid2rowid.containsKey(st.getUID())) {continue;}
-                        if (edw.distance > maxDistance) maxDistance = edw.distance;
-                        if(edw.distance < minDistance) minDistance = edw.distance;
+                        if (uid2rowid.containsKey(st.getUID())) {
+                            continue;
+                        }
+                        if (edw.distance > maxDistance) {
+                            maxDistance = edw.distance;
+                        }
+                        if (edw.distance < minDistance) {
+                            minDistance = edw.distance;
+                        }
                         q.add(st.getUID());
                         synchronized (view) {
                             int vRowNb = nodeTable.addRow();
                             uid2rowid.put(st.getUID(), vRowNb);
-                            if(st instanceof NJLeafNode)
+                            if (st instanceof NJLeafNode) {
                                 nodeTable.setString(vRowNb, "st_id", st.getID());
+                            }
                             nodeTable.set(vRowNb, "st_ref", st);
                             nodeTable.setInt(vRowNb, "w", 0);
                             nodeTable.setInt(vRowNb, "g", 1);
@@ -459,60 +473,54 @@ public class GraphView extends GView {
                         setProgress(perc);
                     }
                     vu.setFixed(false);
-            }
-            maxDistance += 0.001;
-            distance = maxDistance;
-            groupList.setListData(new Group[]{g});
-            sp.setValue(maxDistance);
-            
-            final SpinnerNumberModel model = new SpinnerNumberModel(maxDistance, minDistance, maxDistance, maxDistance / 20);
-            model.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    view.setVisible("graph", null, false);
-                    distance = model.getNumber().floatValue();
-                    int[] selectedIndices = groupList.getSelectedIndices();
-                    for (int i = 0; i < selectedIndices.length; i++) {
-                        Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
-                        view.setVisible("graph", (Predicate) ExpressionParser.parse("g=" + g.getID() + "and distance <= " + distance), true);
-                    }
-                    view.run("draw");
                 }
-            });
-            sp.setModel(model);
-            sp.setValue(maxDistance);
-            
-            // Search stuff.
-            TupleSet search = new PrefixSearchTupleSet();
-            search.addTupleSetListener(new TupleSetListener() {
-                @Override
-                public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
-                    view.run("static");
-                    searchMatch = true;
+                maxDistance += 0.001;
+                distance = distanceFilter == -1 ? maxDistance : distanceFilter;
+                groupList.setListData(new Group[]{g});
+                sp.setValue(maxDistance);
 
-                    itemFound = -1;
-                    if (t.getTupleCount() >= 1) {
-                        String ss = searchPanel.getQuery();
-                        CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
-                        if (tableView.getRowCount() > 0) {
-                            int gid = tableView.getInt(0, "g");
-                            itemFound = gid;
+                final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, maxDistance / 20);
+                model.addChangeListener(new ChangeListener() {
+                    @Override
+                    public void stateChanged(ChangeEvent e) {
+                        updateDistanceFilter(model.getNumber().floatValue());
+                    }
+                });
+                sp.setModel(model);
+                sp.setValue(distance);
+                updateDistanceFilter(distance);
+
+                // Search stuff.
+                TupleSet search = new PrefixSearchTupleSet();
+                search.addTupleSetListener(new TupleSetListener() {
+                    @Override
+                    public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
+                        view.run("static");
+                        searchMatch = true;
+
+                        itemFound = -1;
+                        if (t.getTupleCount() >= 1) {
+                            String ss = searchPanel.getQuery();
+                            CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
+                            if (tableView.getRowCount() > 0) {
+                                int gid = tableView.getInt(0, "g");
+                                itemFound = gid;
+                            }
                         }
+                        groupList.repaint();
                     }
-                    groupList.repaint();
-                }
-            });
-            view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
-            searchPanel = new NodeSearchPanel(view);
-            
-            searchPanel.setShowResultCount(true);
-            bottomBox.remove(11);
-            bottomBox.add(searchPanel, 11);
-            bottomBox.validate();
+                });
+                view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
+                searchPanel = new NodeSearchPanel(view);
 
-            groupList.setSelectedIndex(0);
-            groupList.repaint();
-            return null;
+                searchPanel.setShowResultCount(true);
+                bottomBox.remove(11);
+                bottomBox.add(searchPanel, 11);
+                bottomBox.validate();
+
+                groupList.setSelectedIndex(0);
+                groupList.repaint();
+                return null;
             }
         };
         job.addPropertyChangeListener(new PropertyChangeListener() {
@@ -526,6 +534,18 @@ public class GraphView extends GView {
         });
         job.execute();
     }
+
+    private void updateDistanceFilter(float value) {
+        view.setVisible("graph", null, false);
+        distance = value;
+        int[] selectedIndices = groupList.getSelectedIndices();
+        for (int i = 0; i < selectedIndices.length; i++) {
+            Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
+            view.setVisible("graph", (Predicate) ExpressionParser.parse("g=" + g.getID() + "and distance <= " + distance), true);
+        }
+        view.run("draw");
+    }
+
     public void startAnimation() {
         view.run("draw");
         view.run("layout");
@@ -534,29 +554,52 @@ public class GraphView extends GView {
         groupList.repaint();
         running = true;
     }
+
     public void restartAnimation() {
-        if (running) return;
+        if (running) {
+            return;
+        }
         view.run("layout");
         view.repaint();
         running = true;
         updateUI();
     }
+
     public void stopAnimation() {
-        if (!running) return;
+        if (!running) {
+            return;
+        }
         view.cancel("layout");
         view.repaint();
         running = false;
         updateUI();
     }
+
     @Override
     public void showInfoPanel() {
-        if (infoPanel == null) infoPanel = new InfoPanel(name + " Info");
-        if (!infoPanel.isOpened()) infoPanel.open();
+        if (infoPanel == null) {
+            infoPanel = new InfoPanel(name + " Info");
+        }
+        if (!infoPanel.isOpened()) {
+            infoPanel.open();
+        }
         infoPanel.requestActive();
     }
-    public InfoPanel getInfoPanel() { return infoPanel; }
-    @Override public void closeInfoPanel() { infoPanel.close(); }
-    @Override public boolean getLinearSize() { return linear; }
+
+    public InfoPanel getInfoPanel() {
+        return infoPanel;
+    }
+
+    @Override
+    public void closeInfoPanel() {
+        infoPanel.close();
+    }
+
+    @Override
+    public boolean getLinearSize() {
+        return linear;
+    }
+
     @Override
     public void setLinearSize(boolean status) {
         if (linear != status) {
@@ -564,20 +607,34 @@ public class GraphView extends GView {
             view.run("draw");
         }
     }
+
     public void setLevelLabel(boolean status) {
         hasDistanceLabel = status;
         setRenderer();
     }
+
     public void setEdgePercentageLabel(boolean status) {
-        if (status) rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("edgep"));
-        else rf.setDefaultEdgeRenderer(new EdgeRenderer());
+        if (status) {
+            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("edgep"));
+        } else {
+            rf.setDefaultEdgeRenderer(new EdgeRenderer());
+        }
     }
+
     public void setRoundDistance(boolean status) {
         isRound = status;
         setRenderer();
     }
-    @Override public void setHighQuality(boolean status) { display.setHighQuality(status);}
-    public void setCategoryProvider(CategoryProvider cp) {this.cp = cp;}
+
+    @Override
+    public void setHighQuality(boolean status) {
+        display.setHighQuality(status);
+    }
+
+    public void setCategoryProvider(CategoryProvider cp) {
+        this.cp = cp;
+    }
+
     public void appendTextToInfoPanel(String text) {
         if (infoPanel != null) {
             infoPanel.append(text);
@@ -585,26 +642,55 @@ public class GraphView extends GView {
             infoPanel.requestFocus();
         }
     }
-    @Override public JComponent getDisplay() { return display; }
-    @Override public Visualization getVisualization() { return view; }
-    public long getSpeed() { return fdl.getMaxTimeStep(); }
-    public void setSpeed(long step) { fdl.setMaxTimeStep(step); }
+
+    @Override
+    public JComponent getDisplay() {
+        return display;
+    }
+
+    @Override
+    public Visualization getVisualization() {
+        return view;
+    }
+
+    public long getSpeed() {
+        return fdl.getMaxTimeStep();
+    }
+
+    public void setSpeed(long step) {
+        fdl.setMaxTimeStep(step);
+    }
+
     public void resetDefaultRenderer() {
         view.cancel("layout");
         view.cancel("static");
         rf.setDefaultRenderer(lr);
-        if (running) view.run("layout");
-        else view.run("static");
+        if (running) {
+            view.run("layout");
+        } else {
+            view.run("static");
+        }
     }
+
     public void setDefaultRenderer(AbstractShapeRenderer r) {
         view.cancel("layout");
         view.cancel("static");
         rf.setDefaultRenderer(r);
-        if (running) view.run("layout");
-        else view.run("static");
+        if (running) {
+            view.run("layout");
+        } else {
+            view.run("static");
+        }
     }
-    public ForceDirectedLayout getForceLayout() { return fdl; }
-    public JForcePanel getForcePanel() { return new JForcePanel(fdl.getForceSimulator());}
+
+    public ForceDirectedLayout getForceLayout() {
+        return fdl;
+    }
+
+    public JForcePanel getForcePanel() {
+        return new JForcePanel(fdl.getForceSimulator());
+    }
+
     public ArrayList<ForcePair> getForces() {
         ForceSimulator fs = fdl.getForceSimulator();
         Force[] farray = fs.getForces();
@@ -617,7 +703,12 @@ public class GraphView extends GView {
         }
         return array;
     }
-    @Override public boolean showLabel() { return label;}
+
+    @Override
+    public boolean showLabel() {
+        return label;
+    }
+
     @Override
     public void setShowLabel(boolean status) {
         if (label != status) {
@@ -628,30 +719,50 @@ public class GraphView extends GView {
 
     @Override
     public void showGroupPanel(boolean status) {
-        
+
     }
+
+    @Override
+    public float getDistanceFilterValue() {
+        return distance;
+    }
+
+    @Override
+    public void setDistanceFilterValue(float value) {
+        updateDistanceFilter(value);
+    }
+
     // Private classes.
+
     private class NodeColorAction extends ColorAction {
+
         public NodeColorAction(String group) {
             super(group, VisualItem.FILLCOLOR);
         }
+
         @Override
         public int getColor(VisualItem item) {
             Tuple itemTuple = item.getSourceTuple();
             refreshNodePosition(item);
-            if(itemTuple.get("st_ref") instanceof NJLeafNode){
+            if (itemTuple.get("st_ref") instanceof NJLeafNode) {
                 if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
                     if (itemTuple.getString("st_id").equals(searchPanel.getQuery())) {
-                        if (searchMatch) display.panToAbs(new Point2D.Double(item.getX(), item.getY()));
+                        if (searchMatch) {
+                            display.panToAbs(new Point2D.Double(item.getX(), item.getY()));
+                        }
                         searchMatch = false;
                         return ColorLib.rgb(255, 0, 0);
                     }
                     return ColorLib.rgb(200, 100, 100);
-                } else if (item.isFixed()) { return ColorLib.rgb(255, 100, 100);
-                } else if (item.isHighlighted()) { return ColorLib.rgb(255, 200, 125);
-                } else 
-                    if (((Node) item).getDegree() < 3) return ColorLib.rgb(200, 200, 255);
-                    else return ColorLib.rgb(200, 200, 55);
+                } else if (item.isFixed()) {
+                    return ColorLib.rgb(255, 100, 100);
+                } else if (item.isHighlighted()) {
+                    return ColorLib.rgb(255, 200, 125);
+                } else if (((Node) item).getDegree() < 3) {
+                    return ColorLib.rgb(200, 200, 255);
+                } else {
+                    return ColorLib.rgb(200, 200, 55);
+                }
             }
             return ColorLib.color(Color.WHITE);
         }
@@ -663,18 +774,24 @@ public class GraphView extends GView {
             nt.y = item.getY();
         }
     }
+
     private class EdgeColorAction extends ColorAction {
+
         public EdgeColorAction(String group) {
             super(group, VisualItem.STROKECOLOR);
         }
+
         @Override
         public int getColor(VisualItem item) {
             float c = item.getSourceTuple().getFloat("distance");
             return c >= 0f ? ColorLib.rgb(0, 0, 0) : ColorLib.rgb(255, 0, 0);
         }
     }
+
     private class NodeSearchPanel extends JSearchPanel {
+
         private static final long serialVersionUID = 1L;
+
         NodeSearchPanel(Visualization view) {
             super(view, "graph.nodes", Visualization.SEARCH_ITEMS, "st_id", true, true);
             setShowResultCount(false);
@@ -685,14 +802,16 @@ public class GraphView extends GView {
             requestFocus();
         }
     }
+
     private class ItemInfoControl extends ControlAdapter {
+
         @Override
         public void itemClicked(VisualItem item, MouseEvent e) {
             showInfoPanel();
             if (item instanceof EdgeItem) {
                 Edge edge = (Edge) ((EdgeItem) item).getSourceTuple().get("edge_ref");
                 appendTextToInfoPanel(
-                "From " + edge.getU().getID() + " --> " + edge.getV().getID() + " (distance=" + item.getSourceTuple().getString("distance") + ")\n\n");
+                        "From " + edge.getU().getID() + " --> " + edge.getV().getID() + " (distance=" + item.getSourceTuple().getString("distance") + ")\n\n");
             }
             if (item instanceof NodeItem) {
                 Profile st = (Profile) ((NodeItem) item).getSourceTuple().get("st_ref");
@@ -718,31 +837,61 @@ public class GraphView extends GView {
                         appendTextToInfoPanel(" + 'others' " + df.format(percent) + "%\n");
                     }
                 }
-            appendTextToInfoPanel("\n");
+                appendTextToInfoPanel("\n");
             }
         }
     }
-    private void setRenderer(){
-        if (isRound && hasDistanceLabel) rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance", true));
-        else if(hasDistanceLabel)rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
-        else rf.setDefaultEdgeRenderer(new EdgeRenderer());   
+
+    private void setRenderer() {
+        if (isRound && hasDistanceLabel) {
+            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance", true));
+        } else if (hasDistanceLabel) {
+            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
+        } else {
+            rf.setDefaultEdgeRenderer(new EdgeRenderer());
+        }
     }
+
     private class Group {
+
         private int id;
         private final LinkedList<Integer> list;
+
         Group() {
             this.id = 0;
             list = new LinkedList<>();
         }
-        public void setID(int id) {this.id = id;}
-        public int getID() {return id;}
-        public List<Integer> getItems() {return list;}
-        public void add(int u) {list.add(u);}
-        public int size() {return list.size();}
-        @Override public String toString() {return Integer.toString(id);}
+
+        public void setID(int id) {
+            this.id = id;
+        }
+
+        public int getID() {
+            return id;
+        }
+
+        public List<Integer> getItems() {
+            return list;
+        }
+
+        public void add(int u) {
+            list.add(u);
+        }
+
+        public int size() {
+            return list.size();
+        }
+
+        @Override
+        public String toString() {
+            return Integer.toString(id);
+        }
     }
+
     private class GroupCellRenderer extends JLabel implements ListCellRenderer {
+
         private static final long serialVersionUID = 1L;
+
         @Override
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             String s = value.toString();

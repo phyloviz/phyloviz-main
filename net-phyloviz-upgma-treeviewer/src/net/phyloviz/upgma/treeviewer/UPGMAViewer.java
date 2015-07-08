@@ -5,6 +5,7 @@
  */
 package net.phyloviz.upgma.treeviewer;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
 import net.phyloviz.upgmanjcore.visualization.InfoPanel;
 import net.phyloviz.upgmanjcore.visualization.TreeSlider;
 import java.awt.BorderLayout;
@@ -64,13 +65,14 @@ import prefuse.visual.VisualItem;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import prefuse.Visualization;
 import prefuse.render.Renderer;
+
 /**
  *
  * @author Marta Nascimento
  */
-public final class UPGMAViewer extends GView{
-    
-    private final JComponent _treeview;
+public final class UPGMAViewer extends GView {
+
+    private JComponent _treeview;
     private final UPGMARoot _root;
     private final String label = "node";
     private final String distance = "distance";
@@ -80,75 +82,37 @@ public final class UPGMAViewer extends GView{
     private final String profile = "profile";
     private final String p_id = "p_id";
     private final String show = "hide";
-    
-    private double MAX_DISTANCE; 
-    
+
+    private float MAX_DISTANCE;
+
     private TreeView tview;
     private boolean linear = false;
     private boolean labelBool = true;
-    
+
     private JPanel groupPanel;
     private boolean groupPanelStatus;
-    private JList groupList;    
+    private JList groupList;
     private InfoPanel infoPanel;
     private JPopupMenu popupMenu;
     private JSpinner sp;
     private final String _name;
     private Color BACKGROUND, FOREGROUND;
-    
+
     private JSlider horizontalSlider;
     private final double DISTANCE_FILTER_STEP = 0.001;
-   
-    public UPGMAViewer(String name, UPGMARoot root){
+
+    private float distanceFilterValue = 0;
+
+    public UPGMAViewer(String name, UPGMARoot root) {
+
         _name = name;
         _root = root;
-        _treeview = generateTreeViewComponent();
-
-    }
-  
-    public JComponent generateTreeViewComponent() {
-        
-        BACKGROUND = Color.WHITE;
-        FOREGROUND = Color.BLACK;
-
-        
-        Tree t = new Tree();
-        Table nodes = t.getNodeTable();
-        Table edges = t.getEdgeTable();
-        edges.addColumn(distance, double.class);
-        nodes.addColumn("isRuler", boolean.class);
-        nodes.addColumn(label, String.class);
-        nodes.addColumn(profile, Profile.class);
-        nodes.addColumn(p_id, String.class);
-        nodes.addColumn(distance, double.class);
-        nodes.addColumn(position, double.class);
-        nodes.addColumn(childrenSize, int.class);
-        nodes.addColumn(idx, int.class);
-        nodes.addColumn(show, boolean.class);
-        
-        
-        
-        Node n = t.addRoot();
-        n.set(label, null);
         MAX_DISTANCE = _root.getDistance();
-        n.setDouble(distance, MAX_DISTANCE);
-        
-        createTree(t, n, _root.getNodeLeft());
-        createTree(t, n, _root.getNodeRight());
 
-        setChildrenSize(n);
-        Node rulerNodeLeft = t.addChild(n);
-        rulerNodeLeft.setBoolean("isRuler", true);
-        Node rulerNodeRigth = t.addChild(rulerNodeLeft);
-        rulerNodeRigth.setBoolean("isRuler", true);
-        
-        // create a new treemap
-        tview = new TreeView(t, label);
-        
-        tview.setBackground(BACKGROUND);
-        tview.setForeground(FOREGROUND);
-        
-        tview.setHighQuality(false);
+        tview = createTreeView();
+    }
+
+    public JComponent generateTreeViewComponent() {
 
         // create a search panel for the tree map
         JSearchPanel search = new JSearchPanel(tview.getVisualization(),
@@ -168,15 +132,15 @@ public final class UPGMAViewer extends GView{
         title.setForeground(FOREGROUND);
 
         tview.addControlListener(new ControlAdapter() {
-            
+
             @Override
             public void itemClicked(VisualItem item, MouseEvent e) {
 
-                if (item.canGetString(label) ) {
-                    if(tview.cp != null){
+                if (item.canGetString(label)) {
+                    if (tview.cp != null) {
                         appendLineToInfoPanel("Chart details:");
                         int total = 0;
-                        Profile st = (Profile)item.get("profile");
+                        Profile st = (Profile) item.get("profile");
                         appendLineToInfoPanel(st.toString());
                         DecimalFormat df = new DecimalFormat("#.##");
                         Collection<Category> groupsList = tview.cp.getCategories(st.getID());
@@ -193,15 +157,13 @@ public final class UPGMAViewer extends GView{
                         if (percent > 0) {
                             appendLineToInfoPanel(" + 'others' " + df.format(percent) + "%");
                         }
-                    } 
-
-                    else{
-                        Profile p = (Profile)item.get("profile");
+                    } else {
+                        Profile p = (Profile) item.get("profile");
                         appendLineToInfoPanel(p.toString());
                         appendLineToInfoPanel("# isolates = " + p.getFreq());
                     }
-                    
-                } else if (item instanceof EdgeItem){
+
+                } else if (item instanceof EdgeItem) {
                     Double d = item.getDouble("distance");
                     appendLineToInfoPanel(d / horizontalSlider.getValue() + "");
                 }
@@ -221,9 +183,6 @@ public final class UPGMAViewer extends GView{
 
         });
 
-        
-        
-        
         groupList = new JList();
         groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         groupList.addListSelectionListener(new ListSelectionListener() {
@@ -241,7 +200,7 @@ public final class UPGMAViewer extends GView{
         groupPanel.setLayout(new BorderLayout());
 
         JScrollPane groupListPanel = new JScrollPane(groupList,
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         groupListPanel.getViewport().setBackground(Color.WHITE);
         groupListPanel.setBackground(Color.WHITE);
         TitledBorder tb = new TitledBorder("Groups");
@@ -290,8 +249,7 @@ public final class UPGMAViewer extends GView{
         //tsh.setValuesLabel();
         tsh.setTickSpacing(50);
         horizontalSlider.setBackground(BACKGROUND);
-       
-        
+
         //Create the vertical slider.
         final TreeSlider tsv = new TreeSlider(JSlider.VERTICAL, 0, 100, 40);
         final JSlider verticalSlider = tsv.getSlider();
@@ -305,29 +263,29 @@ public final class UPGMAViewer extends GView{
         tsv.setValuesLabel();
         tsv.setTickSpacing(10);
         verticalSlider.setBackground(BACKGROUND);
-        
+
         JPanel verticalLabelPanel = new JPanel(new GridLayout(10, 1));
         verticalLabelPanel.add(tsv.getLabel());
         verticalLabelPanel.setBackground(BACKGROUND);
-        
+
         sp = new JSpinner();
         sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         sp.setBackground(Color.WHITE);
-        final SpinnerNumberModel model = new SpinnerNumberModel(MAX_DISTANCE+DISTANCE_FILTER_STEP, 0, MAX_DISTANCE+DISTANCE_FILTER_STEP, DISTANCE_FILTER_STEP);
+        final SpinnerNumberModel model = new SpinnerNumberModel(MAX_DISTANCE - distanceFilterValue, 0, MAX_DISTANCE + DISTANCE_FILTER_STEP, DISTANCE_FILTER_STEP);
         model.addChangeListener(new ChangeListener() {
             @Override
-            public void stateChanged(ChangeEvent e) {                
-                double distance = model.getNumber().floatValue();
-                tview.cutDistance(MAX_DISTANCE - distance);
+            public void stateChanged(ChangeEvent e) {
+                float distance = model.getNumber().floatValue();
+                distanceFilterValue = MAX_DISTANCE - distance;
+                tview.cutDistance(distanceFilterValue);
             }
         });
         sp.setModel(model);
-        sp.setValue(MAX_DISTANCE-DISTANCE_FILTER_STEP);
+        sp.setValue(MAX_DISTANCE - distanceFilterValue);
         JPanel cutDistanceOption = new JPanel(new GridLayout(2, 1));
         cutDistanceOption.add(emptyJPanel());
         cutDistanceOption.add(sp);
-        
-        
+
         popupMenu = new JPopupMenu();
         popupMenu.add(new InfoControlAction(this).getMenuItem());
         //popupMenu.add(new EdgeViewControlAction(this).getMenuItem());
@@ -335,7 +293,7 @@ public final class UPGMAViewer extends GView{
         //popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         //popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
-        popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
+        popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         //popupMenu.add(new HighQualityAction(this).getMenuItem());
         //popupMenu.add(new ExportAction(this).getMenuItem());
 
@@ -352,8 +310,7 @@ public final class UPGMAViewer extends GView{
         exportButton.setIcon(new ImageIcon(UPGMAViewer.class.getResource("export.png")));
         exportButton.setMargin(new Insets(0, 0, 0, 0));
         exportButton.addActionListener(new ExportAction(this));
-        
-        
+
         Box horizontalBox = new Box(BoxLayout.X_AXIS);
         horizontalBox.add(Box.createHorizontalStrut(3));
         horizontalBox.add(optionsButton);
@@ -361,53 +318,53 @@ public final class UPGMAViewer extends GView{
         horizontalBox.add(exportButton);
         horizontalBox.add(Box.createHorizontalStrut(5));
         horizontalBox.add(horizontalSlider);
-       // horizontalBox.add(Box.createHorizontalStrut(5));
+        // horizontalBox.add(Box.createHorizontalStrut(5));
         horizontalBox.add(tsh.getLabel());
        // horizontalBox.add(Box.createHorizontalGlue());
-       // horizontalBox.add(Box.createHorizontalGlue());
-       // horizontalBox.add(Box.createHorizontalGlue());
-        
+        // horizontalBox.add(Box.createHorizontalGlue());
+        // horizontalBox.add(Box.createHorizontalGlue());
+
        // horizontalBox.add(search);
-       // horizontalBox.add(Box.createHorizontalStrut(3));
+        // horizontalBox.add(Box.createHorizontalStrut(3));
         horizontalBox.setOpaque(true);
         horizontalBox.setBackground(Color.WHITE);
-        
+
         JPanel horizontalLabelPanel = new JPanel(new GridLayout(1, 3));
         horizontalLabelPanel.add(horizontalBox);
         horizontalLabelPanel.add(emptyJPanel());
         horizontalLabelPanel.add(search);
         horizontalLabelPanel.setBackground(BACKGROUND);
-        
+
         Box verticalBox = new Box(BoxLayout.Y_AXIS);
-        verticalBox.add(verticalSlider);  
+        verticalBox.add(verticalSlider);
         verticalBox.setOpaque(true);
         verticalBox.setBackground(BACKGROUND);
-        
+
         JPanel verticalPanel = new JPanel(new GridLayout(3, 1));
         verticalPanel.add(verticalBox);
-        verticalPanel.add(verticalLabelPanel);               
+        verticalPanel.add(verticalLabelPanel);
         verticalPanel.add(cutDistanceOption);
         verticalPanel.setBackground(BACKGROUND);
-                
-        
+
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(BACKGROUND);
         panel.setForeground(FOREGROUND);
         panel.add(tview, BorderLayout.CENTER);
         panel.add(horizontalLabelPanel, BorderLayout.SOUTH);
         panel.add(verticalPanel, BorderLayout.EAST);
-        
+
+        _treeview = panel;
         return panel;
     }
 
-    private void createTree(Tree t, Node root, NodeType child){
-        
+    private void createTree(Tree t, Node root, NodeType child) {
+
         Node n = t.addChild(root);
         //n.set(label, child.getDisplayName());
-        if(child.getType().equals("Leaf")){
+        if (child.getType().equals("Leaf")) {
             n.set(label, child.getDisplayName());
-            n.set(profile, ((UPGMALeafNode)child).p);
-            n.set(p_id, ((UPGMALeafNode)child).p.getID());
+            n.set(profile, ((UPGMALeafNode) child).p);
+            n.set(p_id, ((UPGMALeafNode) child).p.getID());
             return;
         }
 
@@ -417,25 +374,26 @@ public final class UPGMAViewer extends GView{
         createTree(t, n, newRoot.getNodeLeft());
         createTree(t, n, newRoot.getNodeRight());
     }
-    
-    public JComponent getTreeViewComponent(){
+
+    public JComponent getTreeViewComponent() {
         return _treeview;
     }
     int id = 1;
+
     private int setChildrenSize(Node n) {
-        
-        if(n.getChildCount() == 0){
+
+        if (n.getChildCount() == 0) {
             n.setInt(childrenSize, 1);
             n.setInt("idx", id++);
             return 1;
         }
         int sizeL = setChildrenSize(n.getFirstChild());
         int sizeR = setChildrenSize(n.getLastChild());
-        
+
         n.setInt(childrenSize, sizeL + sizeR);
-        
+
         return sizeL + sizeR;
-        
+
     }
 
     @Override
@@ -452,7 +410,7 @@ public final class UPGMAViewer extends GView{
     public boolean getLinearSize() {
         return linear;
     }
-    
+
     @Override
     public void setLinearSize(boolean status) {
         if (linear != status) {
@@ -461,26 +419,27 @@ public final class UPGMAViewer extends GView{
         }
     }
 
-     @Override
+    @Override
     public void setLevelLabel(boolean status) {
-        
+
         tview.setDistanceLabel(status);
-        
+
     }
-    
+
     @Override
     public void setHighQuality(boolean status) {
         tview.setHighQuality(status);
     }
-    
+
     @Override
     public boolean showLabel() {
         return labelBool;
     }
+
     @Override
     public void setShowLabel(boolean status) {
         if (labelBool != status) {
-            labelBool = status;            
+            labelBool = status;
         }
     }
 
@@ -497,7 +456,7 @@ public final class UPGMAViewer extends GView{
         groupPanelStatus = status;
     }
 
-       @Override
+    @Override
     public void showInfoPanel() {
         if (infoPanel == null) {
             infoPanel = new InfoPanel(_name + " Info");
@@ -507,12 +466,12 @@ public final class UPGMAViewer extends GView{
         }
         infoPanel.requestActive();
     }
+
     @Override
     public void closeInfoPanel() {
         infoPanel.close();
     }
 
-    
     public InfoPanel getInfoPanel() {
         return infoPanel;
     }
@@ -522,7 +481,7 @@ public final class UPGMAViewer extends GView{
         j.setBackground(BACKGROUND);
         return j;
     }
-    
+
     public void appendLineToInfoPanel(String text) {
         if (infoPanel != null) {
             infoPanel.append(text + "\n");
@@ -538,19 +497,67 @@ public final class UPGMAViewer extends GView{
     public void setDefaultRenderer(AbstractShapeRenderer r) {
         tview.setDefaultRenderer(r);
     }
-    
+
     public void setCategoryProvider(CategoryProvider cp) {
         tview.setCategoryProvider(cp);
     }
 
-    
     public Renderer getNodeRenderer() {
         return tview.getNodeRenderer();
     }
 
-    
     public Renderer getEdgeRenderer() {
         return tview.getEdgeRenderer();
     }
-    
+
+    @Override
+    public float getDistanceFilterValue() {
+        return distanceFilterValue;
+    }
+
+    @Override
+    public void setDistanceFilterValue(float value) {
+        distanceFilterValue = value;
+        tview.cutDistance(distanceFilterValue);
+    }
+
+    private TreeView createTreeView() {
+        BACKGROUND = Color.WHITE;
+        FOREGROUND = Color.BLACK;
+
+        Tree t = new Tree();
+        Table nodes = t.getNodeTable();
+        Table edges = t.getEdgeTable();
+        edges.addColumn(distance, double.class);
+        nodes.addColumn("isRuler", boolean.class);
+        nodes.addColumn(label, String.class);
+        nodes.addColumn(profile, Profile.class);
+        nodes.addColumn(p_id, String.class);
+        nodes.addColumn(distance, double.class);
+        nodes.addColumn(position, double.class);
+        nodes.addColumn(childrenSize, int.class);
+        nodes.addColumn(idx, int.class);
+        nodes.addColumn(show, boolean.class);
+
+        Node n = t.addRoot();
+        n.set(label, null);
+        n.setDouble(distance, MAX_DISTANCE);
+
+        createTree(t, n, _root.getNodeLeft());
+        createTree(t, n, _root.getNodeRight());
+
+        setChildrenSize(n);
+        Node rulerNodeLeft = t.addChild(n);
+        rulerNodeLeft.setBoolean("isRuler", true);
+        Node rulerNodeRigth = t.addChild(rulerNodeLeft);
+        rulerNodeRigth.setBoolean("isRuler", true);
+
+        // create a new treemap
+        TreeView tv = new TreeView(t, label);
+
+        tv.setBackground(BACKGROUND);
+        tv.setForeground(FOREGROUND);
+        
+        return tv;
+    }
 }

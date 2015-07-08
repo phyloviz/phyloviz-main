@@ -5,7 +5,6 @@
  */
 package net.phyloviz.upgma.tree;
 
-import java.io.Serializable;
 import net.phyloviz.upgma.json.UPGMAJsonWriter;
 import net.phyloviz.upgma.json.JsonSaver;
 import net.phyloviz.upgma.json.UPGMAToJSON.IEdgeJsonSaver;
@@ -40,7 +39,7 @@ public class UPGMARoot implements IEdgeJsonSaver{
     public String getDisplayName(){
         return "root";
     }
-    public double getDistance(){
+    public float getDistance(){
         return distance;
     }
 }

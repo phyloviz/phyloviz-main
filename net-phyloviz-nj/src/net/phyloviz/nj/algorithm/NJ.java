@@ -89,6 +89,7 @@ public abstract class NJ {
                 IndexNode in = iter.next();
                 float distance = ad.level((NJLeafNode)nodeArray[in.index], leaf); 
                 leaf.setDistance(in, distance);
+                nodeArray[in.index].addToDistance(distance);
             }
         }
     }

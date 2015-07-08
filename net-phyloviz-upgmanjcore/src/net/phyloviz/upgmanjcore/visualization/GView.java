@@ -66,6 +66,10 @@ public abstract class GView extends JPanel {
 
 	public abstract void closeInfoPanel();
         
+        public abstract float getDistanceFilterValue();
+        
+        public abstract void setDistanceFilterValue(float value);
+        
 //        public abstract Renderer getNodeRenderer();
 //        public abstract Renderer getEdgeRenderer();
 

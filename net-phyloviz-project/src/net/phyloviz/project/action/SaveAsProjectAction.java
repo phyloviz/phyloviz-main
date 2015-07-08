@@ -16,7 +16,6 @@ import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
-import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
@@ -25,6 +24,7 @@ import net.phyloviz.core.util.PopulationFactory;
 import net.phyloviz.core.util.TypingFactory;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
+import net.phyloviz.project.utils.FileUtils;
 import net.phyloviz.upgmanjcore.visualization.*;
 import org.openide.awt.StatusDisplayer;
 import org.openide.nodes.Node;
@@ -61,8 +61,15 @@ public final class SaveAsProjectAction extends NodeAction {
         if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 
             String directory = fc.getSelectedFile().getAbsolutePath();
+            
             File f = new File(directory, dataSetName);
-            f.mkdir();
+            boolean created =  f.mkdir();
+            if(!created){
+                try{FileUtils.cleanDirectory(f);}
+                catch(IOException ioe){ Exceptions.printStackTrace(ioe); }
+            
+            }
+            
             directory = f.getAbsolutePath();
 
             File visualizationFolder = new File(directory, VIZ_FOLDER);

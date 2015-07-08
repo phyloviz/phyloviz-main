@@ -78,13 +78,16 @@ public final class GTPanel extends TopComponent implements IGTPanel{
 		super(Lookups.singleton(gr));
 		initComponents();
 		this.setName(name);
+                
                 uv = new UPGMAViewer(name, gr.getRoot());
-                tvc = uv.getTreeViewComponent();
-               
+                
                 PersistentVisualization pv = gr.getPersistentVisualization();
                 if(pv != null){
                     loadVisualization(pv);
-                }
+                } 
+                
+                tvc = uv.generateTreeViewComponent();
+               
                 
                 this.add(tvc);
 		gvCatListen = new CategoryChangeListener() {
@@ -169,8 +172,11 @@ public final class GTPanel extends TopComponent implements IGTPanel{
     public PersistentVisualization getPersistentVisualization() {
         
         PersistentVisualization pc = new PersistentVisualization();
-        pc.categoryProvider = catProvider;
         
+        pc.categoryProvider = catProvider;
+        pc.distanceFilterValue = uv.getDistanceFilterValue();
+        pc.linearSize = uv.getLinearSize();
+                
         return pc;
     }
 
@@ -178,8 +184,14 @@ public final class GTPanel extends TopComponent implements IGTPanel{
     public void loadVisualization(PersistentVisualization pv) {
         
         if(pv.categoryProvider != null){
+            catProvider = pv.categoryProvider;
             uv.setDefaultRenderer( new ChartRenderer(pv.categoryProvider, uv));
             uv.setCategoryProvider(pv.categoryProvider);
+        }
+        if(pv.distanceFilterValue != -1)
+            uv.setDistanceFilterValue(pv.distanceFilterValue);
+        if(pv.linearSize){
+            uv.setLinearSize(pv.linearSize);
         }
     }
 

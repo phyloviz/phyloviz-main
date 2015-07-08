@@ -17,4 +17,8 @@ public class PersistentVisualization implements Serializable{
     
     public CategoryProvider categoryProvider;
     
+    public float distanceFilterValue = -1;
+    
+    public boolean linearSize;
+    
 }

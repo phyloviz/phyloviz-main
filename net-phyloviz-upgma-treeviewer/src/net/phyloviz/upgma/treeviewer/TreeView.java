@@ -86,9 +86,8 @@ public final class TreeView extends Display{
     private boolean linear = false;
     
     private transient JSearchPanel searchPanel;
+
     
-    private boolean searchMatch = false;
-    private double distance = 5;
             
     public TreeView(Tree t, String label) {
         super(new Visualization());
@@ -303,10 +302,9 @@ public final class TreeView extends Display{
         
     }
 
-    void cutDistance(double value) {
+    void cutDistance(float value) {
         
         m_vis.cancel("animatePaint");
-        
         NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
         m_edgeRenderer = new DistanceFilterEdgeRenderer(this, value, rtl.getScaleX(), labeledRender);
                 
