@@ -51,7 +51,7 @@ import org.openide.util.Lookup.Result;
 import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import net.phyloviz.upgmanjcore.visualization.IGTPanel;
-import net.phyloviz.upgmanjcore.visualization.PersistentClass;
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
@@ -61,13 +61,14 @@ import org.openide.util.LookupListener;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
-public class GTPanel extends TopComponent implements IGTPanel{
+public final class GTPanel extends TopComponent implements IGTPanel{
 
 	private ArrayList<JMenuItem> al;
 	private Result<CategoryProvider> r;
 	private CategoryChangeListener gvCatListen;
         private UPGMAViewer uv;
         private final JComponent tvc;
+        private CategoryProvider catProvider;
 
 	/** Creates new form GTPanel
      * @param name
@@ -79,16 +80,24 @@ public class GTPanel extends TopComponent implements IGTPanel{
 		this.setName(name);
                 uv = new UPGMAViewer(name, gr.getRoot());
                 tvc = uv.getTreeViewComponent();
-		this.add(tvc);
+               
+                PersistentVisualization pv = gr.getPersistentVisualization();
+                if(pv != null){
+                    loadVisualization(pv);
+                }
+                
+                this.add(tvc);
 		gvCatListen = new CategoryChangeListener() {
 
 			@Override
 			public void categoryChange(CategoryProvider cp) {
 
 				if (cp.isOn()) {
-					uv.setDefaultRenderer(new ChartRenderer(cp, uv));
+                                        catProvider = cp;
+					uv.setDefaultRenderer( new ChartRenderer(cp, uv));
 					uv.setCategoryProvider(cp);
 				} else {
+                                        catProvider = null;
 					uv.resetDefaultRenderer();
 					uv.setCategoryProvider(null);
 				}
@@ -157,13 +166,21 @@ public class GTPanel extends TopComponent implements IGTPanel{
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public PersistentClass getPersistentClass() {
-        PersistentClass pc = new PersistentClass();
+    public PersistentVisualization getPersistentVisualization() {
         
-        pc.nodeRenderer = uv.getNodeRenderer().getClass().getCanonicalName();
-        pc.edgeRenderer = uv.getEdgeRenderer().getClass().getCanonicalName();
+        PersistentVisualization pc = new PersistentVisualization();
+        pc.categoryProvider = catProvider;
         
         return pc;
+    }
+
+    @Override
+    public void loadVisualization(PersistentVisualization pv) {
+        
+        if(pv.categoryProvider != null){
+            uv.setDefaultRenderer( new ChartRenderer(pv.categoryProvider, uv));
+            uv.setCategoryProvider(pv.categoryProvider);
+        }
     }
 
    

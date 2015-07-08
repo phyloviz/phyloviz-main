@@ -41,6 +41,7 @@ import net.phyloviz.nj.json.NJToJSON;
 import net.phyloviz.nj.ui.OutputPanel;
 import net.phyloviz.nj.ui.NeighborJoiningNode;
 import net.phyloviz.project.ProjectItem;
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.openide.nodes.AbstractNode;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
@@ -54,6 +55,7 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     private NJRoot root;
     private InstanceContent ic;
     private AbstractLookup lookup;
+    private PersistentVisualization cp;
 
     public NeighborJoiningItem(NJRoot root, DataSet ds, AbstractDistance<NJLeafNode> ad, OutputPanel op) {
         this.root = root;
@@ -113,4 +115,12 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
         return output;
     }
 
+    @Override
+    public void addPersistentVisualization(PersistentVisualization cp) {
+        this.cp = cp;
+    }
+    @Override
+    public PersistentVisualization getPersistentVisualization() {
+        return this.cp;
+    }
 }

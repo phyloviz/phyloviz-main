@@ -42,6 +42,7 @@
             </module-dependencies>
             <public-packages>
                 <package>net.phyloviz.category</package>
+                <package>net.phyloviz.category.color</package>
                 <package>net.phyloviz.category.filter</package>
                 <package>net.phyloviz.category.ui</package>
             </public-packages>

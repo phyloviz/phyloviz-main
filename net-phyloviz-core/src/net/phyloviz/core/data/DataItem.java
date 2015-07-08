@@ -35,13 +35,15 @@
 
 package net.phyloviz.core.data;
 
+import java.io.Serializable;
+
 /**
  * This interface describes the minimal requirements for a data item, i.e., a
  * data vector.
  * @since   PHILOViZ 1.0
  * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
  */
-public interface DataItem {
+public interface DataItem extends Serializable{
 
 	/**
 	 * Returns a <tt>String</tt>  that represents the identifier of this

@@ -86,15 +86,13 @@ public class ChartRenderer extends AbstractShapeRenderer {
         }
 
         // Draw background pie...
-        if(hide)
-            fillColor = new Color(214, 214, 214);
         g.setColor(fillColor);
         g.fillRect(area.x, area.y, area.width, area.height);
 
         // Draw each pie slice
         int currAngle = Math.round((float) area.getMinX()) + 2;
         Color groupColor = fillColor;
-        if (glst != null && !hide) {
+        if (glst != null) {
             giter = glst.iterator();
             while (giter.hasNext()) {
                 // Compute the start and stop angles

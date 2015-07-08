@@ -41,6 +41,7 @@ import net.phyloviz.upgma.json.UPGMAToJSON;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgma.ui.UPGMANode;
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.openide.nodes.AbstractNode;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
@@ -53,6 +54,7 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
     private UPGMARoot root;
     private InstanceContent ic;
     private AbstractLookup lookup;
+    private PersistentVisualization cp;
 
     public UPGMAItem(UPGMARoot root, AbstractDistance ad, OutputPanel op) {
         this.op = op;
@@ -112,6 +114,15 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
         UPGMAToJSON json = new UPGMAToJSON(root);
         String output = json.saveToJSON();
         return output;
+    }
+
+    @Override
+    public void addPersistentVisualization(PersistentVisualization cp) {
+        this.cp = cp;
+    }
+    @Override
+    public PersistentVisualization getPersistentVisualization() {
+        return this.cp;
     }
 
 

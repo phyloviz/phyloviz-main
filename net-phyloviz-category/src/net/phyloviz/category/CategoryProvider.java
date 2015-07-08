@@ -1,6 +1,7 @@
 package net.phyloviz.category;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,14 +19,14 @@ import net.phyloviz.core.data.DataItem;
 import net.phyloviz.core.data.DataModel;
 
 @SuppressWarnings("unchecked")
-public class CategoryProvider {
+public class CategoryProvider implements Serializable{
 
-	private DataModel dm;
+	private transient DataModel dm;
 	private TreeMap<String, List<Category>> idMap;
 	private TreeMap<String, Integer> fullCats;
 	private TreeMap<String, Color> colorMap;
 	private Palette pal;
-	private List listeners = Collections.synchronizedList(new LinkedList());
+	private transient List listeners = Collections.synchronizedList(new LinkedList());
 	private boolean on;
 
 	public CategoryProvider(DataModel dm) {

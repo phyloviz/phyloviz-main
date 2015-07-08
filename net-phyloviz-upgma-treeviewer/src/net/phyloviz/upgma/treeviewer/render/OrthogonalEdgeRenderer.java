@@ -109,7 +109,7 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                 double x = sx;
                 double y = ty+20;
                 double distanceX = tx;
-                String distance = String.valueOf(distanceX / scaleX);
+                String distance = String.format("%.2f", distanceX / scaleX);
                 
                 Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
                 Color dc = g.getColor();
@@ -129,7 +129,7 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                     g.drawString(distance, (float)(x), (float) y);
                     x += oneTick;
                     distanceX -= oneTick;
-                    distance = String.valueOf(distanceX / scaleX);
+                    distance = String.format("%.2f", distanceX / scaleX);
                     
                 }
                 

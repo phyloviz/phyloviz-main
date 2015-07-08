@@ -15,7 +15,6 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
@@ -69,10 +68,10 @@ import prefuse.render.Renderer;
  *
  * @author Marta Nascimento
  */
-public final class UPGMAViewer extends GView implements Serializable{
+public final class UPGMAViewer extends GView{
     
     private final JComponent _treeview;
-    private final transient UPGMARoot _root;
+    private final UPGMARoot _root;
     private final String label = "node";
     private final String distance = "distance";
     private final String position = "position";
@@ -444,7 +443,7 @@ public final class UPGMAViewer extends GView implements Serializable{
         return tview;
     }
 
-    
+    @Override
     public Visualization getVisualization() {
         return tview.getVisualization();
     }

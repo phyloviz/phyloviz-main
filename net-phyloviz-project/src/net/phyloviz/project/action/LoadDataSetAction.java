@@ -5,6 +5,7 @@
  */
 package net.phyloviz.project.action;
 
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +18,7 @@ import java.util.Properties;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
+import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
@@ -26,7 +28,7 @@ import net.phyloviz.core.util.PopulationFactory;
 import net.phyloviz.core.util.TypingFactory;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
-import net.phyloviz.upgmanjcore.visualization.PersistentClass;
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.netbeans.api.project.Project;
 import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
@@ -36,6 +38,8 @@ import org.openide.util.Utilities;
 import org.openide.windows.WindowManager;
 
 public final class LoadDataSetAction extends AbstractAction {
+
+    private static final String VIZ_FOLDER = "visualization";
 
     public LoadDataSetAction() {
         putValue(Action.NAME, "Load DataSet");
@@ -48,6 +52,7 @@ public final class LoadDataSetAction extends AbstractAction {
         String propFileName = "config.properties";
 
         String projectDir = getProjectLocation();
+        File visualization = new File(projectDir, VIZ_FOLDER);
 
         try {
 
@@ -67,7 +72,8 @@ public final class LoadDataSetAction extends AbstractAction {
                     populationFile = prop.getProperty("population-file"),
                     populationFK = prop.getProperty("population-foreign-key"),
                     algorithmOutput = prop.getProperty("algorithm-output"),
-                    algorithmOutputOutputFactory = prop.getProperty("algorithm-output-factory");
+                    algorithmOutputOutputFactory = prop.getProperty("algorithm-output-factory"),
+                    visualizations = prop.getProperty("visualization");
 
             String[] algoOutput = algorithmOutput != null
                     ? algorithmOutput.split(",")
@@ -75,6 +81,10 @@ public final class LoadDataSetAction extends AbstractAction {
             String[] algoOutputFactory = algorithmOutputOutputFactory != null
                     ? algorithmOutputOutputFactory.split(",")
                     : new String[]{""};
+
+            String[] viz = visualizations != null
+                    ? visualizations.split(",")
+                    : new String[]{};
 
             if (dataSetName != null && (!dataSetName.equals(""))) {
 
@@ -98,34 +108,40 @@ public final class LoadDataSetAction extends AbstractAction {
                     ds.setPopKey(key);
                 }
 
+                int v_i = 0;
                 Collection<? extends ProjectItemFactory> pifactory = (Lookup.getDefault().lookupAll(ProjectItemFactory.class));
                 for (int i = 0; i < algoOutput.length; i++) {
-
+                    
                     for (ProjectItemFactory pif : pifactory) {
                         String pifName = pif.getClass().getName();
                         if (pifName.equals(algoOutputFactory[i])) {
+
+                            PersistentVisualization pv = null;
+                            if(viz.length > v_i && viz[v_i].split("\\.")[1].equals(algoOutput[i].split("\\.")[2])){
+                                try (FileInputStream fileIn = new FileInputStream(new File(visualization, viz[v_i++]))) {
+
+                                    try (ObjectInputStream in = new ObjectInputStream(fileIn)) {
+
+                                        pv = (PersistentVisualization) in.readObject();
+
+                                    }
+
+                                } catch (IOException | ClassNotFoundException e) {
+                                    Exceptions.printStackTrace(e);
+                                }
+                            }
                             StatusDisplayer.getDefault().setStatusText("Loading algorithms...");
                             ProjectItem pi = pif.loadData(dataSetName, td, projectDir, algoOutput[i]);
+                            
+                            if (pv != null) {
+                                pi.addPersistentVisualization(pv);
+                            }
                             td.add(pi);
                         }
                     }
                 }
 
                 ds.add(td);
-
-                PersistentClass pc = null;
-                try {
-                    FileInputStream fileIn = new FileInputStream("C:\\Users\\Marta Nascimento\\Documents\\employee.ser");
-                    ObjectInputStream in = new ObjectInputStream(fileIn);
-                    pc = (PersistentClass) in.readObject();
-                    in.close();
-                    fileIn.close();
-                } catch (IOException i) {
-                    Exceptions.printStackTrace(i);
-                } catch (ClassNotFoundException c) {
-                    System.out.println("PersistentClass class not found");
-                    Exceptions.printStackTrace(c);
-                }
 
                 Lookup.getDefault().lookup(DataSetTracker.class).add(ds);
                 StatusDisplayer.getDefault().setStatusText("Dataset loaded.");
@@ -134,7 +150,7 @@ public final class LoadDataSetAction extends AbstractAction {
             } else {
                 Exceptions.printStackTrace(new IllegalArgumentException("DataSet name not found!"));
             }
-        } catch (Exception e) {
+        } catch (IOException | HeadlessException | ClassNotFoundException | InstantiationException | IllegalAccessException | NumberFormatException e) {
             Exceptions.printStackTrace(e);
         }
     }

@@ -12,5 +12,6 @@ package net.phyloviz.upgmanjcore.visualization;
 public interface IGTPanel {
     
     public GView getGView();
-    public PersistentClass getPersistentClass();
+    public PersistentVisualization getPersistentVisualization();
+    public void loadVisualization(PersistentVisualization pv);
 }

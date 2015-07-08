@@ -6,15 +6,15 @@
 package net.phyloviz.upgmanjcore.visualization;
 
 import java.io.Serializable;
+import net.phyloviz.category.CategoryProvider;
+
 
 /**
  *
  * @author Marta Nascimento
  */
-public class PersistentClass implements Serializable{
+public class PersistentVisualization implements Serializable{
     
-    public String nodeRenderer;
-    public String edgeRenderer;
-    
+    public CategoryProvider categoryProvider;
     
 }

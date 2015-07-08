@@ -16,6 +16,7 @@ import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
@@ -36,6 +37,7 @@ import org.openide.windows.TopComponent;
 public final class SaveAsProjectAction extends NodeAction {
 
     private static SaveAsProjectAction _instance;
+    private static final String VIZ_FOLDER = "visualization";
 
     private final String ext = ".csv";
 
@@ -63,6 +65,9 @@ public final class SaveAsProjectAction extends NodeAction {
             f.mkdir();
             directory = f.getAbsolutePath();
 
+            File visualizationFolder = new File(directory, VIZ_FOLDER);
+            visualizationFolder.mkdir();
+            
             TypingData td = ds.getLookup().lookup(TypingData.class);
             String typingFactory = td.getNode().getDisplayName();
 
@@ -94,6 +99,7 @@ public final class SaveAsProjectAction extends NodeAction {
                 int algos = 1;
                 Collection<? extends ProjectItemFactory> pif = Lookup.getDefault().lookupAll(ProjectItemFactory.class);
                 StringBuilder algorithmsFactory = new StringBuilder(), algorithms = new StringBuilder();
+                StringBuilder visualization = new StringBuilder();
                 for (ProjectItem item : c) {
 
                     for (ProjectItemFactory factory : pif) {
@@ -108,18 +114,26 @@ public final class SaveAsProjectAction extends NodeAction {
 
                                 if (tc.getLookup().lookup(klass) == item) {
 
+                                    PersistentVisualization pv = ((IGTPanel) tc).getPersistentVisualization();
+                                    if(pv == null) 
+                                        continue;
+                                    
+                                    String viz = "viz." + item.getName() + algos + ".txt";
                                     try{
-                                        IGTPanel view = (IGTPanel) tc;
-                                        PersistentClass pc = view.getPersistentClass();
-                                        FileOutputStream fileOut = new FileOutputStream("C:\\Users\\Marta Nascimento\\Documents\\employee.ser");
-                                        ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                                        out.writeObject(pc);
-                                        out.close();
-                                        fileOut.close();
-                                        System.out.printf("Serialized data is saved in /tmp/employee.ser");
+                                        
+                                        try(FileOutputStream fileOut = new FileOutputStream(new File(visualizationFolder, viz))){
+
+                                            try(ObjectOutputStream out = new ObjectOutputStream(fileOut)){
+
+                                                out.writeObject(pv);
+                                                out.close();
+                                                visualization.append(viz).append(",");
+
+                                            }
+                                        }
                                     } catch (IOException i) {
                                         Exceptions.printStackTrace(i);
-                                    }
+                                    } 
 
                                 }
                             }
@@ -136,8 +150,13 @@ public final class SaveAsProjectAction extends NodeAction {
                 }
 
                 //removing last comma
+                
                 algorithmsFactory.deleteCharAt(algorithmsFactory.length() - 1);
                 algorithms.deleteCharAt(algorithms.length() - 1);
+                if(visualization.length() > 0){
+                    visualization.deleteCharAt(visualization.length() - 1);
+                    props.put("visualization", visualization.toString());
+                }
                 //add props
                 props.put("algorithm-output", algorithms.toString());
                 props.put("algorithm-output-factory", algorithmsFactory.toString());

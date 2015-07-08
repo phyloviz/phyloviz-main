@@ -5,12 +5,18 @@
  */
 package net.phyloviz.project;
 
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+
 /**
  *
  * @author Marta Nascimento
  */
 public interface ProjectItem {
        
+    public void addPersistentVisualization(PersistentVisualization cp);
+    
+    public PersistentVisualization getPersistentVisualization();
+    
     public String getName();
     
     public String getMainName();
