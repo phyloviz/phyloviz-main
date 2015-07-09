@@ -313,10 +313,11 @@ public class GraphView extends GView {
         sp.setBackground(Color.WHITE);
 
         Box verticalPanel = new Box(BoxLayout.Y_AXIS);
-        verticalPanel.add(Box.createVerticalStrut(3));
-        verticalPanel.add(ll);
-        verticalPanel.add(Box.createVerticalStrut(1));
+        
+        verticalPanel.add(Box.createVerticalGlue());
         verticalPanel.add(sp);
+        
+        //verticalPanel.add(sp, BorderLayout.PAGE_END);
         verticalPanel.setBackground(Color.WHITE);
         // Bottom box.
         bottomBox = new Box(BoxLayout.X_AXIS);
@@ -608,6 +609,7 @@ public class GraphView extends GView {
         }
     }
 
+    @Override
     public void setLevelLabel(boolean status) {
         hasDistanceLabel = status;
         setRenderer();
