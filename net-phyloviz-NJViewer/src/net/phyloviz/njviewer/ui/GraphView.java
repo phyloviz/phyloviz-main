@@ -122,12 +122,14 @@ public class GraphView extends GView {
     private boolean running, linear, label = true;
     // Data analysis info...
     private CategoryProvider cp;
+    double maxDistance = 0, minDistance = 0;
 
-    public GraphView(String name, NeighborJoiningItem _er) {
+    public GraphView(String name, NeighborJoiningItem _er, boolean linear) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
         this.setOpaque(true);
         this.name = name;
+        this.linear = linear;
         // Create an empty visualization.
         view = new Visualization();
         // Setup renderers.
@@ -313,10 +315,10 @@ public class GraphView extends GView {
         sp.setBackground(Color.WHITE);
 
         Box verticalPanel = new Box(BoxLayout.Y_AXIS);
-        
+
         verticalPanel.add(Box.createVerticalGlue());
         verticalPanel.add(sp);
-        
+
         //verticalPanel.add(sp, BorderLayout.PAGE_END);
         verticalPanel.setBackground(Color.WHITE);
         // Bottom box.
@@ -341,7 +343,7 @@ public class GraphView extends GView {
         add(verticalPanel, BorderLayout.EAST);
     }
 
-    public void loadGraph(final NJRoot root, final AbstractDistance ad, final float distanceFilter) {
+    public void loadGraph(final NJRoot root, final AbstractDistance ad, final double distanceFilter) {
         final HashMap<Integer, Integer> uid2rowid = new HashMap<>();
 
         // Create and register the graph.
@@ -349,11 +351,10 @@ public class GraphView extends GView {
         vg = view.addGraph("graph", graph);
 
         running = true;
-        linear = false;
         view.setVisible("graph", null, false);
         view.runAfter("draw", "layout");
         view.run("draw");
-
+        
         SwingWorker job = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
@@ -361,7 +362,6 @@ public class GraphView extends GView {
                 Group g = new Group();
                 g.setID(1);
 
-                float maxDistance = 0, minDistance = 0;
                 int nedges = root.size();
 
                 NodeType st = null;
@@ -475,22 +475,8 @@ public class GraphView extends GView {
                     }
                     vu.setFixed(false);
                 }
-                maxDistance += 0.001;
-                distance = distanceFilter == -1 ? maxDistance : distanceFilter;
+
                 groupList.setListData(new Group[]{g});
-                sp.setValue(maxDistance);
-
-                final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, 0.001);
-                model.addChangeListener(new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent e) {
-                        updateDistanceFilter(model.getNumber().floatValue());
-                    }
-                });
-                sp.setModel(model);
-                sp.setValue(distance);
-                updateDistanceFilter(distance);
-
                 // Search stuff.
                 TupleSet search = new PrefixSearchTupleSet();
                 search.addTupleSetListener(new TupleSetListener() {
@@ -530,6 +516,22 @@ public class GraphView extends GView {
                 if (pce.getPropertyName().equals("progress")) {
                     int progress = (Integer) pce.getNewValue();
                     pbar.setValue(progress);
+                    if (progress == 100) {
+                        distance = (float) (distanceFilter == -1 ? maxDistance : distanceFilter);
+
+                        sp.setValue(maxDistance);
+
+                        final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, 0.001);
+                        model.addChangeListener(new ChangeListener() {
+                            @Override
+                            public void stateChanged(ChangeEvent e) {
+                                updateDistanceFilter(model.getNumber().floatValue());
+                            }
+                        });
+                        sp.setModel(model);
+                        sp.setValue(distance);
+                    }
+
                 }
             }
         });
@@ -735,7 +737,6 @@ public class GraphView extends GView {
     }
 
     // Private classes.
-
     private class NodeColorAction extends ColorAction {
 
         public NodeColorAction(String group) {
