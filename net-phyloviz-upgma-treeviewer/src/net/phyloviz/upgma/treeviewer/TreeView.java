@@ -65,8 +65,7 @@ import prefuse.visual.sort.TreeDepthItemSorter;
  * @version 1.0
  * @author <a href="http://jheer.org">jeffrey heer</a>
  */
-
-public final class TreeView extends Display{
+public final class TreeView extends Display {
 
     public static final String TREE_CHI = "/chi-ontology.xml.gz";
 
@@ -84,21 +83,18 @@ public final class TreeView extends Display{
     public transient CategoryProvider cp;
     private boolean labeledRender = false;
     private boolean linear = false;
-    
-    private transient JSearchPanel searchPanel;
+    private final JSearchPanel searchPanel;
 
-    
-            
     public TreeView(Tree t, String label) {
         super(new Visualization());
-        
+
         m_label = label;
 
         m_vis.add(tree, t);
 
         m_nodeRenderer = new NodeRenderer(m_label, this);//new LabelRenderer(m_label);
         m_edgeRenderer = new OrthogonalEdgeRenderer(this);
-                         //new EdgeRenderer(Constants.EDGE_TYPE_LINE);
+        //new EdgeRenderer(Constants.EDGE_TYPE_LINE);
 
         rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
@@ -214,52 +210,57 @@ public final class TreeView extends Display{
                 m_vis.run("animatePaint");
             }
         });
-        
+
         searchPanel = new NodeSearchPanel(m_vis);
         searchPanel.setShowResultCount(true);
-        
-        
+//        
+
         //rotate(new Point(200,300), Math.PI);
     }
+
     public Renderer getNodeRenderer() {
         return m_nodeRenderer;
     }
-    public Visualization getViz(){
+
+    public Visualization getViz() {
         return m_vis;
     }
+
     public Renderer getEdgeRenderer() {
         return m_edgeRenderer;
     }
+
     // ------------------------------------------------------------------------
+
     public void setOrientation(int orientation) {
-        NodeLinkLayout  rtl
+        NodeLinkLayout rtl
                 = (NodeLinkLayout) m_vis.getAction("treeLayout");
         CollapsedSubtreeLayout stl
                 = (CollapsedSubtreeLayout) m_vis.getAction("subLayout");
         switch (orientation) {
             case Constants.ORIENT_LEFT_RIGHT:
-                ((NodeRenderer)m_nodeRenderer).setHorizontalAlignment(Constants.LEFT);
+                ((NodeRenderer) m_nodeRenderer).setHorizontalAlignment(Constants.LEFT);
                 m_edgeRenderer.setHorizontalAlignment1(Constants.RIGHT);
                 m_edgeRenderer.setHorizontalAlignment2(Constants.LEFT);
                 m_edgeRenderer.setVerticalAlignment1(Constants.CENTER);
                 m_edgeRenderer.setVerticalAlignment2(Constants.CENTER);
                 break;
             case Constants.ORIENT_RIGHT_LEFT:
-                ((NodeRenderer)m_nodeRenderer).setHorizontalAlignment(Constants.RIGHT);
+                ((NodeRenderer) m_nodeRenderer).setHorizontalAlignment(Constants.RIGHT);
                 m_edgeRenderer.setHorizontalAlignment1(Constants.LEFT);
                 m_edgeRenderer.setHorizontalAlignment2(Constants.RIGHT);
                 m_edgeRenderer.setVerticalAlignment1(Constants.CENTER);
                 m_edgeRenderer.setVerticalAlignment2(Constants.CENTER);
                 break;
             case Constants.ORIENT_TOP_BOTTOM:
-                ((NodeRenderer)m_nodeRenderer).setHorizontalAlignment(Constants.CENTER);
+                ((NodeRenderer) m_nodeRenderer).setHorizontalAlignment(Constants.CENTER);
                 m_edgeRenderer.setHorizontalAlignment1(Constants.CENTER);
                 m_edgeRenderer.setHorizontalAlignment2(Constants.CENTER);
                 m_edgeRenderer.setVerticalAlignment1(Constants.BOTTOM);
                 m_edgeRenderer.setVerticalAlignment2(Constants.TOP);
                 break;
             case Constants.ORIENT_BOTTOM_TOP:
-                ((NodeRenderer)m_nodeRenderer).setHorizontalAlignment(Constants.CENTER);
+                ((NodeRenderer) m_nodeRenderer).setHorizontalAlignment(Constants.CENTER);
                 m_edgeRenderer.setHorizontalAlignment1(Constants.CENTER);
                 m_edgeRenderer.setHorizontalAlignment2(Constants.CENTER);
                 m_edgeRenderer.setVerticalAlignment1(Constants.TOP);
@@ -277,78 +278,84 @@ public final class TreeView extends Display{
     public int getOrientation() {
         return m_orientation;
     }
-   public double getScaleX(){
+
+    public double getScaleX() {
         return ((NodeLinkLayout) m_vis.getAction("treeLayout")).getScaleX();
     }
+
     void changeDistance(int d) {
         m_vis.cancel("animatePaint");
 
-        NodeLinkLayout  rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
-        
+        NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
+
         rtl.setScaleX(d);
         m_vis.run("treeLayout");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
     }
+
     void changeHigh(int h) {
         m_vis.cancel("animatePaint");
 
-        NodeLinkLayout  rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
-        
+        NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
+
         rtl.setScaleY(h);
         m_vis.run("treeLayout");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
-        
+
     }
 
     void cutDistance(float value) {
-        
+
         m_vis.cancel("animatePaint");
         NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
         m_edgeRenderer = new DistanceFilterEdgeRenderer(this, value, rtl.getScaleX(), labeledRender);
-                
+
         rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
-        
+
         m_vis.setRendererFactory(rf);
         m_vis.run("treeLayout");
         m_vis.run("draw");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
-        
+
         m_vis.cancel("animatePaint");
         m_vis.run("treeLayout");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
     }
-    
+
     void setDistanceLabel(boolean status) {
         labeledRender = status;
         m_vis.cancel("animatePaint");
-        
+
         rf = new DefaultRendererFactory(m_nodeRenderer);
-    
-        if (status) 
+
+        if (status) {
             m_edgeRenderer = new LabeledEdgeRenderer(this);
-        else
+        } else {
             m_edgeRenderer = new OrthogonalEdgeRenderer(this);
-        
+        }
+
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
-        
+
         m_vis.setRendererFactory(rf);
         m_vis.run("treeLayout");
         m_vis.run("draw");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
     }
-    public boolean getLinearSize(){
+
+    public boolean getLinearSize() {
         return linear;
     }
+
     void setLinearSize(boolean status) {
         linear = status;
         m_vis.cancel("animatePaint");
-        
+
         m_vis.run("treeLayout");
         m_vis.run("draw");
         m_vis.run("fullPaint");
@@ -359,12 +366,12 @@ public final class TreeView extends Display{
         m_vis.cancel("treeLayout");
         m_vis.cancel("static");
         m_vis.cancel("animatePaint");
-        
+
         m_nodeRenderer = r;
         rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
         rf.setDefaultRenderer(r);
-        
+
         m_vis.setRendererFactory(rf);
         m_vis.run("treeLayout");
         m_vis.run("draw");
@@ -376,18 +383,19 @@ public final class TreeView extends Display{
         m_vis.cancel("treeLayout");
         m_vis.cancel("static");
         m_vis.cancel("animatePaint");
-        
+
         m_nodeRenderer = new NodeRenderer(m_label, this);//new LabelRenderer(m_label);
         rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
         rf.setDefaultRenderer(m_nodeRenderer);
-        
+
         m_vis.setRendererFactory(rf);
         m_vis.run("treeLayout");
         m_vis.run("draw");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
     }
+
     public void setCategoryProvider(CategoryProvider cp) {
         this.cp = cp;
     }
@@ -454,7 +462,7 @@ public final class TreeView extends Display{
         }
     }
 
-    private static class NodeColorAction extends ColorAction {
+    private class NodeColorAction extends ColorAction {
 
         public NodeColorAction(String group) {
             super(group, VisualItem.FILLCOLOR);
@@ -462,14 +470,16 @@ public final class TreeView extends Display{
 
         @Override
         public int getColor(VisualItem item) {
-            double d =item.getDouble("distance");
+            double d = item.getDouble("distance");
             if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
+                TreeView.this.panToAbs(new Point2D.Double(item.getX(), item.getY()));
                 return ColorLib.rgb(255, 190, 190);
             } else if (m_vis.isInGroup(item, Visualization.FOCUS_ITEMS)) {
                 return ColorLib.rgb(198, 229, 229);
             } else if (item.getDOI() > -1) {
-                if(item.getBoolean("hide"))
+                if (item.getBoolean("hide")) {
                     return ColorLib.rgba(164, 193, 193, 0);
+                }
                 return ColorLib.rgb(164, 193, 193);
             } else {
                 return ColorLib.rgba(255, 255, 255, 0);
@@ -477,21 +487,21 @@ public final class TreeView extends Display{
         }
 
     } // end of inner class TreeMapColorAction
-    
+
     private class NodeSearchPanel extends JSearchPanel {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		NodeSearchPanel(Visualization view) {
-			super(view, treeNodes, Visualization.SEARCH_ITEMS, "p_id", true, true);
-			setShowResultCount(false);
-			setBorder(BorderFactory.createEmptyBorder(5, 5, 4, 0));
-			setFont(FontLib.getFont("Tahoma", Font.PLAIN, 11));
-			setBackground(Color.WHITE);
-			setForeground(Color.BLACK);
-			requestFocus();
-		}
-	}
+        NodeSearchPanel(Visualization view) {
+            super(view, treeNodes, Visualization.SEARCH_ITEMS, "p_id", true, true);
+            setShowResultCount(false);
+            setBorder(BorderFactory.createEmptyBorder(5, 5, 4, 0));
+            setFont(FontLib.getFont("Tahoma", Font.PLAIN, 11));
+            setBackground(Color.WHITE);
+            setForeground(Color.BLACK);
+            requestFocus();
+        }
+    }
 
 } // end of class TreeMap
 
