@@ -21,6 +21,7 @@ public class JsonValidator extends JsonSchemaValidator {
     private static final String[] rootIds = new String[]{"distance", "left", "right"};
     private static final String schemaFileName = "schema.json";
     private static final String schemaPath = new File("").getAbsolutePath();
+    private static final String schemaPath2 = new File("").getPath();
     
     public JsonValidator(){
         super(schemaPath, schemaFileName);        

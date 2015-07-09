@@ -479,7 +479,7 @@ public class GraphView extends GView {
                 groupList.setListData(new Group[]{g});
                 sp.setValue(maxDistance);
 
-                final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, maxDistance / 20);
+                final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, 0.001);
                 model.addChangeListener(new ChangeListener() {
                     @Override
                     public void stateChanged(ChangeEvent e) {

@@ -51,10 +51,10 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
     private final int m_scale;
     private final boolean m_labeled;
 
-    public DistanceFilterEdgeRenderer(TreeView tv, double distance, int scale, boolean labeled) {
+    public DistanceFilterEdgeRenderer(TreeView tv, double distance, int scale, boolean labeled, double maxDistance) {
         super(tv);
         m_key = "viz";
-        m_distance = distance * scale;
+        m_distance = (maxDistance - distance) * scale;
         m_scale = scale;
         m_labeled = labeled;
 
@@ -84,7 +84,7 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
         double diMax = item.getBounds().getMaxX();
         double h = item.getBounds().getCenterY();
      
-        if(diMax <= m_distance || item.getBounds().contains(m_distance, h)){
+        if(diMax <= m_distance || item.getBounds().contains(m_distance-0.001, h)){
             item.setStrokeColor(ColorLib.rgb(214, 214, 214));  
             if(u.canGetString("p_id"))
                 u.setBoolean("hide", true);

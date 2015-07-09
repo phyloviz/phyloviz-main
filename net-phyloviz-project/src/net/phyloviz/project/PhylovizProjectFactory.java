@@ -19,7 +19,7 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ProjectFactory.class)
 public class PhylovizProjectFactory implements ProjectFactory {
 
-    public static final String PROJECT_PROPFILE = "config.properties";
+    public static final String PROJECT_PROPFILE = "config.properties.pviz";
 
     //Specifies when a project is a project, i.e.,
     //if ".properties" is present in a folder:

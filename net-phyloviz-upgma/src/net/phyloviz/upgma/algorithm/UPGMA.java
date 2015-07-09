@@ -126,8 +126,9 @@ public class UPGMA {
             NodeType oldNtRight = nodeArray[minL.index];
             
             join(oldNtLeft, oldNtRight);
-
+            
             findMinimumDistance();
+            op.flush();
         }
         //get last edge and help garbage collector
         Iterator<IndexNode> iter = nodeList.iterator();

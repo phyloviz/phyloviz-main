@@ -18,7 +18,6 @@ import java.util.Properties;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
-import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
@@ -49,7 +48,7 @@ public final class LoadDataSetAction extends AbstractAction {
     public void actionPerformed(ActionEvent ae) {
 
         Properties prop = new Properties();
-        String propFileName = "config.properties";
+        String propFileName = "config.properties.pviz";
 
         String projectDir = getProjectLocation();
         File visualization = new File(projectDir, VIZ_FOLDER);
@@ -59,10 +58,12 @@ public final class LoadDataSetAction extends AbstractAction {
             InputStream inputStream = new FileInputStream(new File(projectDir, propFileName));
             prop.load(inputStream);
 
+            StatusDisplayer.getDefault().setStatusText("Loading DataSet...");
+            
             String dataSetName = prop.getProperty("dataset-name");
             if (dataSetAlreadyOpened(dataSetName)) {
+                JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "DataSet already opened!");
                 WindowManager.getDefault().findTopComponent("DataSetExplorerTopComponent").requestActive();
-                JOptionPane.showMessageDialog(WindowManager.getDefault().findTopComponent("DataSetExplorerTopComponent"), "Eggs are not supposed to be green.");
                 return;
             }
 
@@ -117,7 +118,7 @@ public final class LoadDataSetAction extends AbstractAction {
                         if (pifName.equals(algoOutputFactory[i])) {
 
                             PersistentVisualization pv = null;
-                            if(viz.length > v_i && viz[v_i].split("\\.")[1].equals(algoOutput[i].split("\\.")[2])){
+                            if(viz.length > v_i && viz[v_i].split("\\.")[0].equals(algoOutput[i].split("\\.")[2])){
                                 try (FileInputStream fileIn = new FileInputStream(new File(visualization, viz[v_i++]))) {
 
                                     try (ObjectInputStream in = new ObjectInputStream(fileIn)) {

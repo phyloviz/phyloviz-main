@@ -102,7 +102,7 @@ public class FileUtils {
         IOException exception = null;
         for (File file : files) {
             try {
-                if(!file.getPath().contains("config.properties"))
+                //if(!file.getPath().contains("config.properties"))
                     forceDelete(file);
             } catch (IOException ioe) {
                 exception = ioe;
