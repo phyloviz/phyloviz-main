@@ -23,17 +23,15 @@ public abstract class JsonSchemaValidator {
     private String[] orderList;
     private final Map<String, JsonProp> validatorMap = new HashMap<>();
     private Map<String, String[]> dataIds;
-    private final String schemaPath, schemaFileName;
+    private final File schemaFile;
     
     /**
      * schemaPath - schema source folder
      * schemaFileName - schema file name
-     * @param schemaPath
-     * @param schemaFileName
+     * @param schemaFile
      */
-    public JsonSchemaValidator(String schemaPath, String schemaFileName){
-        this.schemaPath= schemaPath;
-        this.schemaFileName = schemaFileName;
+    public JsonSchemaValidator(File schemaFile){
+        this.schemaFile = schemaFile;
     }
     
     public void setDataIds(Map<String, String[]> dataIds){
@@ -42,8 +40,6 @@ public abstract class JsonSchemaValidator {
     
     public boolean validate(String directory, String filename) {
         //parse validator
-        File schemaFile = new File(schemaPath, schemaFileName);
-        
         try(FileReader reader = new FileReader(schemaFile)) {
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(reader);
@@ -69,7 +65,7 @@ public abstract class JsonSchemaValidator {
             }
             
         } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
+            throw new RuntimeException(ex);
         }
         //validate file
         try(FileReader reader = new FileReader(new File(directory, filename))) {
@@ -88,7 +84,7 @@ public abstract class JsonSchemaValidator {
             }
             
         } catch (Exception ex) {
-            Exceptions.printStackTrace(ex);
+            throw new RuntimeException(ex);
         }
         return true;
     }
