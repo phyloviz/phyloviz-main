@@ -43,7 +43,8 @@ public class UPGMAItemFactory implements ProjectItemFactory {
     public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename) {
 
         JsonValidator jv = new JsonValidator();
-        //if(!jv.validate(directory, filename)) return null;
+        if(!jv.validate(directory, filename)) 
+            return null;
         
         UPGMAItem upgma = null;
 

@@ -38,9 +38,7 @@ import org.openide.windows.TopComponent;
 
 public final class SaveAsProjectAction extends NodeAction {
 
-    private static SaveAsProjectAction _instance;
     private static final String VIZ_FOLDER = "visualization";
-
     private final String ext = ".csv";
 
     public SaveAsProjectAction() {
