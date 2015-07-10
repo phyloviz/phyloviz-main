@@ -14,6 +14,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
@@ -83,7 +84,7 @@ public final class UPGMAViewer extends GView {
     private final String p_id = "p_id";
     private final String show = "hide";
 
-    private float MAX_DISTANCE;
+    private final float MAX_DISTANCE;
 
     private TreeView tview;
     private boolean linear = false;
@@ -99,16 +100,16 @@ public final class UPGMAViewer extends GView {
     private Color BACKGROUND, FOREGROUND;
 
     private JSlider horizontalSlider;
-    private final double DISTANCE_FILTER_STEP = 0.001;
+    private final float DISTANCE_FILTER_STEP = 0.001f;
 
-    private float distanceFilterValue = 0;
+    private float distanceFilterValue;
 
     public UPGMAViewer(String name, UPGMARoot root) {
 
         _name = name;
         _root = root;
         MAX_DISTANCE = _root.getDistance();
-
+        distanceFilterValue = MAX_DISTANCE;
         tview = createTreeView();
     }
 
@@ -164,8 +165,18 @@ public final class UPGMAViewer extends GView {
                     }
 
                 } else if (item instanceof EdgeItem) {
-                    Double d = item.getDouble("distance");
-                    appendLineToInfoPanel(d / horizontalSlider.getValue() + "");
+                    VisualItem src = ((EdgeItem)item).getSourceItem();
+                    VisualItem target = ((EdgeItem)item).getTargetItem();
+                    
+                    if(!src.getBoolean("isRuler") || !target.getBoolean("isRuler")){
+                        
+                        double max_x = item.getBounds().getMaxX();
+                        double min_x = item.getBounds().getMinX();
+                        
+                        Double d = max_x - min_x;
+                        d = d / horizontalSlider.getValue();
+                        appendLineToInfoPanel(d + "");
+                    }
                 }
             }
 //            @Override
@@ -271,17 +282,19 @@ public final class UPGMAViewer extends GView {
         sp = new JSpinner();
         sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         sp.setBackground(Color.WHITE);
-        final SpinnerNumberModel model = new SpinnerNumberModel(MAX_DISTANCE - distanceFilterValue, 0, MAX_DISTANCE + DISTANCE_FILTER_STEP, DISTANCE_FILTER_STEP);
+        
+        
+        final SpinnerNumberModel model = new SpinnerNumberModel(distanceFilterValue , 0, MAX_DISTANCE + DISTANCE_FILTER_STEP, DISTANCE_FILTER_STEP);
         model.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 float distance = model.getNumber().floatValue();
-                distanceFilterValue = MAX_DISTANCE - distance;
-                tview.cutDistance(distanceFilterValue);
+                distanceFilterValue = distance;
+                tview.cutDistance(distanceFilterValue, MAX_DISTANCE);
             }
         });
         sp.setModel(model);
-        sp.setValue(MAX_DISTANCE - distanceFilterValue);
+        sp.setValue(distanceFilterValue);
         JPanel cutDistanceOption = new JPanel(new GridLayout(2, 1));
         cutDistanceOption.add(emptyJPanel());
         cutDistanceOption.add(sp);
@@ -332,7 +345,7 @@ public final class UPGMAViewer extends GView {
         JPanel horizontalLabelPanel = new JPanel(new GridLayout(1, 3));
         horizontalLabelPanel.add(horizontalBox);
         horizontalLabelPanel.add(emptyJPanel());
-        horizontalLabelPanel.add(search);
+        horizontalLabelPanel.add(tview.getSearchPanel());
         horizontalLabelPanel.setBackground(BACKGROUND);
 
         Box verticalBox = new Box(BoxLayout.Y_AXIS);
@@ -518,7 +531,7 @@ public final class UPGMAViewer extends GView {
     @Override
     public void setDistanceFilterValue(float value) {
         distanceFilterValue = value;
-        tview.cutDistance(distanceFilterValue);
+        tview.cutDistance(distanceFilterValue, MAX_DISTANCE);
     }
 
     private TreeView createTreeView() {
@@ -553,7 +566,7 @@ public final class UPGMAViewer extends GView {
         rulerNodeRigth.setBoolean("isRuler", true);
 
         // create a new treemap
-        TreeView tv = new TreeView(t, label);
+        TreeView tv = new TreeView(t, label, MAX_DISTANCE);
 
         tv.setBackground(BACKGROUND);
         tv.setForeground(FOREGROUND);

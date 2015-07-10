@@ -9,12 +9,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import net.phyloviz.upgmanjcore.json.JsonSchemaValidator;
-import org.openide.util.Exceptions;
 
 /**
  *
@@ -28,6 +26,8 @@ public class JsonValidator extends JsonSchemaValidator {
     private static final String schemaFileName = "schema.json";
     private static final URL path = JsonValidator.class.getResource(schemaFileName);
     private static final File file = new File(path.getFile());
+    private static final String schemaPath = new File("").getAbsolutePath();
+    private static final String schemaPath2 = new File("").getPath();
     
     public JsonValidator() throws IOException{
         super(file);        

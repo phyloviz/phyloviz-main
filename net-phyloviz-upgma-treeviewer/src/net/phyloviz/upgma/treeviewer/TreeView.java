@@ -84,10 +84,12 @@ public final class TreeView extends Display {
     private boolean labeledRender = false;
     private boolean linear = false;
     private final JSearchPanel searchPanel;
+    private boolean searchMatch = false;
+    private float cutDistance, maxDistance;
 
-    public TreeView(Tree t, String label) {
+    public TreeView(Tree t, String label, float maxDistance) {
         super(new Visualization());
-
+        this.maxDistance = maxDistance;
         m_label = label;
 
         m_vis.add(tree, t);
@@ -205,6 +207,7 @@ public final class TreeView extends Display {
 
             @Override
             public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
+                searchMatch = true;
                 m_vis.cancel("animatePaint");
                 m_vis.run("fullPaint");
                 m_vis.run("animatePaint");
@@ -217,7 +220,9 @@ public final class TreeView extends Display {
 
         //rotate(new Point(200,300), Math.PI);
     }
-
+    public JSearchPanel getSearchPanel(){
+        return searchPanel;
+    }
     public Renderer getNodeRenderer() {
         return m_nodeRenderer;
     }
@@ -289,6 +294,12 @@ public final class TreeView extends Display {
         NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
 
         rtl.setScaleX(d);
+        m_edgeRenderer = new DistanceFilterEdgeRenderer(this, cutDistance, rtl.getScaleX(), labeledRender, maxDistance);
+
+        rf = new DefaultRendererFactory(m_nodeRenderer);
+        rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
+
+        m_vis.setRendererFactory(rf);
         m_vis.run("treeLayout");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
@@ -306,11 +317,11 @@ public final class TreeView extends Display {
 
     }
 
-    void cutDistance(float value) {
-
+    void cutDistance(float value, float max) {
+        cutDistance = value;
         m_vis.cancel("animatePaint");
         NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
-        m_edgeRenderer = new DistanceFilterEdgeRenderer(this, value, rtl.getScaleX(), labeledRender);
+        m_edgeRenderer = new DistanceFilterEdgeRenderer(this, value, rtl.getScaleX(), labeledRender, max);
 
         rf = new DefaultRendererFactory(m_nodeRenderer);
         rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
@@ -470,9 +481,14 @@ public final class TreeView extends Display {
 
         @Override
         public int getColor(VisualItem item) {
-            double d = item.getDouble("distance");
+            Tuple itemTuple = item.getSourceTuple();
             if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
-                TreeView.this.panToAbs(new Point2D.Double(item.getX(), item.getY()));
+                if (itemTuple.getString("p_id").equals(searchPanel.getQuery())) {
+                    if(searchMatch) {
+                        TreeView.this.panToAbs(new Point2D.Double(item.getX(), item.getY()));
+                    }
+                    searchMatch = false;
+                }
                 return ColorLib.rgb(255, 190, 190);
             } else if (m_vis.isInGroup(item, Visualization.FOCUS_ITEMS)) {
                 return ColorLib.rgb(198, 229, 229);

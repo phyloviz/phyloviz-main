@@ -8,6 +8,7 @@ package net.phyloviz.upgma.treeviewer.render;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 import net.phyloviz.upgma.treeviewer.TreeView;
@@ -23,10 +24,10 @@ import prefuse.visual.VisualItem;
  */
 public class OrthogonalEdgeRenderer extends EdgeRenderer {
 
-    
     private TreeView tv;
+
     /**
-     * 
+     *
      * Creates a new edge renderer with a given arrowType. The edgeType is
      * ignored -- the edges are drawn orthogonally, as per the responsibility of
      * this class. The arrowType is one of the Constants.EDGE_ARROW_* values.
@@ -50,7 +51,6 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
 //    public OrthogonalEdgeRenderer(double value) {
 //        this(Constants.EDGE_TYPE_LINE, Constants.EDGE_ARROW_NONE);
 //    }
-
     /**
      * Creates an orthogonal shape (an edge) to draw between two nodes.
      *
@@ -59,8 +59,9 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
      */
     @Override
     protected Shape getRawShape(VisualItem vi) {
+        
         Path2D.Double result = new Path2D.Double();
-
+        
         if (vi instanceof EdgeItem) {
             EdgeItem edge = (EdgeItem) vi;
             VisualItem source = edge.getSourceItem();
@@ -72,24 +73,31 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
             double ty = target.getBounds().getCenterY();
 
             if (source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
+                
                 result.moveTo(sx, ty);
                 result.lineTo(tx, ty);
 
-            }if (!source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
+            }
+            if (!source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
                 return result;
 
             } else {
+                
                 result.moveTo(sx, sy);
-
                 result.lineTo(sx, ty);
                 result.lineTo(tx, ty);
-
+                result.lineTo(sx, ty);
+                result.lineTo(sx, sy);
+                
+                
+                
                 edge.setDouble("distance", tx - sx);
             }
         }
 
         return result;
     }
+
     @Override
     public void render(Graphics2D g, VisualItem item) {
         super.render(g, item);
@@ -104,35 +112,34 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
             double ty = target.getBounds().getY();
 
             if (source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
-                
+
                 double scaleX = tv.getScaleX();
                 double x = sx;
-                double y = ty+20;
+                double y = ty + 20;
                 double distanceX = tx;
                 String distance = String.format("%.2f", distanceX / scaleX);
-                
+
                 Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
                 Color dc = g.getColor();
                 Font mf = df.deriveFont(Font.BOLD);
                 g.setFont(mf);
                 g.setColor(dc);
-               
+
                 int tickSpace = 4;
-                double oneTick = (tx - sx) / ((double)tickSpace);
-                for(int i = 0; i<= tickSpace; i++){
+                double oneTick = (tx - sx) / ((double) tickSpace);
+                for (int i = 0; i <= tickSpace; i++) {
                     Path2D.Double result = new Path2D.Double();
                     result.moveTo(x, sy);
-                    result.lineTo(x, sy+10);
-                    result.lineTo(x, sy-10);
+                    result.lineTo(x, sy + 10);
+                    result.lineTo(x, sy - 10);
                     g.draw(result);
-                    
-                    g.drawString(distance, (float)(x), (float) y);
+
+                    g.drawString(distance, (float) (x), (float) y);
                     x += oneTick;
                     distanceX -= oneTick;
                     distance = String.format("%.2f", distanceX / scaleX);
-                    
+
                 }
-                
             }
         }
     }

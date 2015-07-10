@@ -37,11 +37,10 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         PersistentVisualization pv = njr.getPersistentVisualization();
         if (pv != null) {
             distanceFilter = pv.distanceFilterValue;
-            gv = new GraphView(name, njr);
+            gv = new GraphView(name, njr, pv.linearSize);
             loadVisualization(pv);
-        }
-        else{
-            gv = new GraphView(name, njr);
+        } else {
+            gv = new GraphView(name, njr, false);
         }
         this.add(gv);
         gvCatListen = new CategoryChangeListener() {
@@ -128,7 +127,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
     public PersistentVisualization getPersistentVisualization() {
 
         PersistentVisualization pc = new PersistentVisualization();
-        
+
         pc.categoryProvider = catProvider;
         pc.distanceFilterValue = gv.getDistanceFilterValue();
         pc.linearSize = gv.getLinearSize();
@@ -138,17 +137,15 @@ public final class GTPanel extends TopComponent implements IGTPanel {
     @Override
     public void loadVisualization(PersistentVisualization pv) {
 
-        if(pv.categoryProvider != null){
+        if (pv.categoryProvider != null) {
             catProvider = pv.categoryProvider;
-            gv.setDefaultRenderer( new ChartRenderer(pv.categoryProvider, gv));
+            gv.setDefaultRenderer(new ChartRenderer(pv.categoryProvider, gv));
             gv.setCategoryProvider(pv.categoryProvider);
         }
-        
-        if(pv.distanceFilterValue != -1){
+
+        if (pv.distanceFilterValue != -1) {
             gv.setDistanceFilterValue(pv.distanceFilterValue);
         }
-        if(pv.linearSize){
-            gv.setLinearSize(pv.linearSize);
-        }
+
     }
 }

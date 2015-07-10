@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.Properties;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import net.phyloviz.core.data.DataSet;
@@ -60,14 +62,23 @@ public final class SaveAsProjectAction extends NodeAction {
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 
+            StatusDisplayer.getDefault().setStatusText("Saving...");
+            
             String directory = fc.getSelectedFile().getAbsolutePath();
             
             File f = new File(directory, dataSetName);
             boolean created =  f.mkdir();
             if(!created){
-                try{FileUtils.cleanDirectory(f);}
-                catch(IOException ioe){ Exceptions.printStackTrace(ioe); }
-            
+                int result = JOptionPane.showConfirmDialog(fc, "Do you want to replace the current project " + dataSetName + "?", "Saving Project", YES_NO_OPTION);
+                if(result == JOptionPane.YES_OPTION){
+                    
+                    try{FileUtils.cleanDirectory(f);}
+                    catch(IOException ioe){ Exceptions.printStackTrace(ioe); }
+                
+                } else {
+                    return;
+                }
+                
             }
             
             directory = f.getAbsolutePath();
@@ -125,7 +136,7 @@ public final class SaveAsProjectAction extends NodeAction {
                                     if(pv == null) 
                                         continue;
                                     
-                                    String viz = "viz." + item.getName() + algos + ".txt";
+                                    String viz = item.getName() + algos + ".pviz";
                                     try{
                                         
                                         try(FileOutputStream fileOut = new FileOutputStream(new File(visualizationFolder, viz))){
@@ -240,7 +251,7 @@ public final class SaveAsProjectAction extends NodeAction {
     private void saveConfigFile(String dir, Properties prop) {
 
         try {
-            FileOutputStream fos = new FileOutputStream(new File(dir, "config.properties"));
+            FileOutputStream fos = new FileOutputStream(new File(dir, "config.properties.pviz"));
             prop.store(fos, "Project Configuration File");
             fos.close();
         } catch (IOException ie) {
