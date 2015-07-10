@@ -6,6 +6,7 @@
 package net.phyloviz.upgma.json;
 
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import net.phyloviz.upgmanjcore.json.JsonSchemaValidator;
@@ -20,10 +21,11 @@ public class JsonValidator extends JsonSchemaValidator {
     private static final String[] unionIds = new String[]{"uid", "distance", "leftID", "rightID"};
     private static final String[] rootIds = new String[]{"distance", "left", "right"};
     private static final String schemaFileName = "schema.json";
-    private static final String schemaPath = new File("").getAbsolutePath();
+    private static final URL path = JsonValidator.class.getResource(schemaFileName);
+    private static final File file = new File(path.getFile());
     
     public JsonValidator(){
-        super(schemaPath, schemaFileName);
+        super(file);
         Map<String, String[]> dataIds = new HashMap<>();
         dataIds.put("leaf", leafIds);
         dataIds.put("union", unionIds);

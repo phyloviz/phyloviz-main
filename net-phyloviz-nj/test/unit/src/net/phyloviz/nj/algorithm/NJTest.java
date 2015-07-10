@@ -41,7 +41,7 @@ public class NJTest {
     @Test
     public void test1() {
         
-        new JsonValidator().validate(null, null);
+        //new JsonValidator().validate(null, null);
         
 //        System.out.println("NJ -> ArrayList de arrays");
 //

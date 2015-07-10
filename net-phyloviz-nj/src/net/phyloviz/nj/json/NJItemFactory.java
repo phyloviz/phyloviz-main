@@ -32,9 +32,12 @@ public class NJItemFactory implements ProjectItemFactory {
     @Override
     public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename) {
         
-        JsonValidator validator = new JsonValidator();
-        
-        //if(!validator.validate(directory, filename)) return null;
+        try {
+            JsonValidator validator = new JsonValidator();
+            if(!validator.validate(directory, filename)) return null;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
         
         NeighborJoiningItem njItem = null;
         
