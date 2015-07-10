@@ -7,6 +7,7 @@ package net.phyloviz.upgma.json;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,9 +44,12 @@ public class UPGMAItemFactory implements ProjectItemFactory {
     public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename) {
 
         JsonValidator jv = new JsonValidator();
-        if(!jv.validate(directory, filename)) 
+        try{
+            if(!jv.validate(directory, filename)) 
             return null;
-        
+        } catch(IOException e){
+            Exceptions.printStackTrace(e);
+        }
         UPGMAItem upgma = null;
 
         try (FileReader reader = new FileReader(new File(directory, filename))) {

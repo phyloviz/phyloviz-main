@@ -5,44 +5,60 @@
  */
 package net.phyloviz.upgmanjcore.json;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.openide.filesystems.FileStateInvalidException;
 import org.openide.util.Exceptions;
 
 /**
  *
  * @author Adriano
  */
-public abstract class JsonSchemaValidator {    
+public class JsonSchemaValidator {    
     private String[] orderList;
     private final Map<String, JsonProp> validatorMap = new HashMap<>();
     private Map<String, String[]> dataIds;
-    private final File schemaFile;
-    
+    private static final String schemaFileName = "schema.json";
+    private File schemaFile;
     /**
      * schemaPath - schema source folder
      * schemaFileName - schema file name
      * @param schemaFile
      */
-    public JsonSchemaValidator(File schemaFile){
-        this.schemaFile = schemaFile;
-    }
+//    public JsonSchemaValidator(File schemaFile){
+//        this.schemaFile = schemaFile;
+//    }
+//    public abstract String getPackage();
+//    public abstract String getRootPath();
     
     public void setDataIds(Map<String, String[]> dataIds){
         this.dataIds = dataIds;
     }
-    
-    public boolean validate(String directory, String filename) {
+    public File getSchemaFile(String packageName, String root) {
+        String[] p =  packageName.split("\\.");
+        
+        File res = new File(root, "src");
+        for(String folder : p){
+            res = new File(res, folder);
+        }
+        res = new File(res, schemaFileName);
+        return res;
+    }
+    public boolean validate(InputStream schema, String directory, String filename) {
         //parse validator
-        try(FileReader reader = new FileReader(schemaFile)) {
+        try{
+            BufferedReader br = new BufferedReader(new InputStreamReader(schema));
             JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(reader);
+            JSONObject json = (JSONObject) parser.parse(br);
             
             //get order
             JSONArray orderObj = (JSONArray) json.get("order");
@@ -60,7 +76,7 @@ public abstract class JsonSchemaValidator {
             //check if has all orders
             for (String orderList1 : orderList) {
                 if (!validatorMap.containsKey(orderList1)) { 
-                    throw new RuntimeException("Invalid Schema!!!!");
+                    Exceptions.printStackTrace(new FileStateInvalidException("Invalid Schema!!!!"));
                 }
             }
             
@@ -84,7 +100,7 @@ public abstract class JsonSchemaValidator {
             }
             
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            Exceptions.printStackTrace(ex);
         }
         return true;
     }
@@ -146,6 +162,10 @@ public abstract class JsonSchemaValidator {
             Object o = (Object)jo.get(key);
             checkType( o, get.item.pType.get(key));
         }
+    }
+
+    public void setSchemaFile(File schemaFile) {
+        this.schemaFile = schemaFile;
     }
     private class ItemType{
         public Map<String, String> pType = new HashMap<>();

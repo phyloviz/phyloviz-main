@@ -28,21 +28,23 @@ import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = ProjectItemFactory.class)
 public class NJItemFactory implements ProjectItemFactory {
-   
+
     @Override
     public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename) {
-        
+
+        JsonValidator validator = new JsonValidator();
         try {
-            JsonValidator validator = new JsonValidator();
-            if(!validator.validate(directory, filename)) return null;
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            if (!validator.validate(directory, filename)) {
+                return null;
+            }
+        } catch (IOException e) {
+            Exceptions.printStackTrace(e);
         }
-        
+
         NeighborJoiningItem njItem = null;
-        
-        try(FileReader reader = new FileReader(new File(directory, filename))) {
-            
+
+        try (FileReader reader = new FileReader(new File(directory, filename))) {
+
             JSONParser parser = new JSONParser();
             JSONObject json;
             json = (JSONObject) parser.parse(reader);
