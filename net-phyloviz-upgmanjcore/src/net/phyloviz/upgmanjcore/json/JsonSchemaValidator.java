@@ -8,14 +8,17 @@ package net.phyloviz.upgmanjcore.json;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.IllegalFormatException;
 import java.util.Iterator;
 import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openide.filesystems.FileStateInvalidException;
 import org.openide.util.Exceptions;
 
@@ -23,36 +26,20 @@ import org.openide.util.Exceptions;
  *
  * @author Adriano
  */
-public class JsonSchemaValidator {    
+public abstract class JsonSchemaValidator {    
     private String[] orderList;
     private final Map<String, JsonProp> validatorMap = new HashMap<>();
     private Map<String, String[]> dataIds;
-    private static final String schemaFileName = "schema.json";
-    private File schemaFile;
+    
     /**
      * schemaPath - schema source folder
-     * schemaFileName - schema file name
-     * @param schemaFile
+ schemaFileName - schema file name
+     * @param dataIds
      */
-//    public JsonSchemaValidator(File schemaFile){
-//        this.schemaFile = schemaFile;
-//    }
-//    public abstract String getPackage();
-//    public abstract String getRootPath();
-    
     public void setDataIds(Map<String, String[]> dataIds){
         this.dataIds = dataIds;
     }
-    public File getSchemaFile(String packageName, String root) {
-        String[] p =  packageName.split("\\.");
-        
-        File res = new File(root, "src");
-        for(String folder : p){
-            res = new File(res, folder);
-        }
-        res = new File(res, schemaFileName);
-        return res;
-    }
+    
     public boolean validate(InputStream schema, String directory, String filename) {
         //parse validator
         try{
@@ -80,8 +67,8 @@ public class JsonSchemaValidator {
                 }
             }
             
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+        } catch (IOException | ParseException ex) {
+            Exceptions.printStackTrace(ex);
         }
         //validate file
         try(FileReader reader = new FileReader(new File(directory, filename))) {
@@ -148,10 +135,10 @@ public class JsonSchemaValidator {
                     double value3 = (double) s;
                     break;
                 default:
-                    throw new RuntimeException("Invalid type in input file!!!");
+                    Exceptions.printStackTrace(new IllegalArgumentException("Invalid type in input file!!!"));
             }
         } catch (Exception e){
-            throw new RuntimeException("Invalid type in input file!!!");
+            Exceptions.printStackTrace(e);
         }
     }
 
@@ -162,10 +149,6 @@ public class JsonSchemaValidator {
             Object o = (Object)jo.get(key);
             checkType( o, get.item.pType.get(key));
         }
-    }
-
-    public void setSchemaFile(File schemaFile) {
-        this.schemaFile = schemaFile;
     }
     private class ItemType{
         public Map<String, String> pType = new HashMap<>();
