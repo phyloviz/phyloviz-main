@@ -5,18 +5,17 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     </head>
     <body>
-        <p> <b>UPGMA</b> (<b>U</b>nweighted <b>P</b>air <b>G</b>roup <b>M</b>ethod with <b>A</b>rithmetic mean) is a simple <b>agglomerative</b> (bottom-up) <b>hierarchical</b> clustering method. 
-        It is one of the most popular methods in ecology for the classification of sampling units (such as vegetation plots) on the basis of their pairwise 
-        similarities in relevant descriptor variables (such as species composition).</p>
-        
-        <p> UPGMA is used for the creation of <b>phenetic trees</b> (phenograms) and in a phylogenetic context, it assumes a constant rate of evolution
-        (molecular clock hypothesis), and is not a well-regarded method for inferring relationships unless this assumption has been tested and justified 
-        for the data set being used. </p>
-        
-        <p> This algorithm constructs a <b>rooted tree</b> (dendrogram) that reflects the structure present in a pairwise <b>dissimilarity matrix</b>.
-        At each step, the nearest two clusters are combined into a higher-level cluster. The <b>distance</b> between any two clusters <b>A</b> and <b>B</b> is 
-        the mean distance between elements of each cluster.</p>
+        <p> <b>SL</b> (<b>S</b>ingle - <b>L</b>inkage) is a simple <b>agglomerative</b> (bottom-up) <b>hierarchical</b> clustering method. 
+            It is also known as <b>nearest neighbour clustering</b></p>
 
-        <p> The method is attributed to <b>Robert R. Sokal</b> and <b>Charles D. Michener</b>. </p>
+        <p> SL is used for the creation of <b>phenetic trees</b> (phenograms) and in a phylogenetic context, it assumes a constant rate of evolution
+            (molecular clock hypothesis), and is not a well-regarded method for inferring relationships unless this assumption has been tested and justified 
+            for the data set being used. </p>
+
+        <p> This algorithm constructs a <b>rooted tree</b> (dendrogram) that reflects the structure present in a pairwise <b>dissimilarity matrix</b>.
+            At each step, the nearest two clusters are combined into a higher-level cluster. The <b>distance</b> between any two clusters <b>A</b> and <b>B</b> is 
+            the <b>shortest</b> distance between elements of each cluster.</p>
+
+        <p> The method is attributed to <b>R. Sibson</b>. </p>
     </body>
 </html>
