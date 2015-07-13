@@ -32,59 +32,21 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
+package net.phyloviz.upgma.algorithm.singlelinkage;
 
-package net.phyloviz.upgma.ui;
+import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.algo.ClusteringMethodProvider;
+import net.phyloviz.core.data.Profile;
+import net.phyloviz.core.data.TypingData;
+import net.phyloviz.upgma.tree.UPGMALeafNode;
+import org.openide.util.lookup.ServiceProvider;
 
-import java.awt.Image;
-import java.util.Collection;
-import javax.swing.Action;
-import net.phyloviz.core.explorer.ExplorerChildren;
-import net.phyloviz.upgma.UPGMAItem;
-import org.openide.nodes.AbstractNode;
-import org.openide.util.ImageUtilities;
-import org.openide.util.Utilities;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
+@ServiceProvider(service = ClusteringMethodProvider.class)
+public class SLMethodProvider implements ClusteringMethodProvider<UPGMALeafNode> {
 
-public class UPGMANode extends AbstractNode{
+    @Override
+    public AbstractClusteringMethod<UPGMALeafNode> getMethod(TypingData<? extends Profile> td) {
+        return new SLMethod();
+    }
 
-        public UPGMANode(UPGMAItem g) {
-            this(g, new InstanceContent());
-        }
-        
-	public UPGMANode(UPGMAItem g, InstanceContent ic) {
-		super(new ExplorerChildren(g.getLookup()), new AbstractLookup(ic));
-		ic.add(g);
-	        setDisplayName(g.toString());
-	}
-
-	@Override
-	public Image getIcon (int type) {
-		return ImageUtilities.loadImage("net/phyloviz/upgma/UPGMAIcon.png");
-	}
-
-	@Override
-	public Image getOpenedIcon (int type) {
-		return getIcon(type);
-	}
-
-	@Override
-	public boolean canDestroy() {
-		return false;
-	}
-
-	@Override
-	public Action getPreferredAction() {
-		return getActions(true)[0];
-	}
-
-	@Override
-	public Action[] getActions(boolean context) {
-
-		Collection<? extends Action> a4p = Utilities.actionsForPath("/Actions/PHYLOViZ/UPGMA");
-
-		Action[] actions = a4p.toArray(new Action[a4p.size()]);
-
-		return actions;
-	}
 }

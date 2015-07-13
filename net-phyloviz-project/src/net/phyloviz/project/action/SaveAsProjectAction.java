@@ -61,29 +61,32 @@ public final class SaveAsProjectAction extends NodeAction {
         if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 
             StatusDisplayer.getDefault().setStatusText("Saving...");
-            
+
             String directory = fc.getSelectedFile().getAbsolutePath();
-            
+
             File f = new File(directory, dataSetName);
-            boolean created =  f.mkdir();
-            if(!created){
+            boolean created = f.mkdir();
+            if (!created) {
                 int result = JOptionPane.showConfirmDialog(fc, "Do you want to replace the current project " + dataSetName + "?", "Saving Project", YES_NO_OPTION);
-                if(result == JOptionPane.YES_OPTION){
-                    
-                    try{FileUtils.cleanDirectory(f);}
-                    catch(IOException ioe){ Exceptions.printStackTrace(ioe); }
-                
+                if (result == JOptionPane.YES_OPTION) {
+
+                    try {
+                        FileUtils.cleanDirectory(f);
+                    } catch (IOException ioe) {
+                        Exceptions.printStackTrace(ioe);
+                    }
+
                 } else {
                     return;
                 }
-                
+
             }
-            
+
             directory = f.getAbsolutePath();
 
             File visualizationFolder = new File(directory, VIZ_FOLDER);
             visualizationFolder.mkdir();
-            
+
             TypingData td = ds.getLookup().lookup(TypingData.class);
             String typingFactory = td.getNode().getDisplayName();
 
@@ -114,7 +117,9 @@ public final class SaveAsProjectAction extends NodeAction {
             if (c.size() > 0) {
                 int algos = 1;
                 Collection<? extends ProjectItemFactory> pif = Lookup.getDefault().lookupAll(ProjectItemFactory.class);
-                StringBuilder algorithmsFactory = new StringBuilder(), algorithms = new StringBuilder();
+                StringBuilder algorithmsFactory = new StringBuilder();
+                StringBuilder algorithms = new StringBuilder();
+                StringBuilder algorithmsDistance = new StringBuilder();
                 StringBuilder visualization = new StringBuilder();
                 for (ProjectItem item : c) {
 
@@ -131,15 +136,16 @@ public final class SaveAsProjectAction extends NodeAction {
                                 if (tc.getLookup().lookup(klass) == item) {
 
                                     PersistentVisualization pv = ((IGTPanel) tc).getPersistentVisualization();
-                                    if(pv == null) 
+                                    if (pv == null) {
                                         continue;
-                                    
-                                    String viz = item.getName() + algos + ".pviz";
-                                    try{
-                                        
-                                        try(FileOutputStream fileOut = new FileOutputStream(new File(visualizationFolder, viz))){
+                                    }
 
-                                            try(ObjectOutputStream out = new ObjectOutputStream(fileOut)){
+                                    String viz = item.getMethodProviderName() + algos + ".pviz";
+                                    try {
+
+                                        try (FileOutputStream fileOut = new FileOutputStream(new File(visualizationFolder, viz))) {
+
+                                            try (ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
 
                                                 out.writeObject(pv);
                                                 out.close();
@@ -149,14 +155,15 @@ public final class SaveAsProjectAction extends NodeAction {
                                         }
                                     } catch (IOException i) {
                                         Exceptions.printStackTrace(i);
-                                    } 
+                                    }
 
                                 }
                             }
 
                             algorithmsFactory.append(itemFactory).append(",");
-
-                            String filename = dataSetName + ".output." + item.getName() + algos++ + ".json";
+                            algorithmsDistance.append(item.getDistanceProvider()).append(",");
+                            
+                            String filename = dataSetName + ".output." + item.getMethodProviderName() + algos++ + ".json";
                             algorithms.append(filename).append(",");
                             save(directory, filename, item.getOutput());
 
@@ -166,16 +173,18 @@ public final class SaveAsProjectAction extends NodeAction {
                 }
 
                 //removing last comma
-                
                 algorithmsFactory.deleteCharAt(algorithmsFactory.length() - 1);
                 algorithms.deleteCharAt(algorithms.length() - 1);
-                if(visualization.length() > 0){
+                algorithmsDistance.deleteCharAt(algorithmsDistance.length() - 1);
+                
+                if (visualization.length() > 0) {
                     visualization.deleteCharAt(visualization.length() - 1);
                     props.put("visualization", visualization.toString());
                 }
                 //add props
                 props.put("algorithm-output", algorithms.toString());
                 props.put("algorithm-output-factory", algorithmsFactory.toString());
+                props.put("algorithm-output-distance", algorithmsDistance.toString());
             }
 
             saveConfigFile(directory, props);

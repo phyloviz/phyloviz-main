@@ -12,7 +12,7 @@ public class NJDistanceStudierKeppler extends NJAbstractDistance {
     
     @Override
     public String toString() {
-        return "Neighbor-Joining distance Studier and Keppler Criterion";
+        return "Studier-Keppler Criterion";
     }
     
     @Override

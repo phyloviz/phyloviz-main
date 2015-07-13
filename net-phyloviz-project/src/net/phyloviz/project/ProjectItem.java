@@ -17,9 +17,11 @@ public interface ProjectItem {
     
     public PersistentVisualization getPersistentVisualization();
     
-    public String getName();
+    public String getMethodProviderName();
     
     public String getMainName();
     
     public String getOutput();
+    
+    public String getDistanceProvider();
 }

@@ -73,16 +73,19 @@ public final class LoadDataSetAction extends AbstractAction {
                     populationFile = prop.getProperty("population-file"),
                     populationFK = prop.getProperty("population-foreign-key"),
                     algorithmOutput = prop.getProperty("algorithm-output"),
-                    algorithmOutputOutputFactory = prop.getProperty("algorithm-output-factory"),
+                    algorithmOutputFactory = prop.getProperty("algorithm-output-factory"),
+                    algorithmOutputDistanceProvider = prop.getProperty("algorithm-output-distance"),
                     visualizations = prop.getProperty("visualization");
 
             String[] algoOutput = algorithmOutput != null
                     ? algorithmOutput.split(",")
                     : new String[]{""};
-            String[] algoOutputFactory = algorithmOutputOutputFactory != null
-                    ? algorithmOutputOutputFactory.split(",")
+            String[] algoOutputFactory = algorithmOutputFactory != null
+                    ? algorithmOutputFactory.split(",")
                     : new String[]{""};
-
+              String[] algoOutputDistance = algorithmOutputDistanceProvider != null
+                    ? algorithmOutputDistanceProvider.split(",")
+                    : new String[]{""};
             String[] viz = visualizations != null
                     ? visualizations.split(",")
                     : new String[]{};
@@ -132,7 +135,7 @@ public final class LoadDataSetAction extends AbstractAction {
                                 }
                             }
                             StatusDisplayer.getDefault().setStatusText("Loading algorithms...");
-                            ProjectItem pi = pif.loadData(dataSetName, td, projectDir, algoOutput[i]);
+                            ProjectItem pi = pif.loadData(dataSetName, td, projectDir, algoOutput[i], algoOutputDistance[i]);
                             
                             if (pv != null) {
                                 pi.addPersistentVisualization(pv);

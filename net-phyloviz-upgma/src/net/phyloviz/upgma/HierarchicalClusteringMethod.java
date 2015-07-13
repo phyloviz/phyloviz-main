@@ -3,16 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.phyloviz.upgma.algorithm;
+package net.phyloviz.upgma;
 
-import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.AbstractClusteringMethod;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
 
 /**
  *
  * @author Marta Nascimento
  */
-public interface HierarchicalClusteringDistance extends AbstractDistance<UPGMALeafNode>{
- 
-    float distance(float d1, float d2);
+public abstract class HierarchicalClusteringMethod implements AbstractClusteringMethod<UPGMALeafNode> {
+
+    @Override
+    public abstract float getLinkageCriteria(float d1, float d2);
+
 }

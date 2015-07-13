@@ -12,7 +12,7 @@ public class NJDistanceSaitouNei extends NJAbstractDistance {
     
     @Override
     public String toString() {
-        return "Neighbor-Joining distance Saitou N. and Nei M. Criterion";
+        return "Saitou-Nei Criterion";
     }
 
     @Override

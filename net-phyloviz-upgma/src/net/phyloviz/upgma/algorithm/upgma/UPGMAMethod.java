@@ -32,59 +32,20 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
+package net.phyloviz.upgma.algorithm.upgma;
 
-package net.phyloviz.upgma.ui;
+import net.phyloviz.upgma.HierarchicalClusteringMethod;
 
-import java.awt.Image;
-import java.util.Collection;
-import javax.swing.Action;
-import net.phyloviz.core.explorer.ExplorerChildren;
-import net.phyloviz.upgma.UPGMAItem;
-import org.openide.nodes.AbstractNode;
-import org.openide.util.ImageUtilities;
-import org.openide.util.Utilities;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
+public class UPGMAMethod extends HierarchicalClusteringMethod{
 
-public class UPGMANode extends AbstractNode{
-
-        public UPGMANode(UPGMAItem g) {
-            this(g, new InstanceContent());
-        }
-        
-	public UPGMANode(UPGMAItem g, InstanceContent ic) {
-		super(new ExplorerChildren(g.getLookup()), new AbstractLookup(ic));
-		ic.add(g);
-	        setDisplayName(g.toString());
-	}
-
-	@Override
-	public Image getIcon (int type) {
-		return ImageUtilities.loadImage("net/phyloviz/upgma/UPGMAIcon.png");
-	}
-
-	@Override
-	public Image getOpenedIcon (int type) {
-		return getIcon(type);
-	}
-
-	@Override
-	public boolean canDestroy() {
-		return false;
-	}
-
-	@Override
-	public Action getPreferredAction() {
-		return getActions(true)[0];
-	}
-
-	@Override
-	public Action[] getActions(boolean context) {
-
-		Collection<? extends Action> a4p = Utilities.actionsForPath("/Actions/PHYLOViZ/UPGMA");
-
-		Action[] actions = a4p.toArray(new Action[a4p.size()]);
-
-		return actions;
-	}
+    @Override
+    public float getLinkageCriteria(float d1, float d2) {
+        return (d1 + d2) / 2;
+    }  
+    
+    @Override
+    public String toString(){
+        return "UPGMA method";
+    }
+    
 }

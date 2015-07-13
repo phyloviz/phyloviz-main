@@ -34,9 +34,11 @@
  */
 package net.phyloviz.upgma;
 
+import net.phyloviz.algo.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.util.NodeFactory;
 import net.phyloviz.project.ProjectItem;
+import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
 import net.phyloviz.upgma.json.UPGMAToJSON;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.ui.OutputPanel;
@@ -50,15 +52,17 @@ import org.openide.util.lookup.InstanceContent;
 public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
 
     private OutputPanel op;
-    private AbstractDistance ad;
+    private HierarchicalClusteringDistance ad;
     private UPGMARoot root;
     private InstanceContent ic;
     private AbstractLookup lookup;
     private PersistentVisualization cp;
+    private AbstractClusteringMethod cm;
 
-    public UPGMAItem(UPGMARoot root, AbstractDistance ad, OutputPanel op) {
+    public UPGMAItem(UPGMARoot root, HierarchicalClusteringDistance ad, AbstractClusteringMethod cm, OutputPanel op) {
         this.op = op;
         this.ad = ad;
+        this.cm = cm;
         this.root = root;
 
         ic = new InstanceContent();
@@ -97,12 +101,12 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
 
     @Override
     public String toString() {
-        return "Hierarchical Clustering (" + ad.toString() + ")";
+        return "Hierarchical Clustering  - "+cm.toString()+" - (" +ad.toString()+  ")";
     }
 
     @Override
-    public String getName() {
-        return ad.toString().split(" ")[0].toLowerCase();
+    public String getMethodProviderName() {
+        return cm.toString().split(" ")[0].toLowerCase();
     }
     @Override
     public String getMainName() {
@@ -123,6 +127,11 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
     @Override
     public PersistentVisualization getPersistentVisualization() {
         return this.cp;
+    }
+
+    @Override
+    public String getDistanceProvider() {
+        return ad.toString().split(" ")[0].toLowerCase();
     }
 
 

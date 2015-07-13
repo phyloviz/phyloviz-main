@@ -82,7 +82,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
                 }
             }
         });
-        gv.loadGraph(njr.getRoot(), njr.getDistance(), distanceFilter);
+        gv.loadGraph(njr.getRoot(), njr.getDistance(), distanceFilter, pv != null);
 
     }
 

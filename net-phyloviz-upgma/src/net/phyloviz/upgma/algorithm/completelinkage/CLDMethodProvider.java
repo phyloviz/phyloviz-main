@@ -34,82 +34,20 @@
  */
 package net.phyloviz.upgma.algorithm.completelinkage;
 
-import net.phyloviz.upgma.algorithm.*;
-import java.util.Comparator;
-import net.phyloviz.algo.Edge;
+import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.algo.ClusteringMethodProvider;
+import net.phyloviz.core.data.Profile;
+import net.phyloviz.core.data.TypingData;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
+import org.openide.util.lookup.ServiceProvider;
 
-public class CLDistance implements HierarchicalClusteringDistance {
+@ServiceProvider(service = ClusteringMethodProvider.class)
+public class CLDMethodProvider implements ClusteringMethodProvider<UPGMALeafNode> {
 
+   
     @Override
-    public float distance(float d1, float d2) {
-        return d1 > d2 ? d1 : d2;
-    }
-    
-    @Override
-    public int level(UPGMALeafNode px, UPGMALeafNode py) {
-        int diffs = 0;
-        for (int i = 0; i < px.profileLength(); i++) {
-            if (px.getValue(i).compareTo(py.getValue(i)) != 0) {
-                diffs++;
-            }
-        }
-        return diffs;
-    }
-
-    @Override
-    public int level(Edge<UPGMALeafNode> e) {
-        throw new UnsupportedOperationException("Complete-Linkage - level");
-    }
-
-    @Override
-    public int compare(Edge<UPGMALeafNode> f, Edge<UPGMALeafNode> e) {
-        throw new UnsupportedOperationException("Complete-Linkage - compareEdges");
-    }
-
-    @Override
-    public int compare(UPGMALeafNode px, UPGMALeafNode py) {
-        throw new UnsupportedOperationException("Complete-Linkage - compareNodes");
-    }
-
-    @Override
-    public Comparator<UPGMALeafNode> getProfileComparator() {
-        throw new UnsupportedOperationException("Complete-Linkage - getProfileComparator");
-    }
-
-    @Override
-    public Comparator<Edge<UPGMALeafNode>> getEdgeComparator() {
-        throw new UnsupportedOperationException("Complete-Linkage - getEdgeComparator");
-    }
-
-    @Override
-    public String toString() {
-        return "Complete-Linkage distance";
-    }
-
-    @Override
-    public String info(UPGMALeafNode px, UPGMALeafNode py) {
-        return null;
-    }
-
-    @Override
-    public String info(Edge<UPGMALeafNode> e) {
-        return null;
-    }
-
-    @Override
-    public boolean configurable() {
-        return false;
-    }
-
-    @Override
-    public void configure() {
-        // Do nothing
-    }
-
-    @Override
-    public int maxLevel() {
-        return -1;
+    public AbstractClusteringMethod<UPGMALeafNode> getMethod(TypingData<? extends Profile> td) {
+        return new CLMethod();
     }
 
 }

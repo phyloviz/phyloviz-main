@@ -14,8 +14,8 @@ import net.phyloviz.core.data.TypingData;
  */
 public interface ProjectItemFactory {
     
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename);
+    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, String distanceProvider);
     
     public String getName();
-    
+
 }

@@ -46,32 +46,32 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
+import net.phyloviz.algo.AbstractClusteringMethod;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.algo.AbstractDistance;
-import net.phyloviz.algo.DistanceProvider;
-import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
+import net.phyloviz.algo.ClusteringMethodProvider;
+import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import org.openide.util.Lookup;
 
-public final class UPGMAVisualPanel1 extends JPanel {
+public final class UPGMAVisualPanel2 extends JPanel {
 
 	private DefaultComboBoxModel typeListModel;
 
 	/** Creates new form GOeBurstVisualPanel1 */
-	public UPGMAVisualPanel1(TypingData<? extends Profile> td) {
+	public UPGMAVisualPanel2(TypingData<? extends Profile> td) {
 
 		typeListModel = new DefaultComboBoxModel();
-		Collection<? extends DistanceProvider> result = Lookup.getDefault().lookupAll(DistanceProvider.class);
-		Iterator<? extends DistanceProvider> ir = result.iterator();
+		Collection<? extends ClusteringMethodProvider> result = Lookup.getDefault().lookupAll(ClusteringMethodProvider.class);
+		Iterator<? extends ClusteringMethodProvider> ir = result.iterator();
 		while (ir.hasNext()) {
-                    AbstractDistance ad = ir.next().getDistance(td);
-                    if (ad != null && ad instanceof HierarchicalClusteringDistance){
-                    	typeListModel.addElement(ad);
+                    AbstractClusteringMethod cm = ir.next().getMethod(td);
+                    if (cm != null && cm instanceof HierarchicalClusteringMethod){
+                    	typeListModel.addElement(cm);
                     }
 		}
 
 		initComponents();
-		String dfn = org.openide.util.NbBundle.getMessage(typeListModel.getSelectedItem().getClass(), "AbstractDistance.description");
+		String dfn = org.openide.util.NbBundle.getMessage(typeListModel.getSelectedItem().getClass(), "AbstractMethod.description");
 		URL url = typeListModel.getSelectedItem().getClass().getResource(dfn);
 		if (url != null) {
 					try {
@@ -91,7 +91,7 @@ public final class UPGMAVisualPanel1 extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				String dfn = org.openide.util.NbBundle.getMessage(typeListModel.getSelectedItem().getClass(), "AbstractDistance.description");
+				String dfn = org.openide.util.NbBundle.getMessage(typeListModel.getSelectedItem().getClass(), "AbstractMethod.description");
 				URL url = typeListModel.getSelectedItem().getClass().getResource(dfn);
 				if (url != null) {
 					try {
@@ -114,11 +114,11 @@ public final class UPGMAVisualPanel1 extends JPanel {
 
 	@Override
 	public String getName() {
-		return "Distance";
+		return "Method";
 	}
 
-	public AbstractDistance getDistance() {
-		return (AbstractDistance) jComboBox1.getSelectedItem();
+	public AbstractClusteringMethod getMethod() {
+		return (AbstractClusteringMethod) jComboBox1.getSelectedItem();
 	}
 
 	/** This method is called from within the constructor to
@@ -146,7 +146,7 @@ public final class UPGMAVisualPanel1 extends JPanel {
 
         jPanel3.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(UPGMAVisualPanel1.class, "UPGMAVisualPanel1.jLabel2.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(UPGMAVisualPanel2.class, "UPGMAVisualPanel2.jLabel2.text")); // NOI18N
         jLabel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
         jPanel3.add(jLabel2);
 
@@ -167,7 +167,7 @@ public final class UPGMAVisualPanel1 extends JPanel {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(UPGMAVisualPanel1.class, "UPGMAVisualPanel1.jLabel3.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(UPGMAVisualPanel2.class, "UPGMAVisualPanel2.jLabel3.text")); // NOI18N
         jLabel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
         jPanel1.add(jLabel3, java.awt.BorderLayout.CENTER);
 
@@ -181,7 +181,7 @@ public final class UPGMAVisualPanel1 extends JPanel {
         jEditorPane1.setEditable(false);
         jEditorPane1.setBackground(new java.awt.Color(240, 240, 240));
         jEditorPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        jEditorPane1.setContentType(org.openide.util.NbBundle.getMessage(UPGMAVisualPanel1.class, "UPGMAVisualPanel1.jEditorPane1.contentType")); // NOI18N
+        jEditorPane1.setContentType(org.openide.util.NbBundle.getMessage(UPGMAVisualPanel2.class, "UPGMAVisualPanel1.jEditorPane1.contentType")); // NOI18N
         jEditorPane1.setMaximumSize(new java.awt.Dimension(200, 200));
         jScrollPane1.setViewportView(jEditorPane1);
 

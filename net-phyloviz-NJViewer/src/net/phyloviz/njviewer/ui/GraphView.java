@@ -353,7 +353,7 @@ public class GraphView extends GView {
         add(verticalPanel, BorderLayout.EAST);
     }
 
-    public void loadGraph(final NJRoot root, final AbstractDistance ad, final double distanceFilter) {
+    public void loadGraph(final NJRoot root, final AbstractDistance ad, final double distanceFilter, final boolean loaded) {
         final HashMap<Integer, Integer> uid2rowid = new HashMap<>();
 
         // Create and register the graph.
@@ -540,6 +540,9 @@ public class GraphView extends GView {
                         });
                         sp.setModel(model);
                         sp.setValue(distance);
+                        
+                        if(loaded)
+                            stopAnimation();
                     }
 
                 }

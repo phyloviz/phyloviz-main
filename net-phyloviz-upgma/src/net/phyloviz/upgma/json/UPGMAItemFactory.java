@@ -12,15 +12,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import net.phyloviz.algo.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.ClusteringMethodProvider;
 import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
+import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
+import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import net.phyloviz.upgma.UPGMAItem;
-import net.phyloviz.upgma.algorithm.HierarchicalClusteringDistance;
 import net.phyloviz.upgma.tree.NodeType;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgma.tree.UPGMARoot;
@@ -41,13 +44,14 @@ import org.openide.util.lookup.ServiceProvider;
 public class UPGMAItemFactory implements ProjectItemFactory {
 
     @Override
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename) {
+    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, String distance) {
 
         JsonValidator jv = new JsonValidator();
-        try{
-            if(!jv.validate(directory, filename)) 
-            return null;
-        } catch(IOException e){
+        try {
+            if (!jv.validate(directory, filename)) {
+                return null;
+            }
+        } catch (IOException e) {
             Exceptions.printStackTrace(e);
         }
         UPGMAItem upgma = null;
@@ -71,9 +75,12 @@ public class UPGMAItemFactory implements ProjectItemFactory {
 
             UPGMARoot root = createRoot(rootObj, leafs, unions);
 
-            HierarchicalClusteringDistance ad = getDistanceProvider(filename, td);
-            OutputPanel op = new OutputPanel(datasetName + ": Hierarchical Clustering (" + ad.toString() + ") Output");
-            upgma = new UPGMAItem(root, ad, op);
+            HierarchicalClusteringMethod cm = getMethodProvider(filename, td);
+            HierarchicalClusteringDistance ad = getDistanceProvider(distance, td);
+            
+            OutputPanel op = new OutputPanel(datasetName + ": Hierarchical Clustering - "+cm.toString()+" - (" +ad.toString()+  ")");
+            
+            upgma = new UPGMAItem(root, ad, cm, op);
 
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
@@ -138,20 +145,40 @@ public class UPGMAItemFactory implements ProjectItemFactory {
         return "upgma";
     }
 
-    private HierarchicalClusteringDistance getDistanceProvider(String filename, TypingData<? extends Profile> td) throws Exception {
-        String[] distanceNames = filename.split("\\.");
-        String distanceName = distanceNames[distanceNames.length-2];
-        int lenght = distanceName.length();
-        distanceName = new StringBuilder(distanceName).deleteCharAt(lenght - 1).toString();
+    private HierarchicalClusteringMethod getMethodProvider(String filename, TypingData<? extends Profile> td) throws Exception {
+        
+        String[] methodNames = filename.split("\\.");
+        String methodName = methodNames[methodNames.length - 2];
+        int lenght = methodName.length();
+        methodName = new StringBuilder(methodName).deleteCharAt(lenght - 1).toString();
+
+        Collection<? extends ClusteringMethodProvider> dp = Lookup.getDefault().lookupAll(ClusteringMethodProvider.class);
+        Iterator<? extends ClusteringMethodProvider> ir = dp.iterator();
+        while (ir.hasNext()) {
+            AbstractClusteringMethod cm = ir.next().getMethod(td);
+            if (cm != null) {
+                String cmName = cm.toString().split(" ")[0].toLowerCase();
+                if (cm instanceof HierarchicalClusteringMethod && methodName.equals(cmName)) {
+                    return (HierarchicalClusteringMethod) cm;
+                }
+            }
+        }
+        throw new Exception(methodName + " Method Provider Not Found!");
+    }
+
+    private HierarchicalClusteringDistance getDistanceProvider(String distance, TypingData<? extends Profile> td) throws Exception {
+        String[] distanceNames = distance.split("\\.");
+        String distanceName = distanceNames[distanceNames.length - 1];
 
         Collection<? extends DistanceProvider> dp = Lookup.getDefault().lookupAll(DistanceProvider.class);
         Iterator<? extends DistanceProvider> ir = dp.iterator();
         while (ir.hasNext()) {
             AbstractDistance ad = ir.next().getDistance(td);
-            if (ad != null){
+            if (ad != null) {
                 String adName = ad.toString().split(" ")[0].toLowerCase();
-                if(ad instanceof HierarchicalClusteringDistance && distanceName.equals(adName))
-                    return (HierarchicalClusteringDistance)ad;
+                if (ad instanceof HierarchicalClusteringDistance && distanceName.equals(adName)) {
+                    return (HierarchicalClusteringDistance) ad;
+                }
             }
         }
         throw new Exception(distanceName + " Distance Provider Not Found!");

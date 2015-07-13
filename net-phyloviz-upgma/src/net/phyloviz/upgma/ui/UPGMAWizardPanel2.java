@@ -35,56 +35,76 @@
 
 package net.phyloviz.upgma.ui;
 
-import java.awt.Image;
-import java.util.Collection;
-import javax.swing.Action;
-import net.phyloviz.core.explorer.ExplorerChildren;
-import net.phyloviz.upgma.UPGMAItem;
-import org.openide.nodes.AbstractNode;
+import java.awt.Component;
+import javax.swing.event.ChangeListener;
+import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.core.data.Profile;
+import net.phyloviz.core.data.TypingData;
+import org.openide.WizardDescriptor;
+import org.openide.WizardValidationException;
+import org.openide.nodes.Node;
+import org.openide.util.HelpCtx;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Utilities;
-import org.openide.util.lookup.AbstractLookup;
-import org.openide.util.lookup.InstanceContent;
 
-public class UPGMANode extends AbstractNode{
+public class UPGMAWizardPanel2 implements WizardDescriptor.ValidatingPanel {
 
-        public UPGMANode(UPGMAItem g) {
-            this(g, new InstanceContent());
-        }
-        
-	public UPGMANode(UPGMAItem g, InstanceContent ic) {
-		super(new ExplorerChildren(g.getLookup()), new AbstractLookup(ic));
-		ic.add(g);
-	        setDisplayName(g.toString());
+	/**
+	 * The visual component that displays this panel. If you need to access the
+	 * component from this class, just use getComponent().
+	 */
+	private UPGMAVisualPanel2 component;
+
+	private Node node;
+
+	public UPGMAWizardPanel2(Node node) {
+		super();
+		this.node = node;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Component getComponent() {
+		if (component == null) {
+			TypingData<? extends Profile> td = node.getLookup().lookup(TypingData.class);
+			component = new UPGMAVisualPanel2(td);
+		}
+		component.setPreferredSize(new java.awt.Dimension(480,340));
+		return component;
 	}
 
 	@Override
-	public Image getIcon (int type) {
-		return ImageUtilities.loadImage("net/phyloviz/upgma/UPGMAIcon.png");
+	public HelpCtx getHelp() {
+		return HelpCtx.DEFAULT_HELP;
 	}
 
 	@Override
-	public Image getOpenedIcon (int type) {
-		return getIcon(type);
+	public boolean isValid() {
+		return true;
 	}
 
 	@Override
-	public boolean canDestroy() {
-		return false;
+	public final void addChangeListener(ChangeListener l) {
 	}
 
 	@Override
-	public Action getPreferredAction() {
-		return getActions(true)[0];
+	public final void removeChangeListener(ChangeListener l) {
 	}
 
 	@Override
-	public Action[] getActions(boolean context) {
+	public void readSettings(Object settings) {
+		((WizardDescriptor) settings).putProperty("WizardPanel_image", ImageUtilities.loadImage("net/phyloviz/upgma/UPGMAImage.png", true));
+	}
 
-		Collection<? extends Action> a4p = Utilities.actionsForPath("/Actions/PHYLOViZ/UPGMA");
+	@Override
+	public void storeSettings(Object settings) {
+		((WizardDescriptor) settings).putProperty("method", ((UPGMAVisualPanel2) getComponent()).getMethod());
+	}
 
-		Action[] actions = a4p.toArray(new Action[a4p.size()]);
+	@Override
+	public void validate() throws WizardValidationException {
+		AbstractClusteringMethod cm = component.getMethod();
 
-		return actions;
+		if (cm == null)
+			throw new WizardValidationException(null, "Invalid method", null);
 	}
 }

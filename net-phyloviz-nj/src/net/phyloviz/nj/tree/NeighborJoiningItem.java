@@ -100,12 +100,12 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     }
 
     @Override
-    public String getName() {
-        return "nj";
+    public String getMethodProviderName() {
+        return "nj-"+(ad.toString().split(" ")[0]).toLowerCase()+"-";
     }
     @Override
     public String getMainName() {
-        return getName();
+        return "nj";
     }
 
     @Override
@@ -122,5 +122,10 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     @Override
     public PersistentVisualization getPersistentVisualization() {
         return this.cp;
+    }
+
+    @Override
+    public String getDistanceProvider() {
+        return ad.toString().split(" ")[0].toLowerCase();
     }
 }

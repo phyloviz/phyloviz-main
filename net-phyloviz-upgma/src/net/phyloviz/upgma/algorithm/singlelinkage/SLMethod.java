@@ -32,31 +32,19 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-package net.phyloviz.upgma.algorithm.upgma;
+package net.phyloviz.upgma.algorithm.singlelinkage;
 
-import net.phyloviz.algo.AbstractDistance;
-import net.phyloviz.algo.DistanceProvider;
-import net.phyloviz.core.data.Profile;
-import net.phyloviz.core.data.TypingData;
-import net.phyloviz.upgma.tree.UPGMALeafNode;
-import org.openide.util.lookup.ServiceProvider;
+import net.phyloviz.upgma.HierarchicalClusteringMethod;
 
-@ServiceProvider(service = DistanceProvider.class)
-public class UPGMADistanceProvider implements DistanceProvider<UPGMALeafNode> {
+public class SLMethod extends HierarchicalClusteringMethod {
 
     @Override
-    public AbstractDistance<UPGMALeafNode> getDistance(TypingData<? extends Profile> td) {
-        return new UPGMADistance();
-    }
-
-    @Override
-    public AbstractDistance<UPGMALeafNode> getDistance(TypingData<? extends Profile> td, int maxLevel) {
-        return getDistance(td);
-    }
-
+    public float getLinkageCriteria(float d1, float d2) {
+        return d1 < d2 ? d1 : d2;
+    }    
+    
     @Override
     public String toString() {
-        return "UPGMA distance";
+        return "Single-Linkage method";
     }
-
 }

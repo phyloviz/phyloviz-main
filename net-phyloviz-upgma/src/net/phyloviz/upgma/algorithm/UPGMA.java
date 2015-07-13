@@ -5,7 +5,7 @@ import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.upgma.algorithm.HierarchicalClusteringDistance;
+import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import net.phyloviz.upgma.tree.IndexListNode;
 import net.phyloviz.upgma.tree.IndexListNode.IndexNode;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
@@ -20,7 +20,8 @@ import net.phyloviz.upgma.ui.OutputPanel;
  */
 public class UPGMA {
 
-    private final HierarchicalClusteringDistance ad;
+    private final HierarchicalClusteringMethod cm;
+    private final AbstractDistance ad;
     private final TypingData<? extends Profile> td;
 
     private IndexListNode nodeList;
@@ -34,11 +35,12 @@ public class UPGMA {
     private int ties = 0;
     private int unionId;
 
-    public UPGMA(TypingData<? extends Profile> inTd, HierarchicalClusteringDistance inAd, OutputPanel op) {
+    public UPGMA(TypingData<? extends Profile> inTd, AbstractDistance oad, HierarchicalClusteringMethod ocm, OutputPanel op) {
         this.nodeList = new IndexListNode();
         this.nodeArray = new NodeType[inTd.size()];
         this.td = inTd;
-        this.ad = inAd;
+        this.ad = oad;
+        this.cm = ocm;
         this.op = op;
 
         int idx = 0, size = td.size();
@@ -99,7 +101,7 @@ public class UPGMA {
                 d2 = n2.getDistanceTo(idx);
             }
 
-            float distance = ad.distance(d1, d2);//(d1 + d2) / 2;
+            float distance = cm.getLinkageCriteria(d1, d2);
 
             if (current.getNodeIdx() < union.getNodeIdx()) {
                 current.setDistance(minC, distance);

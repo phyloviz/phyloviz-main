@@ -3,14 +3,16 @@ package net.phyloviz.nj.json;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.nj.algorithm.studier_keppler.NJDistanceStudierKeppler;
+import net.phyloviz.nj.algorithm.NJAbstractDistance;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NJUnionNode;
@@ -24,13 +26,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openide.util.Exceptions;
+import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = ProjectItemFactory.class)
 public class NJItemFactory implements ProjectItemFactory {
 
     @Override
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename) {
+    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, String distance) {
 
         JsonValidator validator = new JsonValidator();
         try {
@@ -61,12 +64,12 @@ public class NJItemFactory implements ProjectItemFactory {
             }
             NJRoot root = createRoot(rootObj, leafs, unions);
 
-            AbstractDistance ad = new NJDistanceStudierKeppler();
+            AbstractDistance ad = getDistanceProvider(distance, td);
             OutputPanel op = new OutputPanel(datasetName + ": Neighbor-Joining");
             njItem = new NeighborJoiningItem(root, null, ad, op);
-        } catch (IOException | ParseException ex) {
+        } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
-        }
+        } 
         return njItem;
     }
 
@@ -123,6 +126,24 @@ public class NJItemFactory implements ProjectItemFactory {
         return r;
     }
 
+    private AbstractDistance getDistanceProvider(String distance, TypingData<? extends Profile> td) throws Exception {
+        String[] distanceNames = distance.split("\\.");
+        String distanceName = distanceNames[distanceNames.length - 1];
+
+        Collection<? extends DistanceProvider> dp = Lookup.getDefault().lookupAll(DistanceProvider.class);
+        Iterator<? extends DistanceProvider> ir = dp.iterator();
+        while (ir.hasNext()) {
+            AbstractDistance ad = ir.next().getDistance(td);
+            if (ad != null) {
+                String adName = ad.toString().split(" ")[0].toLowerCase();
+                if (ad instanceof NJAbstractDistance && distanceName.equals(adName)) {
+                    return (NJAbstractDistance) ad;
+                }
+            }
+        }
+        throw new Exception(distanceName + " Distance Provider Not Found!");
+    }
+    
     @Override
     public String getName() {
         return "Neighbor-Joining";
