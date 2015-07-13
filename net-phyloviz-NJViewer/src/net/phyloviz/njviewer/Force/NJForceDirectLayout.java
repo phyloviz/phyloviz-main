@@ -22,7 +22,6 @@ import prefuse.visual.VisualItem;
  */
 public class NJForceDirectLayout extends ForceDirectedLayout{
     
-    private float scale = 1;
     
     public NJForceDirectLayout(String g){
         super(g);
@@ -63,13 +62,9 @@ public class NJForceDirectLayout extends ForceDirectedLayout{
                 ForceItem f2 = (ForceItem)n2.get(FORCEITEM);
                 float dist = e.getFloat("distance");
                 if(dist < 0) dist = dist * -1;
-                fsim.addSpring(f1, f2, dist*scale);
+                fsim.addSpring(f1, f2, dist);
             }
         }
     }
 
-    public void changeScale(int value) {
-        scale = value;
-    }
-    
 }

@@ -92,6 +92,7 @@ import net.phyloviz.upgmanjcore.visualization.actions.EdgeLevelLabelAction;
 import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
 import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
+import prefuse.action.assignment.FontAction;
 
 public class GraphView extends GView {
 
@@ -129,7 +130,7 @@ public class GraphView extends GView {
         this.setBackground(Color.WHITE);
         this.setOpaque(true);
         this.name = name;
-        this.linear = linear;
+//        this.linear = linear;
         // Create an empty visualization.
         view = new Visualization();
         // Setup renderers.
@@ -142,10 +143,19 @@ public class GraphView extends GView {
         ColorAction fill = new NodeColorAction("graph.nodes");
         ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
         ColorAction edge = new EdgeColorAction("graph.edges");
+            FontAction nfont =
+            new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
+            @Override
+                public Font getFont(VisualItem item) {
+                    Profile st = (Profile) item.getSourceTuple().get("st_ref");
+                    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (GraphView.this.linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+            }
+        };
 
         ActionList draw = new ActionList();
         draw.add(fill);
         draw.add(text);
+        draw.add(nfont);
         draw.add(edge);
 
         fdl = new NJForceDirectLayout("graph");
