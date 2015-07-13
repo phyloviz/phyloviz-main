@@ -136,11 +136,14 @@ public final class LoadDataSetAction extends AbstractAction {
                             }
                             StatusDisplayer.getDefault().setStatusText("Loading algorithms...");
                             ProjectItem pi = pif.loadData(dataSetName, td, projectDir, algoOutput[i], algoOutputDistance[i]);
-                            
-                            if (pv != null) {
-                                pi.addPersistentVisualization(pv);
+                            if(pi != null){
+                                if (pv != null) {
+                                    pi.addPersistentVisualization(pv);
+                                }
+                                td.add(pi);
+                            } else {
+                                return;
                             }
-                            td.add(pi);
                         }
                     }
                 }
