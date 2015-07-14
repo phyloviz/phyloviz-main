@@ -81,6 +81,8 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
         setDepth(r, root,  root.getBounds().getMinX());
         setDepth(r2, root,  maxDepth);
         
+        MAX_Y = Double.MIN_VALUE;
+        
         secondWalk(root, null, false);
         
         setBreadth(r, root, MAX_Y +  (SCALE_Y * 2));

@@ -86,12 +86,14 @@ public final class TreeView extends Display {
     private final JSearchPanel searchPanel;
     private boolean searchMatch = false;
     private float cutDistance, maxDistance;
+    private final String distanceProvider;
 
-    public TreeView(Tree t, String label, float maxDistance) {
+    public TreeView(Tree t, String label, float maxDistance, String distanceProvider) {
         super(new Visualization());
         this.maxDistance = maxDistance;
+        this.distanceProvider = distanceProvider;
         m_label = label;
-
+        
         m_vis.add(tree, t);
 
         m_nodeRenderer = new NodeRenderer(m_label, this);//new LabelRenderer(m_label);
@@ -235,6 +237,9 @@ public final class TreeView extends Display {
         return m_edgeRenderer;
     }
 
+    public String getDistanceProvider(){
+        return distanceProvider;
+    }
     // ------------------------------------------------------------------------
 
     public void setOrientation(int orientation) {

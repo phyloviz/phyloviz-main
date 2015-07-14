@@ -140,6 +140,11 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                     distance = String.format("%.2f", distanceX / scaleX);
 
                 }
+                String distanceProvider = tv.getDistanceProvider().toUpperCase() + " Distance";
+                x = sx + (oneTick * (tickSpace / 2)) - (distanceProvider.length() * 2);
+                y += 40; 
+                
+                g.drawString(distanceProvider, (float) (x), (float) y);
             }
         }
     }
