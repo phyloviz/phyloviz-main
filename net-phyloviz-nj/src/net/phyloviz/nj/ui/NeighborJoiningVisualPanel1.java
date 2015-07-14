@@ -15,22 +15,22 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
-import net.phyloviz.nj.algorithm.NJAbstractDistance;
+import net.phyloviz.nj.distance.ClusteringDistance;
 import org.openide.util.Lookup;
 
-public final class NeighborJoiningVisualPanel extends JPanel {
+public final class NeighborJoiningVisualPanel1 extends JPanel {
 
 	private DefaultComboBoxModel typeListModel;
 
 	/** Creates new form NeighborJoingVisualPanel1 */
-	public NeighborJoiningVisualPanel(TypingData<? extends Profile> td) {
+	public NeighborJoiningVisualPanel1(TypingData<? extends Profile> td) {
 
 		typeListModel = new DefaultComboBoxModel();
 		Collection<? extends DistanceProvider> result = Lookup.getDefault().lookupAll(DistanceProvider.class);  //gets all NJDistanceProviders
 		Iterator<? extends DistanceProvider> ir = result.iterator();
 		while (ir.hasNext()) {      //for each NJDistanceProvider get NJDistance
 			AbstractDistance ad = ir.next().getDistance(td);
-			if (ad != null && ad instanceof NJAbstractDistance){
+			if (ad != null && ad instanceof ClusteringDistance){
 				typeListModel.addElement(ad);
                                 //break;
                         }
@@ -112,7 +112,7 @@ public final class NeighborJoiningVisualPanel extends JPanel {
 
         jPanel3.setLayout(new java.awt.GridLayout(1, 0, 0, 8));
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(NeighborJoiningVisualPanel.class, "NeighborJoiningVisualPanel.jLabel2.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel2, org.openide.util.NbBundle.getMessage(NeighborJoiningVisualPanel1.class, "NeighborJoiningVisualPanel1.jLabel2.text")); // NOI18N
         jLabel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 12, 2, 8));
         jPanel3.add(jLabel2);
 
@@ -128,7 +128,7 @@ public final class NeighborJoiningVisualPanel extends JPanel {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(NeighborJoiningVisualPanel.class, "NeighborJoiningVisualPanel.jLabel3.text")); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(jLabel3, org.openide.util.NbBundle.getMessage(NeighborJoiningVisualPanel1.class, "NeighborJoiningVisualPanel1.jLabel3.text")); // NOI18N
         jLabel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
         jPanel1.add(jLabel3, java.awt.BorderLayout.CENTER);
 
@@ -142,7 +142,7 @@ public final class NeighborJoiningVisualPanel extends JPanel {
         jEditorPane1.setEditable(false);
         jEditorPane1.setBackground(jPanel5.getBackground());
         jEditorPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder(8, 12, 8, 12));
-        jEditorPane1.setContentType(org.openide.util.NbBundle.getMessage(NeighborJoiningVisualPanel.class, "NeighborJoiningVisualPanel1.jEditorPane1.contentType")); // NOI18N
+        jEditorPane1.setContentType(org.openide.util.NbBundle.getMessage(NeighborJoiningVisualPanel1.class, "NeighborJoiningVisualPanel1.jEditorPane1.contentType")); // NOI18N
         jEditorPane1.setMaximumSize(new java.awt.Dimension(200, 200));
         jScrollPane1.setViewportView(jEditorPane1);
 

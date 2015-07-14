@@ -6,7 +6,10 @@ import java.beans.PropertyChangeEvent;
 import java.text.MessageFormat;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
-import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.core.data.Profile;
+import net.phyloviz.core.data.TypingData;
+import net.phyloviz.nj.AgglomerativeClusteringMethod;
+import net.phyloviz.nj.distance.ClusteringDistance;
 import net.phyloviz.nj.run.NeighborJoiningRunner;
 import org.openide.*;
 import org.openide.WizardDescriptor;
@@ -36,14 +39,17 @@ public class NeighborJoiningWizardAction extends NodeAction {
             boolean cancelled = wizardDescriptor.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 // do something
-                AbstractDistance ad = (AbstractDistance) wizardDescriptor.getProperty("distance");
+                ClusteringDistance ad = (ClusteringDistance) wizardDescriptor.getProperty("distance");
+		AgglomerativeClusteringMethod cm = (AgglomerativeClusteringMethod) wizardDescriptor.getProperty("method");
 
+                TypingData<? extends Profile> td = nodes[0].getLookup().lookup(TypingData.class);
+                
                 if (ad.configurable()) {
                     ad.configure();
                 }
 
                 OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": Neighbor-Joining (" + ad.toString() + ") Output");
-                Runnable job = new NeighborJoiningRunner(nodes[0], op, ad);
+                Runnable job = new NeighborJoiningRunner(op, ad, cm, td);
 
                 op.open();
                 op.requestActive();
@@ -66,7 +72,8 @@ public class NeighborJoiningWizardAction extends NodeAction {
             //TO REMOVE
         if (panels == null) {
             panels = new WizardDescriptor.Panel[]{
-                    new NeighborJoiningWizardPanel1(node)
+                    new NeighborJoiningWizardPanel1(node),
+                    new NeighborJoiningWizardPanel2(node)
                 };
             String[] steps = new String[panels.length];
             for (int i = 0; i < panels.length; i++) {

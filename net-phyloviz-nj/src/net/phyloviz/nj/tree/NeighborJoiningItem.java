@@ -35,8 +35,8 @@
 package net.phyloviz.nj.tree;
 
 import net.phyloviz.algo.AbstractDistance;
-import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.util.NodeFactory;
+import net.phyloviz.nj.AgglomerativeClusteringMethod;
 import net.phyloviz.nj.json.NJToJSON;
 import net.phyloviz.nj.ui.OutputPanel;
 import net.phyloviz.nj.ui.NeighborJoiningNode;
@@ -49,20 +49,20 @@ import org.openide.util.lookup.InstanceContent;
 
 public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, ProjectItem{
 
-    private DataSet ds;
-    private AbstractDistance<NJLeafNode> ad;
-    private OutputPanel op;
-    private NJRoot root;
-    private InstanceContent ic;
-    private AbstractLookup lookup;
+    private final AbstractDistance<NJLeafNode> ad;
+    private final OutputPanel op;
+    private final NJRoot root;
+    private final InstanceContent ic;
+    private final AbstractLookup lookup;
+    private final AgglomerativeClusteringMethod cm;
     private PersistentVisualization cp;
 
-    public NeighborJoiningItem(NJRoot root, DataSet ds, AbstractDistance<NJLeafNode> ad, OutputPanel op) {
-        this.root = root;
-        this.ds = ds;
+    public NeighborJoiningItem(NJRoot root, AbstractDistance<NJLeafNode> ad, AgglomerativeClusteringMethod cm, OutputPanel op) {
         this.op = op;
         this.ad = ad;
-        
+        this.cm = cm;
+        this.root = root;
+
         ic = new InstanceContent();
         lookup = new AbstractLookup(ic);
     }
@@ -73,15 +73,8 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     public AbstractNode getNode() {
         return new NeighborJoiningNode(this);
     }
-    @Override
-    public String toString() {
-        return "NeighborJoining (" + ad.toString() + ")";
-    }
     public NJRoot getRoot() {
         return root;
-    }    
-    public DataSet getDataSet() {
-        return ds;
     }
     public AbstractDistance getDistance() {
         return ad;
@@ -97,11 +90,6 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
 
     public void remove(Object o) {
         ic.remove(o);
-    }
-
-    @Override
-    public String getMethodProviderName() {
-        return "nj-"+(ad.toString().split(" ")[0]).toLowerCase()+"-";
     }
     @Override
     public String getMainName() {
@@ -127,5 +115,13 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     @Override
     public String getDistanceProvider() {
         return ad.toString().split(" ")[0].toLowerCase();
+    }
+    @Override
+    public String toString() {
+        return "NeighborJoining (" + ad.toString() + ")";
+    }
+    @Override
+    public String getMethodProviderName() {
+        return cm.toString().split(" ")[0].toLowerCase();
     }
 }

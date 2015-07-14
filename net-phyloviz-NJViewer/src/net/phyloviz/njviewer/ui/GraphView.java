@@ -98,6 +98,7 @@ public class GraphView extends GView {
 
     private static final long serialVersionUID = 1L;
     private static final String SRC = Graph.DEFAULT_SOURCE_KEY, TRG = Graph.DEFAULT_TARGET_KEY;
+    private static final float cutIncDev = 0.001f;
 
     private float distance;
     private final JSpinner sp;
@@ -527,11 +528,12 @@ public class GraphView extends GView {
                     int progress = (Integer) pce.getNewValue();
                     pbar.setValue(progress);
                     if (progress == 100) {
-                        distance = (float) (distanceFilter == -1 ? maxDistance : distanceFilter);
+                        distance = (float) (distanceFilter == -1 ? maxDistance + cutIncDev : distanceFilter);
+                        maxDistance += cutIncDev;
 
                         sp.setValue(maxDistance);
 
-                        final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, 0.001);
+                        final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, cutIncDev);
                         model.addChangeListener(new ChangeListener() {
                             @Override
                             public void stateChanged(ChangeEvent e) {

@@ -17,7 +17,7 @@ public class NeighborJoiningWizardPanel1 implements WizardDescriptor.ValidatingP
 	 * The visual component that displays this panel. If you need to access the
 	 * component from this class, just use getComponent().
 	 */
-	private NeighborJoiningVisualPanel component;
+	private NeighborJoiningVisualPanel1 component;
 
 	private Node node;
 
@@ -31,7 +31,7 @@ public class NeighborJoiningWizardPanel1 implements WizardDescriptor.ValidatingP
 	public Component getComponent() {
 		if (component == null) {
 			TypingData<? extends Profile> td = node.getLookup().lookup(TypingData.class);
-			component = new NeighborJoiningVisualPanel(td);
+			component = new NeighborJoiningVisualPanel1(td);
 		}
 		component.setPreferredSize(new java.awt.Dimension(480,340));
 		return component;
@@ -62,7 +62,7 @@ public class NeighborJoiningWizardPanel1 implements WizardDescriptor.ValidatingP
 
 	@Override
 	public void storeSettings(Object settings) {
-		((WizardDescriptor) settings).putProperty("distance", ((NeighborJoiningVisualPanel) getComponent()).getDistance());
+		((WizardDescriptor) settings).putProperty("distance", ((NeighborJoiningVisualPanel1) getComponent()).getDistance());
 	}
 
 	@Override

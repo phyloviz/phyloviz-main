@@ -7,12 +7,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import net.phyloviz.algo.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.ClusteringMethodProvider;
 import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.nj.algorithm.NJAbstractDistance;
+import net.phyloviz.nj.AgglomerativeClusteringMethod;
+import net.phyloviz.nj.distance.ClusteringDistance;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NJUnionNode;
@@ -24,7 +27,6 @@ import net.phyloviz.project.ProjectItemFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
@@ -63,10 +65,12 @@ public class NJItemFactory implements ProjectItemFactory {
                 unions = createUnions(unionsArr, leafs);
             }
             NJRoot root = createRoot(rootObj, leafs, unions);
+            
+            AgglomerativeClusteringMethod cm = getMethodProvider(filename, td);
+            ClusteringDistance ad = (ClusteringDistance) getDistanceProvider(distance, td);
 
-            AbstractDistance ad = getDistanceProvider(distance, td);
             OutputPanel op = new OutputPanel(datasetName + ": Neighbor-Joining");
-            njItem = new NeighborJoiningItem(root, null, ad, op);
+            njItem = new NeighborJoiningItem(root, ad, cm, op);
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
         } 
@@ -125,6 +129,27 @@ public class NJItemFactory implements ProjectItemFactory {
         NJRoot r = new NJRoot(node1, node2, distance);
         return r;
     }
+    
+    private AgglomerativeClusteringMethod getMethodProvider(String filename, TypingData<? extends Profile> td) throws Exception {
+        
+        String[] methodNames = filename.split("\\.");
+        String methodName = methodNames[methodNames.length - 2];
+        int lenght = methodName.length();
+        methodName = new StringBuilder(methodName).deleteCharAt(lenght - 1).toString();
+
+        Collection<? extends ClusteringMethodProvider> dp = Lookup.getDefault().lookupAll(ClusteringMethodProvider.class);
+        Iterator<? extends ClusteringMethodProvider> ir = dp.iterator();
+        while (ir.hasNext()) {
+            AbstractClusteringMethod cm = ir.next().getMethod(td);
+            if (cm != null) {
+                String cmName = cm.toString().split(" ")[0].toLowerCase();
+                if (cm instanceof AgglomerativeClusteringMethod && methodName.equals(cmName)) {
+                    return (AgglomerativeClusteringMethod) cm;
+                }
+            }
+        }
+        throw new Exception(methodName + " Method Provider Not Found!");
+    }
 
     private AbstractDistance getDistanceProvider(String distance, TypingData<? extends Profile> td) throws Exception {
         String[] distanceNames = distance.split("\\.");
@@ -136,8 +161,8 @@ public class NJItemFactory implements ProjectItemFactory {
             AbstractDistance ad = ir.next().getDistance(td);
             if (ad != null) {
                 String adName = ad.toString().split(" ")[0].toLowerCase();
-                if (ad instanceof NJAbstractDistance && distanceName.equals(adName)) {
-                    return (NJAbstractDistance) ad;
+                if (ad instanceof ClusteringDistance && distanceName.equals(adName)) {
+                    return (ClusteringDistance) ad;
                 }
             }
         }

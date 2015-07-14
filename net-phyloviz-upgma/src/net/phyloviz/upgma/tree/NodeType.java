@@ -1,6 +1,5 @@
 package net.phyloviz.upgma.tree;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import net.phyloviz.upgma.json.UPGMAToJSON.INodeJsonSaver;
 import net.phyloviz.upgma.tree.IndexListNode.IndexNode;
@@ -19,7 +18,7 @@ public abstract class NodeType implements INodeJsonSaver{
     public NodeIterator in;
     private IndexNode minL;
     private float minQ = Float.POSITIVE_INFINITY;
-    private String type;
+    private final String type;
     
     public NodeType(int id, int size, int nodeIdx, String name, NodeIterator in){
         this.distances = new float[size - nodeIdx - 1];         //removes 1 because size counts itself

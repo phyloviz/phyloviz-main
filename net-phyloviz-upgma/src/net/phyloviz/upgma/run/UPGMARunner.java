@@ -5,7 +5,6 @@
  */
 package net.phyloviz.upgma.run;
 
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
