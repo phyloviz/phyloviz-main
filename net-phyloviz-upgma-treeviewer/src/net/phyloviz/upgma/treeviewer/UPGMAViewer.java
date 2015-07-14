@@ -5,16 +5,15 @@
  */
 package net.phyloviz.upgma.treeviewer;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Constants;
 import net.phyloviz.upgmanjcore.visualization.InfoPanel;
 import net.phyloviz.upgmanjcore.visualization.TreeSlider;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
@@ -103,12 +102,14 @@ public final class UPGMAViewer extends GView {
     private final float DISTANCE_FILTER_STEP = 0.001f;
 
     private float distanceFilterValue;
+    private final String DISTANCE_PROVIDER;
 
-    public UPGMAViewer(String name, UPGMARoot root) {
+    public UPGMAViewer(String name, UPGMARoot root, String distanceProvider) {
 
         _name = name;
         _root = root;
         MAX_DISTANCE = _root.getDistance();
+        DISTANCE_PROVIDER = distanceProvider;
         distanceFilterValue = MAX_DISTANCE;
         tview = createTreeView();
     }
@@ -150,7 +151,7 @@ public final class UPGMAViewer extends GView {
                             while (groups.hasNext()) {
                                 Category group = groups.next();
                                 double percent = (((double) group.weight() * 100) / st.getFreq());
-                                appendLineToInfoPanel(" +" + group.getName() + " " + df.format(percent) + "% " + group.weight());
+                                appendLineToInfoPanel(" +" + group.getName() + " " + group.weight() + " (" + df.format(percent) + "%)");
                                 total += group.weight();
                             }
                         }
@@ -295,9 +296,17 @@ public final class UPGMAViewer extends GView {
         });
         sp.setModel(model);
         sp.setValue(distanceFilterValue);
-        JPanel cutDistanceOption = new JPanel(new GridLayout(2, 1));
-        cutDistanceOption.add(emptyJPanel());
+        
+        
+        Box cutDistanceOption = new Box(BoxLayout.Y_AXIS);
+        cutDistanceOption.add(new JLabel("cut off"));
+        cutDistanceOption.add(new JLabel("threshold:"));
+        cutDistanceOption.add(Box.createVerticalStrut(5));
+        sp.setAlignmentX(Component.LEFT_ALIGNMENT);
         cutDistanceOption.add(sp);
+        cutDistanceOption.setOpaque(true);
+        cutDistanceOption.setBackground(BACKGROUND);
+        
 
         popupMenu = new JPopupMenu();
         popupMenu.add(new InfoControlAction(this).getMenuItem());
@@ -330,6 +339,7 @@ public final class UPGMAViewer extends GView {
         horizontalBox.add(Box.createHorizontalStrut(5));
         horizontalBox.add(exportButton);
         horizontalBox.add(Box.createHorizontalStrut(5));
+        horizontalBox.add(new JLabel("scale distance:"));
         horizontalBox.add(horizontalSlider);
         // horizontalBox.add(Box.createHorizontalStrut(5));
         horizontalBox.add(tsh.getLabel());
@@ -349,6 +359,9 @@ public final class UPGMAViewer extends GView {
         horizontalLabelPanel.setBackground(BACKGROUND);
 
         Box verticalBox = new Box(BoxLayout.Y_AXIS);
+        verticalBox.add(new JLabel("scale height: "));
+        verticalBox.add(Box.createVerticalStrut(5));
+        verticalSlider.setAlignmentX(Component.LEFT_ALIGNMENT);
         verticalBox.add(verticalSlider);
         verticalBox.setOpaque(true);
         verticalBox.setBackground(BACKGROUND);
@@ -566,7 +579,7 @@ public final class UPGMAViewer extends GView {
         rulerNodeRigth.setBoolean("isRuler", true);
 
         // create a new treemap
-        TreeView tv = new TreeView(t, label, MAX_DISTANCE);
+        TreeView tv = new TreeView(t, label, MAX_DISTANCE, DISTANCE_PROVIDER);
 
         tv.setBackground(BACKGROUND);
         tv.setForeground(FOREGROUND);

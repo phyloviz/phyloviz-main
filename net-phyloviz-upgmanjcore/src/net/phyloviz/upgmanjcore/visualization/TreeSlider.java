@@ -11,35 +11,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-//import java.awt.Dimension;
-//import java.awt.Font;
-//import java.awt.FontMetrics;
-//import java.awt.Graphics;
-//import java.awt.Graphics2D;
-//import java.awt.Insets;
-//import java.awt.Rectangle;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.MouseAdapter;
-//import java.awt.event.MouseEvent;
-//import java.awt.geom.AffineTransform;
-//import java.util.ArrayList;
-//import java.util.Iterator;
-//import java.util.List;
-//import javax.swing.AbstractAction;
-//import javax.swing.BoxLayout;
-//import javax.swing.Icon;
-//import javax.swing.JComponent;
-//import javax.swing.JLabel;
-//import javax.swing.JSlider;
-//import javax.swing.JTextField;
-//import javax.swing.event.ChangeEvent;
-//import javax.swing.event.ChangeListener;
-//import javax.swing.plaf.basic.BasicLabelUI;
-//import prefuse.util.StringLib;
-//import prefuse.util.ui.JValueSlider;
+
 //
 ///**
 // *
@@ -54,7 +27,7 @@ public class TreeSlider {
     public TreeSlider(int orientation, int min, int max, int init){
         
         slider = new JSlider(orientation, min, max, init);
-        label = new JLabel(init + "");
+        label = new JLabel(String.valueOf(init));
         
         MIN = min;
         MAX = max;

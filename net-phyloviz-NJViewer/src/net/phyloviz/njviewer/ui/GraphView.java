@@ -361,7 +361,7 @@ public class GraphView extends GView {
         graph = new Graph(nodeTable, edgeTable, false);
         vg = view.addGraph("graph", graph);
 
-        running = true;
+        running = !loaded;
         view.setVisible("graph", null, false);
         view.runAfter("draw", "layout");
         view.run("draw");
@@ -584,9 +584,6 @@ public class GraphView extends GView {
     }
 
     public void stopAnimation() {
-        if (!running) {
-            return;
-        }
         view.cancel("layout");
         view.repaint();
         running = false;

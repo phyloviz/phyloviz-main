@@ -79,7 +79,8 @@ public final class GTPanel extends TopComponent implements IGTPanel{
 		initComponents();
 		this.setName(name);
                 
-                uv = new UPGMAViewer(name, gr.getRoot());
+                String distanceProvider = gr.getDistanceProvider();
+                uv = new UPGMAViewer(name, gr.getRoot(), distanceProvider);
                 
                 PersistentVisualization pv = gr.getPersistentVisualization();
                 if(pv != null){
