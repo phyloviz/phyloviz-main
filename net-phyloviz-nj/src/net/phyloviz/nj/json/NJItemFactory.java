@@ -15,7 +15,7 @@ import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.AgglomerativeClusteringMethod;
-import net.phyloviz.nj.distance.ClusteringDistance;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NJUnionNode;
@@ -67,7 +67,7 @@ public class NJItemFactory implements ProjectItemFactory {
             NJRoot root = createRoot(rootObj, leafs, unions);
             
             AgglomerativeClusteringMethod cm = getMethodProvider(filename, td);
-            ClusteringDistance ad = (ClusteringDistance) getDistanceProvider(distance, td);
+            AbstractDistance ad = (AbstractDistance) getDistanceProvider(distance, td);
 
             OutputPanel op = new OutputPanel(datasetName + ": Neighbor-Joining");
             njItem = new NeighborJoiningItem(root, ad, cm, op);

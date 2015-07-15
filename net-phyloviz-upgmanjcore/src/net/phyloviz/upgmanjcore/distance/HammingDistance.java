@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.phyloviz.nj.distance;
+package net.phyloviz.upgmanjcore.distance;
 
 import net.phyloviz.algo.Edge;
-import net.phyloviz.nj.tree.NJLeafNode;
+import net.phyloviz.core.data.Profile;
 
 /**
  *
@@ -15,7 +15,7 @@ import net.phyloviz.nj.tree.NJLeafNode;
 public class HammingDistance extends ClusteringDistance {
 
     @Override
-    public int level(NJLeafNode px, NJLeafNode py) {
+    public int level(Profile px, Profile py) {
         int diffs = 0;
 
         for (int i = 0; i < px.profileLength(); i++) {
@@ -28,7 +28,7 @@ public class HammingDistance extends ClusteringDistance {
     }
 
     @Override
-    public int level(Edge<NJLeafNode> e) {
+    public int level(Edge<Profile> e) {
         return level(e.getU(), e.getV());
     }
 

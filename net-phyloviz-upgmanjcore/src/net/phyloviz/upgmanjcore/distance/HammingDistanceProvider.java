@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.phyloviz.nj.distance;
+package net.phyloviz.upgmanjcore.distance;
 
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.nj.tree.NJLeafNode;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -17,15 +16,15 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Marta Nascimento
  */
 @ServiceProvider(service = DistanceProvider.class)
-public class HammingDistanceProvider implements DistanceProvider<NJLeafNode> {
+public class HammingDistanceProvider implements DistanceProvider<Profile> {
 
     @Override
-    public AbstractDistance<NJLeafNode> getDistance(TypingData<? extends Profile> td) {
+    public AbstractDistance<Profile> getDistance(TypingData<? extends Profile> td) {
         return new HammingDistance();
     }
 
     @Override
-    public AbstractDistance<NJLeafNode> getDistance(TypingData<? extends Profile> td, int maxLevel) {
+    public AbstractDistance<Profile> getDistance(TypingData<? extends Profile> td, int maxLevel) {
         return getDistance(td);
     }
 }

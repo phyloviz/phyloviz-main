@@ -7,22 +7,22 @@ package net.phyloviz.upgma.run;
 
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import net.phyloviz.upgma.UPGMAItem;
 import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgma.algorithm.UPGMA;
 import net.phyloviz.upgma.tree.UPGMARoot;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 
 
 public class UPGMARunner implements Runnable{
     
     private final OutputPanel op;
-    private final HierarchicalClusteringDistance ad;
+    private final ClusteringDistance ad;
     private final TypingData<? extends Profile> td;
     private final HierarchicalClusteringMethod cm;
 
-    public UPGMARunner(OutputPanel op, HierarchicalClusteringDistance ad, HierarchicalClusteringMethod cm, TypingData<? extends Profile> td) {
+    public UPGMARunner(OutputPanel op, ClusteringDistance ad, HierarchicalClusteringMethod cm, TypingData<? extends Profile> td) {
         this.op = op;
         this.ad = ad;
         this.td = td;

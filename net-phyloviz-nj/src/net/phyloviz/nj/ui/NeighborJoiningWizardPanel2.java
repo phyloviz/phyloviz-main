@@ -40,7 +40,6 @@ import javax.swing.event.ChangeListener;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.AgglomerativeClusteringMethod;
-import net.phyloviz.nj.NJClusteringMethod;
 import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.nodes.Node;
@@ -55,7 +54,7 @@ public class NeighborJoiningWizardPanel2 implements WizardDescriptor.ValidatingP
      */
     private NeighborJoiningVisualPanel2 component;
 
-    private Node node;
+    private final Node node;
 
     public NeighborJoiningWizardPanel2(Node node) {
         super();

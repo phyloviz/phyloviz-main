@@ -12,9 +12,8 @@ import net.phyloviz.upgma.tree.UPGMALeafNode;
  *
  * @author Marta Nascimento
  */
-public abstract class HierarchicalClusteringMethod implements AbstractClusteringMethod<UPGMALeafNode> {
+public interface HierarchicalClusteringMethod extends AbstractClusteringMethod<UPGMALeafNode> {
 
-    @Override
-    public abstract float getLinkageCriteria(float d1, float d2);
+    public float getLinkageCriteria(float d1, float d2);
 
 }

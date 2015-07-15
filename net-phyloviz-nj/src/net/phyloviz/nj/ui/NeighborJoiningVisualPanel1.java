@@ -15,7 +15,7 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
-import net.phyloviz.nj.distance.ClusteringDistance;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import org.openide.util.Lookup;
 
 public final class NeighborJoiningVisualPanel1 extends JPanel {

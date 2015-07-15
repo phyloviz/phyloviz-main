@@ -7,12 +7,30 @@
             <suite-component/>
             <module-dependencies>
                 <dependency>
+                    <code-name-base>net.phyloviz.algo</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>1</release-version>
+                        <specification-version>1.2</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
                     <code-name-base>net.phyloviz.category</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>
                         <release-version>1</release-version>
                         <specification-version>1.0</specification-version>
+                    </run-dependency>
+                </dependency>
+                <dependency>
+                    <code-name-base>net.phyloviz.core</code-name-base>
+                    <build-prerequisite/>
+                    <compile-dependency/>
+                    <run-dependency>
+                        <release-version>1</release-version>
+                        <specification-version>1.5</specification-version>
                     </run-dependency>
                 </dependency>
                 <dependency>
@@ -90,6 +108,7 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
+                <package>net.phyloviz.upgmanjcore.distance</package>
                 <package>net.phyloviz.upgmanjcore.json</package>
                 <package>net.phyloviz.upgmanjcore.visualization</package>
                 <package>net.phyloviz.upgmanjcore.visualization.actions</package>

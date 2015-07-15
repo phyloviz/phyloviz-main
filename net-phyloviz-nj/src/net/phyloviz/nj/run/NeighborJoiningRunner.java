@@ -8,7 +8,7 @@ import net.phyloviz.nj.AgglomerativeClusteringMethod;
 import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.algorithm.NJ;
-import net.phyloviz.nj.distance.ClusteringDistance;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import net.phyloviz.nj.ui.OutputPanel;
 
 /**
@@ -22,7 +22,7 @@ public class NeighborJoiningRunner implements Runnable{
     private final AgglomerativeClusteringMethod cm;
     private final TypingData<? extends Profile> td;
 
-    public NeighborJoiningRunner(OutputPanel op, ClusteringDistance ad, AgglomerativeClusteringMethod cm, TypingData<? extends Profile> td) {
+    public NeighborJoiningRunner(OutputPanel op, AbstractDistance<NJLeafNode> ad, AgglomerativeClusteringMethod cm, TypingData<? extends Profile> td) {
         this.op = op;
         this.ad = ad;
         this.td = td;
@@ -37,7 +37,7 @@ public class NeighborJoiningRunner implements Runnable{
         op.appendWithDate("\nNJ algorithm: computing diferences...\n");
         op.flush();
         
-        NJ matrix = cm.getCulsteringMethod(td, ad, op);
+        NJ matrix = cm.getClusteringMethod(td, ad, op);
         NJRoot root = matrix.generateTree();
         op.flush();
 

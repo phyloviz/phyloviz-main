@@ -5,6 +5,7 @@
  */
 package net.phyloviz.nj;
 
+import net.phyloviz.algo.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
@@ -15,10 +16,9 @@ import net.phyloviz.nj.ui.OutputPanel;
 /**
  *
  * @author Adriano Sousa
- * @param <T>
  */
-public interface AgglomerativeClusteringMethod <T extends Profile> {
+public interface AgglomerativeClusteringMethod extends AbstractClusteringMethod<NJLeafNode> {
 
-    NJ getCulsteringMethod(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op);
+    NJ getClusteringMethod(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op);
     
 }

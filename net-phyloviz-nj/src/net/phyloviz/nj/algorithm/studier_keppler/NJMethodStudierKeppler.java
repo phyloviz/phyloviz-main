@@ -1,4 +1,4 @@
-package net.phyloviz.nj.algorithm.saitou_nei;
+package net.phyloviz.nj.algorithm.studier_keppler;
 
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.algo.AbstractDistance;
@@ -8,15 +8,15 @@ import net.phyloviz.nj.AgglomerativeClusteringMethod;
 import net.phyloviz.nj.algorithm.NJ;
 import net.phyloviz.nj.ui.OutputPanel;
 
-public class NJDistanceSaitouNei implements AgglomerativeClusteringMethod<NJLeafNode>{
+public class NJMethodStudierKeppler implements AgglomerativeClusteringMethod {
     
     @Override
     public String toString() {
-        return "Saitou-Nei Criterion";
+        return "Studier-Keppler Criterion";
     }
 
     @Override
-    public NJ getCulsteringMethod(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op) {
-        return new NJSaitouNei(inTd, inAd, op);
+    public NJ getClusteringMethod(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op) {
+        return new NJStudierKeppler(inTd, inAd, op);
     }
 }

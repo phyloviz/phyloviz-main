@@ -21,7 +21,6 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
-import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import net.phyloviz.upgma.UPGMAItem;
 import net.phyloviz.upgma.tree.NodeType;
@@ -29,6 +28,7 @@ import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.tree.UPGMAUnionNode;
 import net.phyloviz.upgma.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -76,7 +76,7 @@ public class UPGMAItemFactory implements ProjectItemFactory {
             UPGMARoot root = createRoot(rootObj, leafs, unions);
 
             HierarchicalClusteringMethod cm = getMethodProvider(filename, td);
-            HierarchicalClusteringDistance ad = getDistanceProvider(distance, td);
+            ClusteringDistance ad = getDistanceProvider(distance, td);
             
             OutputPanel op = new OutputPanel(datasetName + ": Hierarchical Clustering - "+cm.toString()+" - (" +ad.toString()+  ")");
             
@@ -166,7 +166,7 @@ public class UPGMAItemFactory implements ProjectItemFactory {
         throw new Exception(methodName + " Method Provider Not Found!");
     }
 
-    private HierarchicalClusteringDistance getDistanceProvider(String distance, TypingData<? extends Profile> td) throws Exception {
+    private ClusteringDistance getDistanceProvider(String distance, TypingData<? extends Profile> td) throws Exception {
         String[] distanceNames = distance.split("\\.");
         String distanceName = distanceNames[distanceNames.length - 1];
 
@@ -176,8 +176,8 @@ public class UPGMAItemFactory implements ProjectItemFactory {
             AbstractDistance ad = ir.next().getDistance(td);
             if (ad != null) {
                 String adName = ad.toString().split(" ")[0].toLowerCase();
-                if (ad instanceof HierarchicalClusteringDistance && distanceName.equals(adName)) {
-                    return (HierarchicalClusteringDistance) ad;
+                if (ad instanceof ClusteringDistance && distanceName.equals(adName)) {
+                    return (ClusteringDistance) ad;
                 }
             }
         }

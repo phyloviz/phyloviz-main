@@ -11,13 +11,13 @@ import java.io.IOException;
 import net.phyloviz.alseq.AlignedSequence;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.mlst.MLSTypingFactory;
-import net.phyloviz.upgma.distance.HammingDistance;
-import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import net.phyloviz.upgma.algorithm.UPGMA;
 import net.phyloviz.upgma.algorithm.upgma.UPGMAMethod;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
+import net.phyloviz.upgmanjcore.distance.HammingDistance;
 import org.junit.Test;
 
 /**
@@ -70,7 +70,7 @@ public class UPGMATest {
         BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\Adriano\\Desktop\\PS\\DadosPhyloviz\\"+size+"strep.typing.csv"));
         //BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\Marta Nascimento\\Documents\\8ºSemestre-1415v\\PFC\\DadosPhyloviz\\spneumoniaeClean10.txt"));
         TypingData<AlignedSequence> td = (TypingData<AlignedSequence>) factory.loadData(br);            
-        HierarchicalClusteringDistance ad = new HammingDistance();
+        ClusteringDistance ad = new HammingDistance();
         HierarchicalClusteringMethod cm = new UPGMAMethod();
        
         long init = 0, end = 0;

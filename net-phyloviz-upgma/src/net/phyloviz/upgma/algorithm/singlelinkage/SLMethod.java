@@ -36,7 +36,7 @@ package net.phyloviz.upgma.algorithm.singlelinkage;
 
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
 
-public class SLMethod extends HierarchicalClusteringMethod {
+public class SLMethod implements HierarchicalClusteringMethod {
 
     @Override
     public float getLinkageCriteria(float d1, float d2) {

@@ -11,10 +11,11 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
+import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.algo.ClusteringMethodProvider;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.AgglomerativeClusteringMethod;
-import net.phyloviz.nj.NJClusteringMethod;
 import org.openide.util.Lookup;
 
 public final class NeighborJoiningVisualPanel2 extends JPanel {
@@ -25,10 +26,10 @@ public final class NeighborJoiningVisualPanel2 extends JPanel {
 	public NeighborJoiningVisualPanel2(TypingData<? extends Profile> td) {
 
             typeListModel = new DefaultComboBoxModel();
-            Collection<? extends NJClusteringMethod> result = Lookup.getDefault().lookupAll(NJClusteringMethod.class);
-            Iterator<? extends NJClusteringMethod> ir = result.iterator();
+            Collection<? extends ClusteringMethodProvider> result = Lookup.getDefault().lookupAll(ClusteringMethodProvider.class);
+            Iterator<? extends ClusteringMethodProvider> ir = result.iterator();
             while (ir.hasNext()) {
-                AgglomerativeClusteringMethod cm = ir.next().getMethod();
+                AbstractClusteringMethod cm = ir.next().getMethod(td);
                 if (cm != null && cm instanceof AgglomerativeClusteringMethod){
                     typeListModel.addElement(cm);
                 }

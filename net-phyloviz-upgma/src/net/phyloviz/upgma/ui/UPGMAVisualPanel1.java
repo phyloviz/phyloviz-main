@@ -50,7 +50,7 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
-import net.phyloviz.upgma.distance.HierarchicalClusteringDistance;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import org.openide.util.Lookup;
 
 public final class UPGMAVisualPanel1 extends JPanel {
@@ -65,7 +65,7 @@ public final class UPGMAVisualPanel1 extends JPanel {
 		Iterator<? extends DistanceProvider> ir = result.iterator();
 		while (ir.hasNext()) {
                     AbstractDistance ad = ir.next().getDistance(td);
-                    if (ad != null && ad instanceof HierarchicalClusteringDistance){
+                    if (ad != null && ad instanceof ClusteringDistance){
                     	typeListModel.addElement(ad);
                     }
 		}

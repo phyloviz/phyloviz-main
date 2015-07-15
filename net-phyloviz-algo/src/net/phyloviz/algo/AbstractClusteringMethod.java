@@ -37,9 +37,4 @@ package net.phyloviz.algo;
 
 import net.phyloviz.core.data.Profile;
 
-public interface AbstractClusteringMethod<T extends Profile> {
-
-    public float getLinkageCriteria(float d1, float d2);
-    
-
-}
+public interface AbstractClusteringMethod<T extends Profile> {}

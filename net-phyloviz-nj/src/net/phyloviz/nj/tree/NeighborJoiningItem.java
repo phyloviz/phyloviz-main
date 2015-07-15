@@ -118,7 +118,7 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     }
     @Override
     public String toString() {
-        return "NeighborJoining (" + ad.toString() + ")";
+        return "Neighbor-Joining " + cm.toString() + " (" + ad.toString() + ")";
     }
     @Override
     public String getMethodProviderName() {
