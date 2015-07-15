@@ -534,7 +534,7 @@ public class GraphView extends GView {
                     int progress = (Integer) pce.getNewValue();
                     pbar.setValue(progress);
                     if (progress == 100) {
-                        distance = (float) (distanceFilter == -1 ? maxDistance + cutIncDev : distanceFilter);
+                        distance = (float) (distanceFilter == -1 ? maxDistance : distanceFilter);
                         maxDistance += cutIncDev;
 
                         sp.setValue(maxDistance);
