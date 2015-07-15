@@ -36,40 +36,15 @@
 package net.phyloviz.upgma.ui;
 
 import net.phyloviz.upgma.UPGMAItem;
+import net.phyloviz.upgmanjcore.ui.AbstractViewAction;
 import org.openide.nodes.Node;
-import org.openide.util.HelpCtx;
-import org.openide.util.actions.NodeAction;
 
-public class OutputViewAction extends NodeAction {
-
-	@Override
-	protected void performAction(Node[] nodes) {
-
-		UPGMAItem gr = nodes[0].getLookup().lookup(UPGMAItem.class);
-		if (! gr.getPanel().isOpened())
-			gr.getPanel().open();
-		gr.getPanel().requestActive();
-                
-	}
-
-	@Override
-	protected boolean enable(Node[] nodes) {
-		return nodes.length == 1;
-	}
-
-	@Override
-	public String getName() {
-		return "Output";
-	}
-
-	@Override
-	public HelpCtx getHelpCtx() {
-		return null;
-	}
-
-	@Override
-	protected boolean asynchronous() {
-		return false;
-	}
-
+public class OutputViewAction extends AbstractViewAction {
+    @Override
+    protected void performAction(Node[] nodes) {
+        UPGMAItem gr = nodes[0].getLookup().lookup(UPGMAItem.class);
+        if (! gr.getPanel().isOpened())
+            gr.getPanel().open();
+        gr.getPanel().requestActive();
+    }
 }

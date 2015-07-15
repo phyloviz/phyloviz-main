@@ -111,6 +111,7 @@
                 <package>net.phyloviz.upgmanjcore.distance</package>
                 <package>net.phyloviz.upgmanjcore.json</package>
                 <package>net.phyloviz.upgmanjcore.tree</package>
+                <package>net.phyloviz.upgmanjcore.ui</package>
                 <package>net.phyloviz.upgmanjcore.visualization</package>
                 <package>net.phyloviz.upgmanjcore.visualization.actions</package>
             </public-packages>
