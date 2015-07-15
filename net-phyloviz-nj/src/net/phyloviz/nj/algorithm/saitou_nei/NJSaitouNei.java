@@ -9,11 +9,11 @@ import java.util.Iterator;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.algorithm.NJ;
-import net.phyloviz.nj.tree.IndexList;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.nj.ui.OutputPanel;
 import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
+import net.phyloviz.upgmanjcore.tree.IndexListNode;
 
 /**
  *
@@ -26,8 +26,8 @@ public class NJSaitouNei extends NJ{
     }
     
     @Override
-    protected void CalculateMin(NodeType[] nodeArray, IndexList nodeList) {
-        Iterator<IndexList.IndexNode> iter = nodeList.iterator();
+    protected void CalculateMin(NodeType[] nodeArray, IndexListNode nodeList) {
+        Iterator<IndexListNode.IndexNode> iter = nodeList.iterator();
         while(iter.hasNext()){                              //for each line in this column, calculates Q
             int idx = iter.next().index;
             NodeType nt = nodeArray[idx];
@@ -36,7 +36,7 @@ public class NJSaitouNei extends NJ{
     }
 
     @Override
-    protected NJUnionNode createUnion(NodeType[] nodeArray, Wrapper w, IndexList nodeList, OutputPanel op, int nodeIdx) {
+    protected NJUnionNode createUnion(NodeType[] nodeArray, Wrapper w, IndexListNode nodeList, OutputPanel op, int nodeIdx) {
         float dst = nodeArray[w.c].getPositionDistanceLine(w.l);
         float dlk = (0.5f*dst) + (getSum(nodeArray, w.c, nodeList.getSize()) - getSum(nodeArray, w.l, nodeList.getSize()))/2;
         float drk = dst - dlk;

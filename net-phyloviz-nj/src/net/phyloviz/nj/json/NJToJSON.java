@@ -7,6 +7,7 @@ package net.phyloviz.nj.json;
 
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NodeType;
+import net.phyloviz.upgmanjcore.json.JsonSaver;
 
 /** 
  *
@@ -23,9 +24,6 @@ public class NJToJSON {
         JsonSaver js = new JsonSaver(new String[] {"leaf", "union"}, new NeighborJoiningToJson());
         root.saveData(js, null);
         return js.createFile();
-    }
-    public interface INodeJsonSaver{
-        void saveData(JsonSaver js);
     }
     public interface IEdgeJsonSaver{
         void saveData(JsonSaver js, NodeType from);

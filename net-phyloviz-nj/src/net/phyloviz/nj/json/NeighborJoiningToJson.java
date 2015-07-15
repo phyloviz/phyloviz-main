@@ -6,7 +6,7 @@
 package net.phyloviz.nj.json;
 
 import java.util.HashMap;
-import net.phyloviz.nj.json.JsonSaver.IJsonSaverTag;
+import net.phyloviz.upgmanjcore.json.IJsonSaverTag;
 
 /**
  *

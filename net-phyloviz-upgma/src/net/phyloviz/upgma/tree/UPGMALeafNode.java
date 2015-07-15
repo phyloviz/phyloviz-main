@@ -2,8 +2,8 @@ package net.phyloviz.upgma.tree;
 
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.upgma.json.UPGMAJsonWriter;
-import net.phyloviz.upgma.json.JsonSaver;
-import net.phyloviz.upgma.tree.IndexListNode.NodeIterator;
+import net.phyloviz.upgmanjcore.json.JsonSaver;
+import net.phyloviz.upgmanjcore.tree.IndexListNode.NodeIterator;
 
 /**
  *
