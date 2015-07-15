@@ -325,14 +325,20 @@ public class GraphView extends GView {
         sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         sp.setBackground(Color.WHITE);
 
+        /*Right Box*/
+        
         Box verticalPanel = new Box(BoxLayout.Y_AXIS);
+        JLabel cutLabel1 = new JLabel("cut off");
+        JLabel cutLabel2 = new JLabel("threshold:");
 
         verticalPanel.add(Box.createVerticalGlue());
+        verticalPanel.add(cutLabel1);
+        verticalPanel.add(cutLabel2);
         verticalPanel.add(sp);
 
-        //verticalPanel.add(sp, BorderLayout.PAGE_END);
         verticalPanel.setBackground(Color.WHITE);
-        // Bottom box.
+        
+        /*Bottom Box*/
         bottomBox = new Box(BoxLayout.X_AXIS);
         bottomBox.add(Box.createHorizontalStrut(3));
         bottomBox.add(optionsButton);
