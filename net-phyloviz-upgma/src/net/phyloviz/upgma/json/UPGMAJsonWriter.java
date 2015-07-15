@@ -6,7 +6,7 @@
 package net.phyloviz.upgma.json;
 
 import java.util.HashMap;
-import net.phyloviz.upgma.json.JsonSaver.IJsonSaverTag;
+import net.phyloviz.upgmanjcore.json.IJsonSaverTag;
 
 /**
  *
@@ -35,7 +35,7 @@ public class UPGMAJsonWriter implements IJsonSaverTag{
     }
     @Override
     public HashMap<String, String> getBuildersMap(){
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         map.put("leaf", sbLeafs.toString());
         map.put("union", sbUnions.toString());
         map.put("root", root);

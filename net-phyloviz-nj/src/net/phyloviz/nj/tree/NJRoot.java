@@ -8,9 +8,9 @@ package net.phyloviz.nj.tree;
 import java.util.ArrayList;
 import java.util.List;
 import net.phyloviz.algo.Edge;
-import net.phyloviz.nj.json.JsonSaver;
 import net.phyloviz.nj.json.NJToJSON.IEdgeJsonSaver;
 import net.phyloviz.nj.json.NeighborJoiningToJson;
+import net.phyloviz.upgmanjcore.json.JsonSaver;
 
 /**
  *

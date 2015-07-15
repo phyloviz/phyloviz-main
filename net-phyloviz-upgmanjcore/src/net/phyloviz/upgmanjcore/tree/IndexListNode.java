@@ -3,22 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.phyloviz.nj.tree;
+package net.phyloviz.upgmanjcore.tree;
 
 import java.util.Iterator;
-import net.phyloviz.nj.tree.IndexList.IndexNode;
+import net.phyloviz.upgmanjcore.tree.IndexListNode.IndexNode;
 
 /**
  *
  * @author Adriano
  */
-public class IndexList implements Iterable<IndexNode>{
+public class IndexListNode implements Iterable<IndexNode>{
     
     private final IndexNode dummy;
     private int idx = 0;
     private int size = 0;
     
-    public IndexList(){
+    public IndexListNode(){
         dummy = new IndexNode(-1);
         dummy.next = dummy.prev = dummy;    //prev points to last, next point to first
     }

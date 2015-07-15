@@ -5,6 +5,7 @@
  */
 package net.phyloviz.upgma.json;
 
+import net.phyloviz.upgmanjcore.json.JsonSaver;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.tree.NodeType;
 
@@ -23,9 +24,6 @@ public class UPGMAToJSON {
         JsonSaver js = new JsonSaver(new String[] {"leaf", "union"}, new UPGMAJsonWriter());
         root.saveData(js, null);
         return js.createFile();
-    }
-    public interface INodeJsonSaver{
-        void saveData(JsonSaver js);
     }
     public interface IEdgeJsonSaver{
         void saveData(JsonSaver js, NodeType from);

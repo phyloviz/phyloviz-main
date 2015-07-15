@@ -4,14 +4,14 @@ import java.util.Iterator;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.nj.tree.IndexList;
-import net.phyloviz.nj.tree.IndexList.IndexNode;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.nj.ui.OutputPanel;
 import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
+import net.phyloviz.upgmanjcore.tree.IndexListNode;
+import net.phyloviz.upgmanjcore.tree.IndexListNode.IndexNode;
 
 /**
  *
@@ -22,7 +22,7 @@ public abstract class NJ {
     private final ClusteringDistance<NJLeafNode> ad;
     private final TypingData<? extends Profile> td;
     
-    private IndexList nodeList;
+    private IndexListNode nodeList;
     
     private NodeType[] nodeArray; 
     private NJRoot root;
@@ -30,7 +30,7 @@ public abstract class NJ {
     private int nodeIdx;
 
     public NJ(TypingData<? extends Profile> inTd, ClusteringDistance<NJLeafNode> inAd, OutputPanel op) {
-        nodeList = new IndexList();
+        nodeList = new IndexListNode();
         nodeArray = new NodeType[inTd.size()];
         td = inTd;
         ad = inAd;
@@ -121,10 +121,10 @@ public abstract class NJ {
             }
         }
     }
-    protected Wrapper getMinPair(IndexList nodeList, NodeType[] nodeArray) {
+    protected Wrapper getMinPair(IndexListNode nodeList, NodeType[] nodeArray) {
         Iterator<IndexNode> iter;
         int minC = 0, minL = 0;
-        IndexList.IndexNode minLNode = null;
+        IndexListNode.IndexNode minLNode = null;
         float smallestDst = Float.POSITIVE_INFINITY;
         iter = nodeList.iterator();
         while(iter.hasNext()){
@@ -140,8 +140,8 @@ public abstract class NJ {
         return new Wrapper(minC, minL, minLNode);
     }
     
-    protected abstract void CalculateMin(NodeType[] nodeArray, IndexList nodeList);
-    protected abstract NJUnionNode createUnion(NodeType[] nodeArray, Wrapper w, IndexList nodeList, OutputPanel op, int nodeIdx);
+    protected abstract void CalculateMin(NodeType[] nodeArray, IndexListNode nodeList);
+    protected abstract NJUnionNode createUnion(NodeType[] nodeArray, Wrapper w, IndexListNode nodeList, OutputPanel op, int nodeIdx);
     public abstract float calculateMin(NodeType[] nodeArray, int nodeIdx, int l, int total);
     
     protected class Wrapper{

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.phyloviz.upgma.json;
+package net.phyloviz.upgmanjcore.json;
 
 import java.util.HashMap;
 
@@ -44,10 +44,5 @@ public class JsonSaver{
             result += "\n\t],\n";
             sb.append(result);
         }
-    }
-    
-    public interface IJsonSaverTag{
-        HashMap<String, String> getBuildersMap();
-        String getRoot();
     }
 }

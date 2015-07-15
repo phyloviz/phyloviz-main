@@ -1,9 +1,9 @@
 package net.phyloviz.upgma.tree;
 
 import java.util.Iterator;
-import net.phyloviz.upgma.json.UPGMAToJSON.INodeJsonSaver;
-import net.phyloviz.upgma.tree.IndexListNode.IndexNode;
-import net.phyloviz.upgma.tree.IndexListNode.NodeIterator;
+import net.phyloviz.upgmanjcore.tree.IndexListNode.IndexNode;
+import net.phyloviz.upgmanjcore.tree.IndexListNode.NodeIterator;
+import net.phyloviz.upgmanjcore.json.INodeJsonSaver;
 
 public abstract class NodeType implements INodeJsonSaver{
     

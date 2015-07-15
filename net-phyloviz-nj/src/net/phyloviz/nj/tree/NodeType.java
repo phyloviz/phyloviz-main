@@ -3,9 +3,9 @@ package net.phyloviz.nj.tree;
 import java.util.Iterator;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.nj.algorithm.NJ;
-import net.phyloviz.nj.json.NJToJSON.INodeJsonSaver;
-import net.phyloviz.nj.tree.IndexList.IndexNode;
-import net.phyloviz.nj.tree.IndexList.NodeIterator;
+import net.phyloviz.upgmanjcore.json.INodeJsonSaver;
+import net.phyloviz.upgmanjcore.tree.IndexListNode.IndexNode;
+import net.phyloviz.upgmanjcore.tree.IndexListNode.NodeIterator;
 
 public abstract class NodeType implements INodeJsonSaver, Profile{
     
