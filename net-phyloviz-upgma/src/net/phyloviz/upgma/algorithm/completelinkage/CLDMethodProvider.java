@@ -44,7 +44,6 @@ import org.openide.util.lookup.ServiceProvider;
 @ServiceProvider(service = ClusteringMethodProvider.class)
 public class CLDMethodProvider implements ClusteringMethodProvider<UPGMALeafNode> {
 
-   
     @Override
     public AbstractClusteringMethod<UPGMALeafNode> getMethod(TypingData<? extends Profile> td) {
         return new CLMethod();

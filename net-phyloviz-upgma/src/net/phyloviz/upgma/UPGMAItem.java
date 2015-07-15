@@ -39,6 +39,7 @@ import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.util.NodeFactory;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.upgma.json.UPGMAToJSON;
+import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgma.ui.UPGMANode;
@@ -52,14 +53,14 @@ import org.openide.util.lookup.InstanceContent;
 public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
 
     private final OutputPanel op;
-    private final ClusteringDistance ad;
+    private final ClusteringDistance<UPGMALeafNode> ad;
     private final UPGMARoot root;
     private final InstanceContent ic;
     private final AbstractLookup lookup;
     private final AbstractClusteringMethod cm;
     private PersistentVisualization cp;
 
-    public UPGMAItem(UPGMARoot root, ClusteringDistance ad, AbstractClusteringMethod cm, OutputPanel op) {
+    public UPGMAItem(UPGMARoot root, ClusteringDistance<UPGMALeafNode> ad, AbstractClusteringMethod cm, OutputPanel op) {
         this.op = op;
         this.ad = ad;
         this.cm = cm;

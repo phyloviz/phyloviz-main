@@ -6,15 +6,14 @@
 package net.phyloviz.nj.algorithm.saitou_nei;
 
 import java.util.Iterator;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.algorithm.NJ;
 import net.phyloviz.nj.tree.IndexList;
-import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.nj.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 
 /**
  *
@@ -22,7 +21,7 @@ import net.phyloviz.nj.ui.OutputPanel;
  */
 public class NJSaitouNei extends NJ{
     
-    public NJSaitouNei(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op){
+    public NJSaitouNei(TypingData<? extends Profile> inTd, ClusteringDistance inAd, OutputPanel op){
         super(inTd, inAd, op);
     }
     

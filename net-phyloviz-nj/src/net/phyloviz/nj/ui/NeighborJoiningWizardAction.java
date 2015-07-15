@@ -6,11 +6,12 @@ import java.beans.PropertyChangeEvent;
 import java.text.MessageFormat;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.AgglomerativeClusteringMethod;
 import net.phyloviz.nj.run.NeighborJoiningRunner;
+import net.phyloviz.nj.tree.NJLeafNode;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import org.openide.*;
 import org.openide.WizardDescriptor;
 import org.openide.nodes.Node;
@@ -39,7 +40,7 @@ public class NeighborJoiningWizardAction extends NodeAction {
             boolean cancelled = wizardDescriptor.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
                 // do something
-                AbstractDistance ad = (AbstractDistance) wizardDescriptor.getProperty("distance");
+                ClusteringDistance<NJLeafNode> ad = (ClusteringDistance<NJLeafNode>) wizardDescriptor.getProperty("distance");
 		AgglomerativeClusteringMethod cm = (AgglomerativeClusteringMethod) wizardDescriptor.getProperty("method");
 
                 TypingData<? extends Profile> td = nodes[0].getLookup().lookup(TypingData.class);

@@ -6,7 +6,6 @@
 package net.phyloviz.nj.algorithm.studier_keppler;
 
 import java.util.Iterator;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.algorithm.NJ;
@@ -15,6 +14,7 @@ import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.nj.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 
 /**
  *
@@ -22,7 +22,7 @@ import net.phyloviz.nj.ui.OutputPanel;
  */
 public class NJStudierKeppler extends NJ{
     
-    public NJStudierKeppler(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op){
+    public NJStudierKeppler(TypingData<? extends Profile> inTd, ClusteringDistance<NJLeafNode> inAd, OutputPanel op){
         super(inTd, inAd, op);
     }
     

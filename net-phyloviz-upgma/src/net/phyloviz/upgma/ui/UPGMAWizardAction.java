@@ -45,6 +45,7 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import net.phyloviz.upgma.run.UPGMARunner;
+import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import org.openide.DialogDisplayer;
 import org.openide.WizardDescriptor;
@@ -77,7 +78,7 @@ public final class UPGMAWizardAction extends NodeAction {
 		if (!cancelled) {
 
 			// do something
-			ClusteringDistance ad = (ClusteringDistance) wizardDescriptor.getProperty("distance");
+			ClusteringDistance<UPGMALeafNode> ad = (ClusteringDistance<UPGMALeafNode>) wizardDescriptor.getProperty("distance");
 			HierarchicalClusteringMethod cm = (HierarchicalClusteringMethod) wizardDescriptor.getProperty("method");
                         
 			TypingData<? extends Profile> td = nodes[0].getLookup().lookup(TypingData.class);

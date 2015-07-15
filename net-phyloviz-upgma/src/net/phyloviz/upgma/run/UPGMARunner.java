@@ -11,6 +11,7 @@ import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import net.phyloviz.upgma.UPGMAItem;
 import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgma.algorithm.UPGMA;
+import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 
@@ -18,11 +19,11 @@ import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 public class UPGMARunner implements Runnable{
     
     private final OutputPanel op;
-    private final ClusteringDistance ad;
+    private final ClusteringDistance<UPGMALeafNode> ad;
     private final TypingData<? extends Profile> td;
     private final HierarchicalClusteringMethod cm;
 
-    public UPGMARunner(OutputPanel op, ClusteringDistance ad, HierarchicalClusteringMethod cm, TypingData<? extends Profile> td) {
+    public UPGMARunner(OutputPanel op, ClusteringDistance<UPGMALeafNode> ad, HierarchicalClusteringMethod cm, TypingData<? extends Profile> td) {
         this.op = op;
         this.ad = ad;
         this.td = td;
@@ -35,7 +36,6 @@ public class UPGMARunner implements Runnable{
         
         op.appendWithDate("Hierarchical Clustering - "+cm.toString()+" - (" +ad.toString()+  ") started\n computing distance matrix...\n\n");
         op.flush();
-        //TypingData<? extends AbstractProfile> td = (TypingData<? extends AbstractProfile>) n.getLookup().lookup(TypingData.class);
         
         UPGMA algorithm = new UPGMA(td, ad, cm, op);
         

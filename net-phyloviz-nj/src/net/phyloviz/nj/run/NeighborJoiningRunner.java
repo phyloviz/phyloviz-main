@@ -1,7 +1,6 @@
 package net.phyloviz.nj.run;
 
 import net.phyloviz.nj.tree.NJLeafNode;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.AgglomerativeClusteringMethod;
@@ -18,11 +17,11 @@ import net.phyloviz.nj.ui.OutputPanel;
 public class NeighborJoiningRunner implements Runnable{
     
     private final OutputPanel op;
-    private final AbstractDistance<NJLeafNode> ad;
+    private final ClusteringDistance<NJLeafNode> ad;
     private final AgglomerativeClusteringMethod cm;
     private final TypingData<? extends Profile> td;
 
-    public NeighborJoiningRunner(OutputPanel op, AbstractDistance<NJLeafNode> ad, AgglomerativeClusteringMethod cm, TypingData<? extends Profile> td) {
+    public NeighborJoiningRunner(OutputPanel op, ClusteringDistance<NJLeafNode> ad, AgglomerativeClusteringMethod cm, TypingData<? extends Profile> td) {
         this.op = op;
         this.ad = ad;
         this.td = td;

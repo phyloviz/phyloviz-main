@@ -6,12 +6,12 @@
 package net.phyloviz.nj;
 
 import net.phyloviz.algo.AbstractClusteringMethod;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.algorithm.NJ;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 
 /**
  *
@@ -19,6 +19,6 @@ import net.phyloviz.nj.ui.OutputPanel;
  */
 public interface AgglomerativeClusteringMethod extends AbstractClusteringMethod<NJLeafNode> {
 
-    NJ getClusteringMethod(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op);
+    NJ getClusteringMethod(TypingData<? extends Profile> inTd, ClusteringDistance<NJLeafNode> inAd, OutputPanel op);
     
 }

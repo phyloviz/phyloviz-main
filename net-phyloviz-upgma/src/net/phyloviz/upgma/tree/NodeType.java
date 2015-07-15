@@ -102,7 +102,7 @@ public abstract class NodeType implements INodeJsonSaver{
      * @param numOfElems total number of elements
      * @param nodeArray array with all the nodes
      */
-    public void RemoveDistance(int minL, int numOfElems, NodeType[] nodeArray) {
+    public void removeDistance(int minL, int numOfElems, NodeType[] nodeArray) {
         if(this.minL == null || this.minL.index == minL || nodeArray[this.minL.index] == null){   //if minL hasnt been calculated yet
             calculateMin(nodeArray, minL);
         }

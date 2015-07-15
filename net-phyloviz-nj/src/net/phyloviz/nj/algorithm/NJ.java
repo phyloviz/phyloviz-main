@@ -1,7 +1,6 @@
 package net.phyloviz.nj.algorithm;
 
 import java.util.Iterator;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
@@ -12,6 +11,7 @@ import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.nj.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 
 /**
  *
@@ -19,7 +19,7 @@ import net.phyloviz.nj.ui.OutputPanel;
  */
 public abstract class NJ {
     
-    private final AbstractDistance<NJLeafNode> ad;
+    private final ClusteringDistance<NJLeafNode> ad;
     private final TypingData<? extends Profile> td;
     
     private IndexList nodeList;
@@ -29,7 +29,7 @@ public abstract class NJ {
     private final OutputPanel op;
     private int nodeIdx;
 
-    public NJ(TypingData<? extends Profile> inTd, AbstractDistance<NJLeafNode> inAd, OutputPanel op) {
+    public NJ(TypingData<? extends Profile> inTd, ClusteringDistance<NJLeafNode> inAd, OutputPanel op) {
         nodeList = new IndexList();
         nodeArray = new NodeType[inTd.size()];
         td = inTd;

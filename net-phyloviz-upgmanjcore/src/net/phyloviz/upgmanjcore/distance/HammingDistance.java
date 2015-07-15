@@ -11,11 +11,12 @@ import net.phyloviz.core.data.Profile;
 /**
  *
  * @author Marta Nascimento
+ * @param <T>
  */
-public class HammingDistance extends ClusteringDistance {
+public class HammingDistance<T extends Profile> extends ClusteringDistance<T> {
 
     @Override
-    public int level(Profile px, Profile py) {
+    public int level(T px, T py) {
         int diffs = 0;
 
         for (int i = 0; i < px.profileLength(); i++) {
@@ -28,7 +29,7 @@ public class HammingDistance extends ClusteringDistance {
     }
 
     @Override
-    public int level(Edge<Profile> e) {
+    public int level(Edge<T> e) {
         return level(e.getU(), e.getV());
     }
 

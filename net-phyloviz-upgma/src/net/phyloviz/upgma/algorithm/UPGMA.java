@@ -1,7 +1,6 @@
 package net.phyloviz.upgma.algorithm;
 
 import java.util.Iterator;
-import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
@@ -13,6 +12,7 @@ import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.tree.UPGMAUnionNode;
 import net.phyloviz.upgma.tree.NodeType;
 import net.phyloviz.upgma.ui.OutputPanel;
+import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 
 /**
  *
@@ -21,7 +21,7 @@ import net.phyloviz.upgma.ui.OutputPanel;
 public class UPGMA {
 
     private final HierarchicalClusteringMethod cm;
-    private final AbstractDistance ad;
+    private final ClusteringDistance<UPGMALeafNode> ad;
     private final TypingData<? extends Profile> td;
 
     private IndexListNode nodeList;
@@ -35,7 +35,7 @@ public class UPGMA {
     private int ties = 0;
     private int unionId;
 
-    public UPGMA(TypingData<? extends Profile> inTd, AbstractDistance oad, HierarchicalClusteringMethod ocm, OutputPanel op) {
+    public UPGMA(TypingData<? extends Profile> inTd, ClusteringDistance<UPGMALeafNode> oad, HierarchicalClusteringMethod ocm, OutputPanel op) {
         this.nodeList = new IndexListNode();
         this.nodeArray = new NodeType[inTd.size()];
         this.td = inTd;
@@ -105,10 +105,10 @@ public class UPGMA {
 
             if (current.getNodeIdx() < union.getNodeIdx()) {
                 current.setDistance(minC, distance);
-                current.RemoveDistance(minL.index, nodeList.getSize(), nodeArray);
+                current.removeDistance(minL.index, nodeList.getSize(), nodeArray);
             } else {
                 union.setDistance(in, distance);
-                current.RemoveDistance(minL.index, nodeList.getSize(), nodeArray);
+                current.removeDistance(minL.index, nodeList.getSize(), nodeArray);
             }
         }
 

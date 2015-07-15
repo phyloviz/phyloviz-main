@@ -13,11 +13,12 @@ import net.phyloviz.core.data.Profile;
 /**
  *
  * @author Adriano
+ * @param <T>
  */
-public abstract class ClusteringDistance implements AbstractDistance<Profile>{
+public abstract class ClusteringDistance<T extends Profile> implements AbstractDistance<T>{
     
     @Override
-    public int level(Profile px, Profile py) {
+    public int level(T px, T py) {
         int diffs = 0;
 
         for (int i = 0; i < px.profileLength(); i++) {
@@ -30,7 +31,7 @@ public abstract class ClusteringDistance implements AbstractDistance<Profile>{
     }
     
     @Override
-    public int level(Edge<Profile> e) {
+    public int level(Edge<T> e) {
         return level(e.getU(), e.getV());
     }
     
@@ -40,12 +41,12 @@ public abstract class ClusteringDistance implements AbstractDistance<Profile>{
     }
 
     @Override
-    public int compare(Edge<Profile> ex, Edge<Profile> ey) {
+    public int compare(Edge<T> ex, Edge<T> ey) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public int compare(Profile px, Profile py) {
+    public int compare(T px, T py) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -55,7 +56,7 @@ public abstract class ClusteringDistance implements AbstractDistance<Profile>{
     }
 
     @Override
-    public String info(Edge<Profile> e) {
+    public String info(Edge<T> e) {
         return null;
     }
 
@@ -65,12 +66,12 @@ public abstract class ClusteringDistance implements AbstractDistance<Profile>{
     }
 
     @Override
-    public Comparator<Profile> getProfileComparator() {
+    public Comparator<T> getProfileComparator() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Comparator<Edge<Profile>> getEdgeComparator() {
+    public Comparator<Edge<T>> getEdgeComparator() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
