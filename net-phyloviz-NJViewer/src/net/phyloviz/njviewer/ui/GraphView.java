@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -144,14 +145,14 @@ public class GraphView extends GView {
         ColorAction fill = new NodeColorAction("graph.nodes");
         ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
         ColorAction edge = new EdgeColorAction("graph.edges");
-            FontAction nfont =
-            new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
-            @Override
-                public Font getFont(VisualItem item) {
-                    Profile st = (Profile) item.getSourceTuple().get("st_ref");
-                    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (GraphView.this.linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
-            }
-        };
+        FontAction nfont
+                = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
+                    @Override
+                    public Font getFont(VisualItem item) {
+                        Profile st = (Profile) item.getSourceTuple().get("st_ref");
+                        return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (GraphView.this.linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+                    }
+                };
 
         ActionList draw = new ActionList();
         draw.add(fill);
@@ -326,18 +327,23 @@ public class GraphView extends GView {
         sp.setBackground(Color.WHITE);
 
         /*Right Box*/
-        
-        Box verticalPanel = new Box(BoxLayout.Y_AXIS);
+        Box verticalBox = new Box(BoxLayout.Y_AXIS);
         JLabel cutLabel1 = new JLabel("cut off");
         JLabel cutLabel2 = new JLabel("threshold:");
 
-        verticalPanel.add(Box.createVerticalGlue());
-        verticalPanel.add(cutLabel1);
-        verticalPanel.add(cutLabel2);
-        verticalPanel.add(sp);
+        verticalBox.add(Box.createVerticalStrut(5));
+        verticalBox.add(cutLabel1);
+        verticalBox.add(cutLabel2);
+        verticalBox.add(sp);
 
+        verticalBox.setBackground(Color.WHITE);
+
+        JPanel verticalPanel = new JPanel(new GridLayout(3, 1));
+        verticalPanel.add(emptyJPanel());
+        verticalPanel.add(emptyJPanel());
+        verticalPanel.add(verticalBox);
         verticalPanel.setBackground(Color.WHITE);
-        
+
         /*Bottom Box*/
         bottomBox = new Box(BoxLayout.X_AXIS);
         bottomBox.add(Box.createHorizontalStrut(3));
@@ -360,6 +366,12 @@ public class GraphView extends GView {
         add(verticalPanel, BorderLayout.EAST);
     }
 
+    private JPanel emptyJPanel() {
+        JPanel j = new JPanel();
+        j.setBackground(Color.WHITE);
+        return j;
+    }
+
     public void loadGraph(final NJRoot root, final AbstractDistance ad, final double distanceFilter, final boolean loaded) {
         final HashMap<Integer, Integer> uid2rowid = new HashMap<>();
 
@@ -371,7 +383,7 @@ public class GraphView extends GView {
         view.setVisible("graph", null, false);
         view.runAfter("draw", "layout");
         view.run("draw");
-        
+
         SwingWorker job = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
@@ -548,9 +560,10 @@ public class GraphView extends GView {
                         });
                         sp.setModel(model);
                         sp.setValue(distance);
-                        
-                        if(loaded)
+
+                        if (loaded) {
                             stopAnimation();
+                        }
                     }
 
                 }
