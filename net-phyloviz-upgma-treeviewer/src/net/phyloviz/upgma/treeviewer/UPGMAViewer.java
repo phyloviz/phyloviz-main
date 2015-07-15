@@ -365,7 +365,7 @@ public final class UPGMAViewer extends GView {
         verticalBox.add(verticalSlider);
         verticalBox.setOpaque(true);
         verticalBox.setBackground(BACKGROUND);
-
+        
         JPanel verticalPanel = new JPanel(new GridLayout(3, 1));
         verticalPanel.add(verticalBox);
         verticalPanel.add(verticalLabelPanel);
