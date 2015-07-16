@@ -5,7 +5,7 @@
  */
 package net.phyloviz.upgma;
 
-import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
 
 /**

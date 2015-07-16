@@ -108,6 +108,7 @@
                 </dependency>
             </module-dependencies>
             <public-packages>
+                <package>net.phyloviz.upgmanjcore</package>
                 <package>net.phyloviz.upgmanjcore.distance</package>
                 <package>net.phyloviz.upgmanjcore.json</package>
                 <package>net.phyloviz.upgmanjcore.tree</package>

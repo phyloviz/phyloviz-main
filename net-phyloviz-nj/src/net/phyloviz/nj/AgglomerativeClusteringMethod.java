@@ -5,7 +5,7 @@
  */
 package net.phyloviz.nj;
 
-import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.algorithm.NJ;

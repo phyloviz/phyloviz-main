@@ -33,8 +33,13 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.algo;
+package net.phyloviz.upgmanjcore;
 
 import net.phyloviz.core.data.Profile;
+import net.phyloviz.core.data.TypingData;
 
-public interface AbstractClusteringMethod<T extends Profile> {}
+public interface ClusteringMethodProvider<T extends Profile> {
+
+	public AbstractClusteringMethod<T> getMethod(TypingData<? extends Profile> td);
+
+}

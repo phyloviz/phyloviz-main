@@ -1,8 +1,8 @@
 package net.phyloviz.nj.algorithm.studier_keppler;
 
-import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.nj.tree.NJLeafNode;
-import net.phyloviz.algo.ClusteringMethodProvider;
+import net.phyloviz.upgmanjcore.ClusteringMethodProvider;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import org.openide.util.lookup.ServiceProvider;
