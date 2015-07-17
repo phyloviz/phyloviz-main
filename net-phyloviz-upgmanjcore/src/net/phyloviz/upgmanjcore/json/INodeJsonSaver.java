@@ -6,7 +6,7 @@
 package net.phyloviz.upgmanjcore.json;
 
 /**
- *
+ *  interface for NodeType
  * @author Adriano
  */
 public interface INodeJsonSaver{

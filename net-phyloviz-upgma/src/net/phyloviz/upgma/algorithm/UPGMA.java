@@ -5,8 +5,8 @@ import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
-import net.phyloviz.upgmanjcore.tree.IndexListNode;
-import net.phyloviz.upgmanjcore.tree.IndexListNode.IndexNode;
+import net.phyloviz.upgmanjcore.tree.IndexList;
+import net.phyloviz.upgmanjcore.tree.IndexList.IndexNode;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.tree.UPGMAUnionNode;
@@ -24,7 +24,7 @@ public class UPGMA {
     private final ClusteringDistance<UPGMALeafNode> ad;
     private final TypingData<? extends Profile> td;
 
-    private IndexListNode nodeList;
+    private IndexList nodeList;
 
     private NodeType[] nodeArray;
     private UPGMARoot root;
@@ -36,7 +36,7 @@ public class UPGMA {
     private int unionId;
 
     public UPGMA(TypingData<? extends Profile> inTd, ClusteringDistance<UPGMALeafNode> oad, HierarchicalClusteringMethod ocm, OutputPanel op) {
-        this.nodeList = new IndexListNode();
+        this.nodeList = new IndexList();
         this.nodeArray = new NodeType[inTd.size()];
         this.td = inTd;
         this.ad = oad;
