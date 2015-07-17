@@ -1,6 +1,5 @@
 package net.phyloviz.njviewer.ui;
 
-import net.phyloviz.njviewer.Force.NJForceDirectLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -121,7 +120,7 @@ public class GraphView extends GView {
     private JPopupMenu popupMenu;
     private LabelRenderer lr;
     private DefaultRendererFactory rf;
-    private NJForceDirectLayout fdl;
+    private ForceDirectedLayout fdl;
     private boolean running, linear, label = true;
     // Data analysis info...
     private CategoryProvider cp;
@@ -160,7 +159,7 @@ public class GraphView extends GView {
         draw.add(nfont);
         draw.add(edge);
 
-        fdl = new NJForceDirectLayout("graph");
+        fdl = new ForceDirectedLayout("graph");
 
         ActionList layout = new ActionList(Activity.INFINITY);
         layout.add(fdl);
