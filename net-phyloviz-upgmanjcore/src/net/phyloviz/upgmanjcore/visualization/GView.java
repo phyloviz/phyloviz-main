@@ -41,7 +41,10 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import prefuse.Visualization;
 
-
+/**
+ * Class to be extended by all View used by graphs
+ * @author Adriano
+ */
 public abstract class GView extends JPanel {
 
 	public abstract JComponent getDisplay();
@@ -69,9 +72,5 @@ public abstract class GView extends JPanel {
         public abstract float getDistanceFilterValue();
         
         public abstract void setDistanceFilterValue(float value);
-        
-//        public abstract Renderer getNodeRenderer();
-//        public abstract Renderer getEdgeRenderer();
-
 
 }

@@ -39,7 +39,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.io.IOException;
-import net.phyloviz.upgmanjcore.visualization.GView;
 import org.freehep.graphics2d.PrintColor;
 import org.freehep.graphics2d.VectorGraphics;
 
@@ -50,7 +49,7 @@ import prefuse.Display;
 public class GTExportDialog extends ExportDialog {
 	private static final long serialVersionUID = 1L;
 
-	private GView gv;
+	private final GView gv;
 
 	public GTExportDialog(GView gv) {
 		this.gv =  gv;

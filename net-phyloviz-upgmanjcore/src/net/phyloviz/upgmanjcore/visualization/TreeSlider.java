@@ -15,8 +15,8 @@ import javax.swing.JSlider;
 
 //
 ///**
-// *
-// * @author Marta Nascimento
+// * use in case is necessary a slider
+// * @author Adriano Sousa
 // */
 public class TreeSlider {
 
@@ -37,7 +37,9 @@ public class TreeSlider {
     public JSlider getSlider(){
         return slider;
     }
-    
+    /**
+     * set slider label
+     */
     public void setValuesLabel(){
         Dictionary<Integer, JLabel> labelTable = new Hashtable<>();
         labelTable.put(0,      new JLabel("" + MIN));

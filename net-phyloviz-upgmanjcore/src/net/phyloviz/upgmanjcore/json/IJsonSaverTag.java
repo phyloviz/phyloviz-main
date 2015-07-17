@@ -8,7 +8,7 @@ package net.phyloviz.upgmanjcore.json;
 import java.util.HashMap;
 
 /**
- *
+ * Interface for root Node
  * @author Adriano
  */
 public interface IJsonSaverTag{

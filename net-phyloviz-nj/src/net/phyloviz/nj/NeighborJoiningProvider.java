@@ -20,6 +20,10 @@ public class NeighborJoiningProvider implements AlgorithmProvider {
 		return false;
 	}
 
+        /**
+         * 
+         * @return 
+         */
 	@Override
 	public NodeAction getAction() {
 		if (action == null)

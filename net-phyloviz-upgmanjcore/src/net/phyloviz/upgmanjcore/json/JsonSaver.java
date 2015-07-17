@@ -15,12 +15,19 @@ public class JsonSaver{
 
     private final String[] titles;
     public final IJsonSaverTag njtj;
-
+    /**
+     * 
+     * @param titles to save has keys
+     * @param saver entry point with values to be saved has values
+     */
     public JsonSaver(String[] titles, IJsonSaverTag saver) {
         this.titles = titles;
         njtj = saver;
     }
-
+    /**
+     * 
+     * @return data to be saved in format JSON
+     */
     public String createFile() {
         HashMap<String, String> map = njtj.getBuildersMap();
         StringBuilder sb = new StringBuilder();

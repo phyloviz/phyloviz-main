@@ -6,19 +6,19 @@
 package net.phyloviz.upgmanjcore.tree;
 
 import java.util.Iterator;
-import net.phyloviz.upgmanjcore.tree.IndexListNode.IndexNode;
+import net.phyloviz.upgmanjcore.tree.IndexList.IndexNode;
 
 /**
- *
+ * 
  * @author Adriano
  */
-public class IndexListNode implements Iterable<IndexNode>{
+public class IndexList implements Iterable<IndexNode>{
     
     private final IndexNode dummy;
     private int idx = 0;
     private int size = 0;
     
-    public IndexListNode(){
+    public IndexList(){
         dummy = new IndexNode(-1);
         dummy.next = dummy.prev = dummy;    //prev points to last, next point to first
     }
@@ -39,7 +39,10 @@ public class IndexListNode implements Iterable<IndexNode>{
     public int getSize(){
         return size;
     }
-
+    /**
+     * 
+     * @return iterator with all the elements
+     */
     @Override
     public Iterator<IndexNode> iterator() {
         return new NodeIterator(dummy).iterator();
@@ -55,7 +58,10 @@ public class IndexListNode implements Iterable<IndexNode>{
         private NodeIterator(IndexNode in) {
             start = in;
         }
-        
+        /**
+         * 
+         * @return iterator started from this element
+         */
         @Override
         public Iterator<IndexNode> iterator() {
             return new Iterator<IndexNode>(){
@@ -84,7 +90,9 @@ public class IndexListNode implements Iterable<IndexNode>{
             };
         }
     }
- 
+    /**
+     * Linked Node with index 
+     */
     public class IndexNode{
         public final int index;
         public IndexNode next;

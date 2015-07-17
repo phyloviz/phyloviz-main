@@ -3,7 +3,7 @@ package net.phyloviz.nj.tree;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.nj.json.NeighborJoiningToJson;
 import net.phyloviz.upgmanjcore.json.JsonSaver;
-import net.phyloviz.upgmanjcore.tree.IndexListNode.NodeIterator;
+import net.phyloviz.upgmanjcore.tree.IndexList.NodeIterator;
 
 /**
  *

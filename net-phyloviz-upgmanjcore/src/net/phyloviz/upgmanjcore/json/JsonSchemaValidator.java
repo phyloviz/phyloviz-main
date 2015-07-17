@@ -40,7 +40,13 @@ public abstract class JsonSchemaValidator {
     public void setDataIds(Map<String, String[]> dataIds) {
         this.dataIds = dataIds;
     }
-
+    /**
+     * Validates choosen file with shema
+     * @param schema    schema with validation
+     * @param directory file path to be load
+     * @param filename  file name to be load 
+     * @return 
+     */
     public boolean validate(InputStream schema, String directory, String filename) {
         //parse validator
 
@@ -134,7 +140,13 @@ public abstract class JsonSchemaValidator {
         }
         return true;
     }
-
+    /**
+     * 
+     * @param s     objecto value to be checked
+     * @param get   objecto key to be checked 
+     * @param file  with that is being verified
+     * @return 
+     */
     private boolean checkType(Object s, String get, String file) {
         try {
             switch (get) {
@@ -167,12 +179,15 @@ public abstract class JsonSchemaValidator {
         }
         return true;
     }
-
+    /**
+     * properties of a object in json
+     */
     private class ItemType {
-
         public Map<String, String> pType = new HashMap<>();
     }
-
+    /**
+     * Objecto with key - value data
+     */
     private class JsonProp {
 
         public String type;
