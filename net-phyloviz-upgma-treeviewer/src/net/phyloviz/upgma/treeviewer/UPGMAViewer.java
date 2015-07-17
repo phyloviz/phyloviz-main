@@ -85,7 +85,7 @@ public final class UPGMAViewer extends GView {
 
     private final float MAX_DISTANCE;
 
-    private TreeView tview;
+    private final TreeView tview;
     private boolean linear = false;
     private boolean labelBool = true;
 
@@ -403,6 +403,9 @@ public final class UPGMAViewer extends GView {
 
     public JComponent getTreeViewComponent() {
         return _treeview;
+    }
+    public TreeView getTreeViewer(){
+        return tview;
     }
     int id = 1;
 

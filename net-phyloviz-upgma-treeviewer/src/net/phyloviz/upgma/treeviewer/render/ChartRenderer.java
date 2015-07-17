@@ -144,10 +144,11 @@ public class ChartRenderer extends AbstractShapeRenderer {
             return new Rectangle(x, y, 0, 0);
         }
 
-        int offset = (int) (uv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
-
-        int w = 150 + offset;
-        int h = 30;
+        int offsetX = (int) (uv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
+        int offsetY = (int) (uv.getTreeViewer().getScaleY());
+        
+        int w = 150 + offsetX;
+        int h = offsetY - 10;
 
         Rectangle area = new Rectangle(x, y, w, h);
         return area;
