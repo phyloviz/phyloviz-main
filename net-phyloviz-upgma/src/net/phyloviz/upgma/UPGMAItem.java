@@ -34,7 +34,7 @@
  */
 package net.phyloviz.upgma;
 
-import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.util.NodeFactory;
 import net.phyloviz.project.ProjectItem;

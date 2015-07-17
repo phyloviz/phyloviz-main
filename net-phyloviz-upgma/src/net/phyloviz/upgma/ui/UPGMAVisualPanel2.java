@@ -46,10 +46,10 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.text.html.HTMLDocument;
-import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
-import net.phyloviz.algo.ClusteringMethodProvider;
+import net.phyloviz.upgmanjcore.ClusteringMethodProvider;
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
 import org.openide.util.Lookup;
 

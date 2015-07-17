@@ -292,6 +292,9 @@ public final class TreeView extends Display {
     public double getScaleX() {
         return ((NodeLinkLayout) m_vis.getAction("treeLayout")).getScaleX();
     }
+    public double getScaleY() {
+        return ((NodeLinkLayout) m_vis.getAction("treeLayout")).getScaleY();
+    }
 
     void changeDistance(int d) {
         m_vis.cancel("animatePaint");

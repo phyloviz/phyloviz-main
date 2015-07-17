@@ -37,7 +37,7 @@ package net.phyloviz.upgma.ui;
 
 import java.awt.Component;
 import javax.swing.event.ChangeListener;
-import net.phyloviz.algo.AbstractClusteringMethod;
+import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import org.openide.WizardDescriptor;
