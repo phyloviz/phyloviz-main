@@ -15,68 +15,44 @@ import net.phyloviz.core.data.Profile;
  * @author Adriano
  * @param <T>
  */
-public abstract class ClusteringDistance<T extends Profile> implements AbstractDistance<T>{
-    
-    @Override
-    public int level(T px, T py) {
-        int diffs = 0;
+public abstract class ClusteringDistance<T extends Profile> implements AbstractDistance<T> {
 
-        for (int i = 0; i < px.profileLength(); i++) {
-            if (px.getValue(i).compareTo(py.getValue(i)) != 0) {
-                diffs++;
-            }
-        }
-
-        return diffs;
-    }
-    
     @Override
-    public int level(Edge<T> e) {
-        return level(e.getU(), e.getV());
-    }
-    
+    public abstract int level(T px, T py);
+
+    @Override
+    public abstract int level(Edge<T> e);
+
+    @Override
+    public abstract int compare(Edge<T> ex, Edge<T> ey);
+
+    @Override
+    public abstract int compare(T px, T py);
+
+    @Override
+    public abstract String info(Profile px, Profile py);
+
+    @Override
+    public abstract String info(Edge<T> e);
+
+    @Override
+    public abstract Comparator<T> getProfileComparator();
+
+    @Override
+    public abstract Comparator<Edge<T>> getEdgeComparator();
+
     @Override
     public boolean configurable() {
         return false;
     }
 
     @Override
-    public int compare(Edge<T> ex, Edge<T> ey) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int compare(T px, T py) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String info(Profile px, Profile py) {
-        return null;
-    }
-
-    @Override
-    public String info(Edge<T> e) {
-        return null;
+    public void configure() {
+        //do nothing
     }
 
     @Override
     public int maxLevel() {
         return -1;
     }
-
-    @Override
-    public Comparator<T> getProfileComparator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Comparator<Edge<T>> getEdgeComparator() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void configure() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }        
 }

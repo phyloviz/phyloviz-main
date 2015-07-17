@@ -33,7 +33,7 @@ public class NJUnionNode extends NodeType{
     
     @Override
     public String toString(){
-        return ".";
+        return this.getName();
     }
     @Override public int profileLength(){
         return 0;

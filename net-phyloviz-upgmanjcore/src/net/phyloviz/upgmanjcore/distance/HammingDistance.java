@@ -5,6 +5,7 @@
  */
 package net.phyloviz.upgmanjcore.distance;
 
+import java.util.Comparator;
 import net.phyloviz.algo.Edge;
 import net.phyloviz.core.data.Profile;
 
@@ -36,5 +37,35 @@ public class HammingDistance<T extends Profile> extends ClusteringDistance<T> {
     @Override
     public String toString() {
         return "Hamming Distance";
+    }
+
+    @Override
+    public int compare(Edge<T> ex, Edge<T> ey) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int compare(T px, T py) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String info(Profile px, Profile py) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String info(Edge<T> e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Comparator<T> getProfileComparator() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Comparator<Edge<T>> getEdgeComparator() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
