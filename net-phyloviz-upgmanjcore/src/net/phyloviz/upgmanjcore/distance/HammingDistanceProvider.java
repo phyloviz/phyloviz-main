@@ -20,7 +20,7 @@ public class HammingDistanceProvider implements DistanceProvider<Profile> {
 
     @Override
     public AbstractDistance<Profile> getDistance(TypingData<? extends Profile> td) {
-        return new HammingDistance();
+        return new HammingDistance<>();
     }
 
     @Override
