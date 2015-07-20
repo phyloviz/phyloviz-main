@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: net.phyloviz.upgmanjcore
+OpenIDE-Module-Localizing-Bundle: net/phyloviz/upgmanjcore/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.1
+

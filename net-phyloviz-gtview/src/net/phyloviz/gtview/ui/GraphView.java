@@ -184,13 +184,13 @@ public class GraphView extends GView {
         ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
         ColorAction edge = new EdgeColorAction("graph.edges");
         FontAction nfont
-            = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
-                @Override
-                public Font getFont(VisualItem item) {
-                    GOeBurstNodeExtended st = (GOeBurstNodeExtended) item.getSourceTuple().get("st_ref");
-                    return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
-                }
-            };
+                = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
+                    @Override
+                    public Font getFont(VisualItem item) {
+                        GOeBurstNodeExtended st = (GOeBurstNodeExtended) item.getSourceTuple().get("st_ref");
+                        return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+                    }
+                };
 
         ActionList draw = new ActionList();
         draw.add(fill);
@@ -307,14 +307,14 @@ public class GraphView extends GView {
 
                 if (e.visible()) {
                     nodeTable.setInt(nodeMap.get(e.getU().getID()), "dg",
-                        nodeTable.getInt(nodeMap.get(e.getU().getID()), "dg") + 1);
+                            nodeTable.getInt(nodeMap.get(e.getU().getID()), "dg") + 1);
                     nodeTable.setInt(nodeMap.get(e.getV().getID()), "dg",
-                        nodeTable.getInt(nodeMap.get(e.getV().getID()), "dg") + 1);
+                            nodeTable.getInt(nodeMap.get(e.getV().getID()), "dg") + 1);
                     edgeTable.setInt(rowNb, "viz", er.getDistance().level(e));
                     if (er.getEdgestats().size() != 0) {
                         String edgestats = e.getU().getID() + e.getV().getID();
                         double freq = Double.valueOf(er.getEdgestats().get(Integer.valueOf(edgestats)));
-                        edgeTable.setDouble(rowNb, "edgep", (double) Math.round((Math.pow(10, freq) * 100.0) * 10)/10);
+                        edgeTable.setDouble(rowNb, "edgep", (double) Math.round((Math.pow(10, freq) * 100.0) * 10) / 10);
                     }
                     //} else {
                     //	edgeTable.setInt(rowNb, "viz", -1);
@@ -349,7 +349,7 @@ public class GraphView extends GView {
                 ArrayList<GOeBurstClusterWithStats> gList = new ArrayList<GOeBurstClusterWithStats>(selectedIndices.length);
                 for (int i = 0; i < selectedIndices.length; i++) {
                     view.setVisible("graph",
-                        (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+                            (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
 
                     gList.add((GOeBurstClusterWithStats) groupList.getModel().getElementAt(selectedIndices[i]));
                 }
@@ -368,11 +368,11 @@ public class GraphView extends GView {
         groupList.setListData(new Vector<GOeBurstClusterWithStats>(groups));
 
         groupPanel = new JScrollPane(groupList,
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         groupPanel.getViewport().setBackground(Color.WHITE);
         groupPanel.setBackground(Color.WHITE);
         tb = new TitledBorder("Groups at "
-            + (level == 1 ? "S" : level == 2 ? "D" : "T") + "LV:");
+                + (level == 1 ? "S" : level == 2 ? "D" : "T") + "LV:");
         tb.setBorder(new LineBorder(Color.BLACK));
         groupPanel.setBorder(tb);
         groupPanel.setPreferredSize(new Dimension(90, 600));
@@ -444,8 +444,9 @@ public class GraphView extends GView {
         //popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
         popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
-        if(er.getEdgestats().size() != 0)
+        if (er.getEdgestats().size() != 0) {
             popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
+        }
         popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
@@ -615,7 +616,7 @@ public class GraphView extends GView {
         int[] selectedIndices = groupList.getSelectedIndices();
         for (int i = 0; i < selectedIndices.length; i++) {
             view.setVisible("graph",
-                (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+                    (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
         }
         view.run("draw");
     }
@@ -631,7 +632,7 @@ public class GraphView extends GView {
         int[] selectedIndices = groupList.getSelectedIndices();
         for (int i = 0; i < selectedIndices.length; i++) {
             view.setVisible("graph",
-                (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+                    (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
         }
         view.run("draw");
     }
@@ -848,7 +849,7 @@ public class GraphView extends GView {
             Iterator<GOeBurstNodeExtended> iter = st.getSLVs().iterator();
             while (iter.hasNext()) {
                 NodeItem nitem
-                    = (NodeItem) view.getVisualItem("graph.nodes", n.getTable().getTuple(st2rowid.get(iter.next())));
+                        = (NodeItem) view.getVisualItem("graph.nodes", n.getTable().getTuple(st2rowid.get(iter.next())));
                 nitem.setHighlighted(state);
             }
 
@@ -923,12 +924,12 @@ public class GraphView extends GView {
                 }
 
                 appendTextToInfoPanel(((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(edge)
-                    + "\n");
+                        + "\n");
             }
             if (item instanceof NodeItem) {
                 GOeBurstNodeExtended st = (GOeBurstNodeExtended) ((NodeItem) item).getSourceTuple().get("st_ref");
                 appendTextToInfoPanel(st + "\n"
-                    + ((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
+                        + ((GOeBurstClusterWithStats) groupList.getModel().getElementAt(item.getInt("group"))).getInfo(st));
 
                 appendTextToInfoPanel("Chart details:\n");
                 if (cp != null) {
@@ -1037,7 +1038,7 @@ public class GraphView extends GView {
             for (int i = 0; i < selectedIndices.length; i++) {
 
                 view.setVisible("graph",
-                    (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
+                        (Predicate) ExpressionParser.parse("group=" + selectedIndices[i] + "and " + viz), true);
             }
             view.run("draw");
             view.run("layout");

@@ -35,6 +35,7 @@
 
 package net.phyloviz.core.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,7 +62,7 @@ import org.openide.util.lookup.InstanceContent;
  * @since   PHILOViZ 1.0
  * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
  */
-public class Population implements DataModel, Lookup.Provider, NodeFactory {
+public class Population implements DataModel, Lookup.Provider, NodeFactory, Serializable {
 
 	private InstanceContent ic;
 	private AbstractLookup lookup;
@@ -92,9 +93,9 @@ public class Population implements DataModel, Lookup.Provider, NodeFactory {
 	/**
 	 * A tabular model of this population.
 	 * */
-	private TableModel model;
+	private transient TableModel model;
 
-	private DataSaver saver;
+	private transient DataSaver saver;
 	private int key;
 
 	/**

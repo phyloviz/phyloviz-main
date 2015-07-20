@@ -34,6 +34,7 @@
  */
 package net.phyloviz.core.data;
 
+import net.phyloviz.*;
 import net.phyloviz.core.explorer.DataSetNode;
 import net.phyloviz.core.util.NodeFactory;
 import org.openide.nodes.AbstractNode;
@@ -120,6 +121,8 @@ public class DataSet implements Lookup.Provider, NodeFactory {
 	 */
 	public void remove(Object o) {
 		ic.remove(o);
+                
+                
 	}
 
 	/**

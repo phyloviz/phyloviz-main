@@ -35,7 +35,6 @@
 
 package net.phyloviz.algo;
 
-import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 

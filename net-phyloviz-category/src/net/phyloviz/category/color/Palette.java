@@ -1,8 +1,9 @@
 package net.phyloviz.category.color;
 
 import java.awt.Color;
+import java.io.Serializable;
 
-public class Palette {
+public class Palette implements Serializable{
 
 	private Color[]  colors;
 

@@ -41,3 +41,9 @@
 /net-phyloviz/dist/
 /net-phyloviz-nlvgraph/build/
 /net-phyloviz-nlvgraph/nbproject/private/
+/net-phyloviz-project/build/
+/net-phyloviz-upgmanjcore/build/
+/net-phyloviz-upgma/build/
+/net-phyloviz-upgma-treeviewer/build/
+/net-phyloviz-nj/build/
+/net-phyloviz-NJViewer/build/

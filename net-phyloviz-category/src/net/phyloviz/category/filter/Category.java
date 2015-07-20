@@ -1,11 +1,12 @@
 package net.phyloviz.category.filter;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import net.phyloviz.core.data.DataItem;
 
-public class Category {
+public class Category implements Serializable{
 	
 	private LinkedList<DataItem> items;
 	private String name;

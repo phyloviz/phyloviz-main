@@ -54,7 +54,7 @@ public abstract class GView extends JPanel {
 	
 	public abstract void setLevelLabel(boolean status);
     
-    public abstract void setEdgePercentageLabel(boolean status);
+        public abstract void setEdgePercentageLabel(boolean status);
 
 	public abstract boolean showLabel();
 
