@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.Edge;
 import net.phyloviz.algo.tree.MSTAlgorithm;
-import net.phyloviz.algo.util.DisjointSet;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.Profile;
@@ -126,7 +124,7 @@ public class GraphBuilder implements Runnable {
 		op.append("#Edges: " + edges.size() + "\n");
 		*/
 
-		op.appendWithDate("nLV Graph done.\n");
+		op.appendWithDate("nLV graph done...\n");
 		op.flush();
 
 
