@@ -159,7 +159,17 @@ public class GraphView extends GView {
         draw.add(nfont);
         draw.add(edge);
 
-        fdl = new ForceDirectedLayout("graph");
+        fdl = new ForceDirectedLayout("graph") {
+			@Override
+			protected float getSpringLength(EdgeItem e) {
+    		    return 10 + 300*e.getFloat("distance");
+		    }
+
+			//@Override
+			//protected float getMassValue(VisualItem n) { 
+			//	return 3.0f;	
+			//}
+		};
 
         ActionList layout = new ActionList(Activity.INFINITY);
         layout.add(fdl);
