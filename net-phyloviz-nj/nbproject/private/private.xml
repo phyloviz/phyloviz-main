@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-nj/src/net/phyloviz/nj/json/NJItemFactory.java</file>
+            <file>file:/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-nj/src/net/phyloviz/nj/tree/NeighborJoiningItem.java</file>
+            <file>file:/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-nj/src/net/phyloviz/nj/ui/NeighborJoiningNode.java</file>
+            <file>file:/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-nj/src/net/phyloviz/nj/run/NeighborJoiningRunner.java</file>
+            <file>file:/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-nj/src/net/phyloviz/nj/json/NJToJSON.java</file>
+            <file>file:/home/aplf/projects/phyloviz/phyloviz-main/net-phyloviz-nj/src/net/phyloviz/nj/json/NeighborJoiningToJson.java</file>
+        </group>
     </open-files>
 </project-private>
