@@ -44,14 +44,15 @@ import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.goeburst.ui.GOeBurstNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
+import net.phyloviz.project.ProjectItem;
 import org.openide.nodes.AbstractNode;
 
-public class GOeBurstResult implements NodeFactory, Result {
+public class GOeBurstResult implements NodeFactory, ProjectItem, Result {
 
-	private Collection<GOeBurstClusterWithStats> clustering;
-	private OutputPanel op;
-	private AbstractDistance<GOeBurstNodeExtended> ad;
-	private int level;
+	private final Collection<GOeBurstClusterWithStats> clustering;
+	private final OutputPanel op;
+	private final AbstractDistance<GOeBurstNodeExtended> ad;
+	private final int level;
     private Map<String, Double> edgestats;
 
     public Map<String, Double> getEdgestats() {
@@ -95,5 +96,35 @@ public class GOeBurstResult implements NodeFactory, Result {
 	@Override
 	public String toString() {
 		return "goeBURST (Level " + level + "; " + ad.toString() + ")";
+	}
+
+	@Override
+	public void addPersistentVisualization(net.phyloviz.upgmanjcore.visualization.PersistentVisualization cp) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public net.phyloviz.upgmanjcore.visualization.PersistentVisualization getPersistentVisualization() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String getMethodProviderName() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String getMainName() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String getOutput() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String getDistanceProvider() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
