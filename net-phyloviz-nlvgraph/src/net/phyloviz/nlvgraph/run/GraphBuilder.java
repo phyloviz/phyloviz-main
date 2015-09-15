@@ -26,13 +26,15 @@ public class GraphBuilder implements Runnable {
 	private final OutputPanel op;
 	private final AbstractDistance<GOeBurstNode> ad;
 	private final int min, max;
+	private boolean inner;
 
-	public GraphBuilder(Node n, OutputPanel op, AbstractDistance<GOeBurstNode> ad, int min, int max) {
+	public GraphBuilder(Node n, OutputPanel op, AbstractDistance<GOeBurstNode> ad, int min, int max, boolean inner) {
 		this.n = n;
 		this.op = op;
 		this.ad = ad;
 		this.min = min;
 		this.max = max;
+		this.inner = inner;
 	}
 	
 	@Override
@@ -92,39 +94,38 @@ public class GraphBuilder implements Runnable {
 		}
 
 		op.append("#Nodes: " + nlst.size() + "\n");
-		op.append("#Edges: " + edges.size() + "\n");
 
-		/*
-		op.appendWithDate("\nnLV Graph: sorting edges...\n");
-		op.flush();
+		if (! inner) {
+			op.appendWithDate("\nnLV Graph: sorting edges...\n");
+			op.flush();
+	
+			Collections.sort(edges, ad.getEdgeComparator());
+	
+			op.appendWithDate("\nnLV Graph: filtering edges...\n");
+			op.flush();
 
-		Collections.sort(edges, ad.getEdgeComparator());
+			int level = 0;
+			DisjointSet set = new DisjointSet(maxUID);
 		
-		op.appendWithDate("\nnLV Graph: filtering edges...\n");
-		op.flush();
+			Iterator<Edge<GOeBurstNode>> ie = edges.iterator();
+			LinkedList<Edge<GOeBurstNode>> tmp = new LinkedList<Edge<GOeBurstNode>>();
+			while (ie.hasNext()) {
+				Edge<GOeBurstNode> e = ie.next();
+				int curr = ad.level(e.getU(), e.getV());
 
-		int level = 0;
-		DisjointSet set = new DisjointSet(maxUID);
-		
-		Iterator<Edge<GOeBurstNode>> ie = edges.iterator();
-		LinkedList<Edge<GOeBurstNode>> tmp = new LinkedList<Edge<GOeBurstNode>>();
-		while (ie.hasNext()) {
-			Edge<GOeBurstNode> e = ie.next();
-			int curr = ad.level(e.getU(), e.getV());
-
-			if (curr > level) {
-				for (Edge<GOeBurstNode> xe : tmp)
-					set.unionSet(xe.getU().getUID(), xe.getV().getUID());
-				level = curr;
-				tmp.clear();
-			}
+				if (curr > level) {
+					for (Edge<GOeBurstNode> xe : tmp)
+						set.unionSet(xe.getU().getUID(), xe.getV().getUID());
+					level = curr;
+					tmp.clear();
+				}
 			
-			if (set.sameSet(e.getU().getUID(), e.getV().getUID()))
-				ie.remove();
-			tmp.add(e);
+				if (set.sameSet(e.getU().getUID(), e.getV().getUID()))
+					ie.remove();
+				tmp.add(e);
+			}
 		}
 		op.append("#Edges: " + edges.size() + "\n");
-		*/
 
 		op.appendWithDate("nLV Graph done.\n");
 		op.flush();

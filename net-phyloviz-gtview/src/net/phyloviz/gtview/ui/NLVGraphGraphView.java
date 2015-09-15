@@ -162,6 +162,8 @@ public class NLVGraphGraphView extends GView {
 	private final Box box;
 	// Data analysis info...
 	private CategoryProvider cp;
+    private boolean seeTree = false;
+
 
 	public NLVGraphGraphView(String name, Result _er) {
 		this.setLayout(new BorderLayout());
@@ -283,7 +285,7 @@ public class NLVGraphGraphView extends GView {
 				for (int i = 0; i < selectedIndices.length; i++) {
 					Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
 					view.setVisible("graph",
-						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree)"), true);
+						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree = " + seeTree + ")"), true);
 
 					gList.add(g);
 				}
@@ -597,6 +599,7 @@ public class NLVGraphGraphView extends GView {
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
 		popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
 		popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
+		popupMenu.add(new NLVTreeEdgeViewControlAction(this).getMenuItem());
         //popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
@@ -739,7 +742,7 @@ public class NLVGraphGraphView extends GView {
 						edgeTable.set(rowNb, "tree", true);
 	
 						prefuse.data.Edge ve = vg.getEdge(rowNb);
-						((VisualItem) ve).setVisible(true);
+						((VisualItem) ve).setVisible(seeTree);
 						//view.wait(1);
 					}
 
@@ -831,7 +834,7 @@ public class NLVGraphGraphView extends GView {
 						for (int i = 0; i < selectedIndices.length; i++) {
 							Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
 							view.setVisible("graph",
-								(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree)"), true);
+								(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree = " + seeTree + ")"), true);
 						}
 
 						view.run("draw");
@@ -983,6 +986,17 @@ public class NLVGraphGraphView extends GView {
 		}
 	}
 
+    public void setTreeEdges(boolean status) {
+		seeTree = status;
+        view.setVisible("graph", null, false);
+        int[] selectedIndices = groupList.getSelectedIndices();
+        for (int i = 0; i < selectedIndices.length; i++) {
+            view.setVisible("graph",
+				(Predicate) ExpressionParser.parse("g=" + selectedIndices[i] + "and (w <= " + level + " or tree = " + seeTree + ")"), true);
+        }
+        view.run("draw");
+    }
+	
 	@Override
 	public void setLevelLabel(boolean status) {
 		if (status) {
