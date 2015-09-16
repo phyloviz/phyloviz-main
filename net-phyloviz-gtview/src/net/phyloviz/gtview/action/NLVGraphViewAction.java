@@ -60,7 +60,7 @@ public class NLVGraphViewAction extends NodeAction {
 		
 		//If a viewer is already open, just give it focus
 		for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
-			if (tc instanceof GTPanel2 && tc.getLookup().lookup(Result.class) == gr) {
+			if (tc instanceof NLVGraphGTPanel && tc.getLookup().lookup(Result.class) == gr) {
 				tc.requestActive();
 				return;
 			}
