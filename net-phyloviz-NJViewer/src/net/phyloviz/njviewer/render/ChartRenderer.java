@@ -15,6 +15,7 @@ import java.util.List;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.Profile;
+import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.upgmanjcore.visualization.GView;
 
 import prefuse.render.AbstractShapeRenderer;
@@ -32,12 +33,12 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 		this.gv = gv;
 	}
 
-	public void drawPie(Graphics2D g, Rectangle area, String stId, int freq, Color fillColor) {
-            if(stId == null) return;
+	public void drawPie(Graphics2D g, Rectangle area, int id, int freq, Color fillColor) {
             
             // Get total value of all slices
             double total = 0;
-
+            String stId = String.valueOf(id);
+            
             List<Category> glst = cp.getCategories(stId);
             Iterator<Category> giter;
 
@@ -123,7 +124,6 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 	protected void drawShape(Graphics2D g, VisualItem item, Shape shape) {
 
 		//if render type is NONE, then there is nothing to do
-		String stId = item.getString("st_id");
 		int type = this.getRenderType(item);
 		BasicStroke stroke = this.getStroke(item);
 
@@ -176,8 +176,12 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 			if ( shape instanceof Rectangle2D ) {
 
 				Rectangle area = (Rectangle) shape;
-				int freq = ((Profile) item.get("st_ref")).getFreq();
-				drawPie(g, area, stId, freq, fillColor);
+                                Profile profile = (Profile) item.get("st_ref");
+                                if(profile instanceof NJLeafNode){
+                                    int stId = item.getInt("st_id");
+                                    int freq = profile.getFreq();
+                                    drawPie(g, area, stId, freq, fillColor);
+                                }
 			}
 		} else if ( shape instanceof Line2D ) {
 			if (sdraw) {

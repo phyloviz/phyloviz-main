@@ -55,6 +55,8 @@
                 <package>org.jdom.output</package>
                 <package>org.jdom.transform</package>
                 <package>org.jdom.xpath</package>
+                <package>org.json.simple</package>
+                <package>org.json.simple.parser</package>
                 <package>prefuse</package>
                 <package>prefuse.action</package>
                 <package>prefuse.action.animate</package>
@@ -90,24 +92,24 @@
                 <package>prefuse.visual.tuple</package>
             </public-packages>
             <class-path-extension>
-                <runtime-relative-path>ext/jdom-1.0.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/jdom-1.0.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphics2d-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphics2d-2.4.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsbase-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsbase-2.4.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsio-svg-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsio-svg-2.4.jar</binary-origin>
+                <runtime-relative-path>ext/guava-18.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/guava-18.0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-emf-2.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-emf-2.4.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/freehep-graphicsio-ps-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphicsio-ps-2.4.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/json-simple-1.1.1.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/json-simple-1.1.1.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/jdom-1.0.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/jdom-1.0.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-pdf-2.4.jar</runtime-relative-path>
@@ -118,28 +120,32 @@
                 <binary-origin>release/modules/ext/freehep-graphicsio-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
-                <runtime-relative-path>ext/freehep-graphicsio-ps-2.4.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-graphicsio-ps-2.4.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/prefuse.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/prefuse.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/freehep-io-2.2.2.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/freehep-io-2.2.2.jar</binary-origin>
-            </class-path-extension>
-            <class-path-extension>
-                <runtime-relative-path>ext/guava-18.0.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/guava-18.0.jar</binary-origin>
+                <runtime-relative-path>ext/freehep-graphicsio-svg-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphicsio-svg-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-java-2.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-java-2.4.jar</binary-origin>
             </class-path-extension>
             <class-path-extension>
+                <runtime-relative-path>ext/freehep-io-2.2.2.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-io-2.2.2.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
                 <runtime-relative-path>ext/freehep-graphicsio-swf-2.4.jar</runtime-relative-path>
                 <binary-origin>release/modules/ext/freehep-graphicsio-swf-2.4.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/prefuse.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/prefuse.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/freehep-graphicsbase-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphicsbase-2.4.jar</binary-origin>
+            </class-path-extension>
+            <class-path-extension>
+                <runtime-relative-path>ext/freehep-graphics2d-2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/freehep-graphics2d-2.4.jar</binary-origin>
             </class-path-extension>
         </data>
     </configuration>

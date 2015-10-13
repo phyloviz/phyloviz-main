@@ -1,5 +1,6 @@
 package net.phyloviz.njviewer.ui;
 
+import net.phyloviz.upgmanjcore.visualization.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -37,11 +39,13 @@ import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.nj.tree.NJRoot.EdgeDistanceWrapper;
+import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.njviewer.action.HighQualityAction;
 import net.phyloviz.njviewer.action.RoundDistanceAction;
 import net.phyloviz.njviewer.action.ViewControlAction;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
+import net.phyloviz.njviewer.render.NodeLabelRenderer;
 
 import prefuse.Display;
 import prefuse.Visualization;
@@ -72,7 +76,6 @@ import prefuse.data.tuple.TupleSet;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.render.EdgeRenderer;
-import prefuse.render.LabelRenderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
 import prefuse.util.GraphicsLib;
@@ -118,25 +121,28 @@ public class GraphView extends GView {
     private int itemFound = -1;
     private InfoPanel infoPanel;
     private JPopupMenu popupMenu;
-    private LabelRenderer lr;
+    private NodeLabelRenderer lr;
     private DefaultRendererFactory rf;
     private ForceDirectedLayout fdl;
     private boolean running, linear, label = true;
     // Data analysis info...
     private CategoryProvider cp;
     double maxDistance = 0, minDistance = 0;
+    final Map<Integer, Point> nodesPositions;
 
-    public GraphView(String name, NeighborJoiningItem _er, boolean linear) {
+    public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<Integer, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
         this.setOpaque(true);
         this.name = name;
+
+        this.nodesPositions = nodesPositions;
 //        this.linear = linear;
         // Create an empty visualization.
         view = new Visualization();
         // Setup renderers.
         rf = new DefaultRendererFactory();
-        lr = new LabelRenderer("st_id");
+        lr = new NodeLabelRenderer("st_id");
         lr.setRoundedCorner(10, 10);
         rf.setDefaultRenderer(lr);
         view.setRendererFactory(rf);
@@ -160,16 +166,16 @@ public class GraphView extends GView {
         draw.add(edge);
 
         fdl = new ForceDirectedLayout("graph") {
-			@Override
-			protected float getSpringLength(EdgeItem e) {
-    		    return 10 + 300*e.getFloat("distance");
-		    }
+            @Override
+            protected float getSpringLength(EdgeItem e) {
+                return 10 + 300 * e.getFloat("distance");
+            }
 
 			//@Override
-			//protected float getMassValue(VisualItem n) { 
-			//	return 3.0f;	
-			//}
-		};
+            //protected float getMassValue(VisualItem n) { 
+            //	return 3.0f;	
+            //}
+        };
 
         ActionList layout = new ActionList(Activity.INFINITY);
         layout.add(fdl);
@@ -207,7 +213,7 @@ public class GraphView extends GView {
         });
         // Build schemas.
         Schema nodeSchema = new Schema();
-        nodeSchema.addColumn("st_id", String.class);
+        nodeSchema.addColumn("st_id", int.class);
         nodeSchema.addColumn("st_ref", NodeType.class);
         nodeSchema.addColumn("w", int.class);
         nodeSchema.addColumn("g", int.class);
@@ -373,6 +379,7 @@ public class GraphView extends GView {
         bottomBox.updateUI();
         add(bottomBox, BorderLayout.SOUTH);
         add(verticalPanel, BorderLayout.EAST);
+
     }
 
     private JPanel emptyJPanel() {
@@ -380,9 +387,9 @@ public class GraphView extends GView {
         j.setBackground(Color.WHITE);
         return j;
     }
+    final HashMap<Integer, Integer> uid2rowid = new HashMap<>();
 
     public void loadGraph(final NJRoot root, final AbstractDistance ad, final double distanceFilter, final boolean loaded) {
-        final HashMap<Integer, Integer> uid2rowid = new HashMap<>();
 
         // Create and register the graph.
         graph = new Graph(nodeTable, edgeTable, false);
@@ -441,7 +448,7 @@ public class GraphView extends GView {
                     int uRowNb = nodeTable.addRow();
                     uid2rowid.put(st.getUID(), uRowNb);
                     if (st instanceof NJLeafNode) {
-                        nodeTable.setString(uRowNb, "st_id", st.getID());
+                        nodeTable.setInt(uRowNb, "st_id", Integer.parseInt(st.getID()));
                     }
                     nodeTable.set(uRowNb, "st_ref", st);
                     nodeTable.setInt(uRowNb, "w", 0);
@@ -456,6 +463,20 @@ public class GraphView extends GView {
                     int uRowNb = uid2rowid.get(u);
                     VisualItem vu = (VisualItem) vg.getNode(uRowNb);
                     vu.setFixed(true);
+
+                    if (nodesPositions != null) {
+
+                        Integer id = vu.getInt("st_id");
+                        double x = nodesPositions.get(id).x;
+                        double y = nodesPositions.get(id).y;
+                        vu.setStartX(x);
+                        vu.setStartY(y);
+                        vu.setX(x);
+                        vu.setY(y);
+                        vu.setEndX(x);
+                        vu.setEndY(y);
+
+                    }
 
                     eIter = adjList.get(u).iterator();
                     while (eIter.hasNext()) {
@@ -479,7 +500,9 @@ public class GraphView extends GView {
                             int vRowNb = nodeTable.addRow();
                             uid2rowid.put(st.getUID(), vRowNb);
                             if (st instanceof NJLeafNode) {
-                                nodeTable.setString(vRowNb, "st_id", st.getID());
+                                nodeTable.setInt(vRowNb, "st_id", Integer.parseInt(st.getID()));
+                            } else if (st instanceof NJUnionNode) {
+                                nodeTable.setInt(vRowNb, "st_id", st.getUID());
                             }
                             nodeTable.set(vRowNb, "st_ref", st);
                             nodeTable.setInt(vRowNb, "w", 0);
@@ -495,12 +518,6 @@ public class GraphView extends GView {
 
                             VisualItem vv = (VisualItem) vg.getNode(vRowNb);
                             prefuse.data.Edge ve = vg.getEdge(rowNb);
-                            vv.setStartX(st.x);
-                            vv.setStartY(st.y);
-                            vv.setX(st.x);
-                            vv.setY(st.y);
-                            vv.setEndX(st.x);
-                            vv.setEndY(st.y);
 
                             vv.setVisible(true);
                             ((VisualItem) ve).setVisible(true);
@@ -512,6 +529,9 @@ public class GraphView extends GView {
                         setProgress(perc);
                     }
                     vu.setFixed(false);
+                    if (loaded) {
+                        stopAnimation();
+                    }
                 }
 
                 groupList.setListData(new Group[]{g});
@@ -590,6 +610,9 @@ public class GraphView extends GView {
             view.setVisible("graph", (Predicate) ExpressionParser.parse("g=" + g.getID() + "and distance <= " + distance), true);
         }
         view.run("draw");
+        //view.run("layout");
+        updateUI();
+        //groupList.repaint();
     }
 
     public void startAnimation() {
@@ -648,6 +671,7 @@ public class GraphView extends GView {
         if (linear != status) {
             linear = status;
             view.run("draw");
+            updateUI();
         }
     }
 
@@ -673,6 +697,8 @@ public class GraphView extends GView {
     @Override
     public void setHighQuality(boolean status) {
         display.setHighQuality(status);
+        view.run("draw");
+        updateUI();
     }
 
     public void setCategoryProvider(CategoryProvider cp) {
@@ -776,6 +802,21 @@ public class GraphView extends GView {
         updateDistanceFilter(value);
     }
 
+    public Map<Integer, Point> getNodesPositions() {
+        Map<Integer, Point> positions = new HashMap<Integer, Point>();
+        Iterator<NodeItem> nodes = vg.nodes();
+        while (nodes.hasNext()) {
+            NodeItem i = nodes.next();
+            
+            if (!i.canGetInt("st_id"))  continue;
+            
+            Integer id = i.getInt("st_id");
+            Point p = new Point(i.getX(), i.getY());
+            positions.put(id, p);
+        }
+        return positions;
+    }
+
     // Private classes.
     private class NodeColorAction extends ColorAction {
 
@@ -786,10 +827,9 @@ public class GraphView extends GView {
         @Override
         public int getColor(VisualItem item) {
             Tuple itemTuple = item.getSourceTuple();
-            refreshNodePosition(item);
             if (itemTuple.get("st_ref") instanceof NJLeafNode) {
                 if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
-                    if (itemTuple.getString("st_id").equals(searchPanel.getQuery())) {
+                    if (itemTuple.getInt("st_id") == Integer.parseInt(searchPanel.getQuery())) {
                         if (searchMatch) {
                             display.panToAbs(new Point2D.Double(item.getX(), item.getY()));
                         }
@@ -808,13 +848,6 @@ public class GraphView extends GView {
                 }
             }
             return ColorLib.color(Color.WHITE);
-        }
-
-        private void refreshNodePosition(VisualItem item) {
-            Tuple itemTuple = item.getSourceTuple();
-            NodeType nt = (NodeType) itemTuple.get("st_ref");
-            nt.x = item.getX();
-            nt.y = item.getY();
         }
     }
 
@@ -893,6 +926,8 @@ public class GraphView extends GView {
         } else {
             rf.setDefaultEdgeRenderer(new EdgeRenderer());
         }
+        view.run("draw");
+        updateUI();
     }
 
     private class Group {

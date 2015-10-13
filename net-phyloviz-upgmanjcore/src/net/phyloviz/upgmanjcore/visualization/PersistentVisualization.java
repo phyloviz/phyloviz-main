@@ -6,6 +6,7 @@
 package net.phyloviz.upgmanjcore.visualization;
 
 import java.io.Serializable;
+import java.util.Map;
 import net.phyloviz.category.CategoryProvider;
 
 
@@ -21,4 +22,5 @@ public class PersistentVisualization implements Serializable{
     
     public boolean linearSize;
     
+    public Map<Integer, Point> nodesPositions;
 }

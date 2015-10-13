@@ -27,6 +27,7 @@ import net.phyloviz.core.util.PopulationFactory;
 import net.phyloviz.core.util.TypingFactory;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
+import net.phyloviz.project.ProjectTypingDataFactory;
 import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.netbeans.api.project.Project;
 import org.openide.awt.StatusDisplayer;
@@ -95,10 +96,20 @@ public final class LoadDataSetAction extends AbstractAction {
                 DataSet ds = new DataSet(dataSetName);
 
                 StatusDisplayer.getDefault().setStatusText("Loading typing data...");
-                TypingFactory tf = (TypingFactory) Class.forName(typingFactory).newInstance();
-                TypingData<? extends AbstractProfile> td = tf.loadData(new FileReader(new File(projectDir, typingFile)));
-                td.setDescription(tf.toString());
-
+                
+                TypingFactory tf = null;
+                TypingData<? extends AbstractProfile> td = null;
+                
+                Collection<? extends ProjectTypingDataFactory> tfLookup = (Lookup.getDefault().lookupAll(ProjectTypingDataFactory.class));
+                for(ProjectTypingDataFactory ptdi : tfLookup){
+                    if(ptdi.getClass().getName().equals(typingFactory)){
+                        tf = (TypingFactory) ptdi;
+                        td = ptdi.onLoad(new FileReader(new File(projectDir, typingFile)));
+                        td.setDescription(tf.toString());
+                        ds.add(ptdi);
+                    }
+                }
+                
                 if (populationFile != null && (!populationFile.equals("")) && populationFK != null) {
 
                     StatusDisplayer.getDefault().setStatusText("Loading isolate data...");

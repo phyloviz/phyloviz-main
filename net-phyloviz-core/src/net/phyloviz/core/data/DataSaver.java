@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.core.data;
 
 import java.io.File;
@@ -47,64 +46,72 @@ import org.openide.filesystems.FileChooserBuilder;
 
 public class DataSaver implements SaveCookie {
 
-	private DataModel dm;
+    private DataModel dm;
 
-	public DataSaver(DataModel dm) {
-		this.dm = dm;
-	}
+    public DataSaver(DataModel dm) {
+        this.dm = dm;
+    }
 
-	@Override
-	public void save() throws IOException {
+    @Override
+    public void save() throws IOException {
 
-		String title = "Saving " + this.toString() + "...";
-		File f = new FileChooserBuilder(DataSaver.class).setTitle(title).showSaveDialog();
-		if (f != null) {
-			try {
-				if (!f.exists()) {
-					if (!f.createNewFile()) {
-						String failMsg = "Unable to create " + f.getName();
-						DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
-						return;
-					}
-				} else {
-					String overwriteMessage = "Overwriting " + f.getName();
-					Object userChose = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(overwriteMessage));
-					if (NotifyDescriptor.CANCEL_OPTION.equals(userChose)) {
-						return;
-					}
-				}
+        String title = "Saving " + this.toString() + "...";
+        File f = new FileChooserBuilder(DataSaver.class).setTitle(title).showSaveDialog();
+        if (f != null) {
+            try {
+                if (!f.exists()) {
+                    if (!f.createNewFile()) {
+                        String failMsg = "Unable to create " + f.getName();
+                        DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+                        return;
+                    }
+                } else {
+                    String overwriteMessage = "Overwriting " + f.getName();
+                    Object userChose = DialogDisplayer.getDefault().notify(new NotifyDescriptor.Confirmation(overwriteMessage));
+                    if (NotifyDescriptor.CANCEL_OPTION.equals(userChose)) {
+                        return;
+                    }
+                }
 
-				save(f.getAbsoluteFile());
-			} catch (IOException ioe) {
-				String failMsg = "Error: " + ioe.getMessage();
-				DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
-			}
-		} else
-			throw new FileNotFoundException("Unknown file!");
-	}
+                save(f.getAbsoluteFile());
+            } catch (IOException ioe) {
+                String failMsg = "Error: " + ioe.getMessage();
+                DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+            }
+        } else {
+            throw new FileNotFoundException("Unknown file!");
+        }
+    }
 
-	private void save(File f) throws FileNotFoundException {
+    private void save(File f) throws FileNotFoundException {
 
-		PrintWriter pw = new PrintWriter(f);
-		TableModel tm = dm.tableModel();
+        try (PrintWriter pw = new PrintWriter(f)) {
+            pw.write(toSave());
+        }
+    }
 
-		pw.print(tm.getColumnName(0));
-		for (int i = 1; i < tm.getColumnCount(); i++)
-			pw.print("\t" + tm.getColumnName(i));
-		pw.println();
+    public String toSave() {
+        StringBuilder sb = new StringBuilder();
+        TableModel tm = dm.tableModel();
 
-		for (int k = 0; k < tm.getRowCount(); k++) {
-			pw.print(tm.getValueAt(k, 0));
-			for (int i = 1; i < tm.getColumnCount(); i++)
-				pw.print("\t" + tm.getValueAt(k, i));
-			pw.println();
-		}
+        sb.append(tm.getColumnName(0));
+        for (int i = 1; i < tm.getColumnCount(); i++) {
+            sb.append("\t" + tm.getColumnName(i));
+        }
+        sb.append("\n");
 
-		pw.close();
-	}
+        for (int k = 0; k < tm.getRowCount(); k++) {
+            sb.append(tm.getValueAt(k, 0));
+            for (int i = 1; i < tm.getColumnCount(); i++) {
+                sb.append("\t" + tm.getValueAt(k, i));
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
 
-	@Override
-	public String toString() {
-		return dm.toString();
-	}
+    @Override
+    public String toString() {
+        return dm.toString();
+    }
 }

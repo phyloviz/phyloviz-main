@@ -11,12 +11,8 @@ import net.phyloviz.upgmanjcore.tree.IndexList.NodeIterator;
  */
 public class NJLeafNode extends NodeType{
         
-    public NJLeafNode(Profile profile, int size, int leafIdx, NodeIterator in, double x, double y) {
-        super(size, leafIdx, "Leaf " + (leafIdx+1), in, profile, leafIdx, x, y);
-    }
-    
-    public NJLeafNode(Profile profile, int size, int leafIdx, NodeIterator in){
-        this(profile, size, leafIdx, in, 0, 0);
+    public NJLeafNode(Profile profile, int size, int leafIdx, NodeIterator in) {
+        super(size, leafIdx, "Leaf " + (leafIdx+1), in, profile, leafIdx);
     }
 
     @Override public int profileLength(){
@@ -52,7 +48,7 @@ public class NJLeafNode extends NodeType{
 
     @Override
     public void saveData(JsonSaver js) {
-        ((NeighborJoiningToJson)js.njtj).putLeaf(id, p.getUID() + "", x, y);
+        ((NeighborJoiningToJson)js.njtj).putLeaf(id, p.getUID() + "");
     }
     
 }

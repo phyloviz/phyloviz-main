@@ -90,9 +90,7 @@ public class NJItemFactory implements ProjectItemFactory {
             JSONObject l = it.next();
             Integer p = (int) (long) l.get("profile");
             Integer uid = (int) (long) l.get("id");
-            double x = (double) l.get("x");
-            double y = (double) l.get("y");
-            leafs.put(uid, new NJLeafNode(profiles.get(p), td.size(), uid, null, x, y));
+            leafs.put(uid, new NJLeafNode(profiles.get(p), td.size(), uid, null));
         }
         return leafs;
     }
@@ -107,12 +105,10 @@ public class NJItemFactory implements ProjectItemFactory {
             Integer nr = (int) (long) l.get("right");
             float dl = (float) (double) l.get("distanceLeft");
             float dr = (float) (double) l.get("distanceRight");
-            double x = (double) l.get("x");
-            double y = (double) l.get("y");
 
             NodeType node1 = nl >= size ? unions.get(nl) : leafs.get(nl);
             NodeType node2 = nr >= size ? unions.get(nr) : leafs.get(nr);
-            unions.put(id, new NJUnionNode(node1, dl, node2, dr, size, 0, null, id, x, y));
+            unions.put(id, new NJUnionNode(node1, dl, node2, dr, size, 0, null, id));
         }
         return unions;
     }

@@ -1,7 +1,9 @@
 package net.phyloviz.njviewer.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
@@ -37,10 +39,10 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         PersistentVisualization pv = njr.getPersistentVisualization();
         if (pv != null) {
             distanceFilter = pv.distanceFilterValue;
-            gv = new GraphView(name, njr, pv.linearSize);
+            gv = new GraphView(name, njr, pv.linearSize, pv.nodesPositions);
             loadVisualization(pv);
         } else {
-            gv = new GraphView(name, njr, false);
+            gv = new GraphView(name, njr, false, null);
         }
         this.add(gv);
         gvCatListen = new CategoryChangeListener() {
@@ -131,6 +133,8 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         pc.categoryProvider = catProvider;
         pc.distanceFilterValue = gv.getDistanceFilterValue();
         pc.linearSize = gv.getLinearSize();
+        pc.nodesPositions = ((GraphView)gv).getNodesPositions();
+        
         return pc;
     }
 

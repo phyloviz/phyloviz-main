@@ -22,10 +22,10 @@ public abstract class NodeType implements INodeJsonSaver, Profile{
     public final Profile p;
     public final int id;
     
-    public double x = 0;
-    public double y = 0;
+//    public double x = 0;
+//    public double y = 0;
     
-    public NodeType(int size, int nodeIdx, String name, NodeIterator in, Profile p, int id, double x, double y){
+    public NodeType(int size, int nodeIdx, String name, NodeIterator in, Profile p, int id){
         distances = new float[size - nodeIdx - 1];         //removes 1 becouse size counts itself
         this.name = name;
         this.nodeOffset = nodeIdx + 1;                      //+1 becouse theres no A->A, only A->B, A->C...
@@ -33,8 +33,6 @@ public abstract class NodeType implements INodeJsonSaver, Profile{
         this.in = in;
         this.p = p;
         this.id = id;
-        this.x = x;
-        this.y = y;
     }
     /**
      * @param idx position in distance matrix

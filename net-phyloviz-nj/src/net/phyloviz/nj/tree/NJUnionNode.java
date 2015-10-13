@@ -20,15 +20,12 @@ public class NJUnionNode extends NodeType{
     public final float distance1;
     public final float distance2;
     
-    public NJUnionNode(NodeType n1, float distance1, NodeType n2, float distance2, int size, int nodeIdx, NodeIterator in, int nodeId, double x, double y) {
-        super(size, nodeIdx, "Union " + nodeId, in, null, nodeId, x, y);
+    public NJUnionNode(NodeType n1, float distance1, NodeType n2, float distance2, int size, int nodeIdx, NodeIterator in, int nodeId) {
+        super(size, nodeIdx, "Union " + nodeId, in, null, nodeId);
         this.n1 = n1;
         this.n2 = n2;
         this.distance1 = distance1;
         this.distance2 = distance2;
-    }
-    public NJUnionNode(NodeType n1, float distance1, NodeType n2, float distance2, int size, int nodeIdx, NodeIterator in, int nodeId){
-        this(n1, distance1, n2, distance2, size, nodeIdx, in, nodeId, 0, 0);
     }
     
     @Override
@@ -64,7 +61,7 @@ public class NJUnionNode extends NodeType{
     public void saveData(JsonSaver js) {
         n1.saveData(js);
         n2.saveData(js);
-        ((NeighborJoiningToJson)js.njtj).putUnion(id, n1.id, distance1, n2.id, distance2, x, y);
+        ((NeighborJoiningToJson)js.njtj).putUnion(id, n1.id, distance1, n2.id, distance2);
     }
 
 }

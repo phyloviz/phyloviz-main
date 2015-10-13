@@ -115,10 +115,6 @@
                 <package>net.phyloviz.upgmanjcore.visualization</package>
                 <package>net.phyloviz.upgmanjcore.visualization.actions</package>
             </public-packages>
-            <class-path-extension>
-                <runtime-relative-path>ext/json-simple-1.1.1.jar</runtime-relative-path>
-                <binary-origin>release/modules/ext/json-simple-1.1.1.jar</binary-origin>
-            </class-path-extension>
         </data>
     </configuration>
 </project>

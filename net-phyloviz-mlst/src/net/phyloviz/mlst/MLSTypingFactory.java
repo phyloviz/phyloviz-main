@@ -32,10 +32,11 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.mlst;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
@@ -48,110 +49,132 @@ import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
+import net.phyloviz.project.ProjectTypingDataFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.lookup.ServiceProviders;
 
-@ServiceProvider(service = TypingFactory.class)
-public class MLSTypingFactory implements TypingFactory {
-	
-	private static final String customName = "Multi-Locus Sequence Typing (MLST)";
+@ServiceProviders(value = {
+    @ServiceProvider(service = TypingFactory.class),
+    @ServiceProvider(service = ProjectTypingDataFactory.class)})
+public class MLSTypingFactory implements TypingFactory, ProjectTypingDataFactory {
 
-	@Override
-	public String toString() {
-		return customName;
-	}
+    private static final String customName = "Multi-Locus Sequence Typing (MLST)";
 
-	@Override
-	public TypingData<? extends AbstractProfile> loadData(Reader r)  throws IOException {
+    @Override
+    public String toString() {
+        return customName;
+    }
 
-		BufferedReader in = new BufferedReader(r);
-		int uid = 0;
-		boolean error = false;
-		StringBuilder msg = new StringBuilder();
+    @Override
+    public TypingData<? extends AbstractProfile> loadData(Reader r) throws IOException {
 
-		TypingData<SequenceType> td = null;
+        BufferedReader in = new BufferedReader(r);
+        int uid = 0;
+        boolean error = false;
+        StringBuilder msg = new StringBuilder();
 
-		while (in.ready()) {
-			String s = in.readLine();
-			if (s == null)
-				break;
+        TypingData<SequenceType> td = null;
 
-			String[] lineFields = s.split("[ ,\t]+", 0);
+        while (in.ready()) {
+            String s = in.readLine();
+            if (s == null) {
+                break;
+            }
 
-			// Get headers and initialize this instance.
-			if (td == null) {
-				td = new TypingData<SequenceType>(lineFields);
-				continue;
-			}
+            String[] lineFields = s.split("[ ,\t]+", 0);
 
-			String[] STvec = new String[lineFields.length];
-			System.arraycopy(lineFields, 0, STvec, 0, lineFields.length);
+            // Get headers and initialize this instance.
+            if (td == null) {
+                td = new TypingData<SequenceType>(lineFields);
+                continue;
+            }
 
-			SequenceType profile = new SequenceType(uid++, STvec);
+            String[] STvec = new String[lineFields.length];
+            System.arraycopy(lineFields, 0, STvec, 0, lineFields.length);
 
-			SequenceType oldProfile = td.getEqual(profile);
-			if (oldProfile != null) {
-				oldProfile.incFreq();
-				if (!profile.getID().equals(oldProfile.getID())) {
-					Logger.getLogger(MLSTypingFactory.class.getName()).log(Level.WARNING,
-						"Duplicated profile: {0} aka {1} (frequency updated)", new Object[]{profile.getID(), oldProfile.getID()});
-					msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
-					error = true;
-				}
-			} else {
-				try {
-					td.addData(profile);
-				} catch(Exception e) {
-					Logger.getLogger(MLSTypingFactory.class.getName()).log(Level.WARNING,
-						e.getLocalizedMessage());
-					msg.append("   ").append(profile.getID()).append("\n");
-					error = true;
-				}
-			}
-		}
-		in.close();
+            SequenceType profile = new SequenceType(uid++, STvec);
 
-		if (error) {
-			String failMsg = "Some profiles may have been discarded:\n"+
-				msg.toString() + "Check the log (View->Log) for more details.";
-			DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
-		}
+            SequenceType oldProfile = td.getEqual(profile);
+            if (oldProfile != null) {
+                oldProfile.incFreq();
+                if (!profile.getID().equals(oldProfile.getID())) {
+                    Logger.getLogger(MLSTypingFactory.class.getName()).log(Level.WARNING,
+                            "Duplicated profile: {0} aka {1} (frequency updated)", new Object[]{profile.getID(), oldProfile.getID()});
+                    msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
+                    error = true;
+                }
+            } else {
+                try {
+                    td.addData(profile);
+                } catch (Exception e) {
+                    Logger.getLogger(MLSTypingFactory.class.getName()).log(Level.WARNING,
+                            e.getLocalizedMessage());
+                    msg.append("   ").append(profile.getID()).append("\n");
+                    error = true;
+                }
+            }
+        }
+        in.close();
 
-		
-		return td;
-	}
+        if (error) {
+            String failMsg = "Some profiles may have been discarded:\n"
+                    + msg.toString() + "Check the log (View->Log) for more details.";
+            DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+        }
 
-	@Override
-	public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key) {
+        return td;
+    }
 
-		TreeMap<String, Integer> st2freq = new TreeMap<String, Integer>();
+    @Override
+    public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key) {
 
-		Iterator<Isolate> ii = pop.iterator();
-		while (ii.hasNext()) {
-			String sid = ii.next().get(key);
-			Integer freq = st2freq.get(sid);
-			st2freq.put(sid, (freq == null) ? 1 : (freq.intValue() + 1));
-		}
+        TreeMap<String, Integer> st2freq = new TreeMap<String, Integer>();
 
-		Iterator<? extends AbstractProfile> ip = td.iterator();
-		while(ip.hasNext()) {
-			AbstractProfile ap = ip.next();
-			Integer freq = st2freq.get(ap.getID());
-			ap.setFreq((freq == null) ? 0 : freq.intValue());
-		}
+        Iterator<Isolate> ii = pop.iterator();
+        while (ii.hasNext()) {
+            String sid = ii.next().get(key);
+            Integer freq = st2freq.get(sid);
+            st2freq.put(sid, (freq == null) ? 1 : (freq.intValue() + 1));
+        }
 
-		return td;
-	}
+        Iterator<? extends AbstractProfile> ip = td.iterator();
+        while (ip.hasNext()) {
+            AbstractProfile ap = ip.next();
+            Integer freq = st2freq.get(ap.getID());
+            ap.setFreq((freq == null) ? 0 : freq.intValue());
+        }
 
+        return td;
+    }
 
-	@Override
-	public URL getDescription() {
-		return MLSTypingFactory.class.getResource("Description.html");
-	}
+    @Override
+    public URL getDescription() {
+        return MLSTypingFactory.class.getResource("Description.html");
+    }
 
-	@Override
-	public URL getFormatDescription() {
-		return MLSTypingFactory.class.getResource("FormatDescription.html");
-	}
+    @Override
+    public URL getFormatDescription() {
+        return MLSTypingFactory.class.getResource("FormatDescription.html");
+    }
+
+    @Override
+    public String onSave(TypingData<? extends AbstractProfile> td) {
+
+        String toSave = td.getSaver().toSave();
+
+        return toSave;
+    }
+
+    @Override
+    public TypingData<? extends AbstractProfile> onLoad(Reader r) {
+        try {
+            return loadData(r);
+        } catch (IOException e) {
+            Exceptions.printStackTrace(e);
+        }
+        return null;
+    }
 }

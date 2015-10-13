@@ -18,23 +18,19 @@ public class NeighborJoiningToJson implements IJsonSaverTag{
     private final StringBuilder sbUnions = new StringBuilder();
     private String root; 
     
-    public void putLeaf(int id, String profile, double x, double y){
+    public void putLeaf(int id, String profile){
         String value = "\t\t{\""
                 + "id\": " + id + ", \""
-                + "profile\": " + profile + ", \""
-                + "x\": " + x + ", \""
-                + "y\": " + y + "},\n";
+                + "profile\": " + profile + "},\n";
         sbLeafs.append(value);
     }
-    public void putUnion(int id, int left, float distL, int right, float distR, double x, double y){
+    public void putUnion(int id, int left, float distL, int right, float distR){
         String value = "\t\t{\""
                 + "id\": " + id + ", \""
                 + "left\": " + left + ", \"" 
                 + "distanceLeft\": " + distL + ", \""
                 + "right\": " + right + ", \""
-                + "distanceRight\": " + distR + ", \""
-                + "x\": " + x + ", \""
-                + "y\": " + y + "},\n";
+                + "distanceRight\": " + distR + "},\n";
         sbUnions.append(value);
     }
     public void putRoot(double d, int l, int r){
