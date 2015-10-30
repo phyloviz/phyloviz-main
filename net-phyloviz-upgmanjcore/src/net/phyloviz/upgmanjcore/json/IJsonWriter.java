@@ -11,7 +11,7 @@ import java.util.HashMap;
  * Interface for root Node
  * @author Adriano
  */
-public interface IJsonSaverTag{
+public interface IJsonWriter{
     HashMap<String, String> getBuildersMap();
     String getRoot();
 }

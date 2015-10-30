@@ -33,7 +33,7 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 		this.gv = gv;
 	}
 
-	public void drawPie(Graphics2D g, Rectangle area, int id, int freq, Color fillColor) {
+	public void drawPie(Graphics2D g, Rectangle area, String id, int freq, Color fillColor) {
             
             // Get total value of all slices
             double total = 0;
@@ -178,7 +178,7 @@ public class ChartRenderer  extends AbstractShapeRenderer {
 				Rectangle area = (Rectangle) shape;
                                 Profile profile = (Profile) item.get("st_ref");
                                 if(profile instanceof NJLeafNode){
-                                    int stId = item.getInt("st_id");
+                                    String stId = item.getString("st_id");
                                     int freq = profile.getFreq();
                                     drawPie(g, area, stId, freq, fillColor);
                                 }

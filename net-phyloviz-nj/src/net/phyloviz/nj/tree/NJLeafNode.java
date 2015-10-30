@@ -1,7 +1,7 @@
 package net.phyloviz.nj.tree;
 
 import net.phyloviz.core.data.Profile;
-import net.phyloviz.nj.json.NeighborJoiningToJson;
+import net.phyloviz.nj.json.NeighborJoiningJsonWriter;
 import net.phyloviz.upgmanjcore.json.JsonSaver;
 import net.phyloviz.upgmanjcore.tree.IndexList.NodeIterator;
 
@@ -48,7 +48,7 @@ public class NJLeafNode extends NodeType{
 
     @Override
     public void saveData(JsonSaver js) {
-        ((NeighborJoiningToJson)js.njtj).putLeaf(id, p.getUID() + "");
+        ((NeighborJoiningJsonWriter)js.writer).putLeaf(id, p.getID());
     }
     
 }

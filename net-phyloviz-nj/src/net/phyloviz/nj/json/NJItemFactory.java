@@ -10,12 +10,10 @@ import java.util.Map;
 import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.upgmanjcore.ClusteringMethodProvider;
-import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.AgglomerativeClusteringMethod;
-import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NJUnionNode;
@@ -35,7 +33,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class NJItemFactory implements ProjectItemFactory {
 
     @Override
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, String distance) {
+    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
 
         JsonValidator validator = new JsonValidator();
         try {
@@ -67,7 +65,6 @@ public class NJItemFactory implements ProjectItemFactory {
             NJRoot root = createRoot(rootObj, leafs, unions);
             
             AgglomerativeClusteringMethod cm = getMethodProvider(filename, td);
-            AbstractDistance ad = (AbstractDistance) getDistanceProvider(distance, td);
 
             OutputPanel op = new OutputPanel(datasetName + ": Neighbor-Joining");
             njItem = new NeighborJoiningItem(root, ad, cm, op);
@@ -80,15 +77,15 @@ public class NJItemFactory implements ProjectItemFactory {
     private Map<Integer, NJLeafNode> createLeafs(TypingData<? extends AbstractProfile> td, JSONArray leafsArr) {
 
         Map<Integer, NJLeafNode> leafs = new HashMap(leafsArr.size());
-        Map<Integer, Profile> profiles = new HashMap(td.size());
+        Map<String, Profile> profiles = new HashMap(td.size());
 
         for (Iterator<? extends AbstractProfile> it = td.iterator(); it.hasNext();) {
             Profile p = it.next();
-            profiles.put(p.getUID(), p);
+            profiles.put(p.getID(), p);
         }
         for (Iterator<JSONObject> it = leafsArr.iterator(); it.hasNext();) {
             JSONObject l = it.next();
-            Integer p = (int) (long) l.get("profile");
+            String p = (String) l.get("profile");
             Integer uid = (int) (long) l.get("id");
             leafs.put(uid, new NJLeafNode(profiles.get(p), td.size(), uid, null));
         }
@@ -147,24 +144,6 @@ public class NJItemFactory implements ProjectItemFactory {
         throw new Exception(methodName + " Method Provider Not Found!");
     }
 
-    private AbstractDistance getDistanceProvider(String distance, TypingData<? extends Profile> td) throws Exception {
-        String[] distanceNames = distance.split("\\.");
-        String distanceName = distanceNames[distanceNames.length - 1];
-
-        Collection<? extends DistanceProvider> dp = Lookup.getDefault().lookupAll(DistanceProvider.class);
-        Iterator<? extends DistanceProvider> ir = dp.iterator();
-        while (ir.hasNext()) {
-            AbstractDistance ad = ir.next().getDistance(td);
-            if (ad != null) {
-                String adName = ad.toString().split(" ")[0].toLowerCase();
-                if (ad instanceof ClusteringDistance && distanceName.equals(adName)) {
-                    return (ClusteringDistance) ad;
-                }
-            }
-        }
-        throw new Exception(distanceName + " Distance Provider Not Found!");
-    }
-    
     @Override
     public String getName() {
         return "Neighbor-Joining";

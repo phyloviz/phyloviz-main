@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.goeburst.algorithm;
 
 import net.phyloviz.algo.AbstractDistance;
@@ -49,127 +48,150 @@ import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 
 public class GOeBurstWithStats implements ClusteringMethod<GOeBurstClusterWithStats, GOeBurstNodeExtended> {
-	
-	private int level;
-	private int maxStId;
 
-	private class STLV {
-		int[] lv = new int[GOeBurstClusterWithStats.MAXLV + 1];
-	}
-	private TreeMap<Integer,STLV> stLVs;
-	
-	public GOeBurstWithStats(int level) {
-		this.level = level;
-		this.maxStId = 0;
-		this.stLVs = new TreeMap<Integer,STLV>();
-	}
+    private int level;
+    private int maxStId;
 
-	@Override
-	public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends Profile> otd, AbstractDistance<GOeBurstNodeExtended> ad) {
+    private class STLV {
 
-		ArrayList<GOeBurstNodeExtended> td = new ArrayList<GOeBurstNodeExtended>(otd.size());
-		for (Iterator<? extends Profile> iter = otd.iterator(); iter.hasNext(); )
-			td.add(new GOeBurstNodeExtended(iter.next()));
-		
-		ArrayList<Edge<GOeBurstNodeExtended>> edges = getEdges(td, ad);
-		Collection<GOeBurstClusterWithStats> clustering = getGroups(td, edges, ad);
-		
-		// Update LVs for STs in each group and set group id.
-		Iterator<GOeBurstClusterWithStats> gIter = clustering.iterator();
-		int gid = 0;
-		while (gIter.hasNext()) {
-			GOeBurstClusterWithStats g = gIter.next();
-			g.setID(gid++);
-			g.updateVisibleEdges();
-		}
-		
-		return clustering;
-	}
-	
-	public int getSTxLV(Profile st, int lv) {
-		if (lv > GOeBurstClusterWithStats.MAXLV || lv < 0)
-			level = GOeBurstClusterWithStats.MAXLV;
-			
-		return stLVs.get(st.getUID()).lv[lv];
-	}
+        int[] lv = new int[GOeBurstClusterWithStats.MAXLV + 1];
+    }
+    private TreeMap<Integer, STLV> stLVs;
 
-	private ArrayList<Edge<GOeBurstNodeExtended>> getEdges(Collection<GOeBurstNodeExtended> td, AbstractDistance<GOeBurstNodeExtended> ad) {
-		ArrayList<Edge<GOeBurstNodeExtended>> edges = new ArrayList<Edge<GOeBurstNodeExtended>>();
-		maxStId = 0;
-		
-		Iterator<GOeBurstNodeExtended> uIter = td.iterator();
-		while (uIter.hasNext()) {
-			GOeBurstNodeExtended u = uIter.next();
-			STLV uLV = stLVs.get(u.getUID());
-			
-			if (uLV == null) {
-				uLV = new STLV();
-				stLVs.put(u.getUID(), uLV);
-			}
-			
-			maxStId = Math.max(maxStId, u.getUID());
-			
-			Iterator<GOeBurstNodeExtended> vIter = td.iterator();
-			while (vIter.hasNext()) {
-				GOeBurstNodeExtended v = vIter.next();
-				
-				int diff = ad.level(u, v);
-				
-				if (u != v && diff <= GOeBurstClusterWithStats.MAXLV)
-					uLV.lv[diff - 1] ++;
-				else
-					uLV.lv[GOeBurstClusterWithStats.MAXLV] ++;
+    public GOeBurstWithStats(int level) {
+        this.level = level;
+        this.maxStId = 0;
+        this.stLVs = new TreeMap<Integer, STLV>();
+    }
 
-				if (u.getUID() < v.getUID() && diff <= level)
-					edges.add(new Edge<GOeBurstNodeExtended>(u, v));
-			}
-		}
-		
-		return edges;
-	}
-	
-	private Collection<GOeBurstClusterWithStats> getGroups(Collection<GOeBurstNodeExtended> td, Collection<Edge<GOeBurstNodeExtended>> edges, AbstractDistance<GOeBurstNodeExtended> ad) {
-		DisjointSet s = new DisjointSet(maxStId);
-		
-		Iterator<Edge<GOeBurstNodeExtended>> eIter = edges.iterator();
-		while (eIter.hasNext()) {
-			Edge e = eIter.next();
-			s.unionSet(e.getU().getUID(), e.getV().getUID());
-		}
-		
-		TreeMap<Integer,GOeBurstClusterWithStats> groups = new TreeMap<Integer,GOeBurstClusterWithStats>();
-		eIter = edges.iterator();
-		while (eIter.hasNext()) {
-			Edge<GOeBurstNodeExtended> e = eIter.next();
-			
-			int pi = s.findSet(e.getU().getUID());
-			GOeBurstClusterWithStats g = groups.get(pi);
-			if ( g == null) {
-				g = new GOeBurstClusterWithStats(this, ad);
-				groups.put(pi, g);
-			}
-			
-			g.add(e);
-		}
-		
-		// Add singletons.
-		Iterator<GOeBurstNodeExtended> stIter = td.iterator();
-		while (stIter.hasNext()) {
-			GOeBurstNodeExtended st = stIter.next();
-			
-			int pi = s.findSet(st.getUID());
-			if (groups.get(pi) == null) {
-				GOeBurstClusterWithStats g = new GOeBurstClusterWithStats(this, ad);
-				g.add(st);
-				groups.put(pi, g);
-			}
+    public void addSTlvs(GOeBurstNodeExtended u) {
 
-			((GOeBurstClusterWithStats) groups.get(pi)).updateMaxLVs(st);
-		}
-		
-		ArrayList<GOeBurstClusterWithStats> gList = new ArrayList<GOeBurstClusterWithStats>(groups.values());
-		Collections.sort(gList);
-		
-		return gList;
-	}
+        STLV uLV = stLVs.get(u.getUID());
+
+        if (uLV == null) {
+            uLV = new STLV();
+            stLVs.put(u.getUID(), uLV);
+        }
+    }
+
+    public void setSTlvs(GOeBurstNodeExtended n, int slv, int dlv, int tlv, int sat){
+        STLV st = stLVs.get(n.getUID());
+        st.lv[0] = slv;
+        st.lv[1] = dlv;
+        st.lv[2] = tlv;
+        st.lv[3] = sat;
+    }
+    
+    @Override
+    public Collection<GOeBurstClusterWithStats> getClustering(TypingData<? extends Profile> otd, AbstractDistance<GOeBurstNodeExtended> ad) {
+
+        ArrayList<GOeBurstNodeExtended> td = new ArrayList<GOeBurstNodeExtended>(otd.size());
+        for (Iterator<? extends Profile> iter = otd.iterator(); iter.hasNext();) {
+            td.add(new GOeBurstNodeExtended(iter.next()));
+        }
+
+        ArrayList<Edge<GOeBurstNodeExtended>> edges = getEdges(td, ad);
+        Collection<GOeBurstClusterWithStats> clustering = getGroups(td, edges, ad);
+
+        // Update LVs for STs in each group and set group id.
+        Iterator<GOeBurstClusterWithStats> gIter = clustering.iterator();
+        int gid = 0;
+        while (gIter.hasNext()) {
+            GOeBurstClusterWithStats g = gIter.next();
+            g.setID(gid++);
+            g.updateVisibleEdges();
+        }
+
+        return clustering;
+    }
+
+    public int getSTxLV(Profile st, int lv) {
+        if (lv > GOeBurstClusterWithStats.MAXLV || lv < 0) {
+            level = GOeBurstClusterWithStats.MAXLV;
+        }
+
+        return stLVs.get(st.getUID()).lv[lv];
+    }
+
+    private ArrayList<Edge<GOeBurstNodeExtended>> getEdges(Collection<GOeBurstNodeExtended> td, AbstractDistance<GOeBurstNodeExtended> ad) {
+        ArrayList<Edge<GOeBurstNodeExtended>> edges = new ArrayList<Edge<GOeBurstNodeExtended>>();
+        maxStId = 0;
+
+        Iterator<GOeBurstNodeExtended> uIter = td.iterator();
+        while (uIter.hasNext()) {
+            GOeBurstNodeExtended u = uIter.next();
+            STLV uLV = stLVs.get(u.getUID());
+
+            if (uLV == null) {
+                uLV = new STLV();
+                stLVs.put(u.getUID(), uLV);
+            }
+
+            maxStId = Math.max(maxStId, u.getUID());
+
+            Iterator<GOeBurstNodeExtended> vIter = td.iterator();
+            while (vIter.hasNext()) {
+                GOeBurstNodeExtended v = vIter.next();
+
+                int diff = ad.level(u, v);
+
+                if (u != v && diff <= GOeBurstClusterWithStats.MAXLV) {
+                    uLV.lv[diff - 1]++;
+                } else {
+                    uLV.lv[GOeBurstClusterWithStats.MAXLV]++;
+                }
+
+                if (u.getUID() < v.getUID() && diff <= level) {
+                    edges.add(new Edge<GOeBurstNodeExtended>(u, v));
+                }
+            }
+        }
+
+        return edges;
+    }
+
+    private Collection<GOeBurstClusterWithStats> getGroups(Collection<GOeBurstNodeExtended> td, Collection<Edge<GOeBurstNodeExtended>> edges, AbstractDistance<GOeBurstNodeExtended> ad) {
+        DisjointSet s = new DisjointSet(maxStId);
+
+        Iterator<Edge<GOeBurstNodeExtended>> eIter = edges.iterator();
+        while (eIter.hasNext()) {
+            Edge e = eIter.next();
+            s.unionSet(e.getU().getUID(), e.getV().getUID());
+        }
+
+        TreeMap<Integer, GOeBurstClusterWithStats> groups = new TreeMap<Integer, GOeBurstClusterWithStats>();
+        eIter = edges.iterator();
+        while (eIter.hasNext()) {
+            Edge<GOeBurstNodeExtended> e = eIter.next();
+
+            int pi = s.findSet(e.getU().getUID());
+            GOeBurstClusterWithStats g = groups.get(pi);
+            if (g == null) {
+                g = new GOeBurstClusterWithStats(this, ad);
+                groups.put(pi, g);
+            }
+
+            g.add(e);
+        }
+
+        // Add singletons.
+        Iterator<GOeBurstNodeExtended> stIter = td.iterator();
+        while (stIter.hasNext()) {
+            GOeBurstNodeExtended st = stIter.next();
+
+            int pi = s.findSet(st.getUID());
+            if (groups.get(pi) == null) {
+                GOeBurstClusterWithStats g = new GOeBurstClusterWithStats(this, ad);
+                g.add(st);
+                groups.put(pi, g);
+            }
+
+            ((GOeBurstClusterWithStats) groups.get(pi)).updateMaxLVs(st);
+        }
+
+        ArrayList<GOeBurstClusterWithStats> gList = new ArrayList<GOeBurstClusterWithStats>(groups.values());
+        Collections.sort(gList);
+
+        return gList;
+    }
 }

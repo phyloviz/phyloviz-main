@@ -24,4 +24,6 @@ public interface ProjectItem {
     public String getOutput();
     
     public String getDistanceProvider();
+    
+    public String getAlgorithmLevel();
 }

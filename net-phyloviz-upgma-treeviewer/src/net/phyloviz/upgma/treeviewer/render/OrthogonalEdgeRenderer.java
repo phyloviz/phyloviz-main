@@ -8,7 +8,6 @@ package net.phyloviz.upgma.treeviewer.render;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 import net.phyloviz.upgma.treeviewer.TreeView;
@@ -89,9 +88,9 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                 result.lineTo(sx, ty);
                 result.lineTo(sx, sy);
                 
+                double distance = tx - sx;
                 
-                
-                edge.setDouble("distance", tx - sx);
+                edge.setDouble("distance", distance);
             }
         }
 
@@ -140,7 +139,7 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                     distance = String.format("%.2f", distanceX / scaleX);
 
                 }
-                String distanceProvider = tv.getDistanceProvider().toUpperCase() + " Distance";
+                String distanceProvider = tv.getDistanceProvider();
                 x = sx + (oneTick * (tickSpace / 2)) - (distanceProvider.length() * 2);
                 y += 40; 
                 

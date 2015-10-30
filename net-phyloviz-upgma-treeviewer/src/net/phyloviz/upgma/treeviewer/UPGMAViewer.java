@@ -63,6 +63,7 @@ import prefuse.util.ui.JSearchPanel;
 import prefuse.visual.EdgeItem;
 import prefuse.visual.VisualItem;
 import net.phyloviz.upgmanjcore.visualization.GView;
+import net.phyloviz.upgmanjcore.visualization.actions.RescaleEdgesControlAction;
 import prefuse.Visualization;
 import prefuse.render.Renderer;
 
@@ -87,6 +88,7 @@ public final class UPGMAViewer extends GView {
 
     private final TreeView tview;
     private boolean linear = false;
+    private boolean rescaleDistance = false;
     private boolean labelBool = true;
 
     private JPanel groupPanel;
@@ -166,16 +168,20 @@ public final class UPGMAViewer extends GView {
                     }
 
                 } else if (item instanceof EdgeItem) {
-                    VisualItem src = ((EdgeItem)item).getSourceItem();
-                    VisualItem target = ((EdgeItem)item).getTargetItem();
-                    
-                    if(!src.getBoolean("isRuler") || !target.getBoolean("isRuler")){
-                        
+                    VisualItem src = ((EdgeItem) item).getSourceItem();
+                    VisualItem target = ((EdgeItem) item).getTargetItem();
+
+                    if (!src.getBoolean("isRuler") || !target.getBoolean("isRuler")) {
+
                         double max_x = item.getBounds().getMaxX();
                         double min_x = item.getBounds().getMinX();
-                        
+
                         Double d = max_x - min_x;
                         d = d / horizontalSlider.getValue();
+                        
+                        if(rescaleDistance)
+                            d = Math.pow(Math.E, d)-1;
+                        
                         appendLineToInfoPanel(d + "");
                     }
                 }
@@ -283,9 +289,8 @@ public final class UPGMAViewer extends GView {
         sp = new JSpinner();
         sp.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         sp.setBackground(Color.WHITE);
-        
-        
-        final SpinnerNumberModel model = new SpinnerNumberModel(distanceFilterValue , 0, MAX_DISTANCE + DISTANCE_FILTER_STEP, DISTANCE_FILTER_STEP);
+
+        final SpinnerNumberModel model = new SpinnerNumberModel(distanceFilterValue, 0, MAX_DISTANCE + DISTANCE_FILTER_STEP, DISTANCE_FILTER_STEP);
         model.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -296,8 +301,7 @@ public final class UPGMAViewer extends GView {
         });
         sp.setModel(model);
         sp.setValue(distanceFilterValue);
-        
-        
+
         Box cutDistanceOption = new Box(BoxLayout.Y_AXIS);
         cutDistanceOption.add(new JLabel("cut off"));
         cutDistanceOption.add(new JLabel("threshold:"));
@@ -306,7 +310,6 @@ public final class UPGMAViewer extends GView {
         cutDistanceOption.add(sp);
         cutDistanceOption.setOpaque(true);
         cutDistanceOption.setBackground(BACKGROUND);
-        
 
         popupMenu = new JPopupMenu();
         popupMenu.add(new InfoControlAction(this).getMenuItem());
@@ -316,6 +319,7 @@ public final class UPGMAViewer extends GView {
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         //popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
+        popupMenu.add(new RescaleEdgesControlAction(this, rescaleDistance).getMenuItem());
         //popupMenu.add(new HighQualityAction(this).getMenuItem());
         //popupMenu.add(new ExportAction(this).getMenuItem());
 
@@ -347,7 +351,7 @@ public final class UPGMAViewer extends GView {
         // horizontalBox.add(Box.createHorizontalGlue());
         // horizontalBox.add(Box.createHorizontalGlue());
 
-       // horizontalBox.add(search);
+        // horizontalBox.add(search);
         // horizontalBox.add(Box.createHorizontalStrut(3));
         horizontalBox.setOpaque(true);
         horizontalBox.setBackground(Color.WHITE);
@@ -365,7 +369,7 @@ public final class UPGMAViewer extends GView {
         verticalBox.add(verticalSlider);
         verticalBox.setOpaque(true);
         verticalBox.setBackground(BACKGROUND);
-        
+
         JPanel verticalPanel = new JPanel(new GridLayout(3, 1));
         verticalPanel.add(verticalBox);
         verticalPanel.add(verticalLabelPanel);
@@ -404,7 +408,8 @@ public final class UPGMAViewer extends GView {
     public JComponent getTreeViewComponent() {
         return _treeview;
     }
-    public TreeView getTreeViewer(){
+
+    public TreeView getTreeViewer() {
         return tview;
     }
     int id = 1;
@@ -433,6 +438,19 @@ public final class UPGMAViewer extends GView {
     @Override
     public Visualization getVisualization() {
         return tview.getVisualization();
+    }
+
+    @Override
+    public boolean getRescaleEdges() {
+        return rescaleDistance;
+    }
+
+    @Override
+    public void setRescaleEdges(boolean status) {
+        if (rescaleDistance != status) {
+            rescaleDistance = status;
+            tview.setRescaleEdges(status);
+        }
     }
 
     @Override
@@ -586,7 +604,7 @@ public final class UPGMAViewer extends GView {
 
         tv.setBackground(BACKGROUND);
         tv.setForeground(FOREGROUND);
-        
+
         return tv;
     }
 }

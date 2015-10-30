@@ -40,12 +40,14 @@ public abstract class JsonSchemaValidator {
     public void setDataIds(Map<String, String[]> dataIds) {
         this.dataIds = dataIds;
     }
+
     /**
      * Validates choosen file with shema
-     * @param schema    schema with validation
+     *
+     * @param schema schema with validation
      * @param directory file path to be load
-     * @param filename  file name to be load 
-     * @return 
+     * @param filename file name to be load
+     * @return
      */
     public boolean validate(InputStream schema, String directory, String filename) {
         //parse validator
@@ -90,18 +92,20 @@ public abstract class JsonSchemaValidator {
                 JsonProp jp = validatorMap.get(key);
                 if (jp.type.equalsIgnoreCase("array")) {
                     JSONArray ja = (JSONArray) json.get(key);
-                    if(!validateJsonArray(ja, validatorMap.get(key), filename))
+                    if (!validateJsonArray(ja, validatorMap.get(key), filename)) {
                         return false;
+                    }
                 } else if (jp.type.equalsIgnoreCase("object")) {
                     JSONObject jo = (JSONObject) json.get(key);
-                    if(!validateJsonObject(jo, validatorMap.get(key), filename))
+                    if (!validateJsonObject(jo, validatorMap.get(key), filename)) {
                         return false;
+                    }
                 } else {
                     JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Invalid file " + filename);
                     return false;
                 }
             }
-        } catch(IOException | ParseException e){
+        } catch (IOException | ParseException e) {
             Exceptions.printStackTrace(e);
         }
         return true;
@@ -134,18 +138,20 @@ public abstract class JsonSchemaValidator {
             while (itKeys.hasNext()) {
                 String key = itKeys.next();
                 Object o = (Object) jo.get(key);
-                if(!checkType(o, it.pType.get(key), file))
+                if (!checkType(o, it.pType.get(key), file)) {
                     return false;
+                }
             }
         }
         return true;
     }
+
     /**
-     * 
-     * @param s     objecto value to be checked
-     * @param get   objecto key to be checked 
-     * @param file  with that is being verified
-     * @return 
+     *
+     * @param s objecto value to be checked
+     * @param get objecto key to be checked
+     * @param file with that is being verified
+     * @return
      */
     private boolean checkType(Object s, String get, String file) {
         try {
@@ -159,13 +165,21 @@ public abstract class JsonSchemaValidator {
                 case ("object"):
                     double value3 = (double) s;
                     return true;
+                case ("string"):
+                    String value4 = (String) s;
+                    return true;
+                case ("boolean"):
+                    boolean value = (boolean) s;
+                    return true;
+                case("array"):
+                    return (s.getClass().getName().equals(JSONArray.class.getName()));
                 default:
                     JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Invalid type in " + file);
                     return false;
             }
         } catch (Exception e) {
-           JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Invalid type in " + file);
-           return false;
+            JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Invalid type in " + file);
+            return false;
         }
     }
 
@@ -174,17 +188,21 @@ public abstract class JsonSchemaValidator {
         while (itKeys.hasNext()) {
             String key = itKeys.next();
             Object o = (Object) jo.get(key);
-            if(!checkType(o, get.item.pType.get(key), file))
+            if (!checkType(o, get.item.pType.get(key), file)) {
                 return false;
+            }
         }
         return true;
     }
+
     /**
      * properties of a object in json
      */
     private class ItemType {
+
         public Map<String, String> pType = new HashMap<>();
     }
+
     /**
      * Objecto with key - value data
      */

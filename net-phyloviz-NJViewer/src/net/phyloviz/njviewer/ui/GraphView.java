@@ -128,9 +128,9 @@ public class GraphView extends GView {
     // Data analysis info...
     private CategoryProvider cp;
     double maxDistance = 0, minDistance = 0;
-    final Map<Integer, Point> nodesPositions;
+    final Map<String, Point> nodesPositions;
 
-    public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<Integer, Point> nodesPositions) {
+    public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
         this.setOpaque(true);
@@ -171,7 +171,7 @@ public class GraphView extends GView {
                 return 10 + 300 * e.getFloat("distance");
             }
 
-			//@Override
+            //@Override
             //protected float getMassValue(VisualItem n) { 
             //	return 3.0f;	
             //}
@@ -213,7 +213,7 @@ public class GraphView extends GView {
         });
         // Build schemas.
         Schema nodeSchema = new Schema();
-        nodeSchema.addColumn("st_id", int.class);
+        nodeSchema.addColumn("st_id", String.class);
         nodeSchema.addColumn("st_ref", NodeType.class);
         nodeSchema.addColumn("w", int.class);
         nodeSchema.addColumn("g", int.class);
@@ -448,7 +448,7 @@ public class GraphView extends GView {
                     int uRowNb = nodeTable.addRow();
                     uid2rowid.put(st.getUID(), uRowNb);
                     if (st instanceof NJLeafNode) {
-                        nodeTable.setInt(uRowNb, "st_id", Integer.parseInt(st.getID()));
+                        nodeTable.setString(uRowNb, "st_id", st.getID());
                     }
                     nodeTable.set(uRowNb, "st_ref", st);
                     nodeTable.setInt(uRowNb, "w", 0);
@@ -466,7 +466,7 @@ public class GraphView extends GView {
 
                     if (nodesPositions != null) {
 
-                        Integer id = vu.getInt("st_id");
+                        String id = vu.getString("st_id");
                         double x = nodesPositions.get(id).x;
                         double y = nodesPositions.get(id).y;
                         vu.setStartX(x);
@@ -500,9 +500,9 @@ public class GraphView extends GView {
                             int vRowNb = nodeTable.addRow();
                             uid2rowid.put(st.getUID(), vRowNb);
                             if (st instanceof NJLeafNode) {
-                                nodeTable.setInt(vRowNb, "st_id", Integer.parseInt(st.getID()));
+                                nodeTable.setString(vRowNb, "st_id", st.getID());
                             } else if (st instanceof NJUnionNode) {
-                                nodeTable.setInt(vRowNb, "st_id", st.getUID());
+                                nodeTable.setString(vRowNb, "st_id", st.getUID() + "");
                             }
                             nodeTable.set(vRowNb, "st_ref", st);
                             nodeTable.setInt(vRowNb, "w", 0);
@@ -802,19 +802,31 @@ public class GraphView extends GView {
         updateDistanceFilter(value);
     }
 
-    public Map<Integer, Point> getNodesPositions() {
-        Map<Integer, Point> positions = new HashMap<Integer, Point>();
+    public Map<String, Point> getNodesPositions() {
+        Map<String, Point> positions = new HashMap<String, Point>();
         Iterator<NodeItem> nodes = vg.nodes();
         while (nodes.hasNext()) {
             NodeItem i = nodes.next();
-            
-            if (!i.canGetInt("st_id"))  continue;
-            
-            Integer id = i.getInt("st_id");
+
+            if (!i.canGetString("st_id")) {
+                continue;
+            }
+
+            String id = i.getString("st_id");
             Point p = new Point(i.getX(), i.getY());
             positions.put(id, p);
         }
         return positions;
+    }
+
+    @Override
+    public void setRescaleEdges(boolean status) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean getRescaleEdges() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     // Private classes.
@@ -829,7 +841,7 @@ public class GraphView extends GView {
             Tuple itemTuple = item.getSourceTuple();
             if (itemTuple.get("st_ref") instanceof NJLeafNode) {
                 if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
-                    if (itemTuple.getInt("st_id") == Integer.parseInt(searchPanel.getQuery())) {
+                    if (itemTuple.getString("st_id").equals(searchPanel.getQuery())) {
                         if (searchMatch) {
                             display.panToAbs(new Point2D.Double(item.getX(), item.getY()));
                         }

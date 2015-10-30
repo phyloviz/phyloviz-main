@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -18,6 +19,8 @@ import java.util.Properties;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
+import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
@@ -60,7 +63,7 @@ public final class LoadDataSetAction extends AbstractAction {
             prop.load(inputStream);
 
             StatusDisplayer.getDefault().setStatusText("Loading DataSet...");
-            
+
             String dataSetName = prop.getProperty("dataset-name");
             if (dataSetAlreadyOpened(dataSetName)) {
                 JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "DataSet already opened!");
@@ -76,6 +79,7 @@ public final class LoadDataSetAction extends AbstractAction {
                     algorithmOutput = prop.getProperty("algorithm-output"),
                     algorithmOutputFactory = prop.getProperty("algorithm-output-factory"),
                     algorithmOutputDistanceProvider = prop.getProperty("algorithm-output-distance"),
+                    algorithmOutputLevel = prop.getProperty("algorithm-output-level"),
                     visualizations = prop.getProperty("visualization");
 
             String[] algoOutput = algorithmOutput != null
@@ -84,8 +88,11 @@ public final class LoadDataSetAction extends AbstractAction {
             String[] algoOutputFactory = algorithmOutputFactory != null
                     ? algorithmOutputFactory.split(",")
                     : new String[]{""};
-              String[] algoOutputDistance = algorithmOutputDistanceProvider != null
+            String[] algoOutputDistance = algorithmOutputDistanceProvider != null
                     ? algorithmOutputDistanceProvider.split(",")
+                    : new String[]{""};
+            String[] algoOutputLevel = algorithmOutputLevel != null
+                    ? algorithmOutputLevel.split(",")
                     : new String[]{""};
             String[] viz = visualizations != null
                     ? visualizations.split(",")
@@ -96,20 +103,20 @@ public final class LoadDataSetAction extends AbstractAction {
                 DataSet ds = new DataSet(dataSetName);
 
                 StatusDisplayer.getDefault().setStatusText("Loading typing data...");
-                
+
                 TypingFactory tf = null;
                 TypingData<? extends AbstractProfile> td = null;
-                
+
                 Collection<? extends ProjectTypingDataFactory> tfLookup = (Lookup.getDefault().lookupAll(ProjectTypingDataFactory.class));
-                for(ProjectTypingDataFactory ptdi : tfLookup){
-                    if(ptdi.getClass().getName().equals(typingFactory)){
+                for (ProjectTypingDataFactory ptdi : tfLookup) {
+                    if (ptdi.getClass().getName().equals(typingFactory)) {
                         tf = (TypingFactory) ptdi;
                         td = ptdi.onLoad(new FileReader(new File(projectDir, typingFile)));
                         td.setDescription(tf.toString());
                         ds.add(ptdi);
                     }
                 }
-                
+
                 if (populationFile != null && (!populationFile.equals("")) && populationFK != null) {
 
                     StatusDisplayer.getDefault().setStatusText("Loading isolate data...");
@@ -126,13 +133,13 @@ public final class LoadDataSetAction extends AbstractAction {
                 int v_i = 0;
                 Collection<? extends ProjectItemFactory> pifactory = (Lookup.getDefault().lookupAll(ProjectItemFactory.class));
                 for (int i = 0; i < algoOutput.length; i++) {
-                    
+
                     for (ProjectItemFactory pif : pifactory) {
                         String pifName = pif.getClass().getName();
                         if (pifName.equals(algoOutputFactory[i])) {
 
                             PersistentVisualization pv = null;
-                            if(viz.length > v_i && viz[v_i].split("\\.")[0].equals(algoOutput[i].split("\\.")[2])){
+                            if (viz.length > v_i && viz[v_i].split("\\.")[0].equals(algoOutput[i].split("\\.")[2])) {
                                 try (FileInputStream fileIn = new FileInputStream(new File(visualization, viz[v_i++]))) {
 
                                     try (ObjectInputStream in = new ObjectInputStream(fileIn)) {
@@ -146,8 +153,16 @@ public final class LoadDataSetAction extends AbstractAction {
                                 }
                             }
                             StatusDisplayer.getDefault().setStatusText("Loading algorithms...");
-                            ProjectItem pi = pif.loadData(dataSetName, td, projectDir, algoOutput[i], algoOutputDistance[i]);
-                            if(pi != null){
+                            AbstractDistance ad = null;
+                            Collection<? extends DistanceProvider> dpLookup = (Lookup.getDefault().lookupAll(DistanceProvider.class));
+                            for (DistanceProvider dp : dpLookup) {
+                                if (dp.getClass().getCanonicalName().equals(algoOutputDistance[i])) {
+                                    ad = dp.getDistance(td);
+                                }
+                            }
+
+                            ProjectItem pi = pif.loadData(dataSetName, td, projectDir, algoOutput[i], ad, Integer.parseInt(algoOutputLevel[i]));
+                            if (pi != null) {
                                 if (pv != null) {
                                     pi.addPersistentVisualization(pv);
                                 }

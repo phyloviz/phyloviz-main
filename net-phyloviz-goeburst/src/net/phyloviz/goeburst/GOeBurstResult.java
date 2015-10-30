@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.goeburst;
 
 import net.phyloviz.algo.AbstractDistance;
@@ -42,18 +41,22 @@ import java.util.HashMap;
 import net.phyloviz.core.util.NodeFactory;
 import net.phyloviz.goeburst.cluster.GOeBurstClusterWithStats;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
+import net.phyloviz.goeburst.json.GOeBurstToJSON;
 import net.phyloviz.goeburst.ui.GOeBurstNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
 import net.phyloviz.project.ProjectItem;
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.openide.nodes.AbstractNode;
 
 public class GOeBurstResult implements NodeFactory, ProjectItem, Result {
 
-	private final Collection<GOeBurstClusterWithStats> clustering;
-	private final OutputPanel op;
-	private final AbstractDistance<GOeBurstNodeExtended> ad;
-	private final int level;
+    private final Collection<GOeBurstClusterWithStats> clustering;
+    private final OutputPanel op;
+    private final AbstractDistance<GOeBurstNodeExtended> ad;
+    private final int level;
     private Map<String, Double> edgestats;
+    
+    private PersistentVisualization cp;
 
     public Map<String, Double> getEdgestats() {
         return edgestats;
@@ -62,69 +65,76 @@ public class GOeBurstResult implements NodeFactory, ProjectItem, Result {
     public void setEdgestats(Map<String, Double> edgestats) {
         this.edgestats = edgestats;
     }
+
+    public GOeBurstResult(Collection<GOeBurstClusterWithStats> clustering, AbstractDistance<GOeBurstNodeExtended> ad, int level, OutputPanel op) {
+        this.clustering = clustering;
+        this.op = op;
+        this.level = level;
+        this.ad = ad;
+        this.edgestats = new HashMap<String, Double>();
+    }
+
+    @Override
+    public OutputPanel getPanel() {
+        return op;
+    }
+
+    public Collection<GOeBurstClusterWithStats> getClustering() {
+        return clustering;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+    @Override
+    public String getAlgorithmLevel() {
+        return String.valueOf(level);
+    }
     
-	public GOeBurstResult(Collection<GOeBurstClusterWithStats> clustering, AbstractDistance<GOeBurstNodeExtended> ad, int level, OutputPanel op) {
-		this.clustering = clustering;
-		this.op = op;
-		this.level = level;
-		this.ad = ad;
-	        this.edgestats = new HashMap<String, Double>();
-	}
+    public AbstractDistance<GOeBurstNodeExtended> getDistance() {
+        return ad;
+    }
 
-	@Override
-	public OutputPanel getPanel() {
-		return op;
-	}
+    @Override
+    public AbstractNode getNode() {
+        return new GOeBurstNode(this);
+    }
 
-	public Collection<GOeBurstClusterWithStats> getClustering() {
-		return clustering;
-	}
+    @Override
+    public String toString() {
+        return "goeBURST (Level " + level + "; " + ad.toString() + ")";
+    }
 
-	public int getLevel() {
-		return level;
-	}
+    @Override
+    public void addPersistentVisualization(PersistentVisualization cp) {
+        this.cp = cp;
+    }
 
-	public AbstractDistance<GOeBurstNodeExtended> getDistance() {
-		return ad;
-	}
+    @Override
+    public PersistentVisualization getPersistentVisualization() {
+        return this.cp;
+    }
 
-	@Override
-	public AbstractNode getNode() {
-		return new GOeBurstNode(this);
-	}
+    @Override //getLevel
+    public String getMethodProviderName() {
+        return getMainName();
+    }
 
-	@Override
-	public String toString() {
-		return "goeBURST (Level " + level + "; " + ad.toString() + ")";
-	}
+    @Override
+    public String getMainName() {
+        return "goeburst";
+    }
 
-	@Override
-	public void addPersistentVisualization(net.phyloviz.upgmanjcore.visualization.PersistentVisualization cp) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+    @Override
+    public String getOutput() {
+       
+        GOeBurstToJSON json = new GOeBurstToJSON(clustering);
+        String output = json.saveToJSON();
+        return output;
+    }
 
-	@Override
-	public net.phyloviz.upgmanjcore.visualization.PersistentVisualization getPersistentVisualization() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String getMethodProviderName() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String getMainName() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String getOutput() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String getDistanceProvider() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+    @Override
+    public String getDistanceProvider() {
+        return ad.getClass().getCanonicalName();
+    }
 }

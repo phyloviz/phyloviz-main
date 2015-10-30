@@ -5,18 +5,10 @@
  */
 package net.phyloviz.upgma.treeviewer.render;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
-
+import net.phyloviz.upgma.treeviewer.TreeView;
 import prefuse.Constants;
-import prefuse.Display;
 import prefuse.action.layout.graph.NodeLinkTreeLayout;
-import prefuse.action.layout.graph.TreeLayout;
 import prefuse.data.Graph;
-import prefuse.data.Schema;
-import prefuse.data.tuple.TupleSet;
-import prefuse.util.ArrayLib;
 import prefuse.visual.NodeItem;
 
 /**
@@ -45,10 +37,12 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
     private double maxDepth;
     private int orientation;
     private double MAX_Y;
+    private TreeView tv;
 
-    public NodeLinkLayout(String group, int orientation, double dspace, double bspace, double tspace) {
+    public NodeLinkLayout(TreeView tv, String group, int orientation, double dspace, double bspace, double tspace) {
         super(group, orientation, dspace, bspace, tspace);
         this.orientation = orientation;
+        this.tv = tv;
     }
 
     public void setScaleX(int x) {
@@ -58,10 +52,12 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
     public void setScaleY(int y) {
         SCALE_Y = y;
     }
-    public int getScaleX(){
+
+    public int getScaleX() {
         return SCALE_X;
     }
-    public int getScaleY(){
+
+    public int getScaleY() {
         return SCALE_Y;
     }
 
@@ -71,24 +67,26 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
         initSchema(g.getNodes());
 
         root = getLayoutRoot();
-
-        maxDepth = root.getDouble("distance") * SCALE_X;
+        maxDepth = root.getDouble("distance");
+        if(tv.getRescaleEdges())
+            maxDepth = Math.log(1 + maxDepth) * SCALE_X;
+        else
+            maxDepth = maxDepth * SCALE_X;
 
         NodeItem n = (NodeItem) root.getFirstChild();
         n = (NodeItem) n.getNextSibling();
         NodeItem r = (NodeItem) n.getNextSibling();
         NodeItem r2 = (NodeItem) r.getFirstChild();
-        setDepth(r, root,  root.getBounds().getMinX());
-        setDepth(r2, root,  maxDepth);
-        
+        setDepth(r, root, root.getBounds().getMinX());
+        setDepth(r2, root, maxDepth);
+
         MAX_Y = Double.MIN_VALUE;
-        
+
         secondWalk(root, null, false);
-        
-        setBreadth(r, root, MAX_Y +  (SCALE_Y * 2));
+
+        setBreadth(r, root, MAX_Y + (SCALE_Y * 2));
         setBreadth(r2, root, MAX_Y + (SCALE_Y * 2));
-        
-        
+
     }
 
     private double secondWalk(NodeItem n, NodeItem p, boolean up) {
@@ -99,8 +97,9 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
         if (left.getChildCount() == 0) { // is Leaf
             setDepth(left, n, maxDepth);
             int id = left.getInt("idx");
-            if(MAX_Y < id * SCALE_Y)
+            if (MAX_Y < id * SCALE_Y) {
                 MAX_Y = id * SCALE_Y;
+            }
             setBreadth(left, p, id * SCALE_Y);
         } else {
             secondWalk(left, n, true);
@@ -109,22 +108,28 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
         if (right.getChildCount() == 0) { //is Leaf
             setDepth(right, n, maxDepth);
             int id = right.getInt("idx");
-            if(MAX_Y < id * SCALE_Y)
+            if (MAX_Y < id * SCALE_Y) {
                 MAX_Y = id * SCALE_Y;
+            }
             setBreadth(right, p, id * SCALE_Y);
         } else {
             secondWalk(right, n, false);
         }
 
         double distance;
-        double myDistance = n.getDouble("distance") * SCALE_X;
+        double myDistance = n.getDouble("distance");
+        if(tv.getRescaleEdges())
+            myDistance = Math.log(1 + myDistance) * SCALE_X;
+        else
+            myDistance = myDistance * SCALE_X;
 
         distance = maxDepth - myDistance;
 
         setDepth(n, p, distance);
         double b = (left.getBounds().getMaxY() + right.getBounds().getMinY()) / 2; //(breadthL + breadthR) / 2;
-        if(MAX_Y < b)
+        if (MAX_Y < b) {
             MAX_Y = b;
+        }
         setBreadth(n, p, b);
         return b;
     }

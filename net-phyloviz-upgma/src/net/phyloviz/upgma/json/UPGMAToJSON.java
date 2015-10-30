@@ -23,7 +23,7 @@ public class UPGMAToJSON {
     public String saveToJSON(){
         JsonSaver js = new JsonSaver(new String[] {"leaf", "union"}, new UPGMAJsonWriter());
         root.saveData(js, null);
-        return js.createFile();
+        return js.getJSON();
     }
     public interface IEdgeJsonSaver{
         void saveData(JsonSaver js, NodeType from);

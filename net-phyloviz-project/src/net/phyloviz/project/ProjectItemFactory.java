@@ -5,6 +5,7 @@
  */
 package net.phyloviz.project;
 
+import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.TypingData;
 
@@ -14,7 +15,7 @@ import net.phyloviz.core.data.TypingData;
  */
 public interface ProjectItemFactory {
     
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, String distanceProvider);
+    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance distanceProvider, int level);
     
     public String getName();
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.phyloviz.algo.Edge;
 import net.phyloviz.nj.json.NJToJSON.IEdgeJsonSaver;
-import net.phyloviz.nj.json.NeighborJoiningToJson;
+import net.phyloviz.nj.json.NeighborJoiningJsonWriter;
 import net.phyloviz.upgmanjcore.json.JsonSaver;
 
 /**
@@ -30,7 +30,7 @@ public class NJRoot implements IEdgeJsonSaver{
     public void saveData(JsonSaver js, NodeType from) {
         n1.saveData(js); //start saving to the left
         n2.saveData(js); //start saving to the right
-        ((NeighborJoiningToJson)js.njtj).putRoot(distance, n1.id, n2.id);
+        ((NeighborJoiningJsonWriter)js.writer).putRoot(distance, n1.id, n2.id);
     }
 
     public List<EdgeDistanceWrapper> getList() {

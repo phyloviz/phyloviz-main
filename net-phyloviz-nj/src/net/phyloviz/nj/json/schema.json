@@ -7,7 +7,7 @@
          "items":{
             "properties":{
                "id":{"type":"integer"},
-               "profile":{"type":"integer"}
+               "profile":{"type":"string"}
             },
             "required":[ "id", "profile"],
             "additionalProperties": false

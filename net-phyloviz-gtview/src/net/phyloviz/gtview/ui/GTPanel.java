@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.gtview.ui;
 
 import java.util.ArrayList;
@@ -45,89 +44,106 @@ import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.GOeBurstResult;
 import net.phyloviz.gtview.render.ChartRenderer;
+import net.phyloviz.upgmanjcore.visualization.GView;
+import net.phyloviz.upgmanjcore.visualization.IGTPanel;
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
 
-public class GTPanel extends TopComponent {
+public final class GTPanel extends TopComponent implements IGTPanel {
 
-	private GraphView gv;
-	private ArrayList<JMenuItem> al;
-	private Result<CategoryProvider> r;
-	private CategoryChangeListener gvCatListen;
+    private GraphView gv;
+    private ArrayList<JMenuItem> al;
+    private Result<CategoryProvider> r;
+    private CategoryChangeListener gvCatListen;
+    private CategoryProvider catProvider;
 
-	/** Creates new form GTPanel */
-	public GTPanel(String name, GOeBurstResult gr, TypingData<? extends Profile> ds) {
-		super(Lookups.singleton(gr));
-		initComponents();
-		this.setName(name);
-		gv = new GraphView(name, gr);
-		this.add(gv);
-		gv.startAnimation();
+    /**
+     * Creates new form GTPanel
+     */
+    public GTPanel(String name, GOeBurstResult gr, TypingData<? extends Profile> ds) {
+        super(Lookups.singleton(gr));
+        initComponents();
+        this.setName(name);
 
-		gvCatListen = new CategoryChangeListener() {
+        PersistentVisualization pv = gr.getPersistentVisualization();
+        if (pv != null) {
+            gv = new GraphView(name, gr, pv.linearSize, pv.nodesPositions);
+            loadVisualization(pv);
+        } else {
+            gv = new GraphView(name, gr, false, null);
+        }
+        this.add(gv);
+        
+        gvCatListen = new CategoryChangeListener() {
 
-			@Override
-			public void categoryChange(CategoryProvider cp) {
+            @Override
+            public void categoryChange(CategoryProvider cp) {
 
-				if (cp.isOn()) {
-					gv.setDefaultRenderer(new ChartRenderer(cp, gv));
-					gv.setCategoryProvider(cp);
-				} else {
-					gv.resetDefaultRenderer();
-					gv.setCategoryProvider(null);
-				}
-			}
-		};
+                if (cp.isOn()) {
+                    catProvider = cp;
+                    gv.setDefaultRenderer(new ChartRenderer(cp, gv));
+                    gv.setCategoryProvider(cp);
+                } else {
+                    catProvider = null;
+                    gv.resetDefaultRenderer();
+                    gv.setCategoryProvider(null);
+                }
+            }
+        };
 
 		// Let us track category providers...
-		// TODO: implement this within a renderer.
-		r = ds.getLookup().lookupResult(CategoryProvider.class);
-		Iterator<? extends CategoryProvider> i = r.allInstances().iterator();
-		while (i.hasNext())
-			i.next().addCategoryChangeListener(gvCatListen);
+        // TODO: implement this within a renderer.
+        r = ds.getLookup().lookupResult(CategoryProvider.class);
+        Iterator<? extends CategoryProvider> i = r.allInstances().iterator();
+        while (i.hasNext()) {
+            i.next().addCategoryChangeListener(gvCatListen);
+        }
 
-		r.addLookupListener(new LookupListener() {
+        r.addLookupListener(new LookupListener() {
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public void resultChanged(LookupEvent le) {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void resultChanged(LookupEvent le) {
 
-				Iterator<? extends CategoryProvider> i = ((Result<CategoryProvider>) le.getSource()).allInstances().iterator();
-				while (i.hasNext()) {
-					CategoryProvider cp = i.next();
-					cp.removeCategoryChangeListener(gvCatListen);
-					cp.addCategoryChangeListener(gvCatListen);
-				}
-			}
-		});
-	}
+                Iterator<? extends CategoryProvider> i = ((Result<CategoryProvider>) le.getSource()).allInstances().iterator();
+                while (i.hasNext()) {
+                    CategoryProvider cp = i.next();
+                    cp.removeCategoryChangeListener(gvCatListen);
+                    cp.addCategoryChangeListener(gvCatListen);
+                }
+            }
+        });
+        gv.loadGraph(gr, pv != null);
+        
+    }
 
-	@Override
-	public int getPersistenceType() {
-		return PERSISTENCE_NEVER;
-	}
+    @Override
+    public int getPersistenceType() {
+        return PERSISTENCE_NEVER;
+    }
 
-	@Override
-	protected String preferredID() {
-		return "GTPanel";
-	}
+    @Override
+    protected String preferredID() {
+        return "GTPanel";
+    }
 
-	@Override
-	protected void componentClosed() {
-		gv.closeInfoPanel();
-		gv.stopAnimation();
-		super.componentClosed();
-	}
+    @Override
+    protected void componentClosed() {
+        gv.closeInfoPanel();
+        gv.stopAnimation();
+        super.componentClosed();
+    }
 
-	/** This method is called from within the constructor to
-	 * initialize the form.
-	 * WARNING: Do NOT modify this code. The content of this method is
-	 * always regenerated by the Form Editor.
-	 */
-	@SuppressWarnings("unchecked")
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
         // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
         private void initComponents() {
 
@@ -137,4 +153,30 @@ public class GTPanel extends TopComponent {
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         // End of variables declaration//GEN-END:variables
+    @Override
+    public GView getGView() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PersistentVisualization getPersistentVisualization() {
+
+        PersistentVisualization pc = new PersistentVisualization();
+
+        pc.categoryProvider = catProvider;
+        pc.linearSize = gv.getLinearSize();
+        pc.nodesPositions = ((GraphView)gv).getNodesPositions();
+        
+        return pc;
+    }
+
+    @Override
+    public void loadVisualization(PersistentVisualization pv) {
+
+        if (pv.categoryProvider != null) {
+            catProvider = pv.categoryProvider;
+            gv.setDefaultRenderer(new ChartRenderer(pv.categoryProvider, gv));
+            gv.setCategoryProvider(pv.categoryProvider);
+        }
+    }
 }

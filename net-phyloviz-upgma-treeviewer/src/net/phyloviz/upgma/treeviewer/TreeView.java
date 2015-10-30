@@ -83,6 +83,7 @@ public final class TreeView extends Display {
     public transient CategoryProvider cp;
     private boolean labeledRender = false;
     private boolean linear = false;
+    private boolean rescaleDistance = false;
     private final JSearchPanel searchPanel;
     private boolean searchMatch = false;
     private float cutDistance, maxDistance;
@@ -131,7 +132,7 @@ public final class TreeView extends Display {
         m_vis.putAction("animatePaint", animatePaint);
 
         // create the tree layout action
-        NodeLinkLayout treeLayout = new NodeLinkLayout(tree, m_orientation, 50, 0, 8);
+        NodeLinkLayout treeLayout = new NodeLinkLayout(this, tree, m_orientation, 50, 0, 8);
         treeLayout.setLayoutAnchor(new Point2D.Double(25, 300));
         m_vis.putAction("treeLayout", treeLayout);
 
@@ -366,7 +367,19 @@ public final class TreeView extends Display {
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
     }
+    public boolean getRescaleEdges(){
+        return rescaleDistance;
+    }
+    
+    public void setRescaleEdges(boolean status) {
+        rescaleDistance = status;
+        m_vis.cancel("animatePaint");
 
+        m_vis.run("treeLayout");
+        m_vis.run("draw");
+        m_vis.run("fullPaint");
+        m_vis.run("animatePaint");
+    }
     public boolean getLinearSize() {
         return linear;
     }

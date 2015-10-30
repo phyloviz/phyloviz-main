@@ -21,9 +21,9 @@ public class NJToJSON {
         this.root = root;
     }
     public String saveToJSON(){
-        JsonSaver js = new JsonSaver(new String[] {"leaf", "union"}, new NeighborJoiningToJson());
+        JsonSaver js = new JsonSaver(new String[] {"leaf", "union"}, new NeighborJoiningJsonWriter());
         root.saveData(js, null);
-        return js.createFile();
+        return js.getJSON();
     }
     public interface IEdgeJsonSaver{
         void saveData(JsonSaver js, NodeType from);

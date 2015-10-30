@@ -37,7 +37,7 @@ public class UPGMAUnionNode extends NodeType{
     public void saveData(JsonSaver js) {
         n1.saveData(js);
         n2.saveData(js);
-        ((UPGMAJsonWriter)js.njtj).putUnion(id, distance, n1.id, n2.id);
+        ((UPGMAJsonWriter)js.writer).putUnion(id, distance, n1.id, n2.id);
     }
     @Override
     public String getDisplayName() {

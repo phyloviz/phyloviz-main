@@ -6,13 +6,13 @@
 package net.phyloviz.nj.json;
 
 import java.util.HashMap;
-import net.phyloviz.upgmanjcore.json.IJsonSaverTag;
+import net.phyloviz.upgmanjcore.json.IJsonWriter;
 
 /**
  *
  * @author Adriano
  */
-public class NeighborJoiningToJson implements IJsonSaverTag{
+public class NeighborJoiningJsonWriter implements IJsonWriter{
     
     private final StringBuilder sbLeafs = new StringBuilder();
     private final StringBuilder sbUnions = new StringBuilder();
@@ -21,7 +21,7 @@ public class NeighborJoiningToJson implements IJsonSaverTag{
     public void putLeaf(int id, String profile){
         String value = "\t\t{\""
                 + "id\": " + id + ", \""
-                + "profile\": " + profile + "},\n";
+                + "profile\": \"" + profile + "\"},\n";
         sbLeafs.append(value);
     }
     public void putUnion(int id, int left, float distL, int right, float distR){
@@ -49,7 +49,7 @@ public class NeighborJoiningToJson implements IJsonSaverTag{
     }
     @Override
     public String getRoot() {
-        return root;
+        return "\t\t\"root\":" + root;
     }
     
 }

@@ -23,7 +23,6 @@ import java.awt.geom.RectangularShape;
 import java.awt.geom.RoundRectangle2D;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.upgma.treeviewer.TreeView;
-import net.phyloviz.upgma.treeviewer.UPGMAViewer;
 
 import prefuse.Constants;
 import prefuse.render.AbstractShapeRenderer;

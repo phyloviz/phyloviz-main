@@ -14,29 +14,28 @@ import java.util.HashMap;
 public class JsonSaver{
 
     private final String[] titles;
-    public final IJsonSaverTag njtj;
+    public final IJsonWriter writer;
     /**
      * 
      * @param titles to save has keys
-     * @param saver entry point with values to be saved has values
+     * @param writer entry point with values to be saved has values
      */
-    public JsonSaver(String[] titles, IJsonSaverTag saver) {
+    public JsonSaver(String[] titles, IJsonWriter writer) {
         this.titles = titles;
-        njtj = saver;
+        this.writer = writer;
     }
     /**
      * 
      * @return data to be saved in format JSON
      */
-    public String createFile() {
-        HashMap<String, String> map = njtj.getBuildersMap();
+    public String getJSON() {
+        HashMap<String, String> map = writer.getBuildersMap();
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
         for (int i = 0; i < titles.length; i++) {
             setObjectArray(map, sb, i);
         }
-        String root = "\t\t\"root\":" + njtj.getRoot();
-        sb.append(root);
+        sb.append(writer.getRoot());
         sb.append("}");
         
         return sb.toString();

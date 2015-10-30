@@ -6,20 +6,20 @@
 package net.phyloviz.upgma.json;
 
 import java.util.HashMap;
-import net.phyloviz.upgmanjcore.json.IJsonSaverTag;
+import net.phyloviz.upgmanjcore.json.IJsonWriter;
 
 /**
  *
  * @author Adriano
  */
-public class UPGMAJsonWriter implements IJsonSaverTag{
+public class UPGMAJsonWriter implements IJsonWriter{
     
     private final StringBuilder sbLeafs = new StringBuilder();
     private final StringBuilder sbUnions = new StringBuilder();
     private String root; 
     
     public void putLeaf(int id, String profile){
-        String value = "\t\t{\"uid\": " + id + ", \"profile\": " + profile + "},\n";
+        String value = "\t\t{\"uid\": " + id + ", \"profile\": \"" + profile + "\"},\n";
         sbLeafs.append(value);
     }
     public void putUnion(int id, float distance, int left, int right){
@@ -43,7 +43,7 @@ public class UPGMAJsonWriter implements IJsonSaverTag{
     }
     @Override
     public String getRoot() {
-        return root;
+        return "\t\t\"root\":" + root;
     }
     
 }

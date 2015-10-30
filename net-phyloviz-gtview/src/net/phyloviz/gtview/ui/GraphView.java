@@ -50,7 +50,10 @@ import java.awt.geom.Point2D;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 //import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -72,6 +75,7 @@ import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.gtview.action.*;
 import net.phyloviz.gtview.render.LabeledEdgeRenderer;
+import net.phyloviz.upgmanjcore.visualization.Point;
 import prefuse.Display;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
@@ -112,6 +116,7 @@ import prefuse.util.ui.JSearchPanel;
 import prefuse.util.ui.JValueSlider;
 import prefuse.visual.EdgeItem;
 import prefuse.visual.NodeItem;
+import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 
 public class GraphView extends GView {
@@ -125,7 +130,7 @@ public class GraphView extends GView {
 
     private Table nodeTable;
     private Table edgeTable;
-
+    private VisualGraph vg;
     private TreeMap<Profile, Integer> st2rowid;
     private TreeMap<Edge<GOeBurstNodeExtended>, Integer> edge2rowid;
     Graph graph;
@@ -159,14 +164,16 @@ public class GraphView extends GView {
 
     // Data analysis info...
     private CategoryProvider cp;
+    final Map<String, Point> nodesPositions;
+    private final Box box;
 
-    public GraphView(String name, GOeBurstResult er) {
+    public GraphView(String name, GOeBurstResult er, boolean isLinear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
         this.setOpaque(true);
 
         this.name = name;
-
+        this.nodesPositions = nodesPositions;
         this.er = er;
 
         // Create an empty visualization.
@@ -326,14 +333,6 @@ public class GraphView extends GView {
             }
         }
 
-        // Create the graph.
-        graph = new Graph(nodeTable, edgeTable, false);
-        view.add("graph", graph);
-        view.setVisible("graph", null, false);
-
-        running = true;
-        linear = false;
-
         /* Setup groupPanel. */
         groupList = new JList();
         groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -382,30 +381,6 @@ public class GraphView extends GView {
         infoPanel = new InfoPanel(name + " Info");
         infoPanel.open();
         infoPanel.requestActive();
-
-        // Search stuff.
-        TupleSet search = new PrefixSearchTupleSet();
-        search.addTupleSetListener(new TupleSetListener() {
-            @Override
-            public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
-                view.run("static");
-                searchMatch = true;
-
-                itemFound = -1;
-                if (t.getTupleCount() >= 1) {
-                    String ss = searchPanel.getQuery();
-                    CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
-                    if (tableView.getRowCount() > 0) {
-                        int gid = tableView.getInt(0, "group");
-                        itemFound = gid;
-                    }
-                }
-                groupList.repaint();
-            }
-        });
-        view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
-        searchPanel = new NodeSearchPanel(view);
-        searchPanel.setShowResultCount(true);
 
         // Animation speed control.
         final JValueSlider animCtl = new JValueSlider("animation speed >>", 1, 100, 50);
@@ -467,7 +442,8 @@ public class GraphView extends GView {
         exportButton.addActionListener(new ExportAction(this));
 
         // Bottom box.
-        Box box = new Box(BoxLayout.X_AXIS);
+        
+        box = new Box(BoxLayout.X_AXIS);
         box.add(Box.createHorizontalStrut(3));
         box.add(optionsButton);
         box.add(Box.createHorizontalStrut(5));
@@ -479,14 +455,98 @@ public class GraphView extends GView {
         box.add(Box.createHorizontalStrut(5));
         box.add(animCtl);
         box.add(Box.createHorizontalGlue());
+        
+    }
+
+    public void loadGraph(GOeBurstResult gr, boolean loaded) {
+
+        // Create the graph.
+        graph = new Graph(nodeTable, edgeTable, false);
+        vg = view.addGraph("graph", graph);
+        running = !loaded;
+        view.setVisible("graph", null, false);
+        view.runAfter("draw", "layout");
+        view.run("draw");
+
+        if (nodesPositions != null) {
+
+            Iterator<NodeItem> nodes = vg.nodes();
+            while (nodes.hasNext()) {
+
+                NodeItem n = nodes.next();
+                VisualItem vu = (VisualItem) n;
+                
+                String profile = vu.getSourceTuple().getString("st_id");
+                double x = nodesPositions.get(profile).x;
+                double y = nodesPositions.get(profile).y;
+                vu.setStartX(x);
+                vu.setStartY(y);
+                vu.setX(x);
+                vu.setY(y);
+                vu.setEndX(x);
+                vu.setEndY(y);
+
+            }
+        }
+        
+                // Search stuff.
+        TupleSet search = new PrefixSearchTupleSet();
+        search.addTupleSetListener(new TupleSetListener() {
+            @Override
+            public void tupleSetChanged(TupleSet t, Tuple[] add, Tuple[] rem) {
+                view.run("static");
+                searchMatch = true;
+
+                itemFound = -1;
+                if (t.getTupleCount() >= 1) {
+                    String ss = searchPanel.getQuery();
+                    CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
+                    if (tableView.getRowCount() > 0) {
+                        int gid = tableView.getInt(0, "group");
+                        itemFound = gid;
+                    }
+                }
+                groupList.repaint();
+            }
+        });
+        view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
+        searchPanel = new NodeSearchPanel(view);
+        searchPanel.setShowResultCount(true);
         box.add(searchPanel);
         box.add(Box.createHorizontalStrut(3));
         box.setOpaque(true);
         box.setBackground(Color.WHITE);
         box.updateUI();
         add(box, BorderLayout.SOUTH);
+        
+        groupList.setSelectedIndex(0);
+        groupList.repaint();
+        if(loaded){
+            view.cancel("layout");
+            view.repaint();
+            running = false;
+            updateUI();
+        }
+
     }
 
+    public Map<String, Point> getNodesPositions() {
+        Map<String, Point> positions = new HashMap<String, Point>();
+        Iterator<NodeItem> nodes = vg.nodes();
+        while (nodes.hasNext()) {
+            NodeItem i = nodes.next();
+
+            if (!i.canGetString("st_id")) {
+                continue;
+            }
+
+            String id = i.getString("st_id");
+            Point p = new Point(i.getX(), i.getY());
+            positions.put(id, p);
+        }
+        return positions;
+    }
+    
     public void startAnimation() {
         view.run("draw");
         view.run("layout");

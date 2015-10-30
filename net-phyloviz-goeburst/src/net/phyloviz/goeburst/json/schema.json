@@ -1,0 +1,67 @@
+{
+   "order": ["nodes", "edges", "groups", "edgeTieStats"],
+   "type":"object",
+   "properties":{
+      "nodes":{
+         "type":"array",
+         "items":{
+            "properties":{
+               "id":{"type":"integer"},
+               "profile":{"type":"string"},
+               "graph-lvs":{"type":"array"},
+               "group-lvs":{"type":"array"},
+               "slvs":{"type":"array"},
+               "dlvs":{"type":"array"}
+            },
+            "required":["id", "profile", "graph-lvs", "group-lvs", "slvs", "dlvs"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      },
+      "edges":{
+         "type":"array",
+         "items":{
+            "properties":{
+              "id":{"type": "integer"},
+              "u":{"type":"integer"},
+              "v":{"type":"integer"},
+              "visible":{"type":"boolean"},
+              "maxTie":{"type":"integer"}
+            },
+            "required":["id", "u", "v", "visible", "maxTie"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      },
+      "groups":{
+         "type":"array",
+         "items":{
+            "properties":{
+               "id":{"type":"integer"},
+               "edges":{"type":"array"},
+               "nodes": {"type":"array"},
+               "maxLVs": {"type":"array"},
+               "maxStId": {"type":"integer"}  
+            },
+            "required":["id", "edges", "nodes", "maxLVs", "maxStId"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      },
+      "edgeTieStats":{
+         "type":"array",
+         "items":{
+            "properties":{
+               "group":{"type":"integer"},
+               "ne":{"type":"array"},
+               "fne": {"type":"array"},
+               "xLV": {"type":"array"},
+               "withoutTies": {"type":"integer"}  
+            },
+            "required":["group", "ne", "fne", "xLV", "withoutTies"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      }
+   }
+}

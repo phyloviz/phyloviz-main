@@ -102,13 +102,14 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
 
     @Override
     public String toString() {
-        return "Hierarchical Clustering  - "+cm.toString()+" - (" +ad.toString()+  ")";
+        return "Hierarchical Clustering  - " + cm.toString() + " - (" + ad.toString() + ")";
     }
 
     @Override
     public String getMethodProviderName() {
         return cm.toString().split(" ")[0].toLowerCase();
     }
+
     @Override
     public String getMainName() {
         return "upgma";
@@ -125,6 +126,7 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
     public void addPersistentVisualization(PersistentVisualization cp) {
         this.cp = cp;
     }
+
     @Override
     public PersistentVisualization getPersistentVisualization() {
         return this.cp;
@@ -132,8 +134,12 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
 
     @Override
     public String getDistanceProvider() {
-        return ad.toString().split(" ")[0].toLowerCase();
+        return ad.getClass().getCanonicalName();
     }
 
+    @Override
+    public String getAlgorithmLevel(){
+        return "0";
+    }
 
 }

@@ -27,7 +27,7 @@ public class UPGMARoot implements IEdgeJsonSaver{
     public void saveData(JsonSaver js, NodeType from) {
         n1.saveData(js); //start saving to the left
         n2.saveData(js); //start saving to the right
-        ((UPGMAJsonWriter)js.njtj).putRoot(distance, n1.id, n2.id);
+        ((UPGMAJsonWriter)js.writer).putRoot(distance, n1.id, n2.id);
     }
     
     public NodeType getNodeLeft(){

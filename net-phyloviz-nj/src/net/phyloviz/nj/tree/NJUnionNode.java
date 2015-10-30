@@ -5,7 +5,7 @@
  */
 package net.phyloviz.nj.tree;
 
-import net.phyloviz.nj.json.NeighborJoiningToJson;
+import net.phyloviz.nj.json.NeighborJoiningJsonWriter;
 import net.phyloviz.upgmanjcore.json.JsonSaver;
 import net.phyloviz.upgmanjcore.tree.IndexList.NodeIterator;
 
@@ -61,7 +61,7 @@ public class NJUnionNode extends NodeType{
     public void saveData(JsonSaver js) {
         n1.saveData(js);
         n2.saveData(js);
-        ((NeighborJoiningToJson)js.njtj).putUnion(id, n1.id, distance1, n2.id, distance2);
+        ((NeighborJoiningJsonWriter)js.writer).putUnion(id, n1.id, distance1, n2.id, distance2);
     }
 
 }

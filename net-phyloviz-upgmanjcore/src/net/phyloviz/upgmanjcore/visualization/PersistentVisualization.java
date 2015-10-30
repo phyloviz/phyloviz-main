@@ -22,5 +22,5 @@ public class PersistentVisualization implements Serializable{
     
     public boolean linearSize;
     
-    public Map<Integer, Point> nodesPositions;
+    public Map<String, Point> nodesPositions;
 }

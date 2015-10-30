@@ -114,7 +114,7 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
 
     @Override
     public String getDistanceProvider() {
-        return ad.toString().split(" ")[0].toLowerCase();
+        return ad.getClass().getCanonicalName();
     }
     @Override
     public String toString() {
@@ -123,5 +123,9 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     @Override
     public String getMethodProviderName() {
         return cm.toString().split(" ")[0].toLowerCase();
+    }
+    @Override
+    public String getAlgorithmLevel(){
+        return "0";
     }
 }

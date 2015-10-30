@@ -6,7 +6,6 @@
 package net.phyloviz.project.action;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -17,14 +16,13 @@ import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
+import net.phyloviz.algo.AbstractDistance;
+import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.explorer.DataSetNode;
 import net.phyloviz.core.util.PopulationFactory;
-import net.phyloviz.core.util.TypingFactory;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
 import net.phyloviz.project.ProjectTypingDataFactory;
@@ -121,6 +119,7 @@ public final class SaveAsProjectAction extends NodeAction {
                         StringBuilder algorithmsFactory = new StringBuilder();
                         StringBuilder algorithms = new StringBuilder();
                         StringBuilder algorithmsDistance = new StringBuilder();
+                        StringBuilder algorithmsLevel = new StringBuilder();
                         StringBuilder visualization = new StringBuilder();
                         for (ProjectItem item : c) {
                             for (ProjectItemFactory factory : pif) {
@@ -158,7 +157,18 @@ public final class SaveAsProjectAction extends NodeAction {
                                     }
 
                                     algorithmsFactory.append(itemFactory).append(",");
-                                    algorithmsDistance.append(item.getDistanceProvider()).append(",");
+                                    algorithmsLevel.append(item.getAlgorithmLevel()).append(",");
+                                    
+                                    
+                                    Collection<? extends DistanceProvider> dpLookup = (Lookup.getDefault().lookupAll(DistanceProvider.class));
+                                    for (DistanceProvider dp : dpLookup) {
+                                        AbstractDistance ad = dp.getDistance(td);
+                                        String name = ad.getClass().getCanonicalName();
+                                        if (name.equals(item.getDistanceProvider())) {
+                                            algorithmsDistance.append(dp.getClass().getCanonicalName()).append(",");
+                                        }
+                                    }
+
 
                                     filename = dataSetName + ".output." + item.getMethodProviderName() + algos++ + ".json";
                                     algorithms.append(filename).append(",");
@@ -173,6 +183,7 @@ public final class SaveAsProjectAction extends NodeAction {
                         algorithmsFactory.deleteCharAt(algorithmsFactory.length() - 1);
                         algorithms.deleteCharAt(algorithms.length() - 1);
                         algorithmsDistance.deleteCharAt(algorithmsDistance.length() - 1);
+                        algorithmsLevel.deleteCharAt(algorithmsLevel.length() - 1);
 
                         if (visualization.length() > 0) {
                             visualization.deleteCharAt(visualization.length() - 1);
@@ -182,6 +193,7 @@ public final class SaveAsProjectAction extends NodeAction {
                         props.put("algorithm-output", algorithms.toString());
                         props.put("algorithm-output-factory", algorithmsFactory.toString());
                         props.put("algorithm-output-distance", algorithmsDistance.toString());
+                        props.put("algorithm-output-level", algorithmsLevel.toString());
                     }
 
                     saveConfigFile(directory, props);

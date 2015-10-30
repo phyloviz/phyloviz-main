@@ -7,7 +7,7 @@
          "items":{
             "properties":{
                "uid":{"type":"integer"},
-               "profile":{"type":"integer"}
+               "profile":{"type":"string"}
             },
             "required":["uid","profile"]
          }

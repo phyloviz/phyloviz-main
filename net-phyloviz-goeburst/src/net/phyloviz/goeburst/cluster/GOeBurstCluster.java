@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.goeburst.cluster;
 
 import java.util.Collections;
@@ -42,63 +41,73 @@ import net.phyloviz.algo.util.DisjointSet;
 
 public class GOeBurstCluster extends Cluster<GOeBurstNodeExtended> {
 
-	public static int MAXLV = 3;
-	protected int maxStId;
-	protected AbstractDistance<GOeBurstNodeExtended> ad;
+    public static int MAXLV = 3;
+    protected int maxStId;
+    protected AbstractDistance<GOeBurstNodeExtended> ad;
 
-	public GOeBurstCluster(AbstractDistance<GOeBurstNodeExtended> ad) {
-		super();
-		this.ad = ad;
-	}
+    public GOeBurstCluster(AbstractDistance<GOeBurstNodeExtended> ad) {
+        super();
+        this.ad = ad;
+    }
 
-	@Override
-	public boolean add(GOeBurstNodeExtended st) {
-		if (!super.add(st)) {
-			return false;
-		}
+    public boolean addNode(GOeBurstNodeExtended st) {
+        return super.add(st);
+    }
+    public int getMaxStId(){
+        return maxStId;
+    }
+    public void setMaxStId(int stId){
+        maxStId = stId;
+    }
+    @Override
+    public boolean add(GOeBurstNodeExtended st) {
+        if (!super.add(st)) {
+            return false;
+        }
 
-		maxStId = Math.max(maxStId, st.getUID());
-		st.updateLVsExtended(this.getSTs(), ad, MAXLV);
+        maxStId = Math.max(maxStId, st.getUID());
+        st.updateLVsExtended(this.getSTs(), ad, MAXLV);
 
-		return true;
-	}
+        return true;
+    }
 
-	@Override
-	public String toString() {
-		return " " + Integer.toString(id) + " ";
-	}
+    @Override
+    public String toString() {
+        return " " + Integer.toString(id) + " ";
+    }
 
-	public void updateVisibleEdges() {
+    public void updateVisibleEdges() {
 
-		// Kruskal's algorithm.
-		Collections.sort(getEdges(), ad.getEdgeComparator());
-		DisjointSet s = new DisjointSet(maxStId);
-		Iterator<Edge<GOeBurstNodeExtended>> iter = getEdges().iterator();
-		visibleEdges = 0;
+        // Kruskal's algorithm.
+        Collections.sort(getEdges(), ad.getEdgeComparator());
+        DisjointSet s = new DisjointSet(maxStId);
+        Iterator<Edge<GOeBurstNodeExtended>> iter = getEdges().iterator();
+        visibleEdges = 0;
 
-		while (iter.hasNext()) {
-			Edge e = iter.next();
-			e.setVisible(false);
+        while (iter.hasNext()) {
+            Edge e = iter.next();
+            e.setVisible(false);
 
-			if (!s.sameSet(e.getU().getUID(), e.getV().getUID())) {
-				s.unionSet(e.getU().getUID(), e.getV().getUID());
-				e.setVisible(true);
-				visibleEdges++;
-			}
-		}
-	}
+            if (!s.sameSet(e.getU().getUID(), e.getV().getUID())) {
+                s.unionSet(e.getU().getUID(), e.getV().getUID());
+                e.setVisible(true);
+                visibleEdges++;
+            }
+        }
+    }
 
-	public void updateVisibleEdges(GOeBurstNodeExtended root) {
-		int[] orig = new int[MAXLV + 1];
+    public void updateVisibleEdges(GOeBurstNodeExtended root) {
+        int[] orig = new int[MAXLV + 1];
 
-		for (int i = 0; i < MAXLV + 1; i++) {
-			orig[i] = root.getLV(i);
-			root.setLV(i, Integer.MAX_VALUE);
-		}
+        for (int i = 0; i < MAXLV + 1; i++) {
+            orig[i] = root.getLV(i);
+            root.setLV(i, Integer.MAX_VALUE);
+        }
 
-		updateVisibleEdges();
+        updateVisibleEdges();
 
-		for (int i = 0; i < MAXLV + 1; i++)
-			root.setLV(i, orig[i]);
-	}
+        for (int i = 0; i < MAXLV + 1; i++) {
+            root.setLV(i, orig[i]);
+        }
+    }
 }

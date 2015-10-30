@@ -47,7 +47,11 @@ import prefuse.Visualization;
  */
 public abstract class GView extends JPanel {
 
-	public abstract JComponent getDisplay();
+        public abstract void setRescaleEdges (boolean status);
+        
+        public abstract boolean getRescaleEdges();
+    
+        public abstract JComponent getDisplay();
         
         public abstract Visualization getVisualization();
         

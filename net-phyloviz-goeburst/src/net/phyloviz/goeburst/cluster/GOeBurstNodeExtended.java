@@ -50,6 +50,8 @@ public class GOeBurstNodeExtended extends GOeBurstNode implements Profile {
 		super(p);
 		slvList = new LinkedList<GOeBurstNodeExtended>();
 		dlvList = new LinkedList<GOeBurstNodeExtended>();
+                
+                lv = new int[GOeBurstClusterWithStats.MAXLV + 1];
 	}
 
 	public void addSLV(GOeBurstNodeExtended p) {
@@ -57,7 +59,7 @@ public class GOeBurstNodeExtended extends GOeBurstNode implements Profile {
 	}
 
 	public void addDLV(GOeBurstNodeExtended p) {
-		slvList.add(p);
+		dlvList.add(p);
 	}
 
 	public Collection<GOeBurstNodeExtended> getSLVs() {

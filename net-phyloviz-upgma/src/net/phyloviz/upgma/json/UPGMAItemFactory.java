@@ -15,7 +15,6 @@ import java.util.Map;
 import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.upgmanjcore.ClusteringMethodProvider;
-import net.phyloviz.algo.DistanceProvider;
 import net.phyloviz.core.data.AbstractProfile;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
@@ -44,7 +43,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class UPGMAItemFactory implements ProjectItemFactory {
 
     @Override
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, String distance) {
+    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
 
         JsonValidator jv = new JsonValidator();
         try {
@@ -76,11 +75,10 @@ public class UPGMAItemFactory implements ProjectItemFactory {
             UPGMARoot root = createRoot(rootObj, leafs, unions);
 
             HierarchicalClusteringMethod cm = getMethodProvider(filename, td);
-            ClusteringDistance ad = getDistanceProvider(distance, td);
             
             OutputPanel op = new OutputPanel(datasetName + ": Hierarchical Clustering - "+cm.toString()+" - (" +ad.toString()+  ")");
             
-            upgma = new UPGMAItem(root, ad, cm, op);
+            upgma = new UPGMAItem(root, (ClusteringDistance)ad, cm, op);
 
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);
@@ -92,15 +90,15 @@ public class UPGMAItemFactory implements ProjectItemFactory {
     private Map<Integer, UPGMALeafNode> createLeafs(TypingData<? extends AbstractProfile> td, JSONArray leafsArr) {
 
         Map<Integer, UPGMALeafNode> leafs = new HashMap(leafsArr.size());
-        Map<Integer, Profile> profiles = new HashMap(td.size());
+        Map<String, Profile> profiles = new HashMap(td.size());
 
         for (Iterator<? extends AbstractProfile> it = td.iterator(); it.hasNext();) {
             Profile p = it.next();
-            profiles.put(Integer.parseInt(p.getID()), p);
+            profiles.put(p.getID(), p);
         }
         for (Iterator<JSONObject> it = leafsArr.iterator(); it.hasNext();) {
             JSONObject l = it.next();
-            Integer p = (int) (long) l.get("profile");
+            String p = (String) l.get("profile");
             Integer uid = (int) (long) l.get("uid");
             leafs.put(uid, new UPGMALeafNode(uid, profiles.get(p), td.size(), uid, null));
         }
@@ -165,23 +163,4 @@ public class UPGMAItemFactory implements ProjectItemFactory {
         }
         throw new Exception(methodName + " Method Provider Not Found!");
     }
-
-    private ClusteringDistance getDistanceProvider(String distance, TypingData<? extends Profile> td) throws Exception {
-        String[] distanceNames = distance.split("\\.");
-        String distanceName = distanceNames[distanceNames.length - 1];
-
-        Collection<? extends DistanceProvider> dp = Lookup.getDefault().lookupAll(DistanceProvider.class);
-        Iterator<? extends DistanceProvider> ir = dp.iterator();
-        while (ir.hasNext()) {
-            AbstractDistance ad = ir.next().getDistance(td);
-            if (ad != null) {
-                String adName = ad.toString().split(" ")[0].toLowerCase();
-                if (ad instanceof ClusteringDistance && distanceName.equals(adName)) {
-                    return (ClusteringDistance) ad;
-                }
-            }
-        }
-        throw new Exception(distanceName + " Distance Provider Not Found!");
-    }
-
 }
