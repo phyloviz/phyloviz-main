@@ -16,6 +16,7 @@ import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.upgmanjcore.ClusteringMethodProvider;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.project.ProjectItem;
@@ -43,7 +44,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class UPGMAItemFactory implements ProjectItemFactory {
 
     @Override
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
+    public ProjectItem loadData(DataSet dataset, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
 
         JsonValidator jv = new JsonValidator();
         try {
@@ -76,7 +77,7 @@ public class UPGMAItemFactory implements ProjectItemFactory {
 
             HierarchicalClusteringMethod cm = getMethodProvider(filename, td);
             
-            OutputPanel op = new OutputPanel(datasetName + ": Hierarchical Clustering - "+cm.toString()+" - (" +ad.toString()+  ")");
+            OutputPanel op = new OutputPanel(dataset.toString() + ": Hierarchical Clustering - "+cm.toString()+" - (" +ad.toString()+  ")");
             
             upgma = new UPGMAItem(root, (ClusteringDistance)ad, cm, op);
 

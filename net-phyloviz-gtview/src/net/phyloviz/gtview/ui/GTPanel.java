@@ -39,7 +39,6 @@ import java.util.Iterator;
 import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
-import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.GOeBurstResult;
@@ -155,7 +154,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         // End of variables declaration//GEN-END:variables
     @Override
     public GView getGView() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return gv; //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

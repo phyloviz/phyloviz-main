@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
-import net.phyloviz.gtview.ui.GView;
+import net.phyloviz.upgmanjcore.visualization.GView;
 
 /**
  *

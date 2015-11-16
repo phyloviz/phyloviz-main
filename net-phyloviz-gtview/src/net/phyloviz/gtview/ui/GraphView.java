@@ -34,6 +34,7 @@
  */
 package net.phyloviz.gtview.ui;
 
+import net.phyloviz.upgmanjcore.visualization.ForcePair;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -53,7 +54,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 //import java.util.Scanner;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -75,7 +75,13 @@ import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.gtview.action.*;
 import net.phyloviz.gtview.render.LabeledEdgeRenderer;
+import net.phyloviz.upgmanjcore.visualization.InfoPanel;
 import net.phyloviz.upgmanjcore.visualization.Point;
+import net.phyloviz.upgmanjcore.visualization.actions.EdgeLevelLabelAction;
+import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
+import net.phyloviz.upgmanjcore.visualization.actions.HighQualityAction;
+import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
+import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 import prefuse.Display;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
@@ -119,7 +125,7 @@ import prefuse.visual.NodeItem;
 import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 
-public class GraphView extends GView {
+public class GraphView extends net.phyloviz.upgmanjcore.visualization.GView {
 
     private static final long serialVersionUID = 1L;
 
@@ -422,7 +428,7 @@ public class GraphView extends GView {
         if (er.getEdgestats().size() != 0) {
             popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
         }
-        popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
+        popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
         //popupMenu.add(new ExportAction(this).getMenuItem());
@@ -442,7 +448,6 @@ public class GraphView extends GView {
         exportButton.addActionListener(new ExportAction(this));
 
         // Bottom box.
-        
         box = new Box(BoxLayout.X_AXIS);
         box.add(Box.createHorizontalStrut(3));
         box.add(optionsButton);
@@ -455,7 +460,7 @@ public class GraphView extends GView {
         box.add(Box.createHorizontalStrut(5));
         box.add(animCtl);
         box.add(Box.createHorizontalGlue());
-        
+
     }
 
     public void loadGraph(GOeBurstResult gr, boolean loaded) {
@@ -463,7 +468,7 @@ public class GraphView extends GView {
         // Create the graph.
         graph = new Graph(nodeTable, edgeTable, false);
         vg = view.addGraph("graph", graph);
-        running = !loaded;
+        running = true;
         view.setVisible("graph", null, false);
         view.runAfter("draw", "layout");
         view.run("draw");
@@ -475,7 +480,7 @@ public class GraphView extends GView {
 
                 NodeItem n = nodes.next();
                 VisualItem vu = (VisualItem) n;
-                
+
                 String profile = vu.getSourceTuple().getString("st_id");
                 double x = nodesPositions.get(profile).x;
                 double y = nodesPositions.get(profile).y;
@@ -488,8 +493,10 @@ public class GraphView extends GView {
 
             }
         }
-        
-                // Search stuff.
+        if (loaded) {
+            stopAnimation();
+        }
+        // Search stuff.
         TupleSet search = new PrefixSearchTupleSet();
         search.addTupleSetListener(new TupleSetListener() {
             @Override
@@ -518,10 +525,10 @@ public class GraphView extends GView {
         box.setBackground(Color.WHITE);
         box.updateUI();
         add(box, BorderLayout.SOUTH);
-        
+
         groupList.setSelectedIndex(0);
         groupList.repaint();
-        if(loaded){
+        if (loaded) {
             view.cancel("layout");
             view.repaint();
             running = false;
@@ -546,7 +553,7 @@ public class GraphView extends GView {
         }
         return positions;
     }
-    
+
     public void startAnimation() {
         view.run("draw");
         view.run("layout");
@@ -798,6 +805,26 @@ public class GraphView extends GView {
             label = status;
             view.run("draw");
         }
+    }
+
+    @Override
+    public void setRescaleEdges(boolean status) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean getRescaleEdges() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public float getDistanceFilterValue() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setDistanceFilterValue(float value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     // Private classes.

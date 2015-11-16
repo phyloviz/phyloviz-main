@@ -50,7 +50,7 @@ import java.util.List;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.Profile;
-import net.phyloviz.gtview.ui.GView;
+import net.phyloviz.upgmanjcore.visualization.GView;
 
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.util.ColorLib;

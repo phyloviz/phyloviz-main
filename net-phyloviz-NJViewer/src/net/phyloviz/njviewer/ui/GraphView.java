@@ -41,11 +41,12 @@ import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.nj.tree.NJRoot.EdgeDistanceWrapper;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
-import net.phyloviz.njviewer.action.HighQualityAction;
+import net.phyloviz.upgmanjcore.visualization.actions.HighQualityAction;
 import net.phyloviz.njviewer.action.RoundDistanceAction;
 import net.phyloviz.njviewer.action.ViewControlAction;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
 import net.phyloviz.njviewer.render.NodeLabelRenderer;
+import net.phyloviz.upgmanjcore.visualization.ForcePair;
 
 import prefuse.Display;
 import prefuse.Visualization;
@@ -95,6 +96,7 @@ import net.phyloviz.upgmanjcore.visualization.actions.EdgeLevelLabelAction;
 import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
 import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
+import net.phyloviz.upgmanjcore.visualization.actions.RescaleEdgesControlAction;
 import prefuse.action.assignment.FontAction;
 
 public class GraphView extends GView {
@@ -129,7 +131,7 @@ public class GraphView extends GView {
     private CategoryProvider cp;
     double maxDistance = 0, minDistance = 0;
     final Map<String, Point> nodesPositions;
-
+    private boolean rescaleDistance = false;
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
@@ -168,7 +170,9 @@ public class GraphView extends GView {
         fdl = new ForceDirectedLayout("graph") {
             @Override
             protected float getSpringLength(EdgeItem e) {
-                return 10 + 300 * e.getFloat("distance");
+                double dist = 10 + 300 * e.getFloat("distance");
+                dist = rescaleDistance ? Math.log(dist) : dist;
+                return (float) dist;
             }
 
             //@Override
@@ -315,12 +319,13 @@ public class GraphView extends GView {
         });
         popupMenu = new JPopupMenu();
         popupMenu.add(new InfoControlAction(this).getMenuItem());
+        popupMenu.add(new RescaleEdgesControlAction(this, rescaleDistance).getMenuItem());
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         popupMenu.add(new RoundDistanceAction(this).getMenuItem());
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
-
+        
         JButton optionsButton = new JButton("Options");
         optionsButton.setMargin(new Insets(1, 1, 1, 1));
         optionsButton.addMouseListener(new MouseAdapter() {
@@ -821,12 +826,15 @@ public class GraphView extends GView {
 
     @Override
     public void setRescaleEdges(boolean status) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        rescaleDistance = status;
+        
+         view.run("draw");
+            updateUI();
     }
 
     @Override
     public boolean getRescaleEdges() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return rescaleDistance;
     }
 
     // Private classes.

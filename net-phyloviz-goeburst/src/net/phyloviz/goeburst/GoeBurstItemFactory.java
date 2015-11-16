@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.goeburst.algorithm.GOeBurstWithStats;
 import net.phyloviz.goeburst.cluster.Edge;
@@ -42,7 +43,7 @@ public class GoeBurstItemFactory implements ProjectItemFactory {
     private GOeBurstWithStats goeburstStats;
 
     @Override
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
+    public ProjectItem loadData(DataSet dataset, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
         GOeBurstSchemaValidator validator = new GOeBurstSchemaValidator();
         try {
             if (!validator.validate(directory, filename)) {
@@ -86,7 +87,7 @@ public class GoeBurstItemFactory implements ProjectItemFactory {
             ArrayList<GOeBurstClusterWithStats> gList = new ArrayList<>(groups.values());
             Collections.sort(gList);
             
-            OutputPanel op = new OutputPanel(datasetName + ": goeBurst");
+            OutputPanel op = new OutputPanel(dataset.toString() + ": goeBurst");
             goeburstItem = new GOeBurstResult(gList, ad, level, op);
 
         } catch (Exception ex) {

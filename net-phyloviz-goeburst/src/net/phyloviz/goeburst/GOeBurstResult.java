@@ -117,12 +117,12 @@ public class GOeBurstResult implements NodeFactory, ProjectItem, Result {
 
     @Override //getLevel
     public String getMethodProviderName() {
-        return getMainName();
+        return "goeburst";
     }
 
     @Override
-    public String getMainName() {
-        return "goeburst";
+    public String getFactoryName() {
+        return "GoeBurstItemFactory";
     }
 
     @Override

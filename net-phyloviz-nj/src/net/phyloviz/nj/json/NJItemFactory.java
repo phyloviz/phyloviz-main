@@ -11,6 +11,7 @@ import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.upgmanjcore.ClusteringMethodProvider;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.AgglomerativeClusteringMethod;
@@ -33,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class NJItemFactory implements ProjectItemFactory {
 
     @Override
-    public ProjectItem loadData(String datasetName, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
+    public ProjectItem loadData(DataSet dataset, TypingData<? extends AbstractProfile> td, String directory, String filename, AbstractDistance ad, int level) {
 
         JsonValidator validator = new JsonValidator();
         try {
@@ -66,7 +67,7 @@ public class NJItemFactory implements ProjectItemFactory {
             
             AgglomerativeClusteringMethod cm = getMethodProvider(filename, td);
 
-            OutputPanel op = new OutputPanel(datasetName + ": Neighbor-Joining");
+            OutputPanel op = new OutputPanel(dataset.toString() + ": Neighbor-Joining");
             njItem = new NeighborJoiningItem(root, ad, cm, op);
         } catch (Exception ex) {
             Exceptions.printStackTrace(ex);

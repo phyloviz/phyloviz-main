@@ -111,8 +111,8 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
     }
 
     @Override
-    public String getMainName() {
-        return "upgma";
+    public String getFactoryName() {
+        return "UPGMAItemFactory";
     }
 
     @Override

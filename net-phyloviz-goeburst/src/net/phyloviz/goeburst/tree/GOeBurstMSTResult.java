@@ -41,16 +41,20 @@ import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.util.NodeFactory;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.goeburst.Result;
+import net.phyloviz.goeburst.json.GOeBurstMSTtoJSON;
 import net.phyloviz.goeburst.ui.GOeBurstMSTNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
+import net.phyloviz.project.ProjectItem;
+import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
 import org.openide.nodes.AbstractNode;
 
-public class GOeBurstMSTResult implements NodeFactory, Result {
+public class GOeBurstMSTResult implements NodeFactory, Result, ProjectItem {
 
 	private DataSet ds;
 	private Collection<Edge<GOeBurstNode>> edges;
 	private AbstractDistance<GOeBurstNode> ad;
 	private OutputPanel op;
+        private PersistentVisualization cp;
 
 	public GOeBurstMSTResult(DataSet ds, Collection<Edge<GOeBurstNode>> edges, AbstractDistance<GOeBurstNode> ad, OutputPanel op) {
 		this.ds = ds;
@@ -85,4 +89,41 @@ public class GOeBurstMSTResult implements NodeFactory, Result {
 	public DataSet getDataSet() {
 		return ds;
 	}
+
+    @Override
+    public void addPersistentVisualization(PersistentVisualization cp) {
+        this.cp = cp;
+    }
+
+    @Override
+    public PersistentVisualization getPersistentVisualization() {
+        return cp;
+    }
+
+    @Override
+    public String getMethodProviderName() {
+        return "goeburstFullMST";
+    }
+
+    @Override
+    public String getFactoryName() {
+        return "GoeBurstMSTItemFactory";
+    }
+
+    @Override
+    public String getOutput() {
+        GOeBurstMSTtoJSON json = new GOeBurstMSTtoJSON(edges, ad.maxLevel());
+        String output = json.saveToJSON();
+        return output;
+    }
+
+    @Override
+    public String getDistanceProvider() {
+        return ad.getClass().getCanonicalName();
+    }
+
+    @Override
+    public String getAlgorithmLevel() {
+        return String.valueOf(ad.maxLevel());
+    }
 }

@@ -1,0 +1,31 @@
+{
+   "order": ["nodes", "edges"],
+   "type":"object",
+   "properties":{
+      "nodes":{
+         "type":"array",
+         "items":{
+            "properties":{
+               "id":{"type":"integer"},
+               "profile":{"type":"string"},
+               "group-lvs":{"type":"array"}
+            },
+            "required":["id", "profile", "group-lvs"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      },
+      "edges":{
+         "type":"array",
+         "items":{
+            "properties":{
+              "u":{"type":"integer"},
+              "v":{"type":"integer"}
+            },
+            "required":["u", "v"],
+            "additionalProperties": false
+         },
+         "uniqueItems": true
+      }
+   }
+}

@@ -161,7 +161,7 @@ public final class LoadDataSetAction extends AbstractAction {
                                 }
                             }
 
-                            ProjectItem pi = pif.loadData(dataSetName, td, projectDir, algoOutput[i], ad, Integer.parseInt(algoOutputLevel[i]));
+                            ProjectItem pi = pif.loadData(ds, td, projectDir, algoOutput[i], ad, Integer.parseInt(algoOutputLevel[i]));
                             if (pi != null) {
                                 if (pv != null) {
                                     pi.addPersistentVisualization(pv);

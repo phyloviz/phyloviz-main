@@ -48,12 +48,14 @@ import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
+import net.phyloviz.project.ProjectTypingDataFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.*;
 import org.openide.util.lookup.ServiceProvider;
 
 @ServiceProvider(service = TypingFactory.class)
-public class MLVATypingFactory implements TypingFactory {
+public class MLVATypingFactory implements TypingFactory, ProjectTypingDataFactory  {
 	
 	private static final String customName = "Multi-Locus Variable Number of Tandem Repeats Analysis (MLVA)";
 
@@ -152,4 +154,22 @@ public class MLVATypingFactory implements TypingFactory {
 	public URL getFormatDescription() {
 		return MLVATypingFactory.class.getResource("FormatDescription.html");
 	}
+
+    @Override
+    public String onSave(TypingData<? extends AbstractProfile> td) {
+
+        String toSave = td.getSaver().toSave();
+
+        return toSave;
+    }
+
+    @Override
+    public TypingData<? extends AbstractProfile> onLoad(Reader r) {
+        try {
+            return loadData(r);
+        } catch (IOException e) {
+            Exceptions.printStackTrace(e);
+        }
+        return null;
+    }
 }

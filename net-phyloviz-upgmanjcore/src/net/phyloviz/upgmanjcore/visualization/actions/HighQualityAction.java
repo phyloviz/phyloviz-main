@@ -1,4 +1,4 @@
-package net.phyloviz.njviewer.action;
+package net.phyloviz.upgmanjcore.visualization.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;

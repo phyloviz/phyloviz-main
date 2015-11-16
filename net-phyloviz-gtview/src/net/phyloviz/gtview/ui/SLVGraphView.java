@@ -34,6 +34,7 @@
  */
 package net.phyloviz.gtview.ui;
 
+import net.phyloviz.upgmanjcore.visualization.ForcePair;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -71,6 +72,12 @@ import net.phyloviz.goeburst.cluster.GOeBurstCluster;
 import net.phyloviz.goeburst.cluster.GOeBurstNodeExtended;
 import net.phyloviz.gtview.action.*;
 import net.phyloviz.gtview.render.LabeledEdgeRenderer;
+import net.phyloviz.upgmanjcore.visualization.InfoPanel;
+import net.phyloviz.upgmanjcore.visualization.actions.EdgeLevelLabelAction;
+import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
+import net.phyloviz.upgmanjcore.visualization.actions.HighQualityAction;
+import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
+import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 import prefuse.Display;
 import prefuse.Visualization;
 import prefuse.action.ActionList;
@@ -113,7 +120,7 @@ import prefuse.visual.EdgeItem;
 import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
 
-public class SLVGraphView extends GView {
+public class SLVGraphView extends net.phyloviz.upgmanjcore.visualization.GView {
 
     private static final long serialVersionUID = 1L;
     private static final String SRC = Graph.DEFAULT_SOURCE_KEY;
@@ -437,7 +444,7 @@ public class SLVGraphView extends GView {
         popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         //popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
-        popupMenu.add(new LinearSizeControlAction(this).getMenuItem());
+        popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
         //popupMenu.add(new ExportAction(this).getMenuItem());
@@ -729,6 +736,26 @@ public class SLVGraphView extends GView {
             label = status;
             view.run("draw");
         }
+    }
+
+    @Override
+    public void setRescaleEdges(boolean status) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean getRescaleEdges() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public float getDistanceFilterValue() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setDistanceFilterValue(float value) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     // Private classes.

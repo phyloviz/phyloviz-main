@@ -17,6 +17,7 @@ import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.swing.BorderFactory;
@@ -48,6 +49,7 @@ import net.phyloviz.upgma.tree.NodeType;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
 import net.phyloviz.upgma.tree.UPGMARoot;
 import net.phyloviz.upgma.tree.UPGMAUnionNode;
+import net.phyloviz.upgmanjcore.visualization.ForcePair;
 import net.phyloviz.upgmanjcore.visualization.actions.EdgeLevelLabelAction;
 import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
 import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
@@ -65,7 +67,9 @@ import prefuse.visual.VisualItem;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import net.phyloviz.upgmanjcore.visualization.actions.RescaleEdgesControlAction;
 import prefuse.Visualization;
+import prefuse.action.layout.graph.ForceDirectedLayout;
 import prefuse.render.Renderer;
+import prefuse.util.ui.JForcePanel;
 
 /**
  *
@@ -178,9 +182,6 @@ public final class UPGMAViewer extends GView {
 
                         Double d = max_x - min_x;
                         d = d / horizontalSlider.getValue();
-                        
-                        if(rescaleDistance)
-                            d = Math.pow(Math.E, d)-1;
                         
                         appendLineToInfoPanel(d + "");
                     }
@@ -606,5 +607,25 @@ public final class UPGMAViewer extends GView {
         tv.setForeground(FOREGROUND);
 
         return tv;
+    }
+
+    @Override
+    public void setEdgePercentageLabel(boolean status) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JForcePanel getForcePanel() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ForceDirectedLayout getForceLayout() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ArrayList<ForcePair> getForces() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

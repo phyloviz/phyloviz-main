@@ -92,8 +92,8 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
         ic.remove(o);
     }
     @Override
-    public String getMainName() {
-        return "nj";
+    public String getFactoryName() {
+        return "NJItemFactory";
     }
 
     @Override

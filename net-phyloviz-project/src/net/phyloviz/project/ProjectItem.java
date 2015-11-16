@@ -19,7 +19,7 @@ public interface ProjectItem {
     
     public String getMethodProviderName();
     
-    public String getMainName();
+    public String getFactoryName();
     
     public String getOutput();
     

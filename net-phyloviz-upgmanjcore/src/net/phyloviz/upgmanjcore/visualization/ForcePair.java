@@ -33,65 +33,28 @@
  * to do so, delete this exception statement from your version.
  */
 
-package net.phyloviz.gtview.ui;
+package net.phyloviz.upgmanjcore.visualization;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.io.IOException;
+public class ForcePair {
 
-import org.freehep.graphics2d.PrintColor;
-import org.freehep.graphics2d.VectorGraphics;
+	public float value;
+	public String name;
 
-import org.freehep.graphicsbase.util.export.ExportDialog;
-import org.freehep.graphicsbase.util.export.ExportFileType;
-import prefuse.Display;
-
-public class GTExportDialog extends ExportDialog {
-	private static final long serialVersionUID = 1L;
-
-	private GView gv;
-
-	public GTExportDialog(GView gv) {
-		this.gv = gv;
+	public ForcePair(String name, float i) {
+		value = i;
+		this.name = name;
 	}
 
 	@Override
-	protected boolean writeFile(Component component, ExportFileType t) throws IOException {
-
-		DisplayImage comp = new DisplayImage((Display) component);
-		boolean r = super.writeFile(comp, t);
-		return r;
+	public String toString() {
+		return name + ":" + value;
 	}
 
-	private class DisplayImage extends Component {
-
-		Display d;
-
-		public DisplayImage(Display d) {
-			this.d = d;
-			this.setSize(d.getSize());
-			this.setBackground(Color.WHITE);
-			this.setForeground(Color.BLACK);
-		}
-
-		@Override
-		public void print(Graphics g) {
-
-			VectorGraphics vg = VectorGraphics.create(g);
-			vg.setColorMode(PrintColor.COLOR);
-			vg.setBackground(Color.WHITE);
-
-			// set up the display, render, then revert to normal settings
-			boolean q = d.isHighQuality();
-			d.setHighQuality(false);
-			gv.getVisualization().run("static");
-			d.setHighQuality(true);
-			d.paintDisplay(vg, d.getSize());
-			d.setHighQuality(q);
-
-			//vg.dispose();
-		}
+	public static ForcePair valueOf(String s) {
+		int k = s.indexOf(':');
+		String i = s.substring(0, k);
+		float j = Float.parseFloat(s.substring(k + 1));
+		ForcePair p = new ForcePair(i, j);
+		return p;
 	}
-
 }

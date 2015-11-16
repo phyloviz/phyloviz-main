@@ -37,9 +37,12 @@ package net.phyloviz.upgmanjcore.visualization;
 
 
 
+import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import prefuse.Visualization;
+import prefuse.action.layout.graph.ForceDirectedLayout;
+import prefuse.util.ui.JForcePanel;
 
 /**
  * Class to be extended by all View used by graphs
@@ -47,6 +50,16 @@ import prefuse.Visualization;
  */
 public abstract class GView extends JPanel {
 
+        public abstract void setEdgePercentageLabel(boolean status);
+
+	public abstract JForcePanel getForcePanel();
+
+	public abstract ForceDirectedLayout getForceLayout();
+
+        public abstract ArrayList<ForcePair> getForces();
+
+	public abstract InfoPanel getInfoPanel();
+        
         public abstract void setRescaleEdges (boolean status);
         
         public abstract boolean getRescaleEdges();
