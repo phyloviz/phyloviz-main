@@ -179,9 +179,15 @@ public final class UPGMAViewer extends GView {
 
                         double max_x = item.getBounds().getMaxX();
                         double min_x = item.getBounds().getMinX();
-
-                        Double d = max_x - min_x;
-                        d = d / horizontalSlider.getValue();
+//
+//                        Double d = max_x - min_x;
+//                        d = d / horizontalSlider.getValue();
+                        
+                        double d = item.getDouble("distance");// / horizontalSlider.getValue();
+//                        if(rescaleDistance){
+//                            d = Math.exp(d);
+//                            d = d - 1;
+//                        }
                         
                         appendLineToInfoPanel(d + "");
                     }
@@ -451,6 +457,7 @@ public final class UPGMAViewer extends GView {
         if (rescaleDistance != status) {
             rescaleDistance = status;
             tview.setRescaleEdges(status);
+            tview.changeDistance(horizontalSlider.getValue());
         }
     }
 

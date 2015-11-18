@@ -107,7 +107,7 @@ public class GOeBurstMSTResult implements NodeFactory, Result, ProjectItem {
 
     @Override
     public String getFactoryName() {
-        return "GoeBurstMSTItemFactory";
+        return "GOeBurstMSTItemFactory";
     }
 
     @Override

@@ -68,9 +68,10 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
 
         root = getLayoutRoot();
         maxDepth = root.getDouble("distance");
-        if(tv.getRescaleEdges())
-            maxDepth = Math.log(1 + maxDepth) * SCALE_X;
-        else
+//        if(tv.getRescaleEdges()){
+//            maxDepth = Math.log(1 + maxDepth) * SCALE_X;
+//        }
+//        else
             maxDepth = maxDepth * SCALE_X;
 
         NodeItem n = (NodeItem) root.getFirstChild();

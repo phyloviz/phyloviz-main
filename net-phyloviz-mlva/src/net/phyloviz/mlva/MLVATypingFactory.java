@@ -53,8 +53,11 @@ import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.util.*;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.lookup.ServiceProviders;
 
-@ServiceProvider(service = TypingFactory.class)
+@ServiceProviders(value = {
+    @ServiceProvider(service = TypingFactory.class),
+    @ServiceProvider(service = ProjectTypingDataFactory.class)})
 public class MLVATypingFactory implements TypingFactory, ProjectTypingDataFactory  {
 	
 	private static final String customName = "Multi-Locus Variable Number of Tandem Repeats Analysis (MLVA)";

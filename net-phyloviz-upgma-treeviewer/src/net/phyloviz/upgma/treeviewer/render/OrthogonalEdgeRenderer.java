@@ -23,7 +23,7 @@ import prefuse.visual.VisualItem;
  */
 public class OrthogonalEdgeRenderer extends EdgeRenderer {
 
-    private TreeView tv;
+    protected TreeView tv;
 
     /**
      *
@@ -75,6 +75,7 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                 
                 result.moveTo(sx, ty);
                 result.lineTo(tx, ty);
+                
 
             }
             if (!source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
@@ -89,8 +90,10 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                 result.lineTo(sx, sy);
                 
                 double distance = tx - sx;
-                
-                edge.setDouble("distance", distance);
+                distance = distance / tv.getScaleX();
+                if(!tv.getRescaleEdges()){
+                    edge.setDouble("distance", distance);
+                }
             }
         }
 

@@ -125,7 +125,7 @@ public final class SaveAsProjectAction extends NodeAction {
                             for (ProjectItemFactory factory : pif) {
 
                                 String itemFactory = factory.getClass().getName();
-                                if (itemFactory.contains(item.getFactoryName())) {
+                                 if (itemFactory.contains(item.getFactoryName())) {
 
                                     Class klass = item.getClass();
                                     for (TopComponent tc : TopComponent.getRegistry().getOpened()) {

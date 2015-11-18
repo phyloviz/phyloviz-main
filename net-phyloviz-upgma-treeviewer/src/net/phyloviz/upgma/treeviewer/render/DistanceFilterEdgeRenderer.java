@@ -54,7 +54,8 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
     public DistanceFilterEdgeRenderer(TreeView tv, double distance, int scale, boolean labeled, double maxDistance) {
         super(tv);
         m_key = "viz";
-        m_distance = (maxDistance - distance) * scale;
+        m_distance = tv.getRescaleEdges() ? (maxDistance - Math.log(1 + (distance))) * scale : 
+                (maxDistance - distance) * scale;
         m_scale = scale;
         m_labeled = labeled;
 
@@ -81,38 +82,43 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
         if (shape == null) {
             return;
         }
-        double diMax = item.getBounds().getMaxX();
-        double h = item.getBounds().getCenterY();
-     
-        if(diMax <= m_distance || item.getBounds().contains(m_distance-0.001, h)){
-            item.setStrokeColor(ColorLib.rgb(214, 214, 214));  
-            if(u.canGetString("p_id"))
-                u.setBoolean("hide", true);
-            if(v.canGetString("p_id"))
-                v.setBoolean("hide", true);
-        }
-        
-        else{
-            item.setStrokeColor(ColorLib.rgb(4, 58, 71));
-            
-            if(u.canGetString("p_id"))
-                u.setBoolean("hide", false);
-            if(v.canGetString("p_id"))
-                v.setBoolean("hide", false);
-        }
-        
-        if(m_labeled){
-            double x = (u.getX() + v.getX()) / 2;
-            double y = v.getY() - 2;
+        if (!u.getBoolean("isRuler") || !v.getBoolean("isRuler")) {
+            double diMax = item.getBounds().getMaxX();
+            double h = item.getBounds().getCenterY();
+            boolean hide = m_distance > item.getBounds().getMinX();
+            boolean hide2 =  m_distance < item.getBounds().getMaxX();
+            if(diMax <= m_distance || 
+                    //item.getBounds().contains(m_distance-0.001, h)){
+                    (hide && hide2)){
+                item.setStrokeColor(ColorLib.rgb(214, 214, 214));  
+                if(u.canGetString("p_id"))
+                    u.setBoolean("hide", true);
+                if(v.canGetString("p_id"))
+                    v.setBoolean("hide", true);
+            }
 
-            Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
-            Color dc = g.getColor();
+            else{
+                item.setStrokeColor(ColorLib.rgb(4, 58, 71));
 
-            Font mf = df.deriveFont(Font.BOLD);
+                if(u.canGetString("p_id"))
+                    u.setBoolean("hide", false);
+                if(v.canGetString("p_id"))
+                    v.setBoolean("hide", false);
+            }
 
-            g.setFont(mf);
-            g.setColor(dc);
-            g.drawString(distance + "", (float) (x), (float) y);
+            if(m_labeled){
+                double x = (u.getX() + v.getX()) / 2;
+                double y = v.getY() - 2;
+
+                Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
+                Color dc = g.getColor();
+
+                Font mf = df.deriveFont(Font.BOLD);
+
+                g.setFont(mf);
+                g.setColor(dc);
+                g.drawString(distance + "", (float) (x), (float) y);
+            }
         }
     }
 }
