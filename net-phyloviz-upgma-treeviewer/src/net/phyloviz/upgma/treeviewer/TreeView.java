@@ -312,6 +312,8 @@ public final class TreeView extends Display {
         m_vis.run("treeLayout");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
+        
+        
     }
 
     void changeHigh(int h) {
@@ -379,6 +381,23 @@ public final class TreeView extends Display {
         m_vis.run("draw");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
+        
+        NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
+
+        m_edgeRenderer = new DistanceFilterEdgeRenderer(this, cutDistance, rtl.getScaleX(), labeledRender, maxDistance);
+
+        rf = new DefaultRendererFactory(m_nodeRenderer);
+        rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
+
+        m_vis.setRendererFactory(rf);
+        
+        m_vis.cancel("animatePaint");
+
+        m_vis.run("treeLayout");
+        m_vis.run("draw");
+        m_vis.run("fullPaint");
+        m_vis.run("animatePaint");
+        
     }
     public boolean getLinearSize() {
         return linear;

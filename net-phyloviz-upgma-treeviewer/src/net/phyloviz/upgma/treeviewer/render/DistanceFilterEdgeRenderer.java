@@ -50,12 +50,13 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
     private double m_distance;
     private final int m_scale;
     private final boolean m_labeled;
+    private double distanceai ;
 
     public DistanceFilterEdgeRenderer(TreeView tv, double distance, int scale, boolean labeled, double maxDistance) {
         super(tv);
         m_key = "viz";
-        m_distance = tv.getRescaleEdges() ? (maxDistance - Math.log(1 + (distance))) * scale : 
-                (maxDistance - distance) * scale;
+        m_distance = tv.getRescaleEdges() ? (maxDistance - Math.log(1 + (distance))) * scale
+                : (maxDistance - distance) * scale;
         m_scale = scale;
         m_labeled = labeled;
 
@@ -64,20 +65,22 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
     @Override
     public void render(Graphics2D g, VisualItem item) {
         super.render(g, item);
-        VisualItem u = ((EdgeItem)item).getSourceItem();
-        VisualItem v = ((EdgeItem)item).getTargetItem();
-        
+        VisualItem u = ((EdgeItem) item).getSourceItem();
+        VisualItem v = ((EdgeItem) item).getTargetItem();
+
         String u_id = u.canGetString("p_id") ? u.getString("p_id") : null;
         String v_id = v.canGetString("p_id") ? v.getString("p_id") : null;
-        
+
         double d = -1;
-        if(u_id == null && v_id != null)
+        if (u_id == null && v_id != null) {
             d = u.getDouble("distance");
-        if(v_id == null && u_id != null)
+        }
+        if (v_id == null && u_id != null) {
             d = v.getDouble("distance");
-        
+        }
+
         String distance = d == -1 ? "" : String.valueOf(d);
-        
+
         Shape shape = getShape(item);
         if (shape == null) {
             return;
@@ -86,27 +89,29 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
             double diMax = item.getBounds().getMaxX();
             double h = item.getBounds().getCenterY();
             boolean hide = m_distance > item.getBounds().getMinX();
-            boolean hide2 =  m_distance < item.getBounds().getMaxX();
-            if(diMax <= m_distance || 
-                    //item.getBounds().contains(m_distance-0.001, h)){
-                    (hide && hide2)){
-                item.setStrokeColor(ColorLib.rgb(214, 214, 214));  
-                if(u.canGetString("p_id"))
+            boolean hide2 = m_distance < item.getBounds().getMaxX();
+            if (diMax <= m_distance
+                    || //item.getBounds().contains(m_distance-0.001, h)){
+                    (hide && hide2)) {
+                item.setStrokeColor(ColorLib.rgb(214, 214, 214));
+                if (u.canGetString("p_id")) {
                     u.setBoolean("hide", true);
-                if(v.canGetString("p_id"))
+                }
+                if (v.canGetString("p_id")) {
                     v.setBoolean("hide", true);
-            }
-
-            else{
+                }
+            } else {
                 item.setStrokeColor(ColorLib.rgb(4, 58, 71));
 
-                if(u.canGetString("p_id"))
+                if (u.canGetString("p_id")) {
                     u.setBoolean("hide", false);
-                if(v.canGetString("p_id"))
+                }
+                if (v.canGetString("p_id")) {
                     v.setBoolean("hide", false);
+                }
             }
 
-            if(m_labeled){
+            if (m_labeled) {
                 double x = (u.getX() + v.getX()) / 2;
                 double y = v.getY() - 2;
 

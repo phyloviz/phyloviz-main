@@ -58,9 +58,8 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
      */
     @Override
     protected Shape getRawShape(VisualItem vi) {
-        
+
         Path2D.Double result = new Path2D.Double();
-        
         if (vi instanceof EdgeItem) {
             EdgeItem edge = (EdgeItem) vi;
             VisualItem source = edge.getSourceItem();
@@ -72,26 +71,41 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
             double ty = target.getBounds().getCenterY();
 
             if (source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
-                
+
                 result.moveTo(sx, ty);
                 result.lineTo(tx, ty);
-                
+
+                double x = sx;
+
+                int tickSpace = 4;
+                double oneTick = (tx - sx) / ((double) tickSpace);
+                for (int i = 0; i <= tickSpace; i++) {
+                    
+                    result.moveTo(x, sy);
+                    result.lineTo(x, sy + 10);
+                    result.lineTo(x, sy - 10);
+                    
+
+                    x += oneTick;
+
+                }
+
 
             }
             if (!source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
                 return result;
 
             } else {
-                
+
                 result.moveTo(sx, sy);
                 result.lineTo(sx, ty);
                 result.lineTo(tx, ty);
                 result.lineTo(sx, ty);
                 result.lineTo(sx, sy);
-                
+
                 double distance = tx - sx;
                 distance = distance / tv.getScaleX();
-                if(!tv.getRescaleEdges()){
+                if (!tv.getRescaleEdges()) {
                     edge.setDouble("distance", distance);
                 }
             }
@@ -115,38 +129,38 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
 
             if (source.getBoolean("isRuler") && target.getBoolean("isRuler")) {
 
+                
+                
                 double scaleX = tv.getScaleX();
                 double x = sx;
                 double y = ty + 20;
                 double distanceX = tx;
-                String distance = String.format("%.2f", distanceX / scaleX);
+                double realDistance = distanceX / scaleX;
+                String distance = String.format("%.2f", realDistance);
 
                 Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
                 Color dc = g.getColor();
                 Font mf = df.deriveFont(Font.BOLD);
                 g.setFont(mf);
                 g.setColor(dc);
-
+                
                 int tickSpace = 4;
                 double oneTick = (tx - sx) / ((double) tickSpace);
+                double oneTickDistance = realDistance / ((double) tickSpace);
                 for (int i = 0; i <= tickSpace; i++) {
-                    Path2D.Double result = new Path2D.Double();
-                    result.moveTo(x, sy);
-                    result.lineTo(x, sy + 10);
-                    result.lineTo(x, sy - 10);
-                    g.draw(result);
-
+                    
                     g.drawString(distance, (float) (x), (float) y);
                     x += oneTick;
-                    distanceX -= oneTick;
-                    distance = String.format("%.2f", distanceX / scaleX);
+                    realDistance -= oneTickDistance;
+                    distance = String.format("%.2f", realDistance);
 
                 }
                 String distanceProvider = tv.getDistanceProvider();
                 x = sx + (oneTick * (tickSpace / 2)) - (distanceProvider.length() * 2);
-                y += 40; 
-                
+                y += 40;
+
                 g.drawString(distanceProvider, (float) (x), (float) y);
+                
             }
         }
     }

@@ -457,7 +457,6 @@ public final class UPGMAViewer extends GView {
         if (rescaleDistance != status) {
             rescaleDistance = status;
             tview.setRescaleEdges(status);
-            tview.changeDistance(horizontalSlider.getValue());
         }
     }
 

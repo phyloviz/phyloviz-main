@@ -527,7 +527,7 @@ public class GraphView extends GView {
                             vv.setVisible(true);
                             ((VisualItem) ve).setVisible(true);
 
-                            view.wait(20);
+                            //view.wait(20);
                         }
                         ec++;
                         int perc = ec * 100 / nedges;

@@ -790,7 +790,7 @@ public class GraphView2 extends net.phyloviz.upgmanjcore.visualization.GView {
                             vv.setVisible(true);
                             ((VisualItem) ve).setVisible(true);
 
-                            view.wait(20);
+                            //view.wait(20);
                         }
 
                         //Thread.sleep(5);
@@ -799,10 +799,7 @@ public class GraphView2 extends net.phyloviz.upgmanjcore.visualization.GView {
                         setProgress(perc);
                     }
 
-                    vu.setFixed(false);
-                    if (loaded) {
-                        stopAnimation();
-                    }
+                    //vu.setFixed(false);
                 }
                 level = maxlv;
 
@@ -871,8 +868,9 @@ public class GraphView2 extends net.phyloviz.upgmanjcore.visualization.GView {
                 if (pce.getPropertyName().equals("progress")) {
                     int progress = (Integer) pce.getNewValue();
                     pbar.setValue(progress);
-                    
-                    if(progress == 100 && loaded){
+
+                    if (progress == 100 && loaded) {
+                        updateNodes();
                         stopAnimation();
                     }
                 }
@@ -880,6 +878,19 @@ public class GraphView2 extends net.phyloviz.upgmanjcore.visualization.GView {
         });
 
         job.execute();
+    }
+
+    public void updateNodes() {
+        Iterator<NodeItem> nodes = vg.nodes();
+        while (nodes.hasNext()) {
+            NodeItem i = nodes.next();
+
+            if (!i.canGetString("st_id")) {
+                continue;
+            }
+
+            i.setFixed(false);
+        }
     }
 
     public Map<String, Point> getNodesPositions() {
