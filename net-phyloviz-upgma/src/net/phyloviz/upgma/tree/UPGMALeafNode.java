@@ -17,6 +17,10 @@ public class UPGMALeafNode extends NodeType implements Profile, Comparable<UPGMA
         super(id, size, leafIdx, "Leaf", in);
         this.p = profile;
     }
+    public UPGMALeafNode(int id, Profile profile, int size, int leafIdx){
+        super(id, size, leafIdx, "Leaf");
+        this.p = profile;
+    }
 
     @Override
     public int profileLength() {

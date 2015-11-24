@@ -101,7 +101,7 @@ public class UPGMAItemFactory implements ProjectItemFactory {
             JSONObject l = it.next();
             String p = (String) l.get("profile");
             Integer uid = (int) (long) l.get("uid");
-            leafs.put(uid, new UPGMALeafNode(uid, profiles.get(p), td.size(), uid, null));
+            leafs.put(uid, new UPGMALeafNode(uid, profiles.get(p), td.size(), uid));
         }
 
         return leafs;
@@ -120,7 +120,7 @@ public class UPGMAItemFactory implements ProjectItemFactory {
 
             NodeType node1 = n1 >= size ? unions.get(n1) : leafs.get(n1);
             NodeType node2 = n2 >= size ? unions.get(n2) : leafs.get(n2);
-            unions.put(uid, new UPGMAUnionNode(uid, node1, node2, distance, leafs.size(), node1.getNodeIdx() - 1, null));
+            unions.put(uid, new UPGMAUnionNode(uid, node1, node2, distance, leafs.size(), node1.getNodeIdx() - 1));
         }
 
         return unions;

@@ -163,6 +163,8 @@ public final class SaveAsProjectAction extends NodeAction {
                                     Collection<? extends DistanceProvider> dpLookup = (Lookup.getDefault().lookupAll(DistanceProvider.class));
                                     for (DistanceProvider dp : dpLookup) {
                                         AbstractDistance ad = dp.getDistance(td);
+                                        if(ad == null)
+                                            continue;
                                         String name = ad.getClass().getCanonicalName();
                                         if (name.equals(item.getDistanceProvider())) {
                                             algorithmsDistance.append(dp.getClass().getCanonicalName()).append(",");

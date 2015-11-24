@@ -26,6 +26,12 @@ public class UPGMAUnionNode extends NodeType{
         this.n2 = n2;
         this.distance = distance;
     }
+    public UPGMAUnionNode(int id, NodeType n1, NodeType n2, float distance, int size, int nodeIdx){
+        super(id, size, nodeIdx, "Union");
+        this.n1 = n1;
+        this.n2 = n2;
+        this.distance = distance;
+    }
     
     @Override
     public String toString(){

@@ -29,6 +29,13 @@ public abstract class NodeType implements INodeJsonSaver{
         this.nodeIdx = nodeIdx;
         this.in = in;
     }
+       public NodeType(int id, int size, int nodeIdx, String name){
+        this.id = id;
+        this.type = name;
+        this.name = name + " " + id;
+        this.nodeOffset = nodeIdx + 1;                      //+1 becouse theres no A->A, only A->B, A->C...
+        this.nodeIdx = nodeIdx;
+    }
     /**
      * @param idx position in distance matrix
      * @return distance from index idx
