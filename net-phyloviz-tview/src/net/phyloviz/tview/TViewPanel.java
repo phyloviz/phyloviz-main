@@ -67,7 +67,7 @@ import org.openide.windows.TopComponent;
 
 public class TViewPanel extends TopComponent {
 
-	private final DataSet ds;
+	public final DataSet ds;
 	private final CategoryProvider cp;
 	private final ChartLegendPanel clp;
 	private TablePanel table;
@@ -274,6 +274,13 @@ public class TViewPanel extends TopComponent {
 	protected String preferredID() {
 		return "TViewer";
 	}
+        
+        public TreeSet<String>[] getFilter(){
+            if (tableortree) {
+                return table.getFilterSet();
+            } 
+            return tree.getFilterSet();
+        }
 
 	/** This method is called from within the constructor to
 	 * initialize the form.

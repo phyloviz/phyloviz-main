@@ -5,19 +5,25 @@
  */
 package net.phyloviz.project.action;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeSet;
 import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
+import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
@@ -125,27 +131,27 @@ public final class SaveAsProjectAction extends NodeAction {
                             for (ProjectItemFactory factory : pif) {
 
                                 String itemFactory = factory.getClass().getName();
-                                 if (itemFactory.contains(item.getFactoryName())) {
+                                if (itemFactory.contains(item.getFactoryName())) {
 
                                     Class klass = item.getClass();
                                     for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
 
                                         if (tc.getLookup().lookup(klass) == item) {
-                                            PersistentVisualization pv = ((IGTPanel) tc).getPersistentVisualization();
-                                            if (pv == null) {
+                                            Visualization viz = ((IGTPanel) tc).getVisualization();
+                                            if (viz == null) {
                                                 continue;
                                             }
 
-                                            String viz = item.getMethodProviderName() + algos + ".pviz";
+                                            String vizName = item.getMethodProviderName() + algos + ".pviz";
                                             File visualizationFolder = new File(directory, VIZ_FOLDER);
                                             visualizationFolder.mkdir();
                                             try {
-                                                try (FileOutputStream fileOut = new FileOutputStream(new File(visualizationFolder, viz))) {
+                                                try (FileOutputStream fileOut = new FileOutputStream(new File(visualizationFolder, vizName))) {
                                                     try (ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
 
-                                                        out.writeObject(pv);
+                                                        out.writeObject(viz.pv);
                                                         out.close();
-                                                        visualization.append(viz).append(",");
+                                                        visualization.append(vizName).append(",");
 
                                                     }
                                                 }
@@ -153,24 +159,32 @@ public final class SaveAsProjectAction extends NodeAction {
                                                 Exceptions.printStackTrace(i);
                                             }
 
+                                            if (viz.category != null) {
+                                                String output = readPalette(viz.category);
+                                                save(visualizationFolder.getPath(), item.getMethodProviderName() + algos + ".pviz.palette", output);
+                                                if (viz.filter != null) {
+                                                    output = readTreeSet(viz.filter, viz.category.getDataModel());
+                                                    save(visualizationFolder.getPath(), item.getMethodProviderName() + algos + ".pviz.json", output);
+                                                }
+                                            }
+
                                         }
                                     }
 
                                     algorithmsFactory.append(itemFactory).append(",");
                                     algorithmsLevel.append(item.getAlgorithmLevel()).append(",");
-                                    
-                                    
+
                                     Collection<? extends DistanceProvider> dpLookup = (Lookup.getDefault().lookupAll(DistanceProvider.class));
                                     for (DistanceProvider dp : dpLookup) {
                                         AbstractDistance ad = dp.getDistance(td);
-                                        if(ad == null)
+                                        if (ad == null) {
                                             continue;
+                                        }
                                         String name = ad.getClass().getCanonicalName();
                                         if (name.equals(item.getDistanceProvider())) {
                                             algorithmsDistance.append(dp.getClass().getCanonicalName()).append(",");
                                         }
                                     }
-
 
                                     filename = dataSetName + ".output." + item.getMethodProviderName() + algos++ + ".json";
                                     algorithms.append(filename).append(",");
@@ -282,6 +296,38 @@ public final class SaveAsProjectAction extends NodeAction {
         } catch (IOException ie) {
             Exceptions.printStackTrace(ie);
         }
+    }
+
+    private String readTreeSet(TreeSet<String>[] filterSelection, DataModel dm) {
+        String result = "{";
+        String clas = dm.getClass().getCanonicalName();
+        result += "\t\"datamodel\": \""+clas+"\", \n";
+        result += "\t\"bounds\": { \"col-size\": " + filterSelection.length + "}, \n";
+        result += "\t\"filter\": [\n";
+        for (int i = 0; i < filterSelection.length; i++) {
+            for (int j = 0; j < filterSelection[i].size(); j++) {
+                TreeSet<String> t = filterSelection[i];
+                Iterator<String> it = t.iterator();
+                while (it.hasNext()) {
+                    String value = it.next();
+                    String filter = "\t\t{" + "\"row\":" + j + ", \"col\":" + i + ", \"value\":\"" + value + "\"},\n";
+                    result += filter;
+                }
+
+            }
+        }
+
+        return result + "\t],\n}";
+    }
+
+    private String readPalette(CategoryProvider category) {
+        StringBuilder sb = new StringBuilder();
+        Iterator<Map.Entry<String, Integer>> si = category.getCategories().iterator();
+        while (si.hasNext()) {
+            Color color = category.getCategoryColor(si.next().getKey());
+            sb.append(color.getRed()).append(",").append(color.getGreen()).append(",").append(color.getBlue()).append("\n");
+        }
+        return sb.toString();
     }
 
 }

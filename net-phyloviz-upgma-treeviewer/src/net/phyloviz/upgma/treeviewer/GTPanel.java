@@ -38,6 +38,7 @@ package net.phyloviz.upgma.treeviewer;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TreeSet;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
@@ -45,6 +46,7 @@ import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
+import net.phyloviz.tview.TViewPanel;
 import net.phyloviz.upgma.UPGMAItem;
 import net.phyloviz.upgma.treeviewer.render.ChartRenderer;
 import org.openide.util.Lookup.Result;
@@ -52,6 +54,7 @@ import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import net.phyloviz.upgmanjcore.visualization.IGTPanel;
 import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+import net.phyloviz.upgmanjcore.visualization.Visualization;
 import org.openide.nodes.NodeEvent;
 import org.openide.nodes.NodeListener;
 import org.openide.nodes.NodeMemberEvent;
@@ -69,6 +72,7 @@ public final class GTPanel extends TopComponent implements IGTPanel{
         private UPGMAViewer uv;
         private final JComponent tvc;
         private CategoryProvider catProvider;
+        private TypingData<? extends Profile> ds;
 
 	/** Creates new form GTPanel
      * @param name
@@ -79,14 +83,15 @@ public final class GTPanel extends TopComponent implements IGTPanel{
 		initComponents();
 		this.setName(name);
                 
+                this.ds =  ds;
                 String distanceProvider = gr.getDistanceProvider();
                 int split = distanceProvider.lastIndexOf(".") + 1;
                 distanceProvider = distanceProvider.substring(split);
                 uv = new UPGMAViewer(name, gr.getRoot(), distanceProvider);
                 
-                PersistentVisualization pv = gr.getPersistentVisualization();
-                if(pv != null){
-                    loadVisualization(pv);
+                Visualization viz = gr.getVisualization();
+                if(viz != null){
+                    loadVisualization(viz);
                 } 
                 
                 tvc = uv.generateTreeViewComponent();
@@ -172,33 +177,51 @@ public final class GTPanel extends TopComponent implements IGTPanel{
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public PersistentVisualization getPersistentVisualization() {
-        
-        PersistentVisualization pc = new PersistentVisualization();
-        
-        pc.categoryProvider = catProvider;
-        pc.distanceFilterValue = uv.getDistanceFilterValue();
-        pc.linearSize = uv.getLinearSize();
-                
-        return pc;
+    public Visualization getVisualization() {
+
+        Visualization v = new Visualization();
+        PersistentVisualization pv = new PersistentVisualization();
+
+        if (catProvider != null && catProvider.isOn()) {
+
+            for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
+                if (tc instanceof TViewPanel) {
+                    TViewPanel tvp = (TViewPanel) tc;
+                    TypingData td = tvp.ds.getLookup().lookup(TypingData.class);
+                    if (ds == td) {
+                            v.filter = tvp.getFilter();
+                            v.category = catProvider;
+                            break;
+                    }
+                }
+            }
+        }
+        pv.distanceFilterValue = uv.getDistanceFilterValue();
+        pv.linearSize = uv.getLinearSize();
+        v.pv = pv;
+
+        return v;
     }
 
     @Override
-    public void loadVisualization(PersistentVisualization pv) {
-        
-        if(pv.categoryProvider != null){
-            catProvider = pv.categoryProvider;
-            uv.setDefaultRenderer( new ChartRenderer(pv.categoryProvider, uv));
-            uv.setCategoryProvider(pv.categoryProvider);
-        }
-        if(pv.distanceFilterValue != -1)
-            uv.setDistanceFilterValue(pv.distanceFilterValue);
-        if(pv.linearSize){
-            uv.setLinearSize(pv.linearSize);
-        }
-    }
+    public void loadVisualization(Visualization viz) {
 
-   
+       if (viz.category != null) {
+            catProvider = viz.category;
+
+            uv.setDefaultRenderer(new ChartRenderer(catProvider, uv));
+            uv.setCategoryProvider(catProvider);
+        }
+
+        if (viz.pv.distanceFilterValue != -1) {
+            uv.setDistanceFilterValue(viz.pv.distanceFilterValue);
+        }
+        if(viz.pv.linearSize){
+            uv.setLinearSize(viz.pv.linearSize);
+        }
+        uv.repaint();
+
+    }
 }
 
 class LocalNodeListener implements NodeListener {

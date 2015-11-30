@@ -5,7 +5,7 @@
  */
 package net.phyloviz.project;
 
-import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+import net.phyloviz.upgmanjcore.visualization.Visualization;
 
 /**
  *
@@ -13,9 +13,9 @@ import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
  */
 public interface ProjectItem {
        
-    public void addPersistentVisualization(PersistentVisualization cp);
+    public void addVisualization(Visualization cp);
     
-    public PersistentVisualization getPersistentVisualization();
+    public Visualization getVisualization();
     
     public String getMethodProviderName();
     

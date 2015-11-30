@@ -42,6 +42,7 @@ import net.phyloviz.nj.ui.OutputPanel;
 import net.phyloviz.nj.ui.NeighborJoiningNode;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+import net.phyloviz.upgmanjcore.visualization.Visualization;
 import org.openide.nodes.AbstractNode;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
@@ -55,7 +56,7 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     private final InstanceContent ic;
     private final AbstractLookup lookup;
     private final AgglomerativeClusteringMethod cm;
-    private PersistentVisualization cp;
+    private Visualization viz;
 
     public NeighborJoiningItem(NJRoot root, AbstractDistance<NJLeafNode> ad, AgglomerativeClusteringMethod cm, OutputPanel op) {
         this.op = op;
@@ -104,12 +105,12 @@ public class NeighborJoiningItem implements NodeFactory, Lookup.Provider, Projec
     }
 
     @Override
-    public void addPersistentVisualization(PersistentVisualization cp) {
-        this.cp = cp;
+    public void addVisualization(Visualization viz) {
+        this.viz = viz;
     }
     @Override
-    public PersistentVisualization getPersistentVisualization() {
-        return this.cp;
+    public Visualization getVisualization() {
+        return this.viz;
     }
 
     @Override

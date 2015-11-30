@@ -6,22 +6,30 @@
  */
 package net.phyloviz.project.action;
 
+import java.awt.Color;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeSet;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.DistanceProvider;
+import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.core.data.AbstractProfile;
+import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.DataSetTracker;
 import net.phyloviz.core.data.Population;
@@ -32,6 +40,11 @@ import net.phyloviz.project.ProjectItem;
 import net.phyloviz.project.ProjectItemFactory;
 import net.phyloviz.project.ProjectTypingDataFactory;
 import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+import net.phyloviz.upgmanjcore.visualization.Visualization;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.netbeans.api.project.Project;
 import org.openide.awt.StatusDisplayer;
 import org.openide.filesystems.FileObject;
@@ -117,10 +130,11 @@ public final class LoadDataSetAction extends AbstractAction {
                     }
                 }
 
+                Population pop = null;
                 if (populationFile != null && (!populationFile.equals("")) && populationFK != null) {
 
                     StatusDisplayer.getDefault().setStatusText("Loading isolate data...");
-                    Population pop = ((PopulationFactory) Class.forName(populationFactory).newInstance())
+                    pop = ((PopulationFactory) Class.forName(populationFactory).newInstance())
                             .loadPopulation(new FileReader(new File(projectDir, populationFile)));
                     ds.add(pop);
 
@@ -138,9 +152,10 @@ public final class LoadDataSetAction extends AbstractAction {
                         String pifName = pif.getClass().getName();
                         if (pifName.equals(algoOutputFactory[i])) {
 
+                            Visualization v = new Visualization();
                             PersistentVisualization pv = null;
                             if (viz.length > v_i && viz[v_i].split("\\.")[0].equals(algoOutput[i].split("\\.")[2])) {
-                                try (FileInputStream fileIn = new FileInputStream(new File(visualization, viz[v_i++]))) {
+                                try (FileInputStream fileIn = new FileInputStream(new File(visualization, viz[v_i]))) {
 
                                     try (ObjectInputStream in = new ObjectInputStream(fileIn)) {
 
@@ -151,6 +166,12 @@ public final class LoadDataSetAction extends AbstractAction {
                                 } catch (IOException | ClassNotFoundException e) {
                                     Exceptions.printStackTrace(e);
                                 }
+                                v.pv = pv;
+                                
+                                TreeFilter treefilter = loadTreeFilter(visualization, viz[v_i]);
+                                v.filter = treefilter.filter;
+                                DataModel dm = treefilter.datamodel.equals(TypingData.class.getCanonicalName()) ? td : pop;
+                                v.category = loadCategoryPalette(visualization, viz[v_i++],dm, v.filter); //
                             }
                             StatusDisplayer.getDefault().setStatusText("Loading algorithms...");
                             AbstractDistance ad = null;
@@ -163,9 +184,7 @@ public final class LoadDataSetAction extends AbstractAction {
 
                             ProjectItem pi = pif.loadData(ds, td, projectDir, algoOutput[i], ad, Integer.parseInt(algoOutputLevel[i]));
                             if (pi != null) {
-                                if (pv != null) {
-                                    pi.addPersistentVisualization(pv);
-                                }
+                                pi.addVisualization(v);
                                 td.add(pi);
                             } else {
                                 return;
@@ -217,4 +236,74 @@ public final class LoadDataSetAction extends AbstractAction {
 
         return false;
     }
+
+    private TreeFilter loadTreeFilter(File dir, String filterFile) {
+        TreeFilter tf = new TreeFilter();
+        TreeSet<String>[] filterSet = null;
+        try (FileReader reader = new FileReader(new File(dir, filterFile + ".json"))) {
+
+            JSONParser parser = new JSONParser();
+            JSONObject json;
+            json = (JSONObject) parser.parse(reader);
+
+            tf.datamodel = (String) json.get("datamodel");
+            JSONObject bounds = (JSONObject) json.get("bounds");
+            JSONArray filter = (JSONArray) json.get("filter");
+            int colSize = (int) (long) bounds.get("col-size");
+            filterSet = new TreeSet[colSize];
+            for (int i = 0; i < filterSet.length; i++) {
+                filterSet[i] = new TreeSet<String>();
+            }
+            for (Iterator<JSONObject> it = filter.iterator(); it.hasNext();) {
+                JSONObject obj = it.next();
+                int c = (int) (long) obj.get("col");
+                String value = (String) obj.get("value");
+                filterSet[c].add(value);
+            }
+        } catch (IOException | ParseException ex) {
+            Exceptions.printStackTrace(ex);
+        }
+        tf.filter = filterSet;
+        return tf;
+    }
+
+    private CategoryProvider loadCategoryPalette(File visualization, String viz, DataModel dm, TreeSet<String>[] filter) {
+
+        CategoryProvider catProvider = new CategoryProvider(dm);
+        catProvider.setSelection(filter);
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader(new File(visualization, viz+".palette")));
+            String line;
+            int i = 0;
+            Iterator<Map.Entry<String, Integer>> si = catProvider.getCategories().iterator();
+            while ((line = br.readLine()) != null && i < catProvider.getCategories().size()) {
+                String[] newColors = line.split(",");
+                if (newColors.length == 3) {
+                    Color c = new Color(Integer.parseInt(newColors[0]), Integer.parseInt(newColors[1]), Integer.parseInt(newColors[2]));
+                    catProvider.putCategoryColor(si.next().getKey(), c);
+                    i++;
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            Exceptions.printStackTrace(ex);
+        } catch (IOException ex) {
+            Exceptions.printStackTrace(ex);
+        } finally {
+            try {
+                if(br != null)
+                    br.close();
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }
+        return catProvider;
+        
+    }
+
 }
+class TreeFilter{
+    TreeSet<String>[] filter;
+    String datamodel;
+}
+

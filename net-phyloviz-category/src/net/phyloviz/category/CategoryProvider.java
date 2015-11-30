@@ -35,7 +35,9 @@ public class CategoryProvider implements Serializable{
 		fullCats = new TreeMap<String, Integer>();
 		colorMap = new TreeMap<String, Color>();
 	}
-
+        public DataModel getDataModel(){
+            return dm;
+        }
 	public boolean isOn() {
 		return on;
 	}

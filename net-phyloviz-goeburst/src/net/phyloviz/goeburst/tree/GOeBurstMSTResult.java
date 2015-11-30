@@ -46,6 +46,7 @@ import net.phyloviz.goeburst.ui.GOeBurstMSTNode;
 import net.phyloviz.goeburst.ui.OutputPanel;
 import net.phyloviz.project.ProjectItem;
 import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+import net.phyloviz.upgmanjcore.visualization.Visualization;
 import org.openide.nodes.AbstractNode;
 
 public class GOeBurstMSTResult implements NodeFactory, Result, ProjectItem {
@@ -54,7 +55,7 @@ public class GOeBurstMSTResult implements NodeFactory, Result, ProjectItem {
 	private Collection<Edge<GOeBurstNode>> edges;
 	private AbstractDistance<GOeBurstNode> ad;
 	private OutputPanel op;
-        private PersistentVisualization cp;
+        private Visualization cp;
 
 	public GOeBurstMSTResult(DataSet ds, Collection<Edge<GOeBurstNode>> edges, AbstractDistance<GOeBurstNode> ad, OutputPanel op) {
 		this.ds = ds;
@@ -91,13 +92,13 @@ public class GOeBurstMSTResult implements NodeFactory, Result, ProjectItem {
 	}
 
     @Override
-    public void addPersistentVisualization(PersistentVisualization cp) {
+    public void addVisualization(Visualization cp) {
         this.cp = cp;
     }
 
     @Override
-    public PersistentVisualization getPersistentVisualization() {
-        return cp;
+    public Visualization getVisualization() {
+        return this.cp;
     }
 
     @Override

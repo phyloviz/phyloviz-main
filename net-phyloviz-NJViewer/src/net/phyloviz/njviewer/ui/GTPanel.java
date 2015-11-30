@@ -1,19 +1,20 @@
 package net.phyloviz.njviewer.ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.njviewer.render.ChartRenderer;
+import net.phyloviz.tview.TViewPanel;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import net.phyloviz.upgmanjcore.visualization.IGTPanel;
 import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+import net.phyloviz.upgmanjcore.visualization.Visualization;
 import org.openide.util.Lookup.Result;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
@@ -27,6 +28,8 @@ public final class GTPanel extends TopComponent implements IGTPanel {
     private final Result<CategoryProvider> r;
     private CategoryChangeListener gvCatListen;
     private CategoryProvider catProvider;
+    private TypingData ds;
+    private NeighborJoiningItem njr;
 
     /**
      * Creates new form GTPanel
@@ -35,12 +38,14 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         super(Lookups.singleton(njr));
         initComponents();
         this.setName(name);
+        this.ds = ds;
+        this.njr = njr;
         float distanceFilter = -1;
-        PersistentVisualization pv = njr.getPersistentVisualization();
-        if (pv != null) {
-            distanceFilter = pv.distanceFilterValue;
-            gv = new GraphView(name, njr, pv.linearSize, pv.nodesPositions);
-            loadVisualization(pv);
+        Visualization viz = njr.getVisualization();
+        if (viz != null && viz.pv != null) {
+            distanceFilter = viz.pv.distanceFilterValue;
+            gv = new GraphView(name, njr, viz.pv.linearSize, viz.pv.nodesPositions);
+            loadVisualization(viz);
         } else {
             gv = new GraphView(name, njr, false, null);
         }
@@ -84,7 +89,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
                 }
             }
         });
-        gv.loadGraph(njr.getRoot(), njr.getDistance(), distanceFilter, pv != null);
+        gv.loadGraph(njr.getRoot(), njr.getDistance(), distanceFilter, viz != null && viz.pv != null);
 
     }
 
@@ -126,30 +131,51 @@ public final class GTPanel extends TopComponent implements IGTPanel {
     }
 
     @Override
-    public PersistentVisualization getPersistentVisualization() {
+    public Visualization getVisualization() {
 
-        PersistentVisualization pc = new PersistentVisualization();
+        Visualization v = new Visualization();
+        PersistentVisualization pv = new PersistentVisualization();
 
-        pc.categoryProvider = catProvider;
-        pc.distanceFilterValue = gv.getDistanceFilterValue();
-        pc.linearSize = gv.getLinearSize();
-        pc.nodesPositions = ((GraphView)gv).getNodesPositions();
-        
-        return pc;
+        if (catProvider != null && catProvider.isOn()) {
+
+            for (TopComponent tc : TopComponent.getRegistry().getOpened()) {
+                if (tc instanceof TViewPanel) {
+                    TViewPanel tvp = (TViewPanel) tc;
+                    TypingData td = tvp.ds.getLookup().lookup(TypingData.class);
+                    if (ds == td) {
+                        v.filter = tvp.getFilter();
+                        v.category = catProvider;
+                        break;
+                    }
+                }
+            }
+        }
+        pv.distanceFilterValue = gv.getDistanceFilterValue();
+        pv.linearSize = gv.getLinearSize();
+        pv.nodesPositions = ((GraphView) gv).getNodesPositions();
+        v.pv = pv;
+
+        return v;
     }
 
     @Override
-    public void loadVisualization(PersistentVisualization pv) {
+    public void loadVisualization(Visualization viz) {
 
-        if (pv.categoryProvider != null) {
-            catProvider = pv.categoryProvider;
-            gv.setDefaultRenderer(new ChartRenderer(pv.categoryProvider, gv));
-            gv.setCategoryProvider(pv.categoryProvider);
+        if (viz.category != null) {
+            catProvider = viz.category;
+
+            gv.setDefaultRenderer(new ChartRenderer(catProvider, gv));
+            gv.setCategoryProvider(catProvider);
         }
 
-        if (pv.distanceFilterValue != -1) {
-            gv.setDistanceFilterValue(pv.distanceFilterValue);
+        if (viz.pv.distanceFilterValue != -1) {
+            gv.setDistanceFilterValue(viz.pv.distanceFilterValue);
         }
+        if (viz.pv.linearSize) {
+            gv.setLinearSize(viz.pv.linearSize);
+        }
+        gv.repaint();
 
     }
+
 }

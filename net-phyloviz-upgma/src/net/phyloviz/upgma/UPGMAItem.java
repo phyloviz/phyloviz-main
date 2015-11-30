@@ -45,6 +45,7 @@ import net.phyloviz.upgma.ui.OutputPanel;
 import net.phyloviz.upgma.ui.UPGMANode;
 import net.phyloviz.upgmanjcore.distance.ClusteringDistance;
 import net.phyloviz.upgmanjcore.visualization.PersistentVisualization;
+import net.phyloviz.upgmanjcore.visualization.Visualization;
 import org.openide.nodes.AbstractNode;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
@@ -58,7 +59,7 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
     private final InstanceContent ic;
     private final AbstractLookup lookup;
     private final AbstractClusteringMethod cm;
-    private PersistentVisualization cp;
+    private Visualization cp;
 
     public UPGMAItem(UPGMARoot root, ClusteringDistance<UPGMALeafNode> ad, AbstractClusteringMethod cm, OutputPanel op) {
         this.op = op;
@@ -123,12 +124,12 @@ public class UPGMAItem implements NodeFactory, Lookup.Provider, ProjectItem {
     }
 
     @Override
-    public void addPersistentVisualization(PersistentVisualization cp) {
+    public void addVisualization(Visualization cp) {
         this.cp = cp;
     }
 
     @Override
-    public PersistentVisualization getPersistentVisualization() {
+    public Visualization getVisualization() {
         return this.cp;
     }
 

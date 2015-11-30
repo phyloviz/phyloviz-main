@@ -7,7 +7,6 @@ package net.phyloviz.upgmanjcore.visualization;
 
 import java.io.Serializable;
 import java.util.Map;
-import net.phyloviz.category.CategoryProvider;
 
 
 /**
@@ -16,11 +15,8 @@ import net.phyloviz.category.CategoryProvider;
  */
 public class PersistentVisualization implements Serializable{
     
-    public CategoryProvider categoryProvider;
-    
     public float distanceFilterValue = -1;
-    
     public boolean linearSize;
-    
     public Map<String, Point> nodesPositions;
+    public String filter;
 }

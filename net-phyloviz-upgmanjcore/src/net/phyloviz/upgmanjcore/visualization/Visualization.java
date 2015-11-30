@@ -5,13 +5,16 @@
  */
 package net.phyloviz.upgmanjcore.visualization;
 
+import java.util.TreeSet;
+import net.phyloviz.category.CategoryProvider;
+
 /**
  *
- * @author Marta Nascimento
+ * @author martanascimento
  */
-public interface IGTPanel {
+public class Visualization {
+    public PersistentVisualization pv;
+    public TreeSet<String>[] filter;
+    public CategoryProvider category;
     
-    public GView getGView();
-    public Visualization getVisualization();
-    public void loadVisualization(Visualization pv);
 }
