@@ -168,6 +168,8 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 	private final Box box;
 	// Data analysis info...
 	private CategoryProvider cp;
+    	private int seeTree = -1;
+
 
 	public NLVGraphGraphView(String name, Result _er) {
 		this.setLayout(new BorderLayout());
@@ -258,6 +260,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 		nodeSchema.addColumn("st_ref", Profile.class);
 		nodeSchema.addColumn("w", int.class);
 		nodeSchema.addColumn("g", int.class);
+		nodeSchema.addColumn("tree", int.class);
 
 		Schema edgeSchema = new Schema();
 		edgeSchema.addColumn(SRC, int.class);
@@ -265,7 +268,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 		edgeSchema.addColumn("edge_ref", Edge.class);
 		edgeSchema.addColumn("w", int.class);
 		edgeSchema.addColumn("g", int.class);
-		edgeSchema.addColumn("tree", boolean.class);
+		edgeSchema.addColumn("tree", int.class);
 
 		// Create tables.
 		nodeSchema.lockSchema();
@@ -289,7 +292,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 				for (int i = 0; i < selectedIndices.length; i++) {
 					Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
 					view.setVisible("graph",
-						(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree)"), true);
+						(Predicate) ExpressionParser.parse("g=" + g.getID() + " and ( w <= " + level + " or tree= " + seeTree + " )"), true);
 
 					gList.add(g);
 				}
@@ -603,6 +606,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 		//popupMenu.add(new EdgeFullViewControlAction(this).getMenuItem());
 		popupMenu.add(new ShowLabelControlAction(this).getMenuItem());
 		popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
+		popupMenu.add(new NLVTreeEdgeViewControlAction(this).getMenuItem());
         //popupMenu.add(new EdgePercentageLabelAction(this).getMenuItem());
 		popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
 		popupMenu.add(new HighQualityAction(this).getMenuItem());
@@ -710,6 +714,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 							nodeTable.set(uRowNb, "st_ref", ust);
 							nodeTable.setInt(uRowNb, "w", 0);
 							nodeTable.setInt(uRowNb, "g", 1);
+							nodeTable.setInt(uRowNb, "tree", 0);
 	
 							VisualItem vu = (VisualItem) vg.getNode(uRowNb);
 							vu.setVisible(true);
@@ -727,6 +732,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 							nodeTable.set(vRowNb, "st_ref", vst);
 							nodeTable.setInt(vRowNb, "w", 0);
 							nodeTable.setInt(vRowNb, "g", 1);
+							nodeTable.setInt(vRowNb, "tree", 0);
 
 							VisualItem vv = (VisualItem) vg.getNode(vRowNb);
 							vv.setVisible(true);
@@ -742,10 +748,10 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 						edgeTable.set(rowNb, "edge_ref", e);
 						edgeTable.set(rowNb, "w", lv);
 						edgeTable.set(rowNb, "g", 1);
-						edgeTable.set(rowNb, "tree", true);
+						edgeTable.set(rowNb, "tree", 1);
 	
 						prefuse.data.Edge ve = vg.getEdge(rowNb);
-						((VisualItem) ve).setVisible(true);
+						((VisualItem) ve).setVisible(seeTree == 1);
 						//view.wait(1);
 					}
 
@@ -779,6 +785,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 							nodeTable.set(uRowNb, "st_ref", ust);
 							nodeTable.setInt(uRowNb, "w", 0);
 							nodeTable.setInt(uRowNb, "g", 1);
+							nodeTable.setInt(uRowNb, "tree", 0);
 	
 							VisualItem vu = (VisualItem) vg.getNode(uRowNb);
 							vu.setVisible(true);
@@ -796,6 +803,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 							nodeTable.set(vRowNb, "st_ref", vst);
 							nodeTable.setInt(vRowNb, "w", 0);
 							nodeTable.setInt(vRowNb, "g", 1);
+							nodeTable.setInt(vRowNb, "tree", 0);
 
 							VisualItem vv = (VisualItem) vg.getNode(vRowNb);
 							vv.setVisible(true);
@@ -811,7 +819,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 						edgeTable.set(rowNb, "edge_ref", e);
 						edgeTable.set(rowNb, "w", lv);
 						edgeTable.set(rowNb, "g", 1);
-						edgeTable.set(rowNb, "tree", false);
+						edgeTable.set(rowNb, "tree", 0);
 	
 						prefuse.data.Edge ve = vg.getEdge(rowNb);
 						((VisualItem) ve).setVisible(true);
@@ -837,7 +845,7 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 						for (int i = 0; i < selectedIndices.length; i++) {
 							Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
 							view.setVisible("graph",
-								(Predicate) ExpressionParser.parse("g=" + g.getID() + "and (w <= " + level + " or tree)"), true);
+								(Predicate) ExpressionParser.parse("g=" + g.getID() + " and (w <= " + level + " or tree= " + seeTree + " )"), true);
 						}
 
 						view.run("draw");
@@ -989,6 +997,17 @@ public class NLVGraphGraphView extends net.phyloviz.upgmanjcore.visualization.GV
 		}
 	}
 
+    public void setTreeEdges(boolean status) {
+        view.setVisible("graph", null, false);
+	seeTree = status ? 1 : -1;
+        int[] selectedIndices = groupList.getSelectedIndices();
+        for (int i = 0; i < selectedIndices.length; i++) {
+            view.setVisible("graph",
+				(Predicate) ExpressionParser.parse("g=" + (selectedIndices[i]+1) + " and ( w <= " + level + " or tree= " + seeTree + " )"), true);
+        }
+        view.run("draw");
+    }
+	
 	@Override
 	public void setLevelLabel(boolean status) {
 		if (status) {
