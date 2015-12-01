@@ -44,6 +44,7 @@ import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.tview.TViewPanel;
@@ -90,7 +91,7 @@ public final class GTPanel extends TopComponent implements IGTPanel{
                 uv = new UPGMAViewer(name, gr.getRoot(), distanceProvider);
                 
                 Visualization viz = gr.getVisualization();
-                if(viz != null){
+                if(viz != null && viz.pv != null){
                     loadVisualization(viz);
                 } 
                 
@@ -189,9 +190,12 @@ public final class GTPanel extends TopComponent implements IGTPanel{
                     TViewPanel tvp = (TViewPanel) tc;
                     TypingData td = tvp.ds.getLookup().lookup(TypingData.class);
                     if (ds == td) {
+                        DataModel dm = catProvider.getDataModel();
+                        if(dm == tvp.cp.getDataModel()){
                             v.filter = tvp.getFilter();
                             v.category = catProvider;
                             break;
+                        }
                     }
                 }
             }

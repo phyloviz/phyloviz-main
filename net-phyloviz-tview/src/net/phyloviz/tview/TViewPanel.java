@@ -68,7 +68,7 @@ import org.openide.windows.TopComponent;
 public class TViewPanel extends TopComponent {
 
 	public final DataSet ds;
-	private final CategoryProvider cp;
+	public final CategoryProvider cp;
 	private final ChartLegendPanel clp;
 	private TablePanel table;
 	private TreePanel tree;

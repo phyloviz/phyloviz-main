@@ -40,6 +40,7 @@ import java.util.TreeSet;
 import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.core.data.DataModel;
 //import net.phyloviz.core.data.DataSet;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
@@ -182,9 +183,12 @@ public class GTPanel2 extends TopComponent implements IGTPanel {
                     TViewPanel tvp = (TViewPanel) tc;
                     TypingData td = tvp.ds.getLookup().lookup(TypingData.class);
                     if (ds == td) {
+                        DataModel dm = catProvider.getDataModel();
+                        if(dm == tvp.cp.getDataModel()){
                             v.filter = tvp.getFilter();
                             v.category = catProvider;
                             break;
+                        }
                     }
                 }
             }

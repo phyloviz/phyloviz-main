@@ -143,9 +143,12 @@ public final class GTPanel extends TopComponent implements IGTPanel {
                     TViewPanel tvp = (TViewPanel) tc;
                     TypingData td = tvp.ds.getLookup().lookup(TypingData.class);
                     if (ds == td) {
-                        v.filter = tvp.getFilter();
-                        v.category = catProvider;
-                        break;
+                        DataModel dm = catProvider.getDataModel();
+                        if(dm == tvp.cp.getDataModel()){
+                            v.filter = tvp.getFilter();
+                            v.category = catProvider;
+                            break;
+                        }
                     }
                 }
             }

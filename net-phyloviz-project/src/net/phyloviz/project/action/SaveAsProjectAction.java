@@ -127,6 +127,7 @@ public final class SaveAsProjectAction extends NodeAction {
                         StringBuilder algorithmsDistance = new StringBuilder();
                         StringBuilder algorithmsLevel = new StringBuilder();
                         StringBuilder visualization = new StringBuilder();
+                        boolean firsttime = true;
                         for (ProjectItem item : c) {
                             for (ProjectItemFactory factory : pif) {
 
@@ -159,12 +160,13 @@ public final class SaveAsProjectAction extends NodeAction {
                                                 Exceptions.printStackTrace(i);
                                             }
 
-                                            if (viz.category != null) {
+                                            if (firsttime && viz.category != null) {
+                                                firsttime = false;
                                                 String output = readPalette(viz.category);
-                                                save(visualizationFolder.getPath(), item.getMethodProviderName() + algos + ".pviz.palette", output);
+                                                save(visualizationFolder.getPath(),  "palette.pviz", output);
                                                 if (viz.filter != null) {
                                                     output = readTreeSet(viz.filter, viz.category.getDataModel());
-                                                    save(visualizationFolder.getPath(), item.getMethodProviderName() + algos + ".pviz.json", output);
+                                                    save(visualizationFolder.getPath(), "filter.pviz.json", output);
                                                 }
                                             }
 

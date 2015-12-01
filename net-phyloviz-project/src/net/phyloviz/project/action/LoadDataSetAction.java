@@ -155,7 +155,7 @@ public final class LoadDataSetAction extends AbstractAction {
                             Visualization v = new Visualization();
                             PersistentVisualization pv = null;
                             if (viz.length > v_i && viz[v_i].split("\\.")[0].equals(algoOutput[i].split("\\.")[2])) {
-                                try (FileInputStream fileIn = new FileInputStream(new File(visualization, viz[v_i]))) {
+                                try (FileInputStream fileIn = new FileInputStream(new File(visualization, viz[v_i++]))) {
 
                                     try (ObjectInputStream in = new ObjectInputStream(fileIn)) {
 
@@ -168,10 +168,10 @@ public final class LoadDataSetAction extends AbstractAction {
                                 }
                                 v.pv = pv;
                                 
-                                TreeFilter treefilter = loadTreeFilter(visualization, viz[v_i]);
+                                TreeFilter treefilter = loadTreeFilter(visualization);
                                 v.filter = treefilter.filter;
                                 DataModel dm = treefilter.datamodel.equals(TypingData.class.getCanonicalName()) ? td : pop;
-                                v.category = loadCategoryPalette(visualization, viz[v_i++],dm, v.filter); //
+                                v.category = loadCategoryPalette(visualization,dm, v.filter); //
                             }
                             StatusDisplayer.getDefault().setStatusText("Loading algorithms...");
                             AbstractDistance ad = null;
@@ -237,10 +237,10 @@ public final class LoadDataSetAction extends AbstractAction {
         return false;
     }
 
-    private TreeFilter loadTreeFilter(File dir, String filterFile) {
+    private TreeFilter loadTreeFilter(File dir) {
         TreeFilter tf = new TreeFilter();
         TreeSet<String>[] filterSet = null;
-        try (FileReader reader = new FileReader(new File(dir, filterFile + ".json"))) {
+        try (FileReader reader = new FileReader(new File(dir, "filter.pviz.json"))) {
 
             JSONParser parser = new JSONParser();
             JSONObject json;
@@ -267,13 +267,13 @@ public final class LoadDataSetAction extends AbstractAction {
         return tf;
     }
 
-    private CategoryProvider loadCategoryPalette(File visualization, String viz, DataModel dm, TreeSet<String>[] filter) {
+    private CategoryProvider loadCategoryPalette(File visualization, DataModel dm, TreeSet<String>[] filter) {
 
         CategoryProvider catProvider = new CategoryProvider(dm);
         catProvider.setSelection(filter);
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(new File(visualization, viz+".palette")));
+            br = new BufferedReader(new FileReader(new File(visualization, "palette.pviz")));
             String line;
             int i = 0;
             Iterator<Map.Entry<String, Integer>> si = catProvider.getCategories().iterator();
