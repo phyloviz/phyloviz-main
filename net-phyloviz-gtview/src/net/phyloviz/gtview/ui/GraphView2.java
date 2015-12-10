@@ -799,7 +799,7 @@ public class GraphView2 extends net.phyloviz.upgmanjcore.visualization.GView {
                         setProgress(perc);
                     }
 
-                    //vu.setFixed(false);
+                    vu.setFixed(false);
                 }
                 level = maxlv;
 
