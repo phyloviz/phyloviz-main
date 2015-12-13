@@ -99,7 +99,7 @@ public class MSTRunner implements Runnable {
 		op.flush();
 
 		Collection<Edge<GOeBurstNode>> tree = null;
-		if (nlst.size() > 2) {
+		if (nlst.size() > 1) {
 			MSTAlgorithm<GOeBurstNode> algorithm = new MSTAlgorithm<GOeBurstNode>(nlst, ad.getEdgeComparator());
 			tree = algorithm.getTree();
 		}

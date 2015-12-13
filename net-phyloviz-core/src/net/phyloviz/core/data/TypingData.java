@@ -58,6 +58,7 @@ import org.openide.util.lookup.InstanceContent;
  * Each typing data has a table view, i.e., in can be displayed as a two
  * dimensional table. 
  *
+ * @param <T>
  * @since   PHILOViZ 1.0
  * @author PHYLOViZ Team &lt;phyloviz@gmail.com&gt;
  *
@@ -105,6 +106,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 	/**
 	 * Constructs an empty typing data model, with <code>nColumns</code> features.
+	 * @param nColumns
 	 */
 	@SuppressWarnings("unchecked")
 	public TypingData(int nColumns) {
@@ -115,13 +117,13 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 		headers = new String[nColumns];
 		domains = new HashSet[nColumns];
 		for (int i = 0; i < nColumns; i++) {
-			domains[i] = new HashSet<String>();
+			domains[i] = new HashSet<>();
 		}
-		h2idx = new HashMap<String, Integer>();
+		h2idx = new HashMap<>();
 
-		collection = new ArrayList<T>();
-		unique = new TreeSet<T>();
-		idset = new HashSet<String>();
+		collection = new ArrayList<>();
+		unique = new TreeSet<>();
+		idset = new HashSet<>();
 
 		weightOk = false;
 	}
@@ -129,6 +131,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	/**
 	 * Constructs an empty typing data model, with  <code>ha.lenght</code>
 	 * features, named by the array <code>ha</code>.
+	 * @param ha
 	 */
 	public TypingData(String[] ha) {
 		this(ha.length);
@@ -150,6 +153,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 * Sets the column <code> idx</code> of  this typing data model with a new name
 	 * <code>header</code>.
 	 *
+	 * @param idx
 	 * @param header the new name of the column <code>idx</code>.
 	 * @thows ArrayIndexOutOfBoundException if the <code>idx</code> does not
 	 * corresponds to an existent column.
@@ -166,6 +170,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 * This names are the headers of the columns in a table view of this
 	 * typing data model.
 	 *
+	 * @return headers
 	 */
 	public Collection<String> getHeaders() {
 		return Arrays.asList(headers);
@@ -369,7 +374,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 */
 	@Override
 	public Collection<? extends DataItem> getItems() {
-		return new ArrayList<T>(collection);
+		return new ArrayList<>(collection);
 	}
 
 	/**
@@ -397,7 +402,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 
 	private class DataIterator implements Iterator<T> {
 
-		private Iterator<T> i;
+		private final Iterator<T> i;
 		private T last;
 		private int idx;
 

@@ -98,6 +98,7 @@ public class WizardPanel1 implements WizardDescriptor.ValidatingPanel {
 	public void storeSettings(Object settings) {
 		((WizardDescriptor) settings).putProperty("distance", ((VisualPanel1) getComponent()).getDistance());
 		((WizardDescriptor) settings).putProperty("maxLevel", ((VisualPanel1) getComponent()).getMaxLevel());
+		((WizardDescriptor) settings).putProperty("inner", ((VisualPanel1) getComponent()).getInner());
 	}
 
 	@Override

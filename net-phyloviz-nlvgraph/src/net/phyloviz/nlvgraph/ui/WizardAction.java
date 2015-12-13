@@ -75,6 +75,7 @@ public final class WizardAction extends NodeAction {
 
 			// do something
 			int maxLevel = (Integer) wizardDescriptor.getProperty("maxLevel");
+			boolean inner = (Boolean) wizardDescriptor.getProperty("inner");
 			AbstractDistance ad = (AbstractDistance) wizardDescriptor.getProperty("distance");
 
 			if (ad.configurable()) {
@@ -82,7 +83,7 @@ public final class WizardAction extends NodeAction {
 			}
 			
 			OutputPanel op = new OutputPanel(nodes[0].getParentNode().getDisplayName() + ": nLV Graph (" + ad.toString() + ") Output");
-			Runnable job = new GraphBuilder(nodes[0], op, ad, 0, maxLevel);
+			Runnable job = new GraphBuilder(nodes[0], op, ad, 0, maxLevel, inner);
 
 			op.open();
 			op.requestActive();
