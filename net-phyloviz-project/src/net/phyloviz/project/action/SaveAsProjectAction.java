@@ -164,9 +164,11 @@ public final class SaveAsProjectAction extends NodeAction {
                                                 firsttime = false;
                                                 String output = readPalette(viz.category);
                                                 save(visualizationFolder.getPath(),  "palette.pviz", output);
+                                                props.put("visualization-palette", "palette.pviz");
                                                 if (viz.filter != null) {
                                                     output = readTreeSet(viz.filter, viz.category.getDataModel());
                                                     save(visualizationFolder.getPath(), "filter.pviz.json", output);
+                                                    props.put("visualization-filter", "filter.pviz.json");
                                                 }
                                             }
 
