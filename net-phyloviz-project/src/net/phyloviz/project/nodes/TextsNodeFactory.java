@@ -45,7 +45,7 @@ public class TextsNodeFactory implements NodeFactory {
         @Override
         public List<Node> keys() {
             FileObject textsFolder = 
-                project.getProjectDirectory().getFileObject("phyloproject");
+                project.getProjectDirectory().getFileObject("config.properties.pviz");
             List<Node> result = new ArrayList<Node>();
             if (textsFolder != null) {
                 for (FileObject textsFolderFile : textsFolder.getChildren()) {

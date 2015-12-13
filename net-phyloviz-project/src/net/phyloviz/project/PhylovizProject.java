@@ -50,7 +50,7 @@ public class PhylovizProject implements Project {
                     public void showCustomizer() {
                         JOptionPane.showMessageDialog(
                                 null,
-                                "bla bla bla something for " + getProjectDirectory().getName());
+                                getProjectDirectory().getName());
                     }
 
                 }

@@ -14,6 +14,7 @@ import javax.swing.Action;
 import static net.phyloviz.project.PhylovizProjectLogicalView.CUSTOMER_ICON;
 import net.phyloviz.project.action.CloseProjectAction;
 import net.phyloviz.project.action.LoadDataSetAction;
+import org.netbeans.spi.project.ui.support.NodeFactorySupport;
 import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.nodes.FilterNode;
 import org.openide.nodes.Node;
@@ -29,8 +30,8 @@ public final class ProjectNode extends FilterNode {
 
     public ProjectNode(Node node, PhylovizProject project) throws DataObjectNotFoundException {
         super(node,
-                //NodeFactorySupport.createCompositeChildren(project, "Projects/PHYLOViZ/Nodes"),
-                new FilterNode.Children(node),
+                NodeFactorySupport.createCompositeChildren(project, "Projects/PHYLOViZ/Nodes"),
+                //new FilterNode.Children(node),
                 new ProxyLookup(new Lookup[]{
                     Lookups.singleton(project),
                     node.getLookup()
