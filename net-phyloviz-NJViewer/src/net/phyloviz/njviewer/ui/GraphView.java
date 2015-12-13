@@ -98,6 +98,7 @@ import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.RescaleEdgesControlAction;
 import prefuse.action.assignment.FontAction;
+import prefuse.activity.ActivityListener;
 
 public class GraphView extends GView {
 
@@ -132,6 +133,7 @@ public class GraphView extends GView {
     double maxDistance = 0, minDistance = 0;
     final Map<String, Point> nodesPositions;
     private boolean rescaleDistance = false;
+
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
@@ -167,7 +169,7 @@ public class GraphView extends GView {
         draw.add(nfont);
         draw.add(edge);
 
-        fdl = new ForceDirectedLayout("graph") {
+        fdl = new ForceDirectedLayout("graph", false, true) {
             @Override
             protected float getSpringLength(EdgeItem e) {
                 double dist = 10 + 300 * e.getFloat("distance");
@@ -181,6 +183,7 @@ public class GraphView extends GView {
             //}
         };
 
+        fdl.setIterations(500);
         ActionList layout = new ActionList(Activity.INFINITY);
         layout.add(fdl);
         layout.add(fill);
@@ -325,7 +328,7 @@ public class GraphView extends GView {
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
-        
+
         JButton optionsButton = new JButton("Options");
         optionsButton.setMargin(new Insets(1, 1, 1, 1));
         optionsButton.addMouseListener(new MouseAdapter() {
@@ -595,9 +598,9 @@ public class GraphView extends GView {
                         sp.setModel(model);
                         sp.setValue(distance);
 
-                        if (loaded) {
+                       // if (loaded) {
                             stopAnimation();
-                        }
+                        //}
                     }
 
                 }
@@ -827,9 +830,9 @@ public class GraphView extends GView {
     @Override
     public void setRescaleEdges(boolean status) {
         rescaleDistance = status;
-        
-         view.run("draw");
-            updateUI();
+
+        view.run("draw");
+        updateUI();
     }
 
     @Override
@@ -879,8 +882,15 @@ public class GraphView extends GView {
 
         @Override
         public int getColor(VisualItem item) {
-            float c = item.getSourceTuple().getFloat("distance");
-            return c >= 0f ? ColorLib.rgb(0, 0, 0) : ColorLib.rgb(255, 0, 0);
+            float distance = item.getSourceTuple().getFloat("distance");
+            if (distance < 0) {
+                return ColorLib.rgb(255, 0, 0);
+            } else {
+                double pDistance = distance / maxDistance; 
+                //double viDistance = item.getBounds().getMaxX() - item.getBounds().getMinX();
+               // System.out.println(pDistance + "--->" + viDistance);
+                return ColorLib.rgb(0, (int)(255*pDistance), (int)(255*(1-pDistance)));
+            }
         }
     }
 
