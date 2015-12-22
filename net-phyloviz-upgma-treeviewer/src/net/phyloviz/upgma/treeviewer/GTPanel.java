@@ -106,7 +106,7 @@ public final class GTPanel extends TopComponent implements IGTPanel{
 
 				if (cp.isOn()) {
                                         catProvider = cp;
-					uv.setDefaultRenderer( new ChartRenderer(cp, uv));
+					uv.setDefaultRenderer(new ChartRenderer(cp, uv));
 					uv.setCategoryProvider(cp);
 				} else {
                                         catProvider = null;

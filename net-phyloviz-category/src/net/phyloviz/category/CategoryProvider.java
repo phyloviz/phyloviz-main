@@ -19,149 +19,154 @@ import net.phyloviz.core.data.DataItem;
 import net.phyloviz.core.data.DataModel;
 
 @SuppressWarnings("unchecked")
-public class CategoryProvider implements Serializable{
+public class CategoryProvider implements Serializable {
 
-	private transient DataModel dm;
-	private TreeMap<String, List<Category>> idMap;
-	private TreeMap<String, Integer> fullCats;
-	private TreeMap<String, Color> colorMap;
-	private Palette pal;
-	private transient List listeners = Collections.synchronizedList(new LinkedList());
-	private boolean on;
+    private transient DataModel dm;
+    private TreeMap<String, List<Category>> idMap;
+    private TreeMap<String, Integer> fullCats;
+    private TreeMap<String, Color> colorMap;
+    private Palette pal;
+    private transient List listeners = Collections.synchronizedList(new LinkedList());
+    private boolean on;
 
-	public CategoryProvider(DataModel dm) {
-		this.dm = dm;
-		this.on = false;
-		fullCats = new TreeMap<String, Integer>();
-		colorMap = new TreeMap<String, Color>();
-	}
-        public DataModel getDataModel(){
-            return dm;
+    public CategoryProvider(DataModel dm) {
+        this.dm = dm;
+        this.on = false;
+        fullCats = new TreeMap<String, Integer>();
+        colorMap = new TreeMap<String, Color>();
+    }
+
+
+
+    public DataModel getDataModel() {
+        return dm;
+    }
+
+    public boolean isOn() {
+        return on;
+    }
+
+    public List<Entry<String, Integer>> getCategories() {
+        List<Entry<String, Integer>> entries = new ArrayList(fullCats.entrySet());
+
+        Collections.sort(entries, new Comparator<Entry<String, Integer>>() {
+
+            @Override
+            public int compare(Entry<String, Integer> c1, Entry<String, Integer> c2) {
+                return c2.getValue() - c1.getValue();
+            }
+        });
+
+        return entries;
+    }
+
+    public List<Category> getCategories(String id) {
+
+        List<Category> lst = idMap.get(id);
+        if (lst != null) {
+            Collections.sort(idMap.get(id), new Comparator<Category>() {
+
+                @Override
+                public int compare(Category c1, Category c2) {
+                    return c2.size() - c1.size();
+                }
+            });
         }
-	public boolean isOn() {
-		return on;
-	}
 
-	public List<Entry<String, Integer>> getCategories() {
-		List<Entry<String, Integer>> entries = new ArrayList(fullCats.entrySet());
+        return lst;
+    }
 
-		Collections.sort(entries, new Comparator<Entry<String, Integer>>() {
+    public Color getCategoryColor(String catName) {
+        return colorMap.get(catName);
+    }
 
-			@Override
-			public int compare(Entry<String, Integer> c1, Entry<String, Integer> c2) {
-				return c2.getValue() - c1.getValue();
-			}
-		});
+    public void putCategoryColor(String catName, Color c) {
+        colorMap.put(catName, c);
+    }
 
-		return entries;
-	}
+    public Palette getPalette() {
+        return pal;
+    }
 
-	public List<Category> getCategories(String id) {
+    public synchronized void setSelection(TreeSet<String>[] selection) {
 
-		List<Category> lst = idMap.get(id);
-		if (lst != null)
-			Collections.sort(idMap.get(id), new Comparator<Category>() {
+        if (selection == null) {
+            on = false;
+            fire();
+            return;
+        }
 
-				@Override
-				public int compare(Category c1, Category c2) {
-					return c2.size() - c1.size();
-				}
-			});
+        Filter f = new CompositeFilter(selection, dm);
+        idMap = new TreeMap<String, List<Category>>();
+        fullCats = new TreeMap<String, Integer>();
+        colorMap = new TreeMap<String, Color>();
 
-		return lst;
-	}
+        // Initialize groups for each id...
+        Iterator<? extends DataItem> di = dm.iterator();
+        while (di.hasNext()) {
+            DataItem d = di.next();
+            String id = d.get(dm.getKey());
 
-	public Color getCategoryColor(String catName) {
-		return colorMap.get(catName);
-	}
+            List<Category> gl = idMap.get(id);
+            if (gl == null) {
+                gl = new LinkedList<Category>();
+                gl.add(new Category(""));
+                idMap.put(id, gl);
+            }
 
-	public void putCategoryColor(String catName, Color c) {
-		colorMap.put(catName, c);
-	}
+            gl.get(0).add(d);
+        }
 
-	public Palette getPalette() {
-		return pal;
-	}
+        // Filtering each ST...
+        Iterator<String> ii = idMap.keySet().iterator();
+        while (ii.hasNext()) {
+            String id = ii.next();
+            List<Category> gl = idMap.get(id);
+            gl = f.filtering(gl);
 
-	public synchronized void setSelection(TreeSet<String>[] selection) {
+            // Update full categories...
+            Iterator<Category> gIter = gl.iterator();
+            while (gIter.hasNext()) {
+                Category grp = gIter.next();
 
-		if (selection == null) {
-			on = false;
-			fire();
-			return;
-		}
+                Integer x = fullCats.get(grp.getName());
+                if (x != null) {
+                    x += grp.weight();
+                } else {
+                    x = grp.weight();
+                }
 
-		Filter f = new CompositeFilter(selection, dm);
-		idMap = new TreeMap<String, List<Category>>();
-		fullCats = new TreeMap<String, Integer>();
-		colorMap = new TreeMap<String, Color>();
+                fullCats.put(grp.getName(), x);
+            }
 
-		// Initialize groups for each id...
-		Iterator<? extends DataItem> di = dm.iterator();
-		while (di.hasNext()) {
-			DataItem d = di.next();
-			String id = d.get(dm.getKey());
+            idMap.put(id, gl);
+        }
 
-			List<Category> gl = idMap.get(id);
-			if (gl == null) {
-				gl = new LinkedList<Category>();
-				gl.add(new Category(""));
-				idMap.put(id, gl);
-			}
+        pal = new Palette(fullCats.size());
 
-			gl.get(0).add(d);
-		}
+        int i = 0;
+        Iterator<String> labels = fullCats.keySet().iterator();
+        while (labels.hasNext()) {
+            String label = labels.next();
+            colorMap.put(label, pal.getColors()[i++]);
+        }
 
-		// Filtering each ST...
-		Iterator<String> ii = idMap.keySet().iterator();
-		while (ii.hasNext()) {
-			String id = ii.next();
-			List<Category> gl = idMap.get(id);
-			gl = f.filtering(gl);
+        on = true;
+        fire();
+    }
 
-			// Update full categories...
-			Iterator<Category> gIter = gl.iterator();
-			while (gIter.hasNext()) {
-				Category grp = gIter.next();
+    public void addCategoryChangeListener(CategoryChangeListener pcl) {
+        listeners.add(pcl);
+    }
 
-				Integer x = fullCats.get(grp.getName());
-				if (x != null) {
-					x += grp.weight();
-				} else {
-					x = grp.weight();
-				}
+    public void removeCategoryChangeListener(CategoryChangeListener pcl) {
+        listeners.remove(pcl);
+    }
 
-				fullCats.put(grp.getName(), x);
-			}
-
-			idMap.put(id, gl);
-		}
-
-		pal = new Palette(fullCats.size());
-
-		int i = 0;
-		Iterator<String> labels = fullCats.keySet().iterator();
-		while (labels.hasNext()) {
-			String label = labels.next();
-			colorMap.put(label, pal.getColors()[i++]);
-		}
-
-		on = true;
-		fire();
-	}
-
-	public void addCategoryChangeListener(CategoryChangeListener pcl) {
-		listeners.add(pcl);
-	}
-
-	public void removeCategoryChangeListener(CategoryChangeListener pcl) {
-		listeners.remove(pcl);
-	}
-
-	private void fire() {
-		CategoryChangeListener[] pcls = (CategoryChangeListener[]) listeners.toArray(new CategoryChangeListener[0]);
-		for (int i = 0; i < pcls.length; i++) {
-			pcls[i].categoryChange(this);
-		}
-	}
+    private void fire() {
+        CategoryChangeListener[] pcls = (CategoryChangeListener[]) listeners.toArray(new CategoryChangeListener[0]);
+        for (int i = 0; i < pcls.length; i++) {
+            pcls[i].categoryChange(this);
+        }
+    }
 }

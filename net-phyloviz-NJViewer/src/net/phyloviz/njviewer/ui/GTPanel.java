@@ -1,13 +1,16 @@
 package net.phyloviz.njviewer.ui;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
+import net.phyloviz.category.ui.ChartLegendPanel;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
+import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.njviewer.render.ChartRenderer;
 import net.phyloviz.tview.TViewPanel;
@@ -91,6 +94,19 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         });
         gv.loadGraph(njr.getRoot(), njr.getDistance(), distanceFilter, viz != null && viz.pv != null);
 
+        double maxDist = Double.MIN_VALUE;
+        double minDist = Double.MAX_VALUE;
+        for(NJRoot.EdgeDistanceWrapper edge : njr.getRoot().getList()){
+            double distance = edge.distance;
+            if(distance > maxDist) maxDist = distance;
+            if(distance < minDist) minDist = distance;
+        }
+        
+//        clp = new ChartLegendPanel(new Dimension(128, 128), new CategoryProvider(minDist, maxDist, 10), 10);
+//        clp.setName(name + " (Selection view)");
+//        clp.open();
+//        clp.requestActive();
+
     }
 
     @Override
@@ -144,7 +160,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
                     TypingData td = tvp.ds.getLookup().lookup(TypingData.class);
                     if (ds == td) {
                         DataModel dm = catProvider.getDataModel();
-                        if(dm == tvp.cp.getDataModel()){
+                        if (dm == tvp.cp.getDataModel()) {
                             v.filter = tvp.getFilter();
                             v.category = catProvider;
                             break;

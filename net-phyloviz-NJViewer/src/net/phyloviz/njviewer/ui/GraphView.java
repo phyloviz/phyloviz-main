@@ -4,6 +4,7 @@ import net.phyloviz.upgmanjcore.visualization.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
@@ -24,6 +25,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -46,6 +48,7 @@ import net.phyloviz.njviewer.action.RoundDistanceAction;
 import net.phyloviz.njviewer.action.ViewControlAction;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
 import net.phyloviz.njviewer.render.NodeLabelRenderer;
+import net.phyloviz.njviewer.ui.color.ChartLegendPanel;
 import net.phyloviz.upgmanjcore.visualization.ForcePair;
 
 import prefuse.Display;
@@ -98,7 +101,6 @@ import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.RescaleEdgesControlAction;
 import prefuse.action.assignment.FontAction;
-import prefuse.activity.ActivityListener;
 
 public class GraphView extends GView {
 
@@ -123,6 +125,7 @@ public class GraphView extends GView {
     private JList groupList;
     private int itemFound = -1;
     private InfoPanel infoPanel;
+    private ChartLegendPanel barchartInfoPanel;
     private JPopupMenu popupMenu;
     private NodeLabelRenderer lr;
     private DefaultRendererFactory rf;
@@ -133,13 +136,15 @@ public class GraphView extends GView {
     double maxDistance = 0, minDistance = 0;
     final Map<String, Point> nodesPositions;
     private boolean rescaleDistance = false;
+    private double minEdgeDiff;
+    private double maxEdgeDiff;
+    EdgeColorAction edge;
 
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
         this.setOpaque(true);
         this.name = name;
-
         this.nodesPositions = nodesPositions;
 //        this.linear = linear;
         // Create an empty visualization.
@@ -153,7 +158,7 @@ public class GraphView extends GView {
         // Setup actions to process the visual data.
         ColorAction fill = new NodeColorAction("graph.nodes");
         ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
-        ColorAction edge = new EdgeColorAction("graph.edges");
+        edge = new EdgeColorAction("graph.edges", Color.BLACK, 5);
         FontAction nfont
                 = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
                     @Override
@@ -598,9 +603,18 @@ public class GraphView extends GView {
                         sp.setModel(model);
                         sp.setValue(distance);
 
-                       // if (loaded) {
-                            stopAnimation();
+                        // if (loaded) {
+                        stopAnimation();
                         //}
+                        edge.changeBaseColor(new Color(0, 50, 0));
+                        view.repaint();
+                        updateUI();
+
+                        barchartInfoPanel = new ChartLegendPanel(new Dimension(128, 128), edge.interval, edge.colors, maxEdgeDiff);
+                        barchartInfoPanel.setName(name + " (Selection view)");
+                        barchartInfoPanel.open();
+                        barchartInfoPanel.requestActive();
+
                     }
 
                 }
@@ -667,6 +681,8 @@ public class GraphView extends GView {
     @Override
     public void closeInfoPanel() {
         infoPanel.close();
+        if(barchartInfoPanel != null) 
+            barchartInfoPanel.close();
     }
 
     @Override
@@ -876,22 +892,87 @@ public class GraphView extends GView {
 
     private class EdgeColorAction extends ColorAction {
 
-        public EdgeColorAction(String group) {
+        private boolean firstime = true;
+        private Color[] colors;
+        private final int interval;
+
+        public EdgeColorAction(String group, Color base, int intervals) {
             super(group, VisualItem.STROKECOLOR);
+            interval = intervals;
+            colors = new Color[intervals];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = base;
+                base = base.darker();
+            }
+
+        }
+
+        public void changeBaseColor(Color newColor) {
+            firstime = true;
+            colors = new Color[interval];
+            for (int i = 0; i < colors.length; i++) {
+                colors[i] = newColor;
+                newColor = newColor.brighter();
+            }
+//            colors[0]=new Color(59, 50, 43);
+//            colors[1]=new Color(70,79,184);
+//            colors[2]=new Color(10,138,18);
+//            colors[3]=new Color(235,107,30);
+//            colors[4]=new Color(236,209,190);
         }
 
         @Override
         public int getColor(VisualItem item) {
+            if (firstime) {
+                Iterator<EdgeItem> nodes = vg.edges();
+                double minD = Double.POSITIVE_INFINITY;
+                double maxD = Double.NEGATIVE_INFINITY;
+                while (nodes.hasNext()) {
+                    EdgeItem i = nodes.next();
+                    double xmin = i.getBounds().getMinX();
+                    double xmax = i.getBounds().getMaxX();
+                    double ymin = i.getBounds().getMinY();
+                    double ymax = i.getBounds().getMaxY();
+                    double dist = Math.sqrt(Math.pow(xmax - xmin, 2) + Math.pow(ymax - ymin, 2));
+                    dist = (dist - 10) / 300;
+                    double diff = Math.abs(dist - i.getDouble("distance"));
+                    if (diff < minD) {
+                        minD = diff;
+                    }
+                    if (diff > maxD) {
+                        maxD = diff;
+                    }
+
+                }
+                GraphView.this.minEdgeDiff = minD;
+                GraphView.this.maxEdgeDiff = maxD;
+                firstime = false;
+
+            }
             float distance = item.getSourceTuple().getFloat("distance");
             if (distance < 0) {
                 return ColorLib.rgb(255, 0, 0);
             } else {
-                double pDistance = distance / maxDistance; 
-                //double viDistance = item.getBounds().getMaxX() - item.getBounds().getMinX();
-               // System.out.println(pDistance + "--->" + viDistance);
-                return ColorLib.rgb(0, (int)(255*pDistance), (int)(255*(1-pDistance)));
+                double viDistance = Math.sqrt(Math.pow(item.getBounds().getMaxX() - item.getBounds().getMinX(), 2) + Math.pow(item.getBounds().getMaxY() - item.getBounds().getMinY(), 2));
+                double dist = (viDistance - 10) / 300;
+                double diff = Math.abs(dist - distance);
+                Color c = getColor(diff);
+                return ColorLib.rgb(c.getRed(), c.getGreen(), c.getBlue());
             }
         }
+
+        private Color getColor(double diff) {
+            double min = maxEdgeDiff / interval;
+            double sum = min;
+            for (int i = 0; i<interval; i++) {
+                if (diff <= sum) {
+                    return colors[i];
+                }
+                sum += min;
+            }
+            return colors[0];
+        }
+
     }
 
     private class NodeSearchPanel extends JSearchPanel {
