@@ -123,7 +123,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
     protected void componentClosed() {
         gv.stopAnimation();
         super.componentClosed();
-        gv.closeInfoPanel();
+        gv.closePanels();
     }
 
     /**

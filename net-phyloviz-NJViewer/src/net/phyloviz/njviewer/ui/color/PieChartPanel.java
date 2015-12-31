@@ -5,20 +5,15 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Arc2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import javax.swing.JPanel;
-import net.phyloviz.category.CategoryProvider;
 
 public class PieChartPanel extends JPanel {
 
@@ -144,7 +139,7 @@ public class PieChartPanel extends JPanel {
             double currAngle = 0;
             double arcAngle = 0;
             Arc2D arc = null;
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < total; i++) {
                 arcAngle = (((double) 1 / total) * 360);
                 arc = new Arc2D.Double(area.x + 2, area.y + 2, area.width - 4, area.height - 4, 90 - currAngle, -arcAngle, Arc2D.PIE);
 

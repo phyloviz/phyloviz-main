@@ -7,7 +7,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-class ColorComponent extends JPanel {
+public class ColorComponent extends JPanel {
 
 	private String key;
 	private JLabel name;
@@ -31,7 +31,7 @@ class ColorComponent extends JPanel {
 		this.key = n;
 		BoxLayout b = new BoxLayout(this, BoxLayout.X_AXIS);
 		this.setLayout(b);
-		this.name = new JLabel(n + extra);
+		this.name = new JLabel(extra);
 		this.color = new JLabel("    ");
 		this.name.setOpaque(true);
 		this.name.setBackground(Color.WHITE);

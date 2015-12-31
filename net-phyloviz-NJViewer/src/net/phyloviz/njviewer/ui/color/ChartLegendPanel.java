@@ -1,8 +1,8 @@
 package net.phyloviz.njviewer.ui.color;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import org.openide.util.HelpCtx;
 import org.openide.windows.Mode;
 import org.openide.windows.TopComponent;
@@ -17,14 +17,27 @@ public class ChartLegendPanel extends TopComponent {
 	private Dimension d;
 	private int total;
 
-	public ChartLegendPanel(Dimension _d, int _total, Color[] c, double maxEdgeDiff) {
-		this.setLayout(new BorderLayout());
+	public ChartLegendPanel(EdgeStats edge, Dimension _d) {
+		this.setLayout(new GridLayout(1,2));
 		this.d = _d;
-		this.total = _total;
+		this.total = edge.interval;
 
-		ChartLegend ch = new ChartLegend(d, total, c, maxEdgeDiff);
-		add(ch.getChartPie(), BorderLayout.CENTER);
-		add(ch.getLegends(), BorderLayout.EAST);
+		ChartLegend ch = new ChartLegend(edge, d);
+		add(ch.getChartPie());
+		add(ch.getLegends());
+                
+                
+//                this.setLayout(new GridLayout(1,4));
+//		this.d = _d;
+//		this.total = _total;
+//
+//		ChartLegend ch = new ChartLegend(view, d, total, c, minEdgeDiff, maxEdgeDiff);
+//		add(ch.getChartPie());
+//		add(ch.getLegends());
+//                
+//                ChartLegend ch2 = new ChartLegend(view, d, total, c, minEdgeDiff, maxEdgeDiff);
+//		add(ch2.getChartPie());
+//		add(ch2.getLegends());
 	}
 
 	@Override
