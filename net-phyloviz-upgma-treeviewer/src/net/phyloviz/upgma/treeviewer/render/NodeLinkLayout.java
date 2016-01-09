@@ -68,10 +68,10 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
 
         root = getLayoutRoot();
         maxDepth = root.getDouble("distance");
-//        if(tv.getRescaleEdges()){
-//            maxDepth = Math.log(1 + maxDepth) * SCALE_X;
-//        }
-//        else
+        if(tv.getRescaleEdges()){
+            maxDepth = Math.log(1 + maxDepth) * SCALE_X;
+        }
+        else
             maxDepth = maxDepth * SCALE_X;
 
         NodeItem n = (NodeItem) root.getFirstChild();
@@ -83,14 +83,14 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
 
         MAX_Y = Double.MIN_VALUE;
 
-        secondWalk(root, null, false);
+        secondWalk(root, null);
 
         setBreadth(r, root, MAX_Y + (SCALE_Y * 2));
         setBreadth(r2, root, MAX_Y + (SCALE_Y * 2));
 
     }
 
-    private double secondWalk(NodeItem n, NodeItem p, boolean up) {
+    private double secondWalk(NodeItem n, NodeItem p) {
 
         NodeItem left = (NodeItem) n.getFirstChild();
         NodeItem right = (NodeItem) left.getNextSibling();
@@ -103,7 +103,7 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
             }
             setBreadth(left, p, id * SCALE_Y);
         } else {
-            secondWalk(left, n, true);
+            secondWalk(left, n);
         }
 
         if (right.getChildCount() == 0) { //is Leaf
@@ -114,7 +114,7 @@ public class NodeLinkLayout extends NodeLinkTreeLayout {
             }
             setBreadth(right, p, id * SCALE_Y);
         } else {
-            secondWalk(right, n, false);
+            secondWalk(right, n);
         }
 
         double distance;

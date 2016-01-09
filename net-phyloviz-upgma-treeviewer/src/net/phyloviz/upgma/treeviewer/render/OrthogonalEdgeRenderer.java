@@ -131,12 +131,12 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
 
                 
                 
-                double scaleX = tv.getScaleX();
                 double x = sx;
                 double y = ty + 20;
-                double distanceX = tx;
-                double realDistance = distanceX / scaleX;
-                String distance = String.format("%.2f", realDistance);
+                double distance = tv.maxDistance;
+                
+                
+                String distanceLabel = String.format("%.2f", distance);
 
                 Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
                 Color dc = g.getColor();
@@ -146,13 +146,13 @@ public class OrthogonalEdgeRenderer extends EdgeRenderer {
                 
                 int tickSpace = 4;
                 double oneTick = (tx - sx) / ((double) tickSpace);
-                double oneTickDistance = realDistance / ((double) tickSpace);
+                double oneTickDistance = distance / ((double) tickSpace);
                 for (int i = 0; i <= tickSpace; i++) {
                     
-                    g.drawString(distance, (float) (x), (float) y);
+                    g.drawString(distanceLabel, (float) (x), (float) y);
                     x += oneTick;
-                    realDistance -= oneTickDistance;
-                    distance = String.format("%.2f", realDistance);
+                    distance -= oneTickDistance;
+                    distanceLabel = String.format("%.2f", distance);
 
                 }
                 String distanceProvider = tv.getDistanceProvider();

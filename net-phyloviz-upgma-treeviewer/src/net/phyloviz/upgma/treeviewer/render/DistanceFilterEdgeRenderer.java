@@ -47,7 +47,7 @@ import prefuse.visual.VisualItem;
 public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
 
     private String m_key;
-    private double m_distance;
+    private double thresholdDistance;
     private final int m_scale;
     private final boolean m_labeled;
     private double distanceai ;
@@ -55,7 +55,7 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
     public DistanceFilterEdgeRenderer(TreeView tv, double distance, int scale, boolean labeled, double maxDistance) {
         super(tv);
         m_key = "viz";
-        m_distance = tv.getRescaleEdges() ? (maxDistance - Math.log(1 + (distance))) * scale
+        thresholdDistance = tv.getRescaleEdges() ? (maxDistance - Math.log(1 + (distance))) * scale
                 : (maxDistance - distance) * scale;
         m_scale = scale;
         m_labeled = labeled;
@@ -85,14 +85,13 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
         if (shape == null) {
             return;
         }
-        if (!u.getBoolean("isRuler") || !v.getBoolean("isRuler")) {
+        if (!u.getBoolean("isRuler") && !v.getBoolean("isRuler")) {
             double diMax = item.getBounds().getMaxX();
             double h = item.getBounds().getCenterY();
-            boolean hide = m_distance > item.getBounds().getMinX();
-            boolean hide2 = m_distance < item.getBounds().getMaxX();
-            if (diMax <= m_distance
-                    || //item.getBounds().contains(m_distance-0.001, h)){
-                    (hide && hide2)) {
+            boolean hide = thresholdDistance > item.getBounds().getMinX();
+            boolean hide2 = thresholdDistance < item.getBounds().getMaxX();
+            if (diMax <= thresholdDistance
+                    || (hide && hide2)) {
                 item.setStrokeColor(ColorLib.rgb(214, 214, 214));
                 if (u.canGetString("p_id")) {
                     u.setBoolean("hide", true);

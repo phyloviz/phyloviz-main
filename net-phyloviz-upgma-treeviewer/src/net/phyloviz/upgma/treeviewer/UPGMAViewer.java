@@ -607,7 +607,7 @@ public final class UPGMAViewer extends GView {
         rulerNodeRigth.setBoolean("isRuler", true);
 
         // create a new treemap
-        TreeView tv = new TreeView(t, label, MAX_DISTANCE, DISTANCE_PROVIDER);
+        TreeView tv = new TreeView(t, label, n.getInt(childrenSize), MAX_DISTANCE, DISTANCE_PROVIDER);
 
         tv.setBackground(BACKGROUND);
         tv.setForeground(FOREGROUND);

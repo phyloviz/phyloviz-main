@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.KeyStroke;
@@ -54,6 +55,8 @@ import prefuse.render.DefaultRendererFactory;
 import prefuse.render.Renderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
+import prefuse.util.GraphicsLib;
+import prefuse.util.display.DisplayLib;
 import prefuse.util.ui.JSearchPanel;
 import prefuse.visual.VisualItem;
 import prefuse.visual.expression.InGroupPredicate;
@@ -86,15 +89,16 @@ public final class TreeView extends Display {
     private boolean rescaleDistance = false;
     private final JSearchPanel searchPanel;
     private boolean searchMatch = false;
-    private float cutDistance, maxDistance;
+    public float cutDistance, maxDistance;
     private final String distanceProvider;
+    private final int tdSize;
 
-    public TreeView(Tree t, String label, float maxDistance, String distanceProvider) {
+    public TreeView(Tree t, String label, int tdSize, float maxDistance, String distanceProvider) {
         super(new Visualization());
         this.maxDistance = maxDistance;
         this.distanceProvider = distanceProvider;
         m_label = label;
-        
+        this.tdSize = tdSize;
         m_vis.add(tree, t);
 
         m_nodeRenderer = new NodeRenderer(m_label, this);//new LabelRenderer(m_label);
@@ -183,8 +187,6 @@ public final class TreeView extends Display {
         addControlListener(new WheelZoomControl());
         addControlListener(new PanControl());
         addControlListener(new FocusControl(1));
-        //addControlListener(new MyRotationControl());
-        //addControlListener(new FocusControl(1, "filter"));
 
         registerKeyboardAction(
                 new OrientAction(Constants.ORIENT_LEFT_RIGHT),
@@ -223,9 +225,11 @@ public final class TreeView extends Display {
 
         //rotate(new Point(200,300), Math.PI);
     }
-    public JSearchPanel getSearchPanel(){
+
+    public JSearchPanel getSearchPanel() {
         return searchPanel;
     }
+
     public Renderer getNodeRenderer() {
         return m_nodeRenderer;
     }
@@ -238,7 +242,7 @@ public final class TreeView extends Display {
         return m_edgeRenderer;
     }
 
-    public String getDistanceProvider(){
+    public String getDistanceProvider() {
         return distanceProvider;
     }
     // ------------------------------------------------------------------------
@@ -293,6 +297,7 @@ public final class TreeView extends Display {
     public double getScaleX() {
         return ((NodeLinkLayout) m_vis.getAction("treeLayout")).getScaleX();
     }
+
     public double getScaleY() {
         return ((NodeLinkLayout) m_vis.getAction("treeLayout")).getScaleY();
     }
@@ -312,8 +317,7 @@ public final class TreeView extends Display {
         m_vis.run("treeLayout");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
-        
-        
+
     }
 
     void changeHigh(int h) {
@@ -369,36 +373,27 @@ public final class TreeView extends Display {
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
     }
-    public boolean getRescaleEdges(){
+
+    public boolean getRescaleEdges() {
         return rescaleDistance;
     }
-    
+
     public void setRescaleEdges(boolean status) {
         rescaleDistance = status;
         m_vis.cancel("animatePaint");
 
         m_vis.run("treeLayout");
+        // m_vis.run("animate");
         m_vis.run("draw");
         m_vis.run("fullPaint");
         m_vis.run("animatePaint");
-        
-        NodeLinkLayout rtl = (NodeLinkLayout) m_vis.getAction("treeLayout");
 
-        m_edgeRenderer = new DistanceFilterEdgeRenderer(this, cutDistance, rtl.getScaleX(), labeledRender, maxDistance);
-
-        rf = new DefaultRendererFactory(m_nodeRenderer);
-        rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
-
-        m_vis.setRendererFactory(rf);
-        
-        m_vis.cancel("animatePaint");
-
-        m_vis.run("treeLayout");
-        m_vis.run("draw");
-        m_vis.run("fullPaint");
-        m_vis.run("animatePaint");
-        
+        double x = rescaleDistance ? Math.log(1 + maxDistance) * getScaleX() : maxDistance * getScaleX();
+        double y = tdSize * getScaleY();
+        Point2D.Double p = new Point2D.Double(x / 2, y);
+        panToAbs(p);
     }
+
     public boolean getLinearSize() {
         return linear;
     }
@@ -524,7 +519,7 @@ public final class TreeView extends Display {
             Tuple itemTuple = item.getSourceTuple();
             if (m_vis.isInGroup(item, Visualization.SEARCH_ITEMS)) {
                 if (itemTuple.getString("p_id").equals(searchPanel.getQuery())) {
-                    if(searchMatch) {
+                    if (searchMatch) {
                         TreeView.this.panToAbs(new Point2D.Double(item.getX(), item.getY()));
                     }
                     searchMatch = false;
