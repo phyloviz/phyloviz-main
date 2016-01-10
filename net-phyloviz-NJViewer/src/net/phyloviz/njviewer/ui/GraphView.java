@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -43,13 +42,13 @@ import net.phyloviz.nj.tree.NeighborJoiningItem;
 import net.phyloviz.nj.tree.NJRoot.EdgeDistanceWrapper;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
+import net.phyloviz.njviewer.action.ForceDistanceLayoutAction;
 import net.phyloviz.upgmanjcore.visualization.actions.HighQualityAction;
 import net.phyloviz.njviewer.action.RoundDistanceAction;
 import net.phyloviz.njviewer.action.ViewControlAction;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
 import net.phyloviz.njviewer.render.NodeLabelRenderer;
 import net.phyloviz.njviewer.ui.color.ChartLegendPanel;
-import net.phyloviz.njviewer.ui.color.ColorComponent;
 import net.phyloviz.njviewer.ui.color.ChartsPanel;
 import net.phyloviz.njviewer.ui.color.EdgeStats;
 import net.phyloviz.upgmanjcore.visualization.ForcePair;
@@ -59,7 +58,6 @@ import prefuse.Visualization;
 import prefuse.action.ActionList;
 import prefuse.action.RepaintAction;
 import prefuse.action.assignment.ColorAction;
-import prefuse.action.layout.graph.ForceDirectedLayout;
 import prefuse.activity.Activity;
 import prefuse.controls.Control;
 import prefuse.controls.ControlAdapter;
@@ -103,9 +101,10 @@ import net.phyloviz.upgmanjcore.visualization.actions.ExportAction;
 import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.RescaleEdgesControlAction;
-import org.openide.windows.TopComponent;
+import org.openide.util.Exceptions;
 import prefuse.action.assignment.FontAction;
 import prefuse.util.PrefuseLib;
+import prefuse.action.layout.graph.ForceDirectedLayout;
 
 public class GraphView extends GView {
 
@@ -141,11 +140,12 @@ public class GraphView extends GView {
     double maxDistance = 0, minDistance = 0;
     final Map<String, Point> nodesPositions;
     private boolean rescaleDistance = false;
-    
+
     private ChartsPanel edgeInfoPanel;
     private EdgeColorAction edge;
     private EdgeStats positiveEdges;
     private EdgeStats negativeEdges;
+    private boolean forceDistanceLayout;
 
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
@@ -181,25 +181,27 @@ public class GraphView extends GView {
         draw.add(nfont);
         draw.add(edge);
 
-        fdl = new ForceDirectedLayout("graph", false, true) {
-            @Override
-            protected float getSpringLength(EdgeItem e) {
-                double dist;
-                if(e.getFloat("distance") < 0.01)
-                    dist = 10 + 300 * 0.01f;
-                else
-                    dist = 10 + 300 * e.getFloat("distance");
-                dist = rescaleDistance ? Math.log(dist) : dist;
-                return (float) dist;
-            }
-
-            //@Override
-            //protected float getMassValue(VisualItem n) { 
-            //	return 3.0f;	
-            //}
-        };
-
-        fdl.setIterations(500);
+//        fdl = new ForceDirectedLayout("graph", false, true) {
+//            @Override
+//            protected float getSpringLength(EdgeItem e) {
+//                double dist;
+//                if (e.getFloat("distance") < 0.01) {
+//                    dist = 10 + 300 * 0.01f;
+//                } else {
+//                    dist = 10 + 300 * e.getFloat("distance");
+//                }
+//                dist = rescaleDistance ? Math.log(dist) : dist;
+//                return (float) dist;
+//            }
+//
+//            //@Override
+//            //protected float getMassValue(VisualItem n) { 
+//            //	return 3.0f;	
+//            //}
+//        };
+//
+//        fdl.setIterations(500);
+        fdl = new ForceDirectedLayout("graph");
         ActionList layout = new ActionList(Activity.INFINITY);
         layout.add(fdl);
         layout.add(fill);
@@ -338,9 +340,10 @@ public class GraphView extends GView {
         });
         popupMenu = new JPopupMenu();
         popupMenu.add(new InfoControlAction(this).getMenuItem());
-        popupMenu.add(new RescaleEdgesControlAction(this, rescaleDistance).getMenuItem());
+        // popupMenu.add(new RescaleEdgesControlAction(this, rescaleDistance).getMenuItem());
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         popupMenu.add(new RoundDistanceAction(this).getMenuItem());
+        popupMenu.add(new ForceDistanceLayoutAction(this).getMenuItem());
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ViewControlAction(this).getMenuItem());
@@ -614,26 +617,9 @@ public class GraphView extends GView {
                         sp.setModel(model);
                         sp.setValue(distance);
 
-                        // if (loaded) {
-                        stopAnimation();
-                        //}
-
-                        edge.updatePositions();
-                        view.run("draw");
-                        view.repaint();
-                        updateUI();
-                        edgeInfoPanel = new ChartsPanel(1);
-                        ChartLegendPanel chartInfoPos = new ChartLegendPanel(positiveEdges, new Dimension(128, 128));
-                        edgeInfoPanel.add(chartInfoPos);
-                        if(negativeEdges.minD != Double.POSITIVE_INFINITY){
-                            edgeInfoPanel = new ChartsPanel(2);
-                            ChartLegendPanel chartInfoNeg = new ChartLegendPanel(negativeEdges, new Dimension(128, 128));
-                            edgeInfoPanel.add(chartInfoPos);
-                            edgeInfoPanel.add(chartInfoNeg);
+                        if (loaded) {
+                            stopAnimation();
                         }
-                        edgeInfoPanel.setName(name + " (Selection view)");
-                        edgeInfoPanel.open();
-                        edgeInfoPanel.requestActive();
 
                     }
 
@@ -700,13 +686,21 @@ public class GraphView extends GView {
 
     @Override
     public void closeInfoPanel() {
-        if(infoPanel != null)
+        if (infoPanel != null) {
             infoPanel.close();
+        }
     }
-    public void closePanels(){
-        closeInfoPanel();
-        if(edgeInfoPanel != null)
+
+    public void closeEdgeInfoPanel() {
+        if (edgeInfoPanel != null) {
             edgeInfoPanel.close();
+        }
+    }
+
+    public void closePanels() {
+        closeInfoPanel();
+        closeEdgeInfoPanel();
+
     }
 
     @Override
@@ -886,6 +880,75 @@ public class GraphView extends GView {
         updateUI();
     }
 
+    public void setForceDistanceLayout(boolean status) {
+        forceDistanceLayout = status;
+
+        if (forceDistanceLayout) {
+            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
+                @Override
+                protected float getSpringLength(EdgeItem e) {
+                    double dist;
+                    if (e.getFloat("distance") < 0.01) {
+                        dist = 10 + 300 * 0.01f;
+                    } else {
+                        dist = 10 + 300 * e.getFloat("distance");
+                    }
+                    dist = rescaleDistance ? Math.log(dist) : dist;
+                    return (float) dist;
+                }
+            };
+            ActionList layout = (ActionList) view.getAction("layout");
+            layout.remove(fdl);
+            layout.add(new_fdl);
+            fdl = new_fdl;
+            fdl.setVisualization(view);
+            view.run("layout");
+            view.repaint();
+            updateUI();
+
+            try {
+                //            long now = System.currentTimeMillis();
+//            while(System.currentTimeMillis() - now < 1000);
+                synchronized (view) {
+                    view.wait(2000);
+                    stopAnimation();
+                    view.run("draw");
+                    view.repaint();
+                    updateUI();
+                    edge.updatePositions();
+                    edgeInfoPanel = new ChartsPanel(1);
+                    ChartLegendPanel chartInfoPos = new ChartLegendPanel(positiveEdges, new Dimension(128, 128));
+                    edgeInfoPanel.add(chartInfoPos);
+                    if (negativeEdges.minD != Double.POSITIVE_INFINITY) {
+                        edgeInfoPanel = new ChartsPanel(2);
+                        ChartLegendPanel chartInfoNeg = new ChartLegendPanel(negativeEdges, new Dimension(128, 128));
+                        edgeInfoPanel.add(chartInfoPos);
+                        edgeInfoPanel.add(chartInfoNeg);
+                    }
+                    edgeInfoPanel.setName(name + " (Selection view)");
+                    edgeInfoPanel.open();
+                    edgeInfoPanel.requestActive();
+
+                }
+            } catch (InterruptedException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+
+        } else {
+            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph");
+            ActionList layout = (ActionList) view.getAction("layout");
+            layout.remove(fdl);
+            layout.add(new_fdl);
+            fdl = new_fdl;
+            fdl.setVisualization(view);
+            view.run("layout");
+            view.run("draw");
+            view.repaint();
+            updateUI();
+            closeEdgeInfoPanel();
+        }
+    }
+
     // Private classes.
     private class NodeColorAction extends ColorAction {
 
@@ -920,8 +983,6 @@ public class GraphView extends GView {
         }
     }
 
-    
-
     private class EdgeColorAction extends ColorAction {
 
         public EdgeColorAction(String group) {
@@ -951,7 +1012,7 @@ public class GraphView extends GView {
 
                 if (realDist < 0) {
                     negativeEdges.update(realDist, vizDist);
-                } else if(realDist >= 0.01){
+                } else if (realDist >= 0.01) {
                     positiveEdges.update(realDist, vizDist);
                 }
             }
@@ -962,15 +1023,23 @@ public class GraphView extends GView {
 
             EdgeItem edge = (EdgeItem) item;
             float distance = item.getSourceTuple().getFloat("distance");
-            double viDistance = (PrefuseLib.distance(edge.getSourceItem(), edge.getTargetItem()) - 10) / 300;
-            if (distance < 0) {
-                double diff = negativeEdges.diff(distance, viDistance);
-                return ColorLib.color(negativeEdges.getColor(diff));
+            if (forceDistanceLayout) {
+                double viDistance = (PrefuseLib.distance(edge.getSourceItem(), edge.getTargetItem()) - 10) / 300;
+                if (distance < 0) {
+                    double diff = negativeEdges.diff(distance, viDistance);
+                    return ColorLib.color(negativeEdges.getColor(diff));
+                } else {
+                    if (distance < 0.01) {
+                        return ColorLib.rgb(0, 0, 255);
+                    }
+                    double diff = positiveEdges.diff(distance, viDistance);
+                    return ColorLib.color(positiveEdges.getColor(diff));
+                }
             } else {
-                if(distance < 0.01)
-                    return ColorLib.rgb(0, 0, 255);
-                double diff = positiveEdges.diff(distance, viDistance);
-                return ColorLib.color(positiveEdges.getColor(diff));
+                if (distance < 0) {
+                    return ColorLib.color(Color.RED);
+                }
+                return ColorLib.color(Color.BLACK);
             }
         }
 
