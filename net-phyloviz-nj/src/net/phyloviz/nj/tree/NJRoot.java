@@ -19,7 +19,7 @@ import net.phyloviz.upgmanjcore.json.JsonSaver;
 public class NJRoot implements IEdgeJsonSaver{
          
     public final NodeType n1, n2;
-    private final float distance;
+    public final float distance;
 
     public NJRoot(NodeType n1, NodeType n2, float distance){
         this.n1 = n1;

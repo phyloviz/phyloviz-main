@@ -43,6 +43,7 @@ import net.phyloviz.nj.tree.NJRoot.EdgeDistanceWrapper;
 import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.njviewer.action.ForceDistanceLayoutAction;
+import net.phyloviz.njviewer.action.RadialLayoutAction;
 import net.phyloviz.upgmanjcore.visualization.actions.HighQualityAction;
 import net.phyloviz.njviewer.action.RoundDistanceAction;
 import net.phyloviz.njviewer.action.ShowDistancesLayoutChartAction;
@@ -103,8 +104,10 @@ import net.phyloviz.upgmanjcore.visualization.actions.InfoControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.LinearSizeControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.RescaleEdgesControlAction;
 import prefuse.action.assignment.FontAction;
+import prefuse.action.layout.Layout;
 import prefuse.util.PrefuseLib;
 import prefuse.action.layout.graph.ForceDirectedLayout;
+import prefuse.data.Tree;
 
 public class GraphView extends GView {
 
@@ -133,7 +136,7 @@ public class GraphView extends GView {
     private JPopupMenu popupMenu;
     private NodeLabelRenderer lr;
     private DefaultRendererFactory rf;
-    private ForceDirectedLayout fdl;
+    private Layout fdl;
     private boolean running, linear, label = true;
     // Data analysis info...
     private CategoryProvider cp;
@@ -147,6 +150,8 @@ public class GraphView extends GView {
     private EdgeStats negativeEdges;
     private boolean forceDistanceLayout;
     private final JMenuItem showDistancesChart;
+    private final NJRoot root;
+    private int m_size;
 
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
@@ -154,6 +159,7 @@ public class GraphView extends GView {
         this.setOpaque(true);
         this.name = name;
         this.nodesPositions = nodesPositions;
+        this.root = _er.getRoot();
 //        this.linear = linear;
         // Create an empty visualization.
         view = new Visualization();
@@ -168,11 +174,11 @@ public class GraphView extends GView {
         ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
         edge = new EdgeColorAction("graph.edges");
         FontAction nfont
-                = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 11)) {
+                = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 5)) {
                     @Override
                     public Font getFont(VisualItem item) {
                         Profile st = (Profile) item.getSourceTuple().get("st_ref");
-                        return FontLib.getFont("Tahoma", Font.PLAIN, 11 + (GraphView.this.linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+                        return FontLib.getFont("Tahoma", Font.PLAIN, 5);//11 + (GraphView.this.linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
                     }
                 };
 
@@ -206,7 +212,7 @@ public class GraphView extends GView {
             @Override
             protected float getSpringLength(EdgeItem e) {
                 double distance = e.getDouble("distance");
-                double dist = rescaleDistance ? Math.log(1+ distance) : distance;
+                double dist = rescaleDistance ? Math.log(1 + distance) : distance;
                 return (float) dist;
             }
         };
@@ -251,6 +257,12 @@ public class GraphView extends GView {
         nodeSchema.addColumn("w", int.class);
         nodeSchema.addColumn("g", int.class);
         nodeSchema.addColumn("distance", float.class);
+        nodeSchema.addColumn("wedgesize", float.class);
+        nodeSchema.addColumn("rightborder", float.class);
+        nodeSchema.addColumn("distance0", float.class);
+        nodeSchema.addColumn("distance1", float.class);
+        nodeSchema.addColumn("n0", NodeType.class);
+        nodeSchema.addColumn("n1", NodeType.class);
 
         Schema edgeSchema = new Schema();
         edgeSchema.addColumn(SRC, int.class);
@@ -325,7 +337,7 @@ public class GraphView extends GView {
         animCtl.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                fdl.setMaxTimeStep(animCtl.getValue().longValue());
+                ((ForceDirectedLayout) fdl).setMaxTimeStep(animCtl.getValue().longValue());
             }
         });
 
@@ -348,6 +360,7 @@ public class GraphView extends GView {
         });
         showDistancesChart = new ShowDistancesLayoutChartAction(this).getMenuItem();
         popupMenu = new JPopupMenu();
+        popupMenu.add(new RadialLayoutAction(this).getMenuItem());
         popupMenu.add(new InfoControlAction(this).getMenuItem());
         popupMenu.add(new RescaleEdgesControlAction(this, rescaleDistance).getMenuItem());
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
@@ -486,6 +499,13 @@ public class GraphView extends GView {
                     uid2rowid.put(st.getUID(), uRowNb);
                     if (st instanceof NJLeafNode) {
                         nodeTable.setString(uRowNb, "st_id", st.getID());
+                        m_size++;
+                    } else {
+                        nodeTable.setString(uRowNb, "st_id", st.getUID() + "");
+                        nodeTable.setFloat(uRowNb, "distance0", ((NJUnionNode) st).distance1);
+                        nodeTable.setFloat(uRowNb, "distance1", ((NJUnionNode) st).distance2);
+                        nodeTable.set(uRowNb, "n0", ((NJUnionNode) st).n1);
+                        nodeTable.set(uRowNb, "n1", ((NJUnionNode) st).n2);
                     }
                     nodeTable.set(uRowNb, "st_ref", st);
                     nodeTable.setInt(uRowNb, "w", 0);
@@ -538,8 +558,13 @@ public class GraphView extends GView {
                             uid2rowid.put(st.getUID(), vRowNb);
                             if (st instanceof NJLeafNode) {
                                 nodeTable.setString(vRowNb, "st_id", st.getID());
+                                m_size++;
                             } else if (st instanceof NJUnionNode) {
                                 nodeTable.setString(vRowNb, "st_id", st.getUID() + "");
+                                nodeTable.setFloat(vRowNb, "distance0", ((NJUnionNode) st).distance1);
+                                nodeTable.setFloat(vRowNb, "distance1", ((NJUnionNode) st).distance2);
+                                nodeTable.set(vRowNb, "n0", ((NJUnionNode) st).n1);
+                                nodeTable.set(vRowNb, "n1", ((NJUnionNode) st).n2);
                             }
                             nodeTable.set(vRowNb, "st_ref", st);
                             nodeTable.setInt(vRowNb, "w", 0);
@@ -776,11 +801,11 @@ public class GraphView extends GView {
     }
 
     public long getSpeed() {
-        return fdl.getMaxTimeStep();
+        return ((ForceDirectedLayout) fdl).getMaxTimeStep();
     }
 
     public void setSpeed(long step) {
-        fdl.setMaxTimeStep(step);
+        ((ForceDirectedLayout) fdl).setMaxTimeStep(step);
     }
 
     public void resetDefaultRenderer() {
@@ -806,15 +831,15 @@ public class GraphView extends GView {
     }
 
     public ForceDirectedLayout getForceLayout() {
-        return fdl;
+        return ((ForceDirectedLayout) fdl);
     }
 
     public JForcePanel getForcePanel() {
-        return new JForcePanel(fdl.getForceSimulator());
+        return new JForcePanel(((ForceDirectedLayout) fdl).getForceSimulator());
     }
 
     public ArrayList<ForcePair> getForces() {
-        ForceSimulator fs = fdl.getForceSimulator();
+        ForceSimulator fs = ((ForceDirectedLayout) fdl).getForceSimulator();
         Force[] farray = fs.getForces();
         ArrayList<ForcePair> array = new ArrayList<>();
         for (Force farray1 : farray) {
@@ -922,7 +947,14 @@ public class GraphView extends GView {
             view.repaint();
             updateUI();
         } else {
-            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph");
+            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
+                @Override
+                protected float getSpringLength(EdgeItem e) {
+                    double distance = e.getDouble("distance");
+                    double dist = rescaleDistance ? Math.log(1 + distance) : distance;
+                    return (float) dist;
+                }
+            };
             ActionList layout = (ActionList) view.getAction("layout");
             layout.remove(fdl);
             layout.add(new_fdl);
@@ -964,6 +996,54 @@ public class GraphView extends GView {
             restartAnimation();
             closeEdgeInfoPanel();
         }
+    }
+
+    public void setRadialLayout(boolean status) {
+        if (status) {
+            RadialLayout new_fdl = new RadialLayout("graph", root.distance, m_size);
+            ActionList layout = (ActionList) view.getAction("layout");
+            layout.remove(fdl);
+            layout.add(new_fdl);
+            fdl = new_fdl;
+            fdl.setVisualization(view);
+            view.run("layout");
+            view.run("draw");
+            view.repaint();
+            updateUI();
+        } else {
+            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph");
+            ActionList layout = (ActionList) view.getAction("layout");
+            layout.remove(fdl);
+            layout.add(new_fdl);
+            fdl = new_fdl;
+            fdl.setVisualization(view);
+            setDefaultRenderer(new NodeLabelRenderer("st_id"));
+            rf.setDefaultEdgeRenderer(new EdgeRenderer());
+            view.run("layout");
+            view.run("draw");
+            view.repaint();
+            updateUI();
+        }
+
+    }
+
+    private void createTree(Tree t, Node root, NodeType child) {
+
+        Node n = t.addChild(root);
+        //n.set(label, child.getDisplayName());
+        if (child instanceof NJLeafNode) {
+            n.set("st_id", ((NJLeafNode) child).p.getID());
+            n.set("st_ref", (NJLeafNode) child);
+            return;
+        }
+        NJUnionNode newRoot = (NJUnionNode) child;
+        n.set("st_id", newRoot.getID());
+        n.setFloat("distance0", newRoot.distance1);
+        n.setFloat("distance1", newRoot.distance2);
+        n.set("n0", newRoot.n1);
+        n.set("n1", newRoot.n2);
+        createTree(t, n, newRoot.n1);
+        createTree(t, n, newRoot.n2);
     }
 
     // Private classes.
