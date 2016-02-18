@@ -29,12 +29,12 @@ import org.openide.windows.TopComponent;
 import prefuse.util.force.Force;
 import prefuse.util.force.ForceSimulator;
 
-public class ViewControlAction implements ActionListener {
+public class ForceViewControlAction implements ActionListener {
 
 	private GraphView gv;
 	private JDialog forceDialog;
 
-	public ViewControlAction(GView gv) {
+	public ForceViewControlAction(GView gv) {
 		this.gv =(GraphView) gv;
 		gv.addAncestorListener(new AncestorListener() {
 

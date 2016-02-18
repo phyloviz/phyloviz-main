@@ -1,20 +1,15 @@
 package net.phyloviz.njviewer.render;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RectangularShape;
 import java.util.Iterator;
 import java.util.List;
 import net.phyloviz.category.CategoryProvider;
@@ -22,6 +17,7 @@ import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJUnionNode;
+import net.phyloviz.njviewer.ui.GraphView;
 import net.phyloviz.upgmanjcore.visualization.GView;
 
 import prefuse.render.AbstractShapeRenderer;
@@ -30,6 +26,8 @@ import prefuse.util.FontLib;
 import prefuse.visual.VisualItem;
 
 public class BarChartRenderer extends AbstractShapeRenderer {
+    public static int DEFAULT_WIDTH = 50;
+    public static int DEFAULT_HEIGHT = 5;
 
     private GView gv;
     private CategoryProvider cp;
@@ -37,6 +35,7 @@ public class BarChartRenderer extends AbstractShapeRenderer {
     public BarChartRenderer(CategoryProvider cp, GView gv) {
         this.cp = cp;
         this.gv = gv;
+        ((GraphView)gv).setControlProps();
     }
 
     public void drawBar(Graphics2D g, Shape area, VisualItem item, String id, int freq, Color fillColor) {
@@ -133,10 +132,9 @@ public class BarChartRenderer extends AbstractShapeRenderer {
         }
 
         int offsetX = (int) (gv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
-        int offsetY = (int) (20);
 
-        int w = 50 + offsetX;
-        int h = offsetY - 15;
+        int w = ((GraphView)gv).getWidthControlValue() + offsetX;
+        int h = ((GraphView)gv).getHeightControlValue();
 
         double px = item.getDouble("xp");
         double py = item.getDouble("yp");

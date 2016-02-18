@@ -53,6 +53,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
             gv = new GraphView(name, njr, false, null);
         }
         this.add(gv);
+        gv.enableViewControl(false);
         gvCatListen = new CategoryChangeListener() {
 
             @Override
@@ -60,13 +61,16 @@ public final class GTPanel extends TopComponent implements IGTPanel {
 
                 if (cp.isOn()) {
                     catProvider = cp;
-                    AbstractShapeRenderer chart = gv.isRadial() ? new BarChartRenderer(cp, gv) : new ChartRenderer(cp, gv);
+                    boolean isRadial = gv.isRadial();
+                    AbstractShapeRenderer chart = isRadial ? new BarChartRenderer(cp, gv) : new ChartRenderer(cp, gv);
                     gv.setDefaultRenderer(chart);
                     gv.setCategoryProvider(cp);
+                    gv.enableViewControl(isRadial);
                 } else {
                     catProvider = null;
                     gv.resetDefaultRenderer();
                     gv.setCategoryProvider(null);
+                    gv.enableViewControl(false);
                 }
             }
         };

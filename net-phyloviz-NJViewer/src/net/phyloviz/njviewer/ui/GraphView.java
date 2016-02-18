@@ -44,10 +44,12 @@ import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.nj.tree.NodeType;
 import net.phyloviz.njviewer.action.ForceDistanceLayoutAction;
 import net.phyloviz.njviewer.action.ForceDirectedLayoutAction;
+import net.phyloviz.njviewer.action.control.JRadialViewControlPanel;
+import net.phyloviz.njviewer.action.RadialViewControlAction;
 import net.phyloviz.upgmanjcore.visualization.actions.HighQualityAction;
 import net.phyloviz.njviewer.action.RoundDistanceAction;
 import net.phyloviz.njviewer.action.ShowDistancesLayoutChartAction;
-import net.phyloviz.njviewer.action.ViewControlAction;
+import net.phyloviz.njviewer.action.ForceViewControlAction;
 import net.phyloviz.njviewer.render.BarChartRenderer;
 import net.phyloviz.njviewer.render.ChartRenderer;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
@@ -155,6 +157,8 @@ public class GraphView extends GView {
     private final NJRoot root;
     private int m_size;
     private boolean isRadial = true;
+    private HashMap<String, Integer> props;
+    private final JMenuItem radialViewControlMenuItem;
 
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
@@ -378,7 +382,9 @@ public class GraphView extends GView {
         popupMenu.add(showDistancesChart);
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
-        popupMenu.add(new ViewControlAction(this).getMenuItem());
+        popupMenu.add(new ForceViewControlAction(this).getMenuItem());
+        radialViewControlMenuItem = new RadialViewControlAction(this).getMenuItem();
+        popupMenu.add(radialViewControlMenuItem);
 
         JButton optionsButton = new JButton("Options");
         optionsButton.setMargin(new Insets(1, 1, 1, 1));
@@ -1085,6 +1091,43 @@ public class GraphView extends GView {
 
     boolean isRadial() {
         return isRadial;
+    }
+
+    public JPanel getRadialViewControlPanel() {
+        return new JRadialViewControlPanel(this, props);
+    }
+
+    public int getWidthControlValue() {
+        if (props != null && props.containsKey("width")) {
+            return (int) props.get("width");
+        }
+        return -1;
+    }
+
+    public int getHeightControlValue() {
+        if (props != null && props.containsKey("height")) {
+            return (int) props.get("height");
+        }
+        return -1;
+    }
+
+    public void setControlProps() {
+        props = new HashMap<>();
+        props.put("height", BarChartRenderer.DEFAULT_HEIGHT);
+        props.put("width", BarChartRenderer.DEFAULT_WIDTH);
+    }
+
+    public void setViewControlValue(String key, int value) {
+        props.put(key, value);
+
+        view.run("layout");
+        view.run("draw");
+        view.repaint();
+        updateUI();
+    }
+
+    void enableViewControl(boolean status) {
+        radialViewControlMenuItem.setEnabled(status);
     }
 
     // Private classes.
