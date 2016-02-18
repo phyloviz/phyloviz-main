@@ -90,7 +90,7 @@ public class DistanceFilterEdgeRenderer extends OrthogonalEdgeRenderer {
             double h = item.getBounds().getCenterY();
             boolean hide = thresholdDistance > item.getBounds().getMinX();
             boolean hide2 = thresholdDistance < item.getBounds().getMaxX();
-            if (diMax <= thresholdDistance
+            if (diMax < thresholdDistance
                     || (hide && hide2)) {
                 item.setStrokeColor(ColorLib.rgb(214, 214, 214));
                 if (u.canGetString("p_id")) {
