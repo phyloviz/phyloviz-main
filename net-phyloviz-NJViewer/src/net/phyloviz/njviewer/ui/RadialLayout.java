@@ -34,6 +34,8 @@ public class RadialLayout extends RadialTreeLayout {
         q.push(r);
         r.setFloat("rightborder", 0);
         r.setFloat("wedgesize", (float) (2 * Math.PI));
+        r.setDouble("x", 0);
+        r.setDouble("y", 0);
         setX(r, null, 0);
         setY(r, null, 0);
         while (!q.isEmpty()) {
@@ -49,9 +51,15 @@ public class RadialLayout extends RadialTreeLayout {
                 float w_dist;
                 if (v == r) {
                     w_dist = m_root_distance * 100 + 10;
+                    r.setDouble("xp", (v.getX() + Math.cos(w_alfa) * w_dist));
+                    r.setDouble("yp", (v.getY() + Math.sin(w_alfa) * w_dist));
                 } else {
                     w_dist = v.getFloat("distance" + i) * 100 + 10;
                 }
+                w.setDouble("x", (v.getX() + Math.cos(w_alfa) * w_dist));
+                w.setDouble("y", (v.getY() + Math.sin(w_alfa) * w_dist));
+                w.setDouble("xp", v.getX());
+                w.setDouble("yp", v.getY());
                 setX(w, v, v.getX() + Math.cos(w_alfa) * w_dist);
                 setY(w, v, v.getY() + Math.sin(w_alfa) * w_dist);
 

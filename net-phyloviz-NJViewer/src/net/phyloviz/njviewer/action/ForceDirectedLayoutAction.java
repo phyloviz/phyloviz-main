@@ -8,16 +8,16 @@ import javax.swing.JMenuItem;
 import net.phyloviz.njviewer.ui.GraphView;
 import net.phyloviz.upgmanjcore.visualization.GView;
 
-public class RadialLayoutAction extends AbstractAction {
+public class ForceDirectedLayoutAction extends AbstractAction {
 
 	private final GraphView gv;
 
-	public RadialLayoutAction(GView gv) {
+	public ForceDirectedLayoutAction(GView gv) {
 		this.gv =(GraphView) gv;
 	}
 
 	public JMenuItem getMenuItem() {
-		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Radial Layout");
+		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Change to Force Directed Layout");
 		mi.setMnemonic(KeyEvent.VK_R);
 		mi.setSelected(false);
 		mi.addActionListener(this);
@@ -31,7 +31,7 @@ public class RadialLayoutAction extends AbstractAction {
 			return;
 		}
 		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-		gv.setRadialLayout(status);
+		gv.setForceDirectedLayout(status);
 	}
 
 }

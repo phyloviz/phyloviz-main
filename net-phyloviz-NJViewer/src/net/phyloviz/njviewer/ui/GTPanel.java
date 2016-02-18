@@ -1,17 +1,16 @@
 package net.phyloviz.njviewer.ui;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JMenuItem;
 import net.phyloviz.category.CategoryChangeListener;
 import net.phyloviz.category.CategoryProvider;
-import net.phyloviz.category.ui.ChartLegendPanel;
 import net.phyloviz.core.data.DataModel;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.nj.tree.NJRoot;
 import net.phyloviz.nj.tree.NeighborJoiningItem;
+import net.phyloviz.njviewer.render.BarChartRenderer;
 import net.phyloviz.njviewer.render.ChartRenderer;
 import net.phyloviz.tview.TViewPanel;
 import net.phyloviz.upgmanjcore.visualization.GView;
@@ -23,6 +22,7 @@ import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.lookup.Lookups;
 import org.openide.windows.TopComponent;
+import prefuse.render.AbstractShapeRenderer;
 
 public final class GTPanel extends TopComponent implements IGTPanel {
 
@@ -60,7 +60,8 @@ public final class GTPanel extends TopComponent implements IGTPanel {
 
                 if (cp.isOn()) {
                     catProvider = cp;
-                    gv.setDefaultRenderer(new ChartRenderer(cp, gv));
+                    AbstractShapeRenderer chart = gv.isRadial() ? new BarChartRenderer(cp, gv) : new ChartRenderer(cp, gv);
+                    gv.setDefaultRenderer(chart);
                     gv.setCategoryProvider(cp);
                 } else {
                     catProvider = null;
@@ -183,7 +184,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         if (viz.category != null) {
             catProvider = viz.category;
 
-            gv.setDefaultRenderer(new ChartRenderer(catProvider, gv));
+            gv.setDefaultRenderer(new BarChartRenderer(catProvider, gv));
             gv.setCategoryProvider(catProvider);
         }
 

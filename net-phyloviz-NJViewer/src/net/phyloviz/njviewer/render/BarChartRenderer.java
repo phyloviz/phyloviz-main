@@ -1,38 +1,4 @@
-/*-
- * Copyright (c) 2011, PHYLOViZ Team <phyloviz@gmail.com>
- * All rights reserved.
- * 
- * This file is part of PHYLOViZ <http://www.phyloviz.net>.
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- * 
- * You should have received a copy of the GNU General Public License along
- * with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * Linking this library statically or dynamically with other modules is
- * making a combined work based on this library.  Thus, the terms and
- * conditions of the GNU General Public License cover the whole combination.
- * 
- * As a special exception, the copyright holders of this library give you
- * permission to link this library with independent modules to produce an
- * executable, regardless of the license terms of these independent modules,
- * and to copy and distribute the resulting executable under terms of your
- * choice, provided that you also meet, for each linked independent module,
- * the terms and conditions of the license of that module.  An independent
- * module is a module which is not derived from or based on this library.
- * If you modify this library, you may extend this exception to your version
- * of the library, but you are not obligated to do so.  If you do not wish
- * to do so, delete this exception statement from your version.
- */
-package net.phyloviz.upgma.treeviewer.render;
+package net.phyloviz.njviewer.render;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -41,7 +7,12 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
+import java.awt.font.LineMetrics;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.Iterator;
@@ -49,198 +20,156 @@ import java.util.List;
 import net.phyloviz.category.CategoryProvider;
 import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.Profile;
-import net.phyloviz.upgma.treeviewer.UPGMAViewer;
+import net.phyloviz.nj.tree.NJLeafNode;
+import net.phyloviz.nj.tree.NJUnionNode;
+import net.phyloviz.upgmanjcore.visualization.GView;
+
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
 import prefuse.visual.VisualItem;
 
-public class ChartRenderer extends AbstractShapeRenderer {
+public class BarChartRenderer extends AbstractShapeRenderer {
 
-    private final UPGMAViewer uv;
-    private final CategoryProvider cp;
+    private GView gv;
+    private CategoryProvider cp;
 
-    public ChartRenderer(CategoryProvider cp, UPGMAViewer gv) {
+    public BarChartRenderer(CategoryProvider cp, GView gv) {
         this.cp = cp;
-        this.uv = gv;
+        this.gv = gv;
     }
 
-    public void drawHorizontalChart(Graphics2D g, Rectangle area, String stId, int freq, Color fillColor, boolean hide) {
-        // Get total value of all slices
-        double total = 0;
+    public void drawBar(Graphics2D g, Shape area, VisualItem item, String id, int freq, Color fillColor) {
+
+        String stId = String.valueOf(id);
 
         List<Category> glst = cp.getCategories(stId);
         Iterator<Category> giter;
 
-        if (glst != null) {
-            giter = glst.iterator();
-            //System.out.println("grouplist"+glst);
-            while (giter.hasNext()) {
-                total += giter.next().weight();
-            }
-        }
+        AffineTransform rotator = new AffineTransform();
 
-        total = freq - total;
-        if (total < 0) {
-            total = 0;
-        }
+        double px = item.getDouble("xp");
+        double py = item.getDouble("yp");
+        double tx = item.getDouble("x");
+        double ty = item.getDouble("y");
+        double deltaY = ty - py;
+        double deltaX = tx - px;
+        double theta = Math.atan2(deltaY, deltaX);
 
-        // Draw background pie...
+        Rectangle2D pos = area.getBounds().getBounds2D();
+        rotator.rotate(-theta, pos.getCenterX(), pos.getCenterY());
+        area = rotator.createTransformedShape(area);
+        pos = area.getBounds().getBounds2D();
+
+        rotator = new AffineTransform();
+        rotator.rotate(theta, pos.getCenterX(), pos.getCenterY());
+
         g.setColor(fillColor);
-        g.fillRect(area.x, area.y, area.width, area.height);
-
-        // Draw each pie slice
-        int currAngle = Math.round((float) area.getMinX()) + 2;
+        int currAngle = Math.round((float) area.getBounds2D().getMinX());
         Color groupColor = fillColor;
         if (glst != null) {
             giter = glst.iterator();
             while (giter.hasNext()) {
                 // Compute the start and stop angles
                 Category group = giter.next();
-                                //System.out.println("["+area.getMinX()+" , " + area.getMaxX() +"]-->["+area.getWidth()+"]-->freq:"+freq+"-->groupWeight:"+group.weight() + "-->id:" + stId);
-                //int arcAngle = Math.round((((float) group.weight()) / freq) * 10);
                 float groupPercentage = group.weight() * 100.0f / freq;
 
-                int x_pos = Math.round(groupPercentage * ((float) area.getWidth() - 4) / 100);
+                int x_pos = Math.round(groupPercentage * ((float) area.getBounds2D().getWidth()) / 100);
                 int newWidth = currAngle + x_pos;
-                if (newWidth > area.getMaxX()) {
-                    x_pos -= (newWidth - Math.round((float) area.getMaxX()) - 2);
+                if (newWidth > area.getBounds2D().getMaxX()) {
+                    x_pos -= (newWidth - Math.round((float) area.getBounds2D().getMaxX()));
                 }
                 groupColor = cp.getCategoryColor(group.getName());
                 g.setColor(groupColor);
 
-                if (currAngle + x_pos >= area.getMaxX()) {
-                    x_pos = (Math.round((float)area.getMaxX()) - 2) - currAngle;
+                if (currAngle + x_pos >= area.getBounds2D().getMaxX()) {
+                    x_pos = (Math.round((float) area.getBounds2D().getMaxX())) - currAngle;
                 }
-                g.fillRect(currAngle, area.y + 2, x_pos, area.height - 4);
+                Rectangle2D.Double shap = new Rectangle2D.Double(currAngle, area.getBounds2D().getY(), x_pos, area.getBounds2D().getHeight());
+                GeneralPath rect2 = new GeneralPath(rotator.createTransformedShape(shap));
+                g.setColor(groupColor);
+                //g.draw(rect2);
+                g.fill(rect2);
+
                 currAngle += x_pos;
             }
         }
-        if (currAngle < area.getMaxX() - 4) {
+        if (currAngle < area.getBounds2D().getMaxX()) {
             g.setColor(groupColor);
-            g.fillRect(currAngle, area.y + 2, Math.round((float) area.getMaxX()) - 4 - currAngle, area.height - 4);
+            Rectangle2D.Double shap = new Rectangle2D.Double(currAngle, area.getBounds2D().getY(), Math.round((float) area.getBounds2D().getMaxX()) - currAngle, area.getBounds2D().getHeight());
+            GeneralPath rect2 = new GeneralPath(rotator.createTransformedShape(shap));
+            g.fill(rect2);
         }
-        int x = (int) area.getMaxX();
-        int y = (int) area.getCenterY();
-        g.setPaint(new Color(0, 0, 0));
-        Font font = FontLib.getFont("Tahoma", Font.PLAIN, 11);
-        g.setFont(font);
+        String text = "ST-" + stId;
+        Font m_font = FontLib.getFont("Tahoma", Font.PLAIN, 12);
+        FontRenderContext frc = g.getFontRenderContext();
+        float width = (float) m_font.getStringBounds(text, frc).getWidth();
 
-        if (uv.showLabel()) {
-            String stIdstr = stId;
-            g.drawString(stIdstr, x + 5, y);
+        double distance = 3;
+        if ((theta > Math.PI / 2 && theta < 3 * Math.PI / 2)
+                || (theta < -Math.PI / 2 && theta > -3 * Math.PI / 2)) {
+            theta = theta + Math.PI;
+            distance = -pos.getBounds2D().getWidth()-width-3;
         }
+        double xpos = pos.getX() + pos.getWidth() + distance;
+        AffineTransform at = AffineTransform.getTranslateInstance(xpos, pos.getMaxY());
+        rotator = new AffineTransform();
+        rotator.rotate(theta, pos.getBounds2D().getCenterX(), pos.getBounds2D().getCenterY());
+        rotator.concatenate(at);
+        g.setFont(m_font.deriveFont(rotator));
+        g.setPaint(Color.BLACK);
+        g.drawString(text, 0, 0);
+
     }
 
     @Override
     protected Shape getRawShape(VisualItem item) {
-
         int x = (int) item.getX();
         int y = (int) item.getY();
 
-        Profile st = (Profile) item.getSourceTuple().get("profile");
-
-        if (st == null) {
+        Profile st = (Profile) item.getSourceTuple().get("st_ref");
+        if (st == null || st instanceof NJUnionNode) {
             return new Rectangle(x, y, 0, 0);
         }
 
-        int offsetX = (int) (uv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
-        int offsetY = (int) (uv.getTreeViewer().getScaleY());
-        
-        int w = 150 + offsetX;
-        int h = offsetY - 10;
+        int offsetX = (int) (gv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
+        int offsetY = (int) (20);
 
-        Rectangle area = new Rectangle(x, y, w, h);
-        return area;
+        int w = 50 + offsetX;
+        int h = offsetY - 15;
+
+        double px = item.getDouble("xp");
+        double py = item.getDouble("yp");
+        double tx = item.getDouble("x");
+        double ty = item.getDouble("y");
+        double deltaY = ty - py;
+        double deltaX = tx - px;
+        double theta = Math.atan2(deltaY, deltaX);
+
+        double distance = (w / 2) + 4;
+        double xpos = tx + (distance * Math.cos(theta));
+        double ypos = ty + (distance * Math.sin(theta));
+
+        AffineTransform rotator = new AffineTransform();
+        Rectangle shape = new Rectangle((int) xpos - (w / 2), (int) ypos - (h / 2), w, h);
+        rotator.rotate(theta, shape.getCenterX(), shape.getCenterY());
+        return rotator.createTransformedShape(shape);
+
     }
 
     @Override
-    protected void drawShape(Graphics2D g, VisualItem item, Shape shape) {
+    protected void drawShape(Graphics2D g, VisualItem item, Shape shape
+    ) {
 
-        //if render type is NONE, then there is nothing to do
-        String stId = item.getString("p_id");
-        int type = this.getRenderType(item);
-        BasicStroke stroke = this.getStroke(item);
-
-        if (type == AbstractShapeRenderer.RENDER_TYPE_NONE) {
-            return;
-        }
-
-        // set up colors
-        Color strokeColor = ColorLib.getColor(item.getStrokeColor());
         Color fillColor = ColorLib.getColor(item.getFillColor());
 
-        boolean sdraw = (type == AbstractShapeRenderer.RENDER_TYPE_DRAW
-                || type == AbstractShapeRenderer.RENDER_TYPE_DRAW_AND_FILL)
-                && strokeColor.getAlpha() != 0;
-        boolean fdraw = (type == AbstractShapeRenderer.RENDER_TYPE_FILL
-                || type == AbstractShapeRenderer.RENDER_TYPE_DRAW_AND_FILL)
-                && fillColor.getAlpha() != 0;
-
-        sdraw = fdraw = true;
-        if (!(sdraw || fdraw)) {
-            return;
-        }
-
-        Stroke origStroke = null;
-        if (sdraw) {
-            origStroke = g.getStroke();
-            g.setStroke(stroke);
-        }
-
-        int x, y, w, h;//, aw, ah;
-        double xx, yy, ww, hh;
-
-		// see if an optimized (non-shape) rendering call is available for us
-        // these can speed things up significantly on the windows JRE
-        // it is stupid we have to do this, but we do what we must
-        // if we are zoomed in, we have no choice but to use
-        // full precision rendering methods.
-        if (shape instanceof RectangularShape) {
-            RectangularShape r = (RectangularShape) shape;
-
-            xx = r.getX();
-            ww = r.getWidth();
-            yy = r.getY();
-            hh = r.getHeight();
-
-            x = (int) xx;
-            y = (int) yy;
-            w = (int) (ww + xx - x);
-            h = (int) (hh + yy - y);
-
-            if (shape instanceof Rectangle2D) {
-
-                Rectangle area = (Rectangle) shape;
-                if (item.get("profile") != null) {
-                    int freq = ((Profile) item.get("profile")).getFreq();
-                    boolean hide = item.getBoolean("hide");
-                    drawHorizontalChart(g, area, stId, freq, fillColor, hide);
-                    //System.out.println("draw-pie: " + ((Profile) item.get("profile")).getID());
-                }
+        if (shape instanceof Path2D) {
+            Profile profile = (Profile) item.get("st_ref");
+            if (profile instanceof NJLeafNode) {
+                String stId = item.getString("st_id");
+                int freq = profile.getFreq();
+                drawBar(g, shape, item, stId, freq, fillColor);
             }
-        } else if (shape instanceof Line2D) {
-            if (sdraw) {
-                Line2D l = (Line2D) shape;
-                x = (int) (l.getX1() + 0.5);
-                y = (int) (l.getY1() + 0.5);
-                w = (int) (l.getX2() + 0.5);
-                h = (int) (l.getY2() + 0.5);
-                g.setPaint(strokeColor);
-                g.drawLine(x, y, w, h);
-            }
-        } else {
-            if (fdraw) {
-                g.setPaint(fillColor);
-                g.fill(shape);
-            }
-            if (sdraw) {
-                g.setPaint(strokeColor);
-                g.draw(shape);
-            }
-        }
-        if (sdraw) {
-            g.setStroke(origStroke);
         }
     }
 }
