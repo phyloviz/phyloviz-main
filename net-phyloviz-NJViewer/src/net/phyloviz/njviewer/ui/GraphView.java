@@ -53,6 +53,7 @@ import net.phyloviz.njviewer.action.ForceViewControlAction;
 import net.phyloviz.njviewer.render.BarChartRenderer;
 import net.phyloviz.njviewer.render.ChartRenderer;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
+import net.phyloviz.njviewer.render.RadialEdgeRenderer;
 import net.phyloviz.njviewer.render.NodeLabelRenderer;
 import net.phyloviz.njviewer.ui.color.ChartLegendPanel;
 import net.phyloviz.njviewer.ui.color.ChartsPanel;
@@ -64,7 +65,6 @@ import prefuse.Visualization;
 import prefuse.action.ActionList;
 import prefuse.action.RepaintAction;
 import prefuse.action.assignment.ColorAction;
-import prefuse.activity.Activity;
 import prefuse.controls.Control;
 import prefuse.controls.ControlAdapter;
 import prefuse.controls.DragControl;
@@ -86,7 +86,6 @@ import prefuse.data.search.PrefixSearchTupleSet;
 import prefuse.data.tuple.TupleSet;
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.render.DefaultRendererFactory;
-import prefuse.render.EdgeRenderer;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
 import prefuse.util.GraphicsLib;
@@ -112,6 +111,7 @@ import prefuse.action.layout.Layout;
 import prefuse.util.PrefuseLib;
 import prefuse.action.layout.graph.ForceDirectedLayout;
 import prefuse.data.Tree;
+import prefuse.render.EdgeRenderer;
 
 public class GraphView extends GView {
 
@@ -224,7 +224,7 @@ public class GraphView extends GView {
 //            }
 //        };
         //fdl = new RadialLayout("graph", root.distance, 8194);
-        ActionList layout = new ActionList(Activity.INFINITY);
+        ActionList layout = new ActionList(ActionList.INFINITY);
         //layout.add(fdl);
         layout.add(fill);
         layout.add(text);
@@ -783,7 +783,7 @@ public class GraphView extends GView {
         if (status) {
             rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("edgep"));
         } else {
-            rf.setDefaultEdgeRenderer(new EdgeRenderer());
+            rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
         }
     }
 
@@ -1061,32 +1061,13 @@ public class GraphView extends GView {
             } else {
                 setDefaultRenderer(lr);
             }
-            rf.setDefaultEdgeRenderer(new EdgeRenderer());
+            rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
             view.run("layout");
             view.run("draw");
             view.repaint();
             updateUI();
         }
 
-    }
-
-    private void createTree(Tree t, Node root, NodeType child) {
-
-        Node n = t.addChild(root);
-        //n.set(label, child.getDisplayName());
-        if (child instanceof NJLeafNode) {
-            n.set("st_id", ((NJLeafNode) child).p.getID());
-            n.set("st_ref", (NJLeafNode) child);
-            return;
-        }
-        NJUnionNode newRoot = (NJUnionNode) child;
-        n.set("st_id", newRoot.getID());
-        n.setFloat("distance0", newRoot.distance1);
-        n.setFloat("distance1", newRoot.distance2);
-        n.set("n0", newRoot.n1);
-        n.set("n1", newRoot.n2);
-        createTree(t, n, newRoot.n1);
-        createTree(t, n, newRoot.n2);
     }
 
     boolean isRadial() {
@@ -1286,7 +1267,7 @@ public class GraphView extends GView {
         } else if (hasDistanceLabel) {
             rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
         } else {
-            rf.setDefaultEdgeRenderer(new EdgeRenderer());
+            rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
         }
         view.run("draw");
         updateUI();

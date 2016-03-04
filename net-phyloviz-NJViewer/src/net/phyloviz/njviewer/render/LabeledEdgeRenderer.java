@@ -38,12 +38,17 @@ public class LabeledEdgeRenderer extends EdgeRenderer {
 		NodeItem u = ((EdgeItem) item).getSourceItem();	
 		NodeItem v = ((EdgeItem) item).getTargetItem();	
 		
-		// Draw label...
+                double ux = u.getDouble("x");
+                double uy = u.getDouble("y");
+                double vx = v.getDouble("x");
+                double vy = v.getDouble("y");
+		
+                // Draw label...
 		Shape shape = getShape(item);
 		if ( shape == null ) return;
 
-		double x = (u.getX() + v.getX())/2;
-		double y = (u.getY() + v.getY())/2;
+		double x = (ux + vx)/2;
+		double y = (uy + vy)/2;
 		Font df = FontLib.getFont("Tahoma", Font.PLAIN, 11);
 		Color dc = g.getColor();
 		

@@ -1,6 +1,7 @@
 package net.phyloviz.njviewer.render;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -35,7 +36,7 @@ public class NodeLabelRenderer extends LabelRenderer {
         String s = null;
         if (item.canGetString(m_labelName)) {
             if (item.get("st_ref") instanceof NJLeafNode) {
-                return "ST-" + item.getString("st_id");
+                return item.getString("st_id");
             } else {
                 return s;
             }
@@ -106,157 +107,47 @@ public class NodeLabelRenderer extends LabelRenderer {
             return;
         }
 
-        // fill the shape, if requested
-        int type = getRenderType(item);
-        if (type == RENDER_TYPE_FILL || type == RENDER_TYPE_DRAW_AND_FILL) {
-            // GraphicsLib.paint(g, item, shape, getStroke(item), RENDER_TYPE_FILL);
-        }
-
-        // now render the image and text
         String text = m_text;
-        Image img = getImage(item);
-
-        if (text == null && img == null) {
-            return;
-        }
-
-        double size = item.getSize();
-        boolean useInt = 1.5 > Math.max(g.getTransform().getScaleX(),
-                g.getTransform().getScaleY());
-        double x = shape.getBounds2D().getCenterX() + size * m_horizBorder;
-        double y = shape.getBounds2D().getMinY() + size * m_vertBorder;
-
-        // render image
-        if (img != null) {
-            double w = size * img.getWidth(null);
-            double h = size * img.getHeight(null);
-            double ix = x, iy = y;
-
-            // determine one co-ordinate based on the image position
-            switch (m_imagePos) {
-                case Constants.LEFT:
-                    x += w + size * m_imageMargin;
-                    break;
-                case Constants.RIGHT:
-                    ix = shape.getBounds2D().getMaxX() - size * m_horizBorder - w;
-                    break;
-                case Constants.TOP:
-                    y += h + size * m_imageMargin;
-                    break;
-                case Constants.BOTTOM:
-                    iy = shape.getBounds2D().getMaxY() - size * m_vertBorder - h;
-                    break;
-                default:
-                    throw new IllegalStateException(
-                            "Unrecognized image alignment setting.");
-            }
-
-            // determine the other coordinate based on image alignment
-            switch (m_imagePos) {
-                case Constants.LEFT:
-                case Constants.RIGHT:
-                    // need to set image y-coordinate
-                    switch (m_vImageAlign) {
-                        case Constants.TOP:
-                            break;
-                        case Constants.BOTTOM:
-                            iy = shape.getBounds2D().getMaxY() - size * m_vertBorder - h;
-                            break;
-                        case Constants.CENTER:
-                            iy = shape.getBounds2D().getCenterY() - h / 2;
-                            break;
-                    }
-                    break;
-                case Constants.TOP:
-                case Constants.BOTTOM:
-                    // need to set image x-coordinate
-                    switch (m_hImageAlign) {
-                        case Constants.LEFT:
-                            break;
-                        case Constants.RIGHT:
-                            ix = shape.getBounds2D().getMaxX() - size * m_horizBorder - w;
-                            break;
-                        case Constants.CENTER:
-                            ix = shape.getBounds2D().getCenterX() - w / 2;
-                            break;
-                    }
-                    break;
-            }
-
-            if (useInt && size == 1.0) {
-                // if possible, use integer precision
-                // results in faster, flicker-free image rendering
-                //  g.drawImage(img, (int) ix, (int) iy, null);
-            } else {
-                m_transform.setTransform(size, 0, 0, size, ix, iy);
-                // g.drawImage(img, m_transform, null);
-            }
-        }
+        m_font = new Font("Tahoma", Font.PLAIN, 5);
 
         // render text
         int textColor = item.getTextColor();
         if (text != null && ColorLib.alpha(textColor) > 0) {
             g.setPaint(ColorLib.getColor(textColor));
             g.setFont(m_font);
-            FontMetrics fm = DEFAULT_GRAPHICS.getFontMetrics(m_font);
-
-            // compute available height
-            double th;
-            switch (m_imagePos) {
-                case Constants.LEFT:
-                case Constants.RIGHT:
-                    th = shape.getBounds2D().getHeight() - 2 * size * m_vertBorder;
-                    break;
-                default:
-                    th = m_textDim.height;
-            }
-
-            // compute starting y-coordinate
-            y += fm.getAscent();
-            y += th - m_textDim.height;
-
-            FontRenderContext frc = g.getFontRenderContext();
-            Rectangle2D strBounds = m_font.getStringBounds(text, frc);
-            float width = (float) strBounds.getWidth();
-            LineMetrics lm = m_font.getLineMetrics(text, frc);
-            float height = lm.getAscent() + lm.getDescent();
-
-            // Scale text into rect.
-            float xScale = (float) shape.getBounds2D().getWidth() / width;
-            float yScale = (float) shape.getBounds2D().getHeight() / height;
-            float scale = (xScale > yScale) ? yScale : xScale;
 
             double px = item.getDouble("xp");
             double py = item.getDouble("yp");
-            double tx = item.getDouble("x");
-            double ty = item.getDouble("y");
-            double deltaY = ty - py;
-            double deltaX = tx - px;
+            double x = item.getDouble("x");
+            double y = item.getDouble("y");
+
+            double deltaY = y - py;
+            double deltaX = x - px;
             double theta = Math.atan2(deltaY, deltaX);
 
-            double distance = 3;
-            if ((theta > Math.PI / 2 && theta < 3 * Math.PI / 2)
-                    || (theta < -Math.PI / 2 && theta > -3 * Math.PI / 2)) {
-                theta = theta + Math.PI;
-                double b = m_textDim.getWidth();
-                distance = -b - 3;
-
-            }
-
+            double w = m_textDim.getWidth();
+            double h = m_textDim.getHeight();
+            
+            double distance = (w/2) + 4;
+            
             x = x + (distance * Math.cos(theta));
             y = y + (distance * Math.sin(theta));
 
-            AffineTransform at = AffineTransform.getTranslateInstance(x, y);
-            at.scale(scale, scale);
-            AffineTransform rotator = new AffineTransform();
+            if ((theta > Math.PI / 2 && theta < 3 * Math.PI / 2)
+                    || (theta < -Math.PI / 2 && theta > -3 * Math.PI / 2)) {
 
+                theta = theta + Math.PI;
 
-            rotator.rotate(theta, x, y);
-            rotator.concatenate(at);
-            g.setFont(m_font.deriveFont(rotator));
+            }
+
             g.setPaint(Color.BLACK);
+            
+            AffineTransform orig = g.getTransform();
+            g.rotate(theta, x, y);
 
-            g.drawString(text, 0, 0);
+            g.drawString(text, (float) (x - (w/2)), (float) (y+(h/4)));
+            g.setTransform(orig);
+            
 
         }
     }

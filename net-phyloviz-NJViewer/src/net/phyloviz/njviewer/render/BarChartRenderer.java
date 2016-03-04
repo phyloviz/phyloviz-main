@@ -26,6 +26,7 @@ import prefuse.util.FontLib;
 import prefuse.visual.VisualItem;
 
 public class BarChartRenderer extends AbstractShapeRenderer {
+
     public static int DEFAULT_WIDTH = 50;
     public static int DEFAULT_HEIGHT = 5;
 
@@ -35,11 +36,10 @@ public class BarChartRenderer extends AbstractShapeRenderer {
     public BarChartRenderer(CategoryProvider cp, GView gv) {
         this.cp = cp;
         this.gv = gv;
-        ((GraphView)gv).setControlProps();
+        ((GraphView) gv).setControlProps();
     }
 
     public void drawBar(Graphics2D g, Shape area, VisualItem item, String id, int freq, Color fillColor) {
-
         String stId = String.valueOf(id);
 
         List<Category> glst = cp.getCategories(stId);
@@ -87,7 +87,6 @@ public class BarChartRenderer extends AbstractShapeRenderer {
                 Rectangle2D.Double shap = new Rectangle2D.Double(currAngle, area.getBounds2D().getY(), x_pos, area.getBounds2D().getHeight());
                 GeneralPath rect2 = new GeneralPath(rotator.createTransformedShape(shap));
                 g.setColor(groupColor);
-                //g.draw(rect2);
                 g.fill(rect2);
 
                 currAngle += x_pos;
@@ -99,60 +98,65 @@ public class BarChartRenderer extends AbstractShapeRenderer {
             GeneralPath rect2 = new GeneralPath(rotator.createTransformedShape(shap));
             g.fill(rect2);
         }
-        String text = "ST-" + stId;
-        Font m_font = FontLib.getFont("Tahoma", Font.PLAIN, 12);
-        FontRenderContext frc = g.getFontRenderContext();
-        float width = (float) m_font.getStringBounds(text, frc).getWidth();
+        String text = stId;
+        Font m_font = new Font("Tahoma", Font.PLAIN, 5);
+        g.setFont(m_font);
+        FontRenderContext frc = g.getFontRenderContext(); 
+        double width =  m_font.getStringBounds(text, frc).getWidth();
+        double height = m_font.getStringBounds(text, frc).getHeight();
+        double barWidth = pos.getWidth();
+        double distance = (barWidth / 2) + (width / 2) + 4;
 
-        double distance = 3;
+        double x = pos.getCenterX() + (distance * Math.cos(theta));
+        double y = pos.getCenterY() + (distance * Math.sin(theta));
+
         if ((theta > Math.PI / 2 && theta < 3 * Math.PI / 2)
                 || (theta < -Math.PI / 2 && theta > -3 * Math.PI / 2)) {
-            theta = theta + Math.PI;
-            distance = -pos.getBounds2D().getWidth()-width-3;
-        }
-        double xpos = pos.getX() + pos.getWidth() + distance;
-        AffineTransform at = AffineTransform.getTranslateInstance(xpos, pos.getMaxY());
-        rotator = new AffineTransform();
-        rotator.rotate(theta, pos.getBounds2D().getCenterX(), pos.getBounds2D().getCenterY());
-        rotator.concatenate(at);
-        g.setFont(m_font.deriveFont(rotator));
-        g.setPaint(Color.BLACK);
-        g.drawString(text, 0, 0);
 
+            theta = theta + Math.PI;
+
+        }
+
+        g.setPaint(Color.BLACK);
+
+        AffineTransform orig = g.getTransform();
+        g.rotate(theta, x, y);
+
+        g.drawString(text, (float) (x - (width / 2)), (float) (y + (height / 4)));
+        g.setTransform(orig);
+        
     }
 
     @Override
     protected Shape getRawShape(VisualItem item) {
-        int x = (int) item.getX();
-        int y = (int) item.getY();
+        double px = item.getDouble("xp");
+        double py = item.getDouble("yp");
+        double x = item.getDouble("x");
+        double y = item.getDouble("y");
 
         Profile st = (Profile) item.getSourceTuple().get("st_ref");
         if (st == null || st instanceof NJUnionNode) {
-            return new Rectangle(x, y, 0, 0);
+            return new Rectangle((int) x, (int) y, 0, 0);
         }
 
         int offsetX = (int) (gv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
 
-        int w = ((GraphView)gv).getWidthControlValue() + offsetX;
-        int h = ((GraphView)gv).getHeightControlValue();
+        double w = ((GraphView) gv).getWidthControlValue() + offsetX;
+        double h = ((GraphView) gv).getHeightControlValue();
 
-        double px = item.getDouble("xp");
-        double py = item.getDouble("yp");
-        double tx = item.getDouble("x");
-        double ty = item.getDouble("y");
-        double deltaY = ty - py;
-        double deltaX = tx - px;
+        
+        double deltaY = y - py;
+        double deltaX = x - px;
         double theta = Math.atan2(deltaY, deltaX);
 
         double distance = (w / 2) + 4;
-        double xpos = tx + (distance * Math.cos(theta));
-        double ypos = ty + (distance * Math.sin(theta));
-
+        x = x + (distance * Math.cos(theta));
+        y = y + (distance * Math.sin(theta));
+       
         AffineTransform rotator = new AffineTransform();
-        Rectangle shape = new Rectangle((int) xpos - (w / 2), (int) ypos - (h / 2), w, h);
+        Rectangle2D.Double shape = new Rectangle2D.Double(x - (w / 2), y - (h / 2), w, h);
         rotator.rotate(theta, shape.getCenterX(), shape.getCenterY());
         return rotator.createTransformedShape(shape);
-
     }
 
     @Override
