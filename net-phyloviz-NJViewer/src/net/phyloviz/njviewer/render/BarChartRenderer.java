@@ -29,14 +29,17 @@ public class BarChartRenderer extends AbstractShapeRenderer {
 
     public static int DEFAULT_WIDTH = 50;
     public static int DEFAULT_HEIGHT = 5;
+    public static int DEFAULT_FONT_SIZE = 4;
 
     private GView gv;
     private CategoryProvider cp;
+    private int widthBar = DEFAULT_WIDTH;
+    private int heightBar = DEFAULT_HEIGHT;
+    private int fontSize = DEFAULT_FONT_SIZE;
 
     public BarChartRenderer(CategoryProvider cp, GView gv) {
         this.cp = cp;
         this.gv = gv;
-        ((GraphView) gv).setControlProps();
     }
 
     public void drawBar(Graphics2D g, Shape area, VisualItem item, String id, int freq, Color fillColor) {
@@ -99,10 +102,10 @@ public class BarChartRenderer extends AbstractShapeRenderer {
             g.fill(rect2);
         }
         String text = stId;
-        Font m_font = new Font("Tahoma", Font.PLAIN, 5);
+        Font m_font = new Font("Tahoma", Font.PLAIN, getFontSize());
         g.setFont(m_font);
-        FontRenderContext frc = g.getFontRenderContext(); 
-        double width =  m_font.getStringBounds(text, frc).getWidth();
+        FontRenderContext frc = g.getFontRenderContext();
+        double width = m_font.getStringBounds(text, frc).getWidth();
         double height = m_font.getStringBounds(text, frc).getHeight();
         double barWidth = pos.getWidth();
         double distance = (barWidth / 2) + (width / 2) + 4;
@@ -124,7 +127,7 @@ public class BarChartRenderer extends AbstractShapeRenderer {
 
         g.drawString(text, (float) (x - (width / 2)), (float) (y + (height / 4)));
         g.setTransform(orig);
-        
+
     }
 
     @Override
@@ -141,10 +144,9 @@ public class BarChartRenderer extends AbstractShapeRenderer {
 
         int offsetX = (int) (gv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
 
-        double w = ((GraphView) gv).getWidthControlValue() + offsetX;
-        double h = ((GraphView) gv).getHeightControlValue();
+        double w = getWidthBarControlValue() + offsetX;
+        double h = getHeightBarControlValue();
 
-        
         double deltaY = y - py;
         double deltaX = x - px;
         double theta = Math.atan2(deltaY, deltaX);
@@ -152,7 +154,7 @@ public class BarChartRenderer extends AbstractShapeRenderer {
         double distance = (w / 2) + 4;
         x = x + (distance * Math.cos(theta));
         y = y + (distance * Math.sin(theta));
-       
+
         AffineTransform rotator = new AffineTransform();
         Rectangle2D.Double shape = new Rectangle2D.Double(x - (w / 2), y - (h / 2), w, h);
         rotator.rotate(theta, shape.getCenterX(), shape.getCenterY());
@@ -173,5 +175,28 @@ public class BarChartRenderer extends AbstractShapeRenderer {
                 drawBar(g, shape, item, stId, freq, fillColor);
             }
         }
+    }
+
+    private int getWidthBarControlValue() {
+        return widthBar;
+    }
+
+    private int getHeightBarControlValue() {
+        return heightBar;
+    }
+
+    public void setWidth(int value) {
+        widthBar = value;
+    }
+
+    public void setHeight(int value) {
+        heightBar = value;
+    }
+
+    private int getFontSize() {
+        return fontSize;
+    }
+    public void setFontSize(int value) {
+        fontSize = value;
     }
 }

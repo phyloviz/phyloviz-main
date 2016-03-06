@@ -157,8 +157,9 @@ public class GraphView extends GView {
     private final NJRoot root;
     private int m_size;
     private boolean isRadial = true;
-    private HashMap<String, Integer> props;
+//    private HashMap<String, Integer> props;
     private final JMenuItem radialViewControlMenuItem;
+    private JRadialViewControlPanel radialViewControlPanel;
 
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
@@ -383,7 +384,7 @@ public class GraphView extends GView {
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
         popupMenu.add(new ForceViewControlAction(this).getMenuItem());
-        radialViewControlMenuItem = new RadialViewControlAction(this).getMenuItem();
+        radialViewControlMenuItem = new RadialViewControlAction(this, getRadialViewControlPanel()).getMenuItem();
         popupMenu.add(radialViewControlMenuItem);
 
         JButton optionsButton = new JButton("Options");
@@ -1074,32 +1075,32 @@ public class GraphView extends GView {
         return isRadial;
     }
 
-    public JPanel getRadialViewControlPanel() {
-        return new JRadialViewControlPanel(this, props);
+    public JRadialViewControlPanel getRadialViewControlPanel() {
+        return new JRadialViewControlPanel(this);
     }
 
-    public int getWidthControlValue() {
-        if (props != null && props.containsKey("width")) {
-            return (int) props.get("width");
-        }
-        return -1;
+    public void setHeightViewControlValue(int value) {
+        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
+        r.setHeight(value);
+
+        view.run("layout");
+        view.run("draw");
+        view.repaint();
+        updateUI();
     }
 
-    public int getHeightControlValue() {
-        if (props != null && props.containsKey("height")) {
-            return (int) props.get("height");
-        }
-        return -1;
-    }
+    public void setWidthViewControlValue(int value) {
+        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
+        r.setWidth(value);
 
-    public void setControlProps() {
-        props = new HashMap<>();
-        props.put("height", BarChartRenderer.DEFAULT_HEIGHT);
-        props.put("width", BarChartRenderer.DEFAULT_WIDTH);
+        view.run("layout");
+        view.run("draw");
+        view.repaint();
+        updateUI();
     }
-
-    public void setViewControlValue(String key, int value) {
-        props.put(key, value);
+    public void setFontViewControlValue(int value) {
+        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
+        r.setFontSize(value);
 
         view.run("layout");
         view.run("draw");
