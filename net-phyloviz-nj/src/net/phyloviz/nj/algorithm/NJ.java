@@ -35,7 +35,11 @@ public abstract class NJ {
         td = inTd;
         ad = inAd;
         this.op = op;
-        nodeIdx = inTd.size() + 1;
+        Profile p = null;
+        for (Iterator<? extends AbstractProfile> it = td.iterator(); it.hasNext();) {
+            p = it.next();
+        }
+        nodeIdx = p.getUID() + 1;
     }
     
     public NJRoot generateTree(){

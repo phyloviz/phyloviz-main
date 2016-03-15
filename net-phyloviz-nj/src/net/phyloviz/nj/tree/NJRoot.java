@@ -60,7 +60,9 @@ public class NJRoot implements IEdgeJsonSaver{
     }
 
     public int size() {
-        return size(n1) + size(n2) - 1;
+        int s1 = size(n1);
+        int s2 = size(n2);
+        return s1 + s2 - 1;
     }
 
     private int size(NodeType n) {
