@@ -38,10 +38,10 @@ public class LabeledEdgeRenderer extends EdgeRenderer {
 		NodeItem u = ((EdgeItem) item).getSourceItem();	
 		NodeItem v = ((EdgeItem) item).getTargetItem();	
 		
-                double ux = u.getDouble("x");
-                double uy = u.getDouble("y");
-                double vx = v.getDouble("x");
-                double vy = v.getDouble("y");
+                double ux = u.getX();//u.getDouble("x");
+                double uy = u.getY();//u.getDouble("y");
+                double vx = v.getX();//v.getDouble("x");
+                double vy = v.getY();//v.getDouble("y");
 		
                 // Draw label...
 		Shape shape = getShape(item);

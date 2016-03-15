@@ -3,7 +3,6 @@ package net.phyloviz.njviewer.ui;
 import net.phyloviz.upgmanjcore.visualization.Point;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -28,8 +27,6 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import net.phyloviz.algo.AbstractDistance;
 import net.phyloviz.algo.Edge;
@@ -53,8 +50,9 @@ import net.phyloviz.njviewer.action.ForceViewControlAction;
 import net.phyloviz.njviewer.render.BarChartRenderer;
 import net.phyloviz.njviewer.render.ChartRenderer;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
-import net.phyloviz.njviewer.render.RadialEdgeRenderer;
 import net.phyloviz.njviewer.render.NodeLabelRenderer;
+import net.phyloviz.njviewer.render.RadialEdgeRenderer;
+import net.phyloviz.njviewer.render.RadialNodeLabelRenderer;
 import net.phyloviz.njviewer.ui.color.ChartLegendPanel;
 import net.phyloviz.njviewer.ui.color.ChartsPanel;
 import net.phyloviz.njviewer.ui.color.EdgeStats;
@@ -110,8 +108,8 @@ import prefuse.action.assignment.FontAction;
 import prefuse.action.layout.Layout;
 import prefuse.util.PrefuseLib;
 import prefuse.action.layout.graph.ForceDirectedLayout;
-import prefuse.data.Tree;
 import prefuse.render.EdgeRenderer;
+import prefuse.render.LabelRenderer;
 
 public class GraphView extends GView {
 
@@ -133,12 +131,12 @@ public class GraphView extends GView {
     private Display display;
     private JSearchPanel searchPanel;
     private boolean searchMatch = false;
-    private JList groupList;
+//    private JList groupList;
     private int itemFound = -1;
     private InfoPanel infoPanel;
     //private ChartLegendPanel chartInfoPos, chartInfoNeg;
     private JPopupMenu popupMenu;
-    private NodeLabelRenderer lr;
+    private LabelRenderer lr;
     private DefaultRendererFactory rf;
     private Layout fdl;
     private boolean running, linear, label = true;
@@ -173,8 +171,7 @@ public class GraphView extends GView {
         view = new Visualization();
         // Setup renderers.
         rf = new DefaultRendererFactory();
-        lr = new NodeLabelRenderer("st_id");
-        lr.setRoundedCorner(10, 10);
+        lr = new RadialNodeLabelRenderer("st_id");
         rf.setDefaultRenderer(lr);
         view.setRendererFactory(rf);
         // Setup actions to process the visual data.
@@ -291,38 +288,38 @@ public class GraphView extends GView {
         nodeTable = nodeSchema.instantiate();
         edgeTable = edgeSchema.instantiate();
         // Group panel.
-        groupList = new JList();
-        groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        groupList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting()) {
-                    return;
-                }
-                int[] selectedIndices = groupList.getSelectedIndices();
-                view.setVisible("graph", null, false);
-                for (int i = 0; i < selectedIndices.length; i++) {
-                    Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
-                    view.setVisible("graph",
-                            (Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + distance), true);
-                }
-                view.run("draw");
-
-                appendTextToInfoPanel("\n");
-                SwingWorker job = new SwingWorker() {
-                    @Override
-                    protected Object doInBackground() throws Exception {
-                        //Thread.sleep(100);
-                        Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
-                        GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
-                        DisplayLib.fitViewToBounds(display, bounds, 1000);
-                        return null;
-                    }
-                };
-                job.execute();
-            }
-        });
-        groupList.setCellRenderer(new GroupCellRenderer());
+//        groupList = new JList();
+//        groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+//        groupList.addListSelectionListener(new ListSelectionListener() {
+//            @Override
+//            public void valueChanged(ListSelectionEvent e) {
+//                if (e.getValueIsAdjusting()) {
+//                    return;
+//                }
+//                int[] selectedIndices = groupList.getSelectedIndices();
+//                view.setVisible("graph", null, false);
+//                for (int i = 0; i < selectedIndices.length; i++) {
+//                    Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
+//                    view.setVisible("graph",
+//                            (Predicate) ExpressionParser.parse("g=" + g.getID() + "and w <= " + distance), true);
+//                }
+//                view.run("draw");
+//
+//                appendTextToInfoPanel("\n");
+//                SwingWorker job = new SwingWorker() {
+//                    @Override
+//                    protected Object doInBackground() throws Exception {
+//                        //Thread.sleep(100);
+//                        Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
+//                        GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
+//                        DisplayLib.fitViewToBounds(display, bounds, 1000);
+//                        return null;
+//                    }
+//                };
+//                job.execute();
+//            }
+//        });
+//        groupList.setCellRenderer(new GroupCellRenderer());
 
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(Color.WHITE);
@@ -614,7 +611,7 @@ public class GraphView extends GView {
                     }
                 }
 
-                groupList.setListData(new Group[]{g});
+//                groupList.setListData(new Group[]{g});
                 // Search stuff.
                 TupleSet search = new PrefixSearchTupleSet();
                 search.addTupleSetListener(new TupleSetListener() {
@@ -632,7 +629,7 @@ public class GraphView extends GView {
                                 itemFound = gid;
                             }
                         }
-                        groupList.repaint();
+//                        groupList.repaint();
                     }
                 });
                 view.addFocusGroup(Visualization.SEARCH_ITEMS, search);
@@ -643,8 +640,8 @@ public class GraphView extends GView {
                 bottomBox.add(searchPanel, 11);
                 bottomBox.validate();
 
-                groupList.setSelectedIndex(0);
-                groupList.repaint();
+//                groupList.setSelectedIndex(0);
+//                groupList.repaint();
                 return null;
             }
         };
@@ -689,11 +686,11 @@ public class GraphView extends GView {
     private void updateDistanceFilter(float value) {
         view.setVisible("graph", null, false);
         distance = value;
-        int[] selectedIndices = groupList.getSelectedIndices();
-        for (int i = 0; i < selectedIndices.length; i++) {
-            Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
-            view.setVisible("graph", (Predicate) ExpressionParser.parse("g=" + g.getID() + "and distance <= " + distance), true);
-        }
+//        int[] selectedIndices = groupList.getSelectedIndices();
+//        for (int i = 0; i < selectedIndices.length; i++) {
+//            Group g = (Group) groupList.getModel().getElementAt(selectedIndices[i]);
+        view.setVisible("graph", (Predicate) ExpressionParser.parse("distance <= " + distance), true);
+//        }
         view.run("draw");
         //view.run("layout");
         updateUI();
@@ -704,8 +701,8 @@ public class GraphView extends GView {
         view.run("draw");
         view.run("layout");
         updateUI();
-        groupList.setSelectedIndex(0);
-        groupList.repaint();
+//        groupList.setSelectedIndex(0);
+//        groupList.repaint();
         running = true;
     }
 
@@ -1040,7 +1037,10 @@ public class GraphView extends GView {
             if (cp != null) {
                 setDefaultRenderer(new ChartRenderer(cp, this));
             } else {
+                lr = new NodeLabelRenderer("st_id");
+                ((NodeLabelRenderer) lr).setRoundedCorner(10, 10);
                 setDefaultRenderer(lr);
+//            rf.setDefaultRenderer(lr);
             }
             rf.setDefaultEdgeRenderer(new EdgeRenderer());
             view.run("layout");
@@ -1060,7 +1060,9 @@ public class GraphView extends GView {
             if (cp != null) {
                 setDefaultRenderer(new BarChartRenderer(cp, this));
             } else {
+                lr = new RadialNodeLabelRenderer("st_id");
                 setDefaultRenderer(lr);
+                rf.setDefaultRenderer(lr);
             }
             rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
             view.run("layout");
@@ -1098,6 +1100,7 @@ public class GraphView extends GView {
         view.repaint();
         updateUI();
     }
+
     public void setFontViewControlValue(int value) {
         BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
         r.setFontSize(value);
@@ -1268,7 +1271,10 @@ public class GraphView extends GView {
         } else if (hasDistanceLabel) {
             rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
         } else {
-            rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
+            if(isRadial)
+                rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
+            else
+                rf.setDefaultEdgeRenderer(new EdgeRenderer());
         }
         view.run("draw");
         updateUI();
@@ -1310,35 +1316,35 @@ public class GraphView extends GView {
         }
     }
 
-    private class GroupCellRenderer extends JLabel implements ListCellRenderer {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            String s = value.toString();
-            setText(s);
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
-                setForeground(list.getSelectionForeground());
-            } else {
-                setBackground(list.getBackground());
-                setForeground(list.getForeground());
-            }
-            setEnabled(list.isEnabled());
-            setFont(list.getFont());
-
-            Group g = (Group) groupList.getModel().getElementAt(index);
-            if (g.size() == 1) {
-                setFont(list.getFont().deriveFont(Font.ITALIC));
-                setForeground(Color.GRAY);
-            }
-            if (itemFound == g.getID()) {
-                setFont(list.getFont().deriveFont(Font.BOLD));
-                setForeground(Color.RED);
-            }
-            setOpaque(true);
-            return this;
-        }
-    }
+//    private class GroupCellRenderer extends JLabel implements ListCellRenderer {
+//
+//        private static final long serialVersionUID = 1L;
+//
+//        @Override
+//        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//            String s = value.toString();
+//            setText(s);
+//            if (isSelected) {
+//                setBackground(list.getSelectionBackground());
+//                setForeground(list.getSelectionForeground());
+//            } else {
+//                setBackground(list.getBackground());
+//                setForeground(list.getForeground());
+//            }
+//            setEnabled(list.isEnabled());
+//            setFont(list.getFont());
+//
+//            Group g = (Group) groupList.getModel().getElementAt(index);
+//            if (g.size() == 1) {
+//                setFont(list.getFont().deriveFont(Font.ITALIC));
+//                setForeground(Color.GRAY);
+//            }
+//            if (itemFound == g.getID()) {
+//                setFont(list.getFont().deriveFont(Font.BOLD));
+//                setForeground(Color.RED);
+//            }
+//            setOpaque(true);
+//            return this;
+//        }
+//    }
 }
