@@ -156,6 +156,7 @@ public class GraphView extends GView {
     private int m_size;
     private boolean isRadial = true;
 //    private HashMap<String, Integer> props;
+    private final JMenuItem forceViewControlMenuItem;
     private final JMenuItem radialViewControlMenuItem;
     private JRadialViewControlPanel radialViewControlPanel;
 
@@ -369,7 +370,6 @@ public class GraphView extends GView {
                 stopAnimation();
             }
         });
-        showDistancesChart = new ShowDistancesLayoutChartAction(this).getMenuItem();
         popupMenu = new JPopupMenu();
         popupMenu.add(new ForceDirectedLayoutAction(this).getMenuItem());
         popupMenu.add(new InfoControlAction(this).getMenuItem());
@@ -377,10 +377,16 @@ public class GraphView extends GView {
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         popupMenu.add(new RoundDistanceAction(this).getMenuItem());
         popupMenu.add(new ForceDistanceLayoutAction(this).getMenuItem());
+
+        showDistancesChart = new ShowDistancesLayoutChartAction(this).getMenuItem();
         popupMenu.add(showDistancesChart);
+        
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
-        popupMenu.add(new ForceViewControlAction(this).getMenuItem());
+        
+        forceViewControlMenuItem = new ForceViewControlAction(this).getMenuItem();
+        popupMenu.add(forceViewControlMenuItem);
+        
         radialViewControlMenuItem = new RadialViewControlAction(this, getRadialViewControlPanel()).getMenuItem();
         popupMenu.add(radialViewControlMenuItem);
 
@@ -1082,6 +1088,9 @@ public class GraphView extends GView {
     }
 
     public void setHeightViewControlValue(int value) {
+        if (cp == null)
+            return;
+
         BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
         r.setHeight(value);
 
@@ -1092,6 +1101,9 @@ public class GraphView extends GView {
     }
 
     public void setWidthViewControlValue(int value) {
+        if (cp == null)
+            return;
+
         BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
         r.setWidth(value);
 
@@ -1102,8 +1114,13 @@ public class GraphView extends GView {
     }
 
     public void setFontViewControlValue(int value) {
-        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
-        r.setFontSize(value);
+        if (cp != null) {
+            BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
+            r.setFontSize(value);
+        } else {
+            RadialNodeLabelRenderer r = (RadialNodeLabelRenderer) rf.getDefaultRenderer();
+            r.setFontSize(value);
+        }
 
         view.run("layout");
         view.run("draw");
@@ -1113,6 +1130,7 @@ public class GraphView extends GView {
 
     void enableViewControl(boolean status) {
         radialViewControlMenuItem.setEnabled(status);
+        forceViewControlMenuItem.setEnabled(!status);
     }
 
     // Private classes.

@@ -17,7 +17,7 @@ public class ForceDirectedLayoutAction extends AbstractAction {
 	}
 
 	public JMenuItem getMenuItem() {
-		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Change to Force Directed Layout");
+		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Force Directed Layout");
 		mi.setMnemonic(KeyEvent.VK_R);
 		mi.setSelected(false);
 		mi.addActionListener(this);

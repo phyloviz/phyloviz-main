@@ -53,7 +53,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
             gv = new GraphView(name, njr, false, null);
         }
         this.add(gv);
-        gv.enableViewControl(false);
+        gv.enableViewControl(gv.isRadial());
         gvCatListen = new CategoryChangeListener() {
 
             @Override
@@ -70,7 +70,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
                     catProvider = null;
                     gv.resetDefaultRenderer();
                     gv.setCategoryProvider(null);
-                    gv.enableViewControl(false);
+                    gv.enableViewControl(gv.isRadial());
                 }
             }
         };

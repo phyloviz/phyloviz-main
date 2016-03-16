@@ -45,7 +45,7 @@ public class RadialViewControlAction implements ActionListener {
 	}
 
 	public JMenuItem getMenuItem() {
-		JMenuItem mi = new JMenuItem("Radial View Control");
+		JMenuItem mi = new JMenuItem("Tree View Control");
 		mi.setToolTipText("Rendering engine control");
 		mi.setMnemonic(KeyEvent.VK_C);
 		mi.addActionListener(this);
