@@ -158,7 +158,7 @@ public class GraphView extends GView {
 //    private HashMap<String, Integer> props;
     private final JMenuItem forceViewControlMenuItem;
     private final JMenuItem radialViewControlMenuItem;
-    private JRadialViewControlPanel radialViewControlPanel;
+    private ActionList filter;
 
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
@@ -223,12 +223,14 @@ public class GraphView extends GView {
 //            }
 //        };
         //fdl = new RadialLayout("graph", root.distance, 8194);
-        ActionList layout = new ActionList(ActionList.INFINITY);
-        //layout.add(fdl);
-        layout.add(fill);
-        layout.add(text);
-        layout.add(edge);
-        layout.add(new RepaintAction());
+        filter = new ActionList();
+        filter.add(fill);
+        filter.add(text);
+        filter.add(edge);
+        filter.add(new RepaintAction());
+
+        ActionList layout = new ActionList();
+        layout.add(filter);
 
         ActionList staticLayout = new ActionList();
         staticLayout.add(fill);
@@ -380,13 +382,13 @@ public class GraphView extends GView {
 
         showDistancesChart = new ShowDistancesLayoutChartAction(this).getMenuItem();
         popupMenu.add(showDistancesChart);
-        
+
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
-        
+
         forceViewControlMenuItem = new ForceViewControlAction(this).getMenuItem();
         popupMenu.add(forceViewControlMenuItem);
-        
+
         radialViewControlMenuItem = new RadialViewControlAction(this, getRadialViewControlPanel()).getMenuItem();
         popupMenu.add(radialViewControlMenuItem);
 
@@ -951,50 +953,52 @@ public class GraphView extends GView {
     }
 
     public void setForceDistanceLayout(boolean status) {
-        forceDistanceLayout = status;
-        if (showChart) {
-            setDistanceChart(false);
-        }
-        if (forceDistanceLayout) {
-            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
-                @Override
-                protected float getSpringLength(EdgeItem e) {
-                    double dist;
-                    if (e.getFloat("distance") < 0.01) {
-                        dist = 10 + 300 * 0.01f;
-                    } else {
-                        dist = 10 + 300 * e.getFloat("distance");
+        if (!isRadial) {
+            forceDistanceLayout = status;
+            if (showChart) {
+                setDistanceChart(false);
+            }
+            if (forceDistanceLayout) {
+                ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
+                    @Override
+                    protected float getSpringLength(EdgeItem e) {
+                        double dist;
+                        if (e.getFloat("distance") < 0.01) {
+                            dist = 10 + 300 * 0.01f;
+                        } else {
+                            dist = 10 + 300 * e.getFloat("distance");
+                        }
+                        dist = rescaleDistance ? Math.log(dist) : dist;
+                        return (float) dist;
                     }
-                    dist = rescaleDistance ? Math.log(dist) : dist;
-                    return (float) dist;
-                }
-            };
-            ActionList layout = (ActionList) view.getAction("layout");
-            layout.remove(fdl);
-            layout.add(new_fdl);
-            fdl = new_fdl;
-            fdl.setVisualization(view);
-            view.run("layout");
-            view.repaint();
-            updateUI();
-        } else {
-            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
-                @Override
-                protected float getSpringLength(EdgeItem e) {
-                    double distance = e.getDouble("distance");
-                    double dist = rescaleDistance ? Math.log(1 + distance) : distance;
-                    return (float) dist;
-                }
-            };
-            ActionList layout = (ActionList) view.getAction("layout");
-            layout.remove(fdl);
-            layout.add(new_fdl);
-            fdl = new_fdl;
-            fdl.setVisualization(view);
-            view.run("layout");
-            view.run("draw");
-            view.repaint();
-            updateUI();
+                };
+                ActionList layout = (ActionList) view.getAction("layout");
+                layout.remove(fdl);
+                layout.add(new_fdl);
+                fdl = new_fdl;
+                fdl.setVisualization(view);
+                view.run("layout");
+                view.repaint();
+                updateUI();
+            } else {
+                ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
+                    @Override
+                    protected float getSpringLength(EdgeItem e) {
+                        double distance = e.getDouble("distance");
+                        double dist = rescaleDistance ? Math.log(1 + distance) : distance;
+                        return (float) dist;
+                    }
+                };
+                ActionList layout = (ActionList) view.getAction("layout");
+                layout.remove(fdl);
+                layout.add(new_fdl);
+                fdl = new_fdl;
+                fdl.setVisualization(view);
+                view.run("layout");
+                view.run("draw");
+                view.repaint();
+                updateUI();
+            }
         }
     }
 
@@ -1033,11 +1037,12 @@ public class GraphView extends GView {
         if (status) {
             isRadial = false;
             ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph");
-            ActionList layout = (ActionList) view.getAction("layout");
-            if (fdl != null) {
-                layout.remove(fdl);
-            }
-            layout.add(new_fdl);
+            ActionList newLayout = new ActionList(ActionList.INFINITY);
+            newLayout.add(new_fdl);
+            newLayout.add(filter);
+            view.removeAction("layout");
+            view.putAction("layout", newLayout);
+
             fdl = new_fdl;
             fdl.setVisualization(view);
             if (cp != null) {
@@ -1046,7 +1051,6 @@ public class GraphView extends GView {
                 lr = new NodeLabelRenderer("st_id");
                 ((NodeLabelRenderer) lr).setRoundedCorner(10, 10);
                 setDefaultRenderer(lr);
-//            rf.setDefaultRenderer(lr);
             }
             rf.setDefaultEdgeRenderer(new EdgeRenderer());
             view.run("layout");
@@ -1056,11 +1060,12 @@ public class GraphView extends GView {
         } else {
             isRadial = true;
             RadialLayout new_fdl = new RadialLayout("graph", root.distance, m_size);
-            ActionList layout = (ActionList) view.getAction("layout");
-            if (fdl != null) {
-                layout.remove(fdl);
-            }
-            layout.add(new_fdl);
+            ActionList newLayout = new ActionList(ActionList.INFINITY);
+            newLayout.add(new_fdl);
+            newLayout.add(filter);
+            view.removeAction("layout");
+            view.putAction("layout", newLayout);
+
             fdl = new_fdl;
             fdl.setVisualization(view);
             if (cp != null) {
@@ -1088,8 +1093,9 @@ public class GraphView extends GView {
     }
 
     public void setHeightViewControlValue(int value) {
-        if (cp == null)
+        if (cp == null) {
             return;
+        }
 
         BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
         r.setHeight(value);
@@ -1101,8 +1107,9 @@ public class GraphView extends GView {
     }
 
     public void setWidthViewControlValue(int value) {
-        if (cp == null)
+        if (cp == null) {
             return;
+        }
 
         BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
         r.setWidth(value);
@@ -1289,10 +1296,11 @@ public class GraphView extends GView {
         } else if (hasDistanceLabel) {
             rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
         } else {
-            if(isRadial)
+            if (isRadial) {
                 rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
-            else
+            } else {
                 rf.setDefaultEdgeRenderer(new EdgeRenderer());
+            }
         }
         view.run("draw");
         updateUI();
