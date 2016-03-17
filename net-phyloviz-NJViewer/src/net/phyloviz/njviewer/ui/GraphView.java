@@ -1060,7 +1060,7 @@ public class GraphView extends GView {
         } else {
             isRadial = true;
             RadialLayout new_fdl = new RadialLayout("graph", root.distance, m_size);
-            ActionList newLayout = new ActionList(ActionList.INFINITY);
+            ActionList newLayout = new ActionList();
             newLayout.add(new_fdl);
             newLayout.add(filter);
             view.removeAction("layout");
