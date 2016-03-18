@@ -475,8 +475,8 @@ public class GraphView extends GView {
             @Override
             protected Object doInBackground() throws Exception {
                 // Create initial group.
-                Group g = new Group();
-                g.setID(1);
+//                Group g = new Group();
+//                g.setID(1);
 
                 int nedges = root.size();
 
@@ -500,17 +500,17 @@ public class GraphView extends GView {
                     adjList.get(u).add(edw);
                     adjList.get(v).add(edw);
                 }
-                SwingWorker job = new SwingWorker() {
-                    @Override
-                    protected Object doInBackground() throws Exception {
-                        //Thread.sleep(500);
-                        Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
-                        GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
-                        DisplayLib.fitViewToBounds(display, bounds, 2000);
-                        return null;
-                    }
-                };
-                job.execute();
+//                SwingWorker job = new SwingWorker() {
+//                    @Override
+//                    protected Object doInBackground() throws Exception {
+//                        //Thread.sleep(500);
+//                        Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
+//                        GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
+//                        DisplayLib.fitViewToBounds(display, bounds, 2000);
+//                        return null;
+//                    }
+//                };
+//                job.execute();
                 // Fill tables. 
                 // Fill tables. 
                 LinkedList<Integer> q = new LinkedList<>();
@@ -683,6 +683,11 @@ public class GraphView extends GView {
                             stopAnimation();
                         }
 
+                        //Center view
+                        Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
+                        GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
+                        DisplayLib.fitViewToBounds(display, bounds, 2000);
+                        
                     }
 
                 }
@@ -1306,41 +1311,41 @@ public class GraphView extends GView {
         updateUI();
     }
 
-    private class Group {
-
-        private int id;
-        private final LinkedList<Integer> list;
-
-        Group() {
-            this.id = 0;
-            list = new LinkedList<>();
-        }
-
-        public void setID(int id) {
-            this.id = id;
-        }
-
-        public int getID() {
-            return id;
-        }
-
-        public List<Integer> getItems() {
-            return list;
-        }
-
-        public void add(int u) {
-            list.add(u);
-        }
-
-        public int size() {
-            return list.size();
-        }
-
-        @Override
-        public String toString() {
-            return Integer.toString(id);
-        }
-    }
+//    private class Group {
+//
+//        private int id;
+//        private final LinkedList<Integer> list;
+//
+//        Group() {
+//            this.id = 0;
+//            list = new LinkedList<>();
+//        }
+//
+//        public void setID(int id) {
+//            this.id = id;
+//        }
+//
+//        public int getID() {
+//            return id;
+//        }
+//
+//        public List<Integer> getItems() {
+//            return list;
+//        }
+//
+//        public void add(int u) {
+//            list.add(u);
+//        }
+//
+//        public int size() {
+//            return list.size();
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return Integer.toString(id);
+//        }
+//    }
 
 //    private class GroupCellRenderer extends JLabel implements ListCellRenderer {
 //
