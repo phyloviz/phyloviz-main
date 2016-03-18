@@ -102,7 +102,7 @@ public class Isolate implements DataItem {
 	 * @throws IndexOutOfBoundsException   if the argument <code>idx</code> is negative
 	 * or not less than the size of the ancillary data list.
 	 */
-	protected void set(int idx, String value) {
+	public void set(int idx, String value) {
 		if (idx >= 0 && idx < values.size()) {
 			values.set(idx, value);
 		}

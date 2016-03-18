@@ -39,6 +39,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -58,6 +59,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class AlignedSequenceFastaFactory implements TypingFactory {
 	
 	private static final String customName = "Aligned Sequences (FASTA)";
+	private final HashMap<String, String> sameAs = new HashMap<String, String>();
 
 	@Override
 	public String toString() {
@@ -128,6 +130,8 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 						new Object[]{profile.getID(), oldProfile.getID()});
 					msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
 					error = true;
+
+					sameAs.put(profile.getID(), oldProfile.getID());
 				}
 			} else {
 				try {
@@ -158,7 +162,10 @@ public class AlignedSequenceFastaFactory implements TypingFactory {
 
 		Iterator<Isolate> ii = pop.iterator();
 		while (ii.hasNext()) {
-			String sid = ii.next().get(key);
+			Isolate i = ii.next();
+			if (sameAs.containsKey(i.get(key)))
+				i.set(key, sameAs.get(i.get(key)));
+			String sid = i.get(key);
 			Integer freq = st2freq.get(sid);
 			st2freq.put(sid, (freq == null) ? 1 : (freq.intValue() + 1));
 		}
