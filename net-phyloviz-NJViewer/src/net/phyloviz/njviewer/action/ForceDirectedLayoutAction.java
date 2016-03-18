@@ -32,6 +32,7 @@ public class ForceDirectedLayoutAction extends AbstractAction {
 		}
 		boolean status = ((JCheckBoxMenuItem) e.getSource()).isSelected();
 		gv.setForceDirectedLayout(status);
+		gv.enableViewControl(!status);
 	}
 
 }
