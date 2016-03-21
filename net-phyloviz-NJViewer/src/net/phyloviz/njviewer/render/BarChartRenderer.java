@@ -17,6 +17,7 @@ import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJUnionNode;
+import net.phyloviz.njviewer.action.control.JRadialViewControlPanel;
 import net.phyloviz.njviewer.ui.GraphView;
 import net.phyloviz.upgmanjcore.visualization.GView;
 
@@ -29,13 +30,13 @@ public class BarChartRenderer extends AbstractShapeRenderer {
 
     public static int DEFAULT_WIDTH = 50;
     public static int DEFAULT_HEIGHT = 5;
-    public static int DEFAULT_FONT_SIZE = 4;
+    public static int DEFAULT_FONT_SIZE = 5;
 
     private GView gv;
     private CategoryProvider cp;
     private int widthBar = DEFAULT_WIDTH;
     private int heightBar = DEFAULT_HEIGHT;
-    private int fontSize = DEFAULT_FONT_SIZE;
+//    private int fontSize = DEFAULT_FONT_SIZE;
 
     public BarChartRenderer(CategoryProvider cp, GView gv) {
         this.cp = cp;
@@ -102,7 +103,7 @@ public class BarChartRenderer extends AbstractShapeRenderer {
             g.fill(rect2);
         }
         String text = stId;
-        Font m_font = new Font("Tahoma", Font.PLAIN, getFontSize());
+        Font m_font = new Font("Tahoma", Font.PLAIN, ((GraphView)gv).getRadialControlViewInfo(JRadialViewControlPanel.FONT));
         g.setFont(m_font);
         FontRenderContext frc = g.getFontRenderContext();
         double width = m_font.getStringBounds(text, frc).getWidth();
@@ -178,25 +179,25 @@ public class BarChartRenderer extends AbstractShapeRenderer {
     }
 
     private int getWidthBarControlValue() {
-        return widthBar;
+        return ((GraphView)gv).getRadialControlViewInfo(JRadialViewControlPanel.WIDTH);
     }
 
     private int getHeightBarControlValue() {
-        return heightBar;
+        return ((GraphView)gv).getRadialControlViewInfo(JRadialViewControlPanel.HEIGHT);
     }
 
-    public void setWidth(int value) {
-        widthBar = value;
-    }
+//    public void setWidth(int value) {
+//        widthBar = value;
+//    }
+//
+//    public void setHeight(int value) {
+//        heightBar = value;
+//    }
 
-    public void setHeight(int value) {
-        heightBar = value;
-    }
-
-    private int getFontSize() {
-        return fontSize;
-    }
-    public void setFontSize(int value) {
-        fontSize = value;
-    }
+//    private int getFontSize() {
+//        return fontSize;
+//    }
+//    public void setFontSize(int value) {
+//        fontSize = value;
+//    }
 }

@@ -21,6 +21,7 @@ public class RoundDistanceAction extends AbstractAction {
 		mi.setToolTipText("Round the label edges distance value");
 		mi.setMnemonic(KeyEvent.VK_V);
 		mi.setSelected(false);
+                mi.setEnabled(false);
 		mi.addActionListener(this);
 		return mi;
 	}

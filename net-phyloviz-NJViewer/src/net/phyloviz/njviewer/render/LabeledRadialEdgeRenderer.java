@@ -13,13 +13,13 @@ import prefuse.visual.EdgeItem;
 import prefuse.visual.NodeItem;
 import prefuse.visual.VisualItem;
 
-public class LabeledEdgeRenderer extends EdgeRenderer {
+public class LabeledRadialEdgeRenderer extends RadialEdgeRenderer {
 
     private final String m_key;
     private boolean round = false;
     private final GView gv;
 
-    public LabeledEdgeRenderer(GView gv, String key, boolean round) {
+    public LabeledRadialEdgeRenderer(GView gv, String key, boolean round) {
         super();
         this.gv = gv;
         m_key = key;
@@ -32,10 +32,10 @@ public class LabeledEdgeRenderer extends EdgeRenderer {
         NodeItem u = ((EdgeItem) item).getSourceItem();
         NodeItem v = ((EdgeItem) item).getTargetItem();
 
-        double ux = u.getX();//u.getDouble("x");
-        double uy = u.getY();//u.getDouble("y");
-        double vx = v.getX();//v.getDouble("x");
-        double vy = v.getY();//v.getDouble("y");
+        double ux = u.getDouble("x");
+        double uy = u.getDouble("y");
+        double vx = v.getDouble("x");
+        double vy = v.getDouble("y");
 
         // Draw label...
         Shape shape = getShape(item);

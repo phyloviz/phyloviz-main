@@ -20,6 +20,7 @@ public class ForceDistanceLayoutAction extends AbstractAction {
 		JCheckBoxMenuItem mi = new JCheckBoxMenuItem("Force Distance Layout");
 		mi.setMnemonic(KeyEvent.VK_F);
 		mi.setSelected(false);
+                mi.setEnabled(!gv.isRadial());
 		mi.addActionListener(this);
 		return mi;
 	}

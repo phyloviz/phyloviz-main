@@ -6,6 +6,8 @@ package net.phyloviz.njviewer.ui;
  */
 
 import java.util.LinkedList;
+import net.phyloviz.njviewer.action.control.JRadialViewControlPanel;
+import net.phyloviz.upgmanjcore.visualization.GView;
 import prefuse.action.layout.graph.RadialTreeLayout;
 
 import prefuse.data.Graph;
@@ -15,9 +17,13 @@ public class RadialLayout extends RadialTreeLayout {
 
     private final int m_size;
     private final float m_root_distance;
-
-    public RadialLayout(String group, float rootDistance, int size) {
+    public static final int DEFAULT_ZERO_DISTANCE_VALUE = 10;
+    public static final int DEFAULT_DISTANCE_MULTIPLIER = 100;
+    private final GView gv;
+    
+    public RadialLayout(GView gv, String group, float rootDistance, int size) {
         super(group);
+        this.gv = gv;
         m_size = size;
         m_root_distance = rootDistance;
     }
@@ -50,11 +56,11 @@ public class RadialLayout extends RadialTreeLayout {
                 float w_alfa = w.getFloat("rightborder") + (w.getFloat("wedgesize") / 2);
                 float w_dist;
                 if (v == r) {
-                    w_dist = m_root_distance * 100 + 10;
+                    w_dist = m_root_distance * getDistanceMultiplier() + getZeroDistanceValue();
                     r.setDouble("xp", (v.getX() + Math.cos(w_alfa) * w_dist));
                     r.setDouble("yp", (v.getY() + Math.sin(w_alfa) * w_dist));
                 } else {
-                    w_dist = v.getFloat("distance" + i) * 100 + 10;
+                    w_dist = v.getFloat("distance" + i) * getDistanceMultiplier() + getZeroDistanceValue();
                 }
                 w.setDouble("x", (v.getX() + Math.cos(w_alfa) * w_dist));
                 w.setDouble("y", (v.getY() + Math.sin(w_alfa) * w_dist));
@@ -78,6 +84,14 @@ public class RadialLayout extends RadialTreeLayout {
         int sizeR = leafcount((NodeItem) n.getLastChild());
 
         return sizeL + sizeR;
+    }
+
+    private int getDistanceMultiplier() {
+        return ((GraphView)gv).getRadialControlViewInfo(JRadialViewControlPanel.DISTANCE_MULTIPLIER);
+    }
+
+    private int getZeroDistanceValue() {
+        return ((GraphView)gv).getRadialControlViewInfo(JRadialViewControlPanel.ZERO_DISTANCE);
     }
 
 } // end of class RadialTreeLayout

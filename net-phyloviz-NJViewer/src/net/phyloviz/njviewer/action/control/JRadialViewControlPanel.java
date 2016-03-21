@@ -24,6 +24,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import net.phyloviz.njviewer.render.BarChartRenderer;
 import net.phyloviz.njviewer.ui.GraphView;
+import net.phyloviz.njviewer.ui.RadialLayout;
 import net.phyloviz.upgmanjcore.visualization.GView;
 
 public class JRadialViewControlPanel extends JPanel {
@@ -31,16 +32,20 @@ public class JRadialViewControlPanel extends JPanel {
     private ControlPanelChangeListener lstnr = new ControlPanelChangeListener();
     private GView gv;
     private Map<String, Integer> props = new HashMap<>();
-    
-    public String WIDTH = "width";
-    public String HEIGHT = "height";
-    public String FONT = "font";
-    
+
+    public static String WIDTH = "width";
+    public static String HEIGHT = "height";
+    public static String FONT = "font";
+    public static String ZERO_DISTANCE = "distance=0 value";
+    public static String DISTANCE_MULTIPLIER = "distance multiplier";
+
     public JRadialViewControlPanel(GView gv) {
         this.gv = gv;
-        this.props.put("width", BarChartRenderer.DEFAULT_WIDTH);
-        this.props.put("height", BarChartRenderer.DEFAULT_HEIGHT);
-        this.props.put("font", BarChartRenderer.DEFAULT_FONT_SIZE);
+        this.props.put(WIDTH, BarChartRenderer.DEFAULT_WIDTH);
+        this.props.put(HEIGHT, BarChartRenderer.DEFAULT_HEIGHT);
+        this.props.put(FONT, BarChartRenderer.DEFAULT_FONT_SIZE);
+        this.props.put(ZERO_DISTANCE, RadialLayout.DEFAULT_ZERO_DISTANCE_VALUE);
+        this.props.put(DISTANCE_MULTIPLIER, RadialLayout.DEFAULT_DISTANCE_MULTIPLIER);
         this.setBackground(Color.WHITE);
         initUI();
     }
@@ -72,6 +77,10 @@ public class JRadialViewControlPanel extends JPanel {
         return s;
     }
 
+    public Integer getProp(String prop) {
+        return props.get(prop);
+    }
+
     /**
      * Change listener that updates parameters in response to interaction.
      */
@@ -81,14 +90,21 @@ public class JRadialViewControlPanel extends JPanel {
             JSlider s = (JSlider) e.getSource();
             String name = s.getName();
             int val = s.getValue().intValue();
-            if(name.equals(HEIGHT))
-                ((GraphView) gv).setHeightViewControlValue(val);
-            else if(name.equals(WIDTH))
-                ((GraphView) gv).setWidthViewControlValue(val);
-             else if(name.equals(FONT))
-                ((GraphView) gv).setFontViewControlValue(val);
+            props.put(name, val);
+            ((GraphView) gv).updateLayout();
+//            if (name.equals(HEIGHT)) {
+//                ((GraphView) gv).setHeightViewControlValue(val);
+//            } else if (name.equals(WIDTH)) {
+//                ((GraphView) gv).setWidthViewControlValue(val);
+//            } else if (name.equals(FONT)) {
+//                ((GraphView) gv).setFontViewControlValue(val);
+//            } else if(name.equals(ZERO_DISTANCE))
+//                ((GraphView) gv).setZeroDistanceViewControlValue(val);
+//             else if(name.equals(DISTANCE_MULTIPLIER))
+//                ((GraphView) gv).setDistanceMultiplierViewControlValue(val);
+//            a = 0;
         }
-    } 
+    }
 
     public JFrame showControlPanel(GView gv, Map<String, Integer> props) {
         JFrame frame = new JFrame("Control Panel");
@@ -98,4 +114,4 @@ public class JRadialViewControlPanel extends JPanel {
         return frame;
     }
 
-} 
+}

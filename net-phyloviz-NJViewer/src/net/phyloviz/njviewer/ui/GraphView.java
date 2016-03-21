@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -50,6 +49,7 @@ import net.phyloviz.njviewer.action.ForceViewControlAction;
 import net.phyloviz.njviewer.render.BarChartRenderer;
 import net.phyloviz.njviewer.render.ChartRenderer;
 import net.phyloviz.njviewer.render.LabeledEdgeRenderer;
+import net.phyloviz.njviewer.render.LabeledRadialEdgeRenderer;
 import net.phyloviz.njviewer.render.NodeLabelRenderer;
 import net.phyloviz.njviewer.render.RadialEdgeRenderer;
 import net.phyloviz.njviewer.render.RadialNodeLabelRenderer;
@@ -71,7 +71,6 @@ import prefuse.controls.PanControl;
 import prefuse.controls.WheelZoomControl;
 import prefuse.controls.ZoomControl;
 import prefuse.controls.ZoomToFitControl;
-import prefuse.data.CascadedTable;
 import prefuse.data.Graph;
 import prefuse.data.Node;
 import prefuse.data.Schema;
@@ -123,16 +122,15 @@ public class GraphView extends GView {
     private final Visualization view;
     private final JProgressBar pbar;
 
-    private boolean hasDistanceLabel = false, isRound = false;
+    private boolean hasDistanceLabel = false, roundDistanceValues = false;
     private String name;
-    private Table nodeTable, edgeTable;
+    private final Table nodeTable, edgeTable;
     private Graph graph;
     private VisualGraph vg;
-    private Display display;
+    private final Display display;
     private JSearchPanel searchPanel;
     private boolean searchMatch = false;
 //    private JList groupList;
-    private int itemFound = -1;
     private InfoPanel infoPanel;
     //private ChartLegendPanel chartInfoPos, chartInfoNeg;
     private JPopupMenu popupMenu;
@@ -151,14 +149,22 @@ public class GraphView extends GView {
     private EdgeStats positiveEdges;
     private EdgeStats negativeEdges;
     private boolean forceDistanceLayout;
-    private final JMenuItem showDistancesChart;
     private final NJRoot root;
     private int m_size;
     private boolean isRadial = true;
 //    private HashMap<String, Integer> props;
-    private final JMenuItem forceViewControlMenuItem;
-    private final JMenuItem radialViewControlMenuItem;
     private ActionList filter;
+    private int fontSize = 5;
+    private final JMenuItem showDistancesChartAction;
+    private final JMenuItem forceViewControlAction;
+    private final JMenuItem radialViewControlMenuItem;
+    private final JMenuItem forceDistanceLayoutAction;
+    private final JMenuItem rescaleEdgesAction;
+    private final JMenuItem roundDistancesAction;
+    private final JButton playButton;
+    private final JButton pauseButton;
+    private final JValueSlider animCtl;
+    private JRadialViewControlPanel radialViewControlPanel;
 
     public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
         this.setLayout(new BorderLayout());
@@ -172,7 +178,7 @@ public class GraphView extends GView {
         view = new Visualization();
         // Setup renderers.
         rf = new DefaultRendererFactory();
-        lr = new RadialNodeLabelRenderer("st_id");
+        lr = new RadialNodeLabelRenderer(this, "st_id");
         rf.setDefaultRenderer(lr);
         view.setRendererFactory(rf);
         // Setup actions to process the visual data.
@@ -180,11 +186,11 @@ public class GraphView extends GView {
         ColorAction text = new ColorAction("graph.nodes", VisualItem.TEXTCOLOR, ColorLib.gray(0));
         edge = new EdgeColorAction("graph.edges");
         FontAction nfont
-                = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, 5)) {
+                = new FontAction("graph.nodes", FontLib.getFont("Tahoma", Font.PLAIN, fontSize)) {
                     @Override
                     public Font getFont(VisualItem item) {
                         Profile st = (Profile) item.getSourceTuple().get("st_ref");
-                        return FontLib.getFont("Tahoma", Font.PLAIN, 5);//11 + (GraphView.this.linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
+                        return FontLib.getFont("Tahoma", Font.PLAIN, fontSize);//11 + (GraphView.this.linear ? 11 * st.getFreq() : (7 * Math.log(1 + st.getFreq()))));
                     }
                 };
 
@@ -346,16 +352,18 @@ public class GraphView extends GView {
         pbar.setString(null);
         pbar.setValue(0);
         // Animation speed control.
-        final JValueSlider animCtl = new JValueSlider("Anim. speed>>", 1, 100, 50);
+        animCtl = new JValueSlider("Anim. speed>>", 1, 100, 50);
         animCtl.setBackground(Color.WHITE);
         animCtl.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                ((ForceDirectedLayout) fdl).setMaxTimeStep(animCtl.getValue().longValue());
+                if (!isRadial) {
+                    ((ForceDirectedLayout) fdl).setMaxTimeStep(animCtl.getValue().longValue());
+                }
             }
         });
 
-        JButton playButton = new JButton(">");
+        playButton = new JButton(">");
         playButton.setMargin(new Insets(1, 1, 1, 1));
         playButton.addActionListener(new ActionListener() {
             @Override
@@ -364,7 +372,7 @@ public class GraphView extends GView {
             }
         });
 
-        JButton pauseButton = new JButton("||");
+        pauseButton = new JButton("||");
         pauseButton.setMargin(new Insets(1, 1, 1, 1));
         pauseButton.addActionListener(new ActionListener() {
             @Override
@@ -372,24 +380,25 @@ public class GraphView extends GView {
                 stopAnimation();
             }
         });
+        rescaleEdgesAction = new RescaleEdgesControlAction(this, rescaleDistance).getMenuItem();
+        rescaleEdgesAction.setEnabled(!isRadial);
+        roundDistancesAction = new RoundDistanceAction(this).getMenuItem();
+        forceDistanceLayoutAction = new ForceDistanceLayoutAction(this).getMenuItem();
+        showDistancesChartAction = new ShowDistancesLayoutChartAction(this).getMenuItem();
+        forceViewControlAction = new ForceViewControlAction(this).getMenuItem();
+        radialViewControlMenuItem = new RadialViewControlAction(this, getRadialViewControlPanel()).getMenuItem();
+
         popupMenu = new JPopupMenu();
         popupMenu.add(new ForceDirectedLayoutAction(this).getMenuItem());
         popupMenu.add(new InfoControlAction(this).getMenuItem());
-        popupMenu.add(new RescaleEdgesControlAction(this, rescaleDistance).getMenuItem());
+        popupMenu.add(rescaleEdgesAction);
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
-        popupMenu.add(new RoundDistanceAction(this).getMenuItem());
-        popupMenu.add(new ForceDistanceLayoutAction(this).getMenuItem());
-
-        showDistancesChart = new ShowDistancesLayoutChartAction(this).getMenuItem();
-        popupMenu.add(showDistancesChart);
-
+        popupMenu.add(roundDistancesAction);
+        popupMenu.add(forceDistanceLayoutAction);
+        popupMenu.add(showDistancesChartAction);
         popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
         popupMenu.add(new HighQualityAction(this).getMenuItem());
-
-        forceViewControlMenuItem = new ForceViewControlAction(this).getMenuItem();
-        popupMenu.add(forceViewControlMenuItem);
-
-        radialViewControlMenuItem = new RadialViewControlAction(this, getRadialViewControlPanel()).getMenuItem();
+        popupMenu.add(forceViewControlAction);
         popupMenu.add(radialViewControlMenuItem);
 
         JButton optionsButton = new JButton("Options");
@@ -628,15 +637,14 @@ public class GraphView extends GView {
                         view.run("static");
                         searchMatch = true;
 
-                        itemFound = -1;
-                        if (t.getTupleCount() >= 1) {
-                            String ss = searchPanel.getQuery();
-                            CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
-                            if (tableView.getRowCount() > 0) {
-                                int gid = tableView.getInt(0, "g");
-                                itemFound = gid;
-                            }
-                        }
+//                        if (t.getTupleCount() >= 1) {
+//                            String ss = searchPanel.getQuery();
+//                            CascadedTable tableView = new CascadedTable(nodeTable, (Predicate) ExpressionParser.parse("st_id=\"" + ss + "\""));
+//                            if (tableView.getRowCount() > 0) {
+//                                int gid = tableView.getInt(0, "g");
+//                                itemFound = gid;
+//                            }
+//                        }
 //                        groupList.repaint();
                     }
                 });
@@ -687,7 +695,7 @@ public class GraphView extends GView {
                         Rectangle2D bounds = view.getBounds(Visualization.ALL_ITEMS);
                         GraphicsLib.expand(bounds, 50 + (int) (1 / display.getScale()));
                         DisplayLib.fitViewToBounds(display, bounds, 2000);
-                        
+
                     }
 
                 }
@@ -787,20 +795,21 @@ public class GraphView extends GView {
     @Override
     public void setLevelLabel(boolean status) {
         hasDistanceLabel = status;
-        setRenderer();
+        roundDistancesAction.setEnabled(status);
+        setEdgeRenderer(hasDistanceLabel);
     }
 
     public void setEdgePercentageLabel(boolean status) {
         if (status) {
-            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("edgep"));
+            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer(this, "edgep", false));
         } else {
             rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
         }
     }
 
     public void setRoundDistance(boolean status) {
-        isRound = status;
-        setRenderer();
+        roundDistanceValues = status;
+        setEdgeRenderer(hasDistanceLabel);
     }
 
     @Override
@@ -936,14 +945,13 @@ public class GraphView extends GView {
 
     @Override
     public void setRescaleEdges(boolean status) {
+
         rescaleDistance = status;
+
         if (showChart) {
             setDistanceChart(false);
         }
-        //view.run("layout");
-        view.run("draw");
-        view.repaint();
-        updateUI();
+        setForceDirectedLayout(true);
     }
 
     @Override
@@ -955,56 +963,6 @@ public class GraphView extends GView {
         view.run("draw");
         view.repaint();
         updateUI();
-    }
-
-    public void setForceDistanceLayout(boolean status) {
-        if (!isRadial) {
-            forceDistanceLayout = status;
-            if (showChart) {
-                setDistanceChart(false);
-            }
-            if (forceDistanceLayout) {
-                ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
-                    @Override
-                    protected float getSpringLength(EdgeItem e) {
-                        double dist;
-                        if (e.getFloat("distance") < 0.01) {
-                            dist = 10 + 300 * 0.01f;
-                        } else {
-                            dist = 10 + 300 * e.getFloat("distance");
-                        }
-                        dist = rescaleDistance ? Math.log(dist) : dist;
-                        return (float) dist;
-                    }
-                };
-                ActionList layout = (ActionList) view.getAction("layout");
-                layout.remove(fdl);
-                layout.add(new_fdl);
-                fdl = new_fdl;
-                fdl.setVisualization(view);
-                view.run("layout");
-                view.repaint();
-                updateUI();
-            } else {
-                ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph") {
-                    @Override
-                    protected float getSpringLength(EdgeItem e) {
-                        double distance = e.getDouble("distance");
-                        double dist = rescaleDistance ? Math.log(1 + distance) : distance;
-                        return (float) dist;
-                    }
-                };
-                ActionList layout = (ActionList) view.getAction("layout");
-                layout.remove(fdl);
-                layout.add(new_fdl);
-                fdl = new_fdl;
-                fdl.setVisualization(view);
-                view.run("layout");
-                view.run("draw");
-                view.repaint();
-                updateUI();
-            }
-        }
     }
 
     private void openEdgeInfoChart() {
@@ -1032,16 +990,44 @@ public class GraphView extends GView {
         if (status) {
             openEdgeInfoChart();
         } else {
-            showDistancesChart.setSelected(showChart);
+            showDistancesChartAction.setSelected(showChart);
             restartAnimation();
             closeEdgeInfoPanel();
         }
     }
 
+    public void setForceDistanceLayout(boolean status) {
+        forceDistanceLayout = status;
+        setForceDirectedLayout(true);
+    }
+
     public void setForceDirectedLayout(boolean status) {
         if (status) {
-            isRadial = false;
-            ForceDirectedLayout new_fdl = new ForceDirectedLayout("graph");
+            ForceDirectedLayout new_fdl;
+            if (isRadial) {
+                isRadial = !status;
+                new_fdl = new ForceDirectedLayout("graph");
+            } else {
+                new_fdl = new ForceDirectedLayout("graph") {
+                    @Override
+                    protected float getSpringLength(EdgeItem e) {
+                        if (forceDistanceLayout) {
+                            double dist;
+                            if (e.getFloat("distance") < 0.01) {
+                                dist = 10 + 300 * 0.01f;
+                            } else {
+                                dist = 10 + 300 * e.getFloat("distance");
+                            }
+                            dist = rescaleDistance ? Math.log(dist) : dist;
+                            return (float) dist;
+                        } else {
+                            double distance = e.getDouble("distance");
+                            double dist = rescaleDistance ? Math.log(1 + distance) : distance;
+                            return (float) dist;
+                        }
+                    }
+                };
+            }
             ActionList newLayout = new ActionList(ActionList.INFINITY);
             newLayout.add(new_fdl);
             newLayout.add(filter);
@@ -1057,14 +1043,15 @@ public class GraphView extends GView {
                 ((NodeLabelRenderer) lr).setRoundedCorner(10, 10);
                 setDefaultRenderer(lr);
             }
-            rf.setDefaultEdgeRenderer(new EdgeRenderer());
+            setEdgeRenderer(hasDistanceLabel);//rf.setDefaultEdgeRenderer(new EdgeRenderer());
+            enableForceDirectedActions(true);
             view.run("layout");
             view.run("draw");
             view.repaint();
             updateUI();
         } else {
             isRadial = true;
-            RadialLayout new_fdl = new RadialLayout("graph", root.distance, m_size);
+            RadialLayout new_fdl = new RadialLayout(this, "graph", root.distance, m_size);
             ActionList newLayout = new ActionList();
             newLayout.add(new_fdl);
             newLayout.add(filter);
@@ -1076,11 +1063,12 @@ public class GraphView extends GView {
             if (cp != null) {
                 setDefaultRenderer(new BarChartRenderer(cp, this));
             } else {
-                lr = new RadialNodeLabelRenderer("st_id");
+                lr = new RadialNodeLabelRenderer(this, "st_id");
                 setDefaultRenderer(lr);
                 rf.setDefaultRenderer(lr);
             }
-            rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
+            setEdgeRenderer(hasDistanceLabel); //rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
+            enableForceDirectedActions(false);
             view.run("layout");
             view.run("draw");
             view.repaint();
@@ -1089,60 +1077,88 @@ public class GraphView extends GView {
 
     }
 
-    boolean isRadial() {
+    public void updateLayout() {
+        view.run("layout");
+        view.run("draw");
+        view.repaint();
+        updateUI();
+    }
+
+    public boolean isRadial() {
         return isRadial;
     }
 
     public JRadialViewControlPanel getRadialViewControlPanel() {
-        return new JRadialViewControlPanel(this);
+        radialViewControlPanel = new JRadialViewControlPanel(this);
+        return radialViewControlPanel;
     }
 
-    public void setHeightViewControlValue(int value) {
-        if (cp == null) {
-            return;
-        }
-
-        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
-        r.setHeight(value);
-
-        view.run("layout");
-        view.run("draw");
-        view.repaint();
-        updateUI();
+//    public void setHeightViewControlValue(int value) {
+//        if (cp == null) {
+//            return;
+//        }
+//
+//        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
+//        r.setHeight(value);
+//
+//        view.run("layout");
+//        view.run("draw");
+//        view.repaint();
+//        updateUI();
+//    }
+//
+//    public void setWidthViewControlValue(int value) {
+//        if (cp == null) {
+//            return;
+//        }
+//
+//        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
+//        r.setWidth(value);
+//
+//        view.run("layout");
+//        view.run("draw");
+//        view.repaint();
+//        updateUI();
+//    }
+    public int getRadialControlViewInfo(String prop) {
+        return radialViewControlPanel.getProp(prop);
     }
+//    public int getFontSize() {
+//        return radialViewControlPanel.getProp(JRadialViewControlPanel.FONT);
+//    }
 
-    public void setWidthViewControlValue(int value) {
-        if (cp == null) {
-            return;
-        }
-
-        BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
-        r.setWidth(value);
-
-        view.run("layout");
-        view.run("draw");
-        view.repaint();
-        updateUI();
-    }
-
-    public void setFontViewControlValue(int value) {
-        if (cp != null) {
-            BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
-            r.setFontSize(value);
-        } else {
-            RadialNodeLabelRenderer r = (RadialNodeLabelRenderer) rf.getDefaultRenderer();
-            r.setFontSize(value);
-        }
-
-        view.run("layout");
-        view.run("draw");
-        view.repaint();
-        updateUI();
-    }
-
+//    public void setFontViewControlValue(int value) {
+//        fontSize = value;
+////        if (cp != null) {
+////            BarChartRenderer r = (BarChartRenderer) rf.getDefaultRenderer();
+////            r.setFontSize(value);
+////        } else {
+////            RadialNodeLabelRenderer r = (RadialNodeLabelRenderer) rf.getDefaultRenderer();
+////            r.setFontSize(value);
+////        }
+//
+//        view.run("layout");
+//        view.run("draw");
+//        view.repaint();
+//        updateUI();
+//    }
+//    public void setZeroDistanceViewControlValue(int value){
+//        
+//    }
     void enableViewControl(boolean status) {
         radialViewControlMenuItem.setEnabled(status);
-        forceViewControlMenuItem.setEnabled(!status);
+        forceViewControlAction.setEnabled(!status);
+    }
+
+    private void enableForceDirectedActions(boolean status) {
+        animCtl.setEnabled(status);
+        playButton.setEnabled(status);
+        pauseButton.setEnabled(status);
+        rescaleEdgesAction.setEnabled(status);
+        forceDistanceLayoutAction.setEnabled(status);
+        showDistancesChartAction.setEnabled(status);
+        forceViewControlAction.setEnabled(status);
+        radialViewControlMenuItem.setEnabled(!status);
     }
 
     // Private classes.
@@ -1295,17 +1311,17 @@ public class GraphView extends GView {
         }
     }
 
-    private void setRenderer() {
-        if (isRound && hasDistanceLabel) {
-            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance", true));
-        } else if (hasDistanceLabel) {
-            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer("distance"));
-        } else {
-            if (isRadial) {
-                rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
+    private void setEdgeRenderer(boolean label) {
+        if (isRadial) {
+            if (label) {
+                rf.setDefaultEdgeRenderer(new LabeledRadialEdgeRenderer(this, "distance", roundDistanceValues));
             } else {
-                rf.setDefaultEdgeRenderer(new EdgeRenderer());
+                rf.setDefaultEdgeRenderer(new RadialEdgeRenderer());
             }
+        } else if (label) {
+            rf.setDefaultEdgeRenderer(new LabeledEdgeRenderer(this, "distance", roundDistanceValues));
+        } else {
+            rf.setDefaultEdgeRenderer(new EdgeRenderer());
         }
         view.run("draw");
         updateUI();
@@ -1346,7 +1362,6 @@ public class GraphView extends GView {
 //            return Integer.toString(id);
 //        }
 //    }
-
 //    private class GroupCellRenderer extends JLabel implements ListCellRenderer {
 //
 //        private static final long serialVersionUID = 1L;

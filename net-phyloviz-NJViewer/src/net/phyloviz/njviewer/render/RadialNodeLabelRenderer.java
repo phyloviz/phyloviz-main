@@ -4,19 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Shape;
-import java.awt.font.FontRenderContext;
-import java.awt.font.LineMetrics;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
-import net.phyloviz.nj.tree.NJLeafNode;
-
-import prefuse.Constants;
-import static prefuse.render.AbstractShapeRenderer.RENDER_TYPE_DRAW_AND_FILL;
-import static prefuse.render.AbstractShapeRenderer.RENDER_TYPE_FILL;
-import prefuse.render.LabelRenderer;
+import net.phyloviz.njviewer.action.control.JRadialViewControlPanel;
+import net.phyloviz.njviewer.ui.GraphView;
+import net.phyloviz.upgmanjcore.visualization.GView;
 import static prefuse.render.Renderer.DEFAULT_GRAPHICS;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
@@ -25,13 +17,15 @@ import prefuse.visual.VisualItem;
 
 public class RadialNodeLabelRenderer extends NodeLabelRenderer {
 
-    public static int DEFAULT_FONT_SIZE = 4;
+    public static int DEFAULT_FONT_SIZE = 5;
 
     AffineTransform m_transform = new AffineTransform();
-    private int fontSize = DEFAULT_FONT_SIZE;
+//    private int fontSize = DEFAULT_FONT_SIZE;
+    private final GView gv;
 
-    public RadialNodeLabelRenderer(String textField) {
+    public RadialNodeLabelRenderer(GView gv, String textField) {
         super(textField);
+        this.gv = gv;
         this.setTextField(textField);
     }
 
@@ -99,7 +93,7 @@ public class RadialNodeLabelRenderer extends NodeLabelRenderer {
         }
 
         String text = m_text;
-        m_font = new Font("Tahoma", Font.PLAIN, getFontSize());
+        m_font = new Font("Tahoma", Font.PLAIN, ((GraphView) gv).getRadialControlViewInfo(JRadialViewControlPanel.FONT));
 
         // render text
         int textColor = item.getTextColor();
@@ -143,11 +137,11 @@ public class RadialNodeLabelRenderer extends NodeLabelRenderer {
         }
     }
 
-    private int getFontSize() {
-        return fontSize;
-    }
-    public void setFontSize(int value) {
-        fontSize = value;
-    }
+//    private int getFontSize() {
+//        return fontSize;
+//    }
+//    public void setFontSize(int value) {
+//        fontSize = value;
+//    }
 
 } // end of class LabelRenderer
