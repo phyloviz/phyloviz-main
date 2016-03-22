@@ -60,6 +60,7 @@ public class ForceViewControlAction implements ActionListener {
 		JMenuItem mi = new JMenuItem("Control");
 		mi.setToolTipText("Rendering engine control");
 		mi.setMnemonic(KeyEvent.VK_C);
+                mi.setEnabled(!gv.isRadial());
 		mi.addActionListener(this);
 		return mi;
 	}

@@ -17,25 +17,25 @@ import net.phyloviz.category.filter.Category;
 import net.phyloviz.core.data.Profile;
 import net.phyloviz.nj.tree.NJLeafNode;
 import net.phyloviz.nj.tree.NJUnionNode;
+import net.phyloviz.njviewer.action.control.JRadialViewControlPanel;
 import net.phyloviz.njviewer.ui.GraphView;
 import net.phyloviz.upgmanjcore.visualization.GView;
 
 import prefuse.render.AbstractShapeRenderer;
 import prefuse.util.ColorLib;
-import prefuse.util.FontLib;
 import prefuse.visual.VisualItem;
 
 public class BarChartRenderer extends AbstractShapeRenderer {
 
     public static int DEFAULT_WIDTH = 50;
     public static int DEFAULT_HEIGHT = 5;
-    public static int DEFAULT_FONT_SIZE = 4;
+    public static int DEFAULT_FONT_SIZE = 5;
 
     private GView gv;
     private CategoryProvider cp;
     private int widthBar = DEFAULT_WIDTH;
     private int heightBar = DEFAULT_HEIGHT;
-    private int fontSize = DEFAULT_FONT_SIZE;
+//    private int fontSize = DEFAULT_FONT_SIZE;
 
     public BarChartRenderer(CategoryProvider cp, GView gv) {
         this.cp = cp;
@@ -58,16 +58,13 @@ public class BarChartRenderer extends AbstractShapeRenderer {
         double deltaX = tx - px;
         double theta = Math.atan2(deltaY, deltaX);
 
-        Rectangle2D pos = area.getBounds().getBounds2D();
-        rotator.rotate(-theta, pos.getCenterX(), pos.getCenterY());
-        area = rotator.createTransformedShape(area);
-        pos = area.getBounds().getBounds2D();
+        Rectangle2D pos = getBar(item, 0, 0);
 
         rotator = new AffineTransform();
         rotator.rotate(theta, pos.getCenterX(), pos.getCenterY());
 
         g.setColor(fillColor);
-        int currAngle = Math.round((float) area.getBounds2D().getMinX());
+        int currAngle = Math.round((float) pos.getBounds2D().getMinX());
         Color groupColor = fillColor;
         if (glst != null) {
             giter = glst.iterator();
@@ -76,18 +73,18 @@ public class BarChartRenderer extends AbstractShapeRenderer {
                 Category group = giter.next();
                 float groupPercentage = group.weight() * 100.0f / freq;
 
-                int x_pos = Math.round(groupPercentage * ((float) area.getBounds2D().getWidth()) / 100);
+                int x_pos = Math.round(groupPercentage * ((float) pos.getBounds2D().getWidth()) / 100);
                 int newWidth = currAngle + x_pos;
-                if (newWidth > area.getBounds2D().getMaxX()) {
-                    x_pos -= (newWidth - Math.round((float) area.getBounds2D().getMaxX()));
+                if (newWidth > pos.getBounds2D().getMaxX()) {
+                    x_pos -= (newWidth - Math.round((float) pos.getBounds2D().getMaxX()));
                 }
                 groupColor = cp.getCategoryColor(group.getName());
                 g.setColor(groupColor);
 
-                if (currAngle + x_pos >= area.getBounds2D().getMaxX()) {
-                    x_pos = (Math.round((float) area.getBounds2D().getMaxX())) - currAngle;
+                if (currAngle + x_pos >= pos.getBounds2D().getMaxX()) {
+                    x_pos = (Math.round((float) pos.getBounds2D().getMaxX())) - currAngle;
                 }
-                Rectangle2D.Double shap = new Rectangle2D.Double(currAngle, area.getBounds2D().getY(), x_pos, area.getBounds2D().getHeight());
+                Rectangle2D.Double shap = new Rectangle2D.Double(currAngle, pos.getBounds2D().getY(), x_pos, pos.getBounds2D().getHeight());
                 GeneralPath rect2 = new GeneralPath(rotator.createTransformedShape(shap));
                 g.setColor(groupColor);
                 g.fill(rect2);
@@ -95,14 +92,14 @@ public class BarChartRenderer extends AbstractShapeRenderer {
                 currAngle += x_pos;
             }
         }
-        if (currAngle < area.getBounds2D().getMaxX()) {
+        if (currAngle < pos.getBounds2D().getMaxX()) {
             g.setColor(groupColor);
-            Rectangle2D.Double shap = new Rectangle2D.Double(currAngle, area.getBounds2D().getY(), Math.round((float) area.getBounds2D().getMaxX()) - currAngle, area.getBounds2D().getHeight());
+            Rectangle2D.Double shap = new Rectangle2D.Double(currAngle, pos.getBounds2D().getY(), Math.round((float) pos.getBounds2D().getMaxX()) - currAngle, pos.getBounds2D().getHeight());
             GeneralPath rect2 = new GeneralPath(rotator.createTransformedShape(shap));
             g.fill(rect2);
         }
         String text = stId;
-        Font m_font = new Font("Tahoma", Font.PLAIN, getFontSize());
+        Font m_font = new Font("Tahoma", Font.PLAIN, ((GraphView) gv).getRadialControlViewInfo(JRadialViewControlPanel.FONT));
         g.setFont(m_font);
         FontRenderContext frc = g.getFontRenderContext();
         double width = m_font.getStringBounds(text, frc).getWidth();
@@ -141,11 +138,29 @@ public class BarChartRenderer extends AbstractShapeRenderer {
         if (st == null || st instanceof NJUnionNode) {
             return new Rectangle((int) x, (int) y, 0, 0);
         }
+        double deltaY = y - py;
+        double deltaX = x - px;
+        double theta = Math.atan2(deltaY, deltaX);
 
+        double w = getWidthBarControlValue();
+
+        AffineTransform rotator = new AffineTransform();
+        Rectangle2D.Double shape = getBar(item, w, 0);
+        rotator.rotate(theta, shape.getCenterX(), shape.getCenterY());
+        return rotator.createTransformedShape(shape);
+    }
+
+    public Rectangle2D.Double getBar(VisualItem item, double width, double height) {
+        double px = item.getDouble("xp");
+        double py = item.getDouble("yp");
+        double x = item.getDouble("x");
+        double y = item.getDouble("y");
+        
+        Profile st = (Profile) item.getSourceTuple().get("st_ref");
         int offsetX = (int) (gv.getLinearSize() ? 12 * st.getFreq() : (12 * Math.log(1 + st.getFreq())));
-
-        double w = getWidthBarControlValue() + offsetX;
-        double h = getHeightBarControlValue();
+        
+        double w = getWidthBarControlValue() + offsetX + width;
+        double h = getHeightBarControlValue() + height;
 
         double deltaY = y - py;
         double deltaX = x - px;
@@ -155,10 +170,8 @@ public class BarChartRenderer extends AbstractShapeRenderer {
         x = x + (distance * Math.cos(theta));
         y = y + (distance * Math.sin(theta));
 
-        AffineTransform rotator = new AffineTransform();
         Rectangle2D.Double shape = new Rectangle2D.Double(x - (w / 2), y - (h / 2), w, h);
-        rotator.rotate(theta, shape.getCenterX(), shape.getCenterY());
-        return rotator.createTransformedShape(shape);
+        return shape;
     }
 
     @Override
@@ -172,31 +185,31 @@ public class BarChartRenderer extends AbstractShapeRenderer {
             if (profile instanceof NJLeafNode) {
                 String stId = item.getString("st_id");
                 int freq = profile.getFreq();
+//                g.draw(shape);
                 drawBar(g, shape, item, stId, freq, fillColor);
             }
         }
     }
 
     private int getWidthBarControlValue() {
-        return widthBar;
+        return ((GraphView) gv).getRadialControlViewInfo(JRadialViewControlPanel.WIDTH);
     }
 
     private int getHeightBarControlValue() {
-        return heightBar;
+        return ((GraphView) gv).getRadialControlViewInfo(JRadialViewControlPanel.HEIGHT);
     }
 
-    public void setWidth(int value) {
-        widthBar = value;
-    }
-
-    public void setHeight(int value) {
-        heightBar = value;
-    }
-
-    private int getFontSize() {
-        return fontSize;
-    }
-    public void setFontSize(int value) {
-        fontSize = value;
-    }
+//    public void setWidth(int value) {
+//        widthBar = value;
+//    }
+//
+//    public void setHeight(int value) {
+//        heightBar = value;
+//    }
+//    private int getFontSize() {
+//        return fontSize;
+//    }
+//    public void setFontSize(int value) {
+//        fontSize = value;
+//    }
 }
