@@ -4,14 +4,19 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import net.phyloviz.core.data.Profile;
+import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.njviewer.action.control.JRadialViewControlPanel;
 import net.phyloviz.njviewer.ui.GraphView;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import static prefuse.render.Renderer.DEFAULT_GRAPHICS;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
+import prefuse.util.GraphicsLib;
 import prefuse.util.StringLib;
 import prefuse.visual.VisualItem;
 
@@ -86,6 +91,47 @@ public class RadialNodeLabelRenderer extends NodeLabelRenderer {
     }
 
     @Override
+    protected Shape getRawShape(VisualItem item) {
+        m_text = getText(item);
+        double size = item.getSize();
+
+        if (m_text != null) {
+            m_text = computeTextDimensions(item, m_text, size);
+        } else {
+            return new Rectangle( (int)item.getX(), (int)item.getY(), 0, 0);
+        }
+        double px = item.getDouble("xp");
+        double py = item.getDouble("yp");
+        double x = item.getDouble("x");
+        double y = item.getDouble("y");
+
+        double deltaY = y - py;
+        double deltaX = x - px;
+        double theta = Math.atan2(deltaY, deltaX);
+
+        double w = m_textDim.getWidth();
+        double h = m_textDim.getHeight();
+
+        double distance = (w / 2) + 4;
+
+        x = x + (distance * Math.cos(theta));
+        y = y + (distance * Math.sin(theta));
+
+        if ((theta > Math.PI / 2 && theta < 3 * Math.PI / 2)
+                || (theta < -Math.PI / 2 && theta > -3 * Math.PI / 2)) {
+
+            theta = theta + Math.PI;
+
+        }
+
+        AffineTransform rotator = new AffineTransform();
+        Rectangle2D.Double shape = new Rectangle2D.Double(x - (w / 2), y - (h / 2), w, h);
+        rotator.rotate(theta, shape.getCenterX(), shape.getCenterY());
+        return rotator.createTransformedShape(shape);
+
+    }
+
+    @Override
     public void render(Graphics2D g, VisualItem item) {
         Shape shape = (Shape) getShape(item);
         if (shape == null) {
@@ -112,9 +158,9 @@ public class RadialNodeLabelRenderer extends NodeLabelRenderer {
 
             double w = m_textDim.getWidth();
             double h = m_textDim.getHeight();
-            
-            double distance = (w/2) + 4;
-            
+
+            double distance = (w / 2) + 4;
+
             x = x + (distance * Math.cos(theta));
             y = y + (distance * Math.sin(theta));
 
@@ -126,13 +172,12 @@ public class RadialNodeLabelRenderer extends NodeLabelRenderer {
             }
 
             g.setPaint(Color.BLACK);
-            
+
             AffineTransform orig = g.getTransform();
             g.rotate(theta, x, y);
 
-            g.drawString(text, (float) (x - (w/2)), (float) (y+(h/4)));
+            g.drawString(text, (float) (x - (w / 2)), (float) (y + (h / 4)));
             g.setTransform(orig);
-            
 
         }
     }
@@ -143,5 +188,4 @@ public class RadialNodeLabelRenderer extends NodeLabelRenderer {
 //    public void setFontSize(int value) {
 //        fontSize = value;
 //    }
-
 } // end of class LabelRenderer
