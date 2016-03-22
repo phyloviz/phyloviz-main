@@ -33,11 +33,11 @@ public class JRadialViewControlPanel extends JPanel {
     private GView gv;
     private Map<String, Integer> props = new HashMap<>();
 
-    public static String WIDTH = "width";
-    public static String HEIGHT = "height";
-    public static String FONT = "font";
-    public static String ZERO_DISTANCE = "distance=0 value";
-    public static String DISTANCE_MULTIPLIER = "distance multiplier";
+    public static String WIDTH = "Bar width";
+    public static String HEIGHT = "Bar height";
+    public static String FONT = "Font size";
+    public static String ZERO_DISTANCE = "Distance offset";
+    public static String DISTANCE_MULTIPLIER = "Distance multiplier";
 
     public JRadialViewControlPanel(GView gv) {
         this.gv = gv;
@@ -57,7 +57,7 @@ public class JRadialViewControlPanel extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         Box v = new Box(BoxLayout.Y_AXIS);
         for (Entry<String, Integer> p : props.entrySet()) {
-            JSlider field = createField(p.getKey(), p.getValue(), 1, p.getValue() * 2);
+            JSlider field = createField(p.getKey(), p.getValue(), 1, p.getValue() * 10);
             field.addChangeListener(lstnr);
             v.add(field);
         }
