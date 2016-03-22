@@ -142,7 +142,7 @@ public class BarChartRenderer extends AbstractShapeRenderer {
         double deltaX = x - px;
         double theta = Math.atan2(deltaY, deltaX);
 
-        double w = DEFAULT_WIDTH;
+        double w = getWidthBarControlValue();
 
         AffineTransform rotator = new AffineTransform();
         Rectangle2D.Double shape = getBar(item, w, 0);

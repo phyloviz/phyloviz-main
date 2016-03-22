@@ -389,17 +389,18 @@ public class GraphView extends GView {
         radialViewControlMenuItem = new RadialViewControlAction(this, getRadialViewControlPanel()).getMenuItem();
 
         popupMenu = new JPopupMenu();
-        popupMenu.add(new ForceDirectedLayoutAction(this).getMenuItem());
         popupMenu.add(new InfoControlAction(this).getMenuItem());
+        popupMenu.add(new HighQualityAction(this).getMenuItem());
+        popupMenu.add(radialViewControlMenuItem);
+        popupMenu.add(new ForceDirectedLayoutAction(this).getMenuItem());
+        popupMenu.add(forceDistanceLayoutAction);
         popupMenu.add(rescaleEdgesAction);
+        popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
+        popupMenu.add(forceViewControlAction);
         popupMenu.add(new EdgeLevelLabelAction(this).getMenuItem());
         popupMenu.add(roundDistancesAction);
-        popupMenu.add(forceDistanceLayoutAction);
         popupMenu.add(showDistancesChartAction);
-        popupMenu.add(new LinearSizeControlAction(this, linear).getMenuItem());
-        popupMenu.add(new HighQualityAction(this).getMenuItem());
-        popupMenu.add(forceViewControlAction);
-        popupMenu.add(radialViewControlMenuItem);
+
 
         JButton optionsButton = new JButton("Options");
         optionsButton.setMargin(new Insets(1, 1, 1, 1));
@@ -1145,7 +1146,7 @@ public class GraphView extends GView {
 //    public void setZeroDistanceViewControlValue(int value){
 //        
 //    }
-    void enableViewControl(boolean status) {
+    public void enableViewControl(boolean status) {
         radialViewControlMenuItem.setEnabled(status);
         forceViewControlAction.setEnabled(!status);
     }
