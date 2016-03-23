@@ -674,6 +674,7 @@ public class GraphView extends GView {
                         setForceDirectedLayout(false);
 
                         distance = (float) (distanceFilter == -1 ? maxDistance : distanceFilter);
+                        distance = Math.round(distance*1000.0f) / 1000.0f;
                         maxDistance += cutIncDev;
 
                         sp.setValue(maxDistance);
