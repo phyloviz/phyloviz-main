@@ -140,7 +140,7 @@ public class GraphView extends GView {
     private boolean running, linear, label = true;
     // Data analysis info...
     private CategoryProvider cp;
-    double maxDistance = 0, minDistance = 0;
+    float maxDistance = 0, minDistance = 0;
     final Map<String, Point> nodesPositions;
     private boolean rescaleDistance = false, showChart = false;
 
@@ -674,12 +674,12 @@ public class GraphView extends GView {
                         setForceDirectedLayout(false);
 
                         distance = (float) (distanceFilter == -1 ? maxDistance : distanceFilter);
-                        distance = Math.round(distance*1000.0f) / 1000.0f;
-                        maxDistance += cutIncDev;
+                        distance = Math.round((distance+cutIncDev)*1000.0f) / 1000.0f;
+//                        maxDistance += cutIncDev;
 
-                        sp.setValue(maxDistance);
+//                        sp.setValue(maxDistance);
 
-                        final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, cutIncDev);
+                        final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, distance+cutIncDev, cutIncDev);
                         model.addChangeListener(new ChangeListener() {
                             @Override
                             public void stateChanged(ChangeEvent e) {
