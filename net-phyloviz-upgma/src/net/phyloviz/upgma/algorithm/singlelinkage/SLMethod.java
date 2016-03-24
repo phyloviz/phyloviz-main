@@ -35,11 +35,12 @@
 package net.phyloviz.upgma.algorithm.singlelinkage;
 
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
+import net.phyloviz.upgma.tree.NodeType;
 
 public class SLMethod implements HierarchicalClusteringMethod {
 
     @Override
-    public float getLinkageCriteria(float d1, float d2) {
+    public float getLinkageCriteria(NodeType c1, NodeType c2, float d1, float d2) {
         return d1 < d2 ? d1 : d2;
     }    
     

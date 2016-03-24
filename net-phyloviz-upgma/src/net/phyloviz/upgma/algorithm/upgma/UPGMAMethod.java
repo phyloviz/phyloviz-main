@@ -35,12 +35,16 @@
 package net.phyloviz.upgma.algorithm.upgma;
 
 import net.phyloviz.upgma.HierarchicalClusteringMethod;
+import net.phyloviz.upgma.tree.NodeType;
 
 public class UPGMAMethod implements HierarchicalClusteringMethod{
 
     @Override
-    public float getLinkageCriteria(float d1, float d2) {
-        return (d1 + d2) / 2;
+    public float getLinkageCriteria(NodeType c1, NodeType c2, float d1, float d2) {
+        int c1Size = c1.getSize();
+        int c2Size = c2.getSize();
+        
+        return ((d1*c1Size) + (d2*c2Size)) / (c1Size + c2Size);
     }  
     
     @Override

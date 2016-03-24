@@ -52,6 +52,7 @@ public abstract class NodeType implements INodeJsonSaver{
     public String getName(){
         return name;
     }
+    public abstract int getSize();
     /**
      * Sets new distance and check if new minimum
      * @param in IndexNode from new distance

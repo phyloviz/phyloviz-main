@@ -19,18 +19,21 @@ public class UPGMAUnionNode extends NodeType{
     
     private final float distance;		// The full-distance of the node
     private final NodeType n1, n2;	// Left and right children
+    private int size;
     
     public UPGMAUnionNode(int id, NodeType n1, NodeType n2, float distance, int size, int nodeIdx, NodeIterator in){
         super(id, size, nodeIdx, "Union", in);
         this.n1 = n1;
         this.n2 = n2;
         this.distance = distance;
+        this.size = n1.getSize() + n2.getSize();
     }
     public UPGMAUnionNode(int id, NodeType n1, NodeType n2, float distance, int size, int nodeIdx){
         super(id, size, nodeIdx, "Union");
         this.n1 = n1;
         this.n2 = n2;
         this.distance = distance;
+        this.size = n1.getSize() + n2.getSize();
     }
     
     @Override
@@ -57,5 +60,9 @@ public class UPGMAUnionNode extends NodeType{
     }
     public double getDistance(){
         return distance;
+    }
+    @Override
+    public int getSize(){
+        return size;
     }
 }

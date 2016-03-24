@@ -82,26 +82,31 @@ public class UPGMA {
         while (iter.hasNext()) {
 
             IndexNode in = iter.next();
-            int idx = in.index;
-            if (idx == minC.index || idx == minL.index) {
+            int currIdx = in.index;
+            if (currIdx == minC.index || currIdx == minL.index) {
                 continue;                //deleted nodes
             }
 
-            NodeType current = nodeArray[idx];
+            NodeType current = nodeArray[currIdx];
 
             float d1, d2;
+            NodeType c1, c2;
             if (current.getNodeIdx() < n1.getNodeIdx()) {
                 d1 = current.getDistanceTo(minC.index);
+                c1 = current;
             } else {
-                d1 = n1.getDistanceTo(idx);
+                d1 = n1.getDistanceTo(currIdx);
+                c1 = n1;
             }
             if (current.getNodeIdx() < n2.getNodeIdx()) {
                 d2 = current.getDistanceTo(minL.index);
+                c2 = current;
             } else {
-                d2 = n2.getDistanceTo(idx);
+                d2 = n2.getDistanceTo(currIdx);
+                c2 = n2;
             }
 
-            float distance = cm.getLinkageCriteria(d1, d2);
+            float distance = cm.getLinkageCriteria(c1, c2, d1, d2);
 
             if (current.getNodeIdx() < union.getNodeIdx()) {
                 current.setDistance(minC, distance);

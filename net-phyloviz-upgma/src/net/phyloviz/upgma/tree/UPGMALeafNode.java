@@ -12,6 +12,7 @@ import net.phyloviz.upgmanjcore.tree.IndexList.NodeIterator;
 public class UPGMALeafNode extends NodeType implements Profile, Comparable<UPGMALeafNode>{
     
     public final Profile p;
+    public final int size = 1;
     
     public UPGMALeafNode(int id, Profile profile, int size, int leafIdx, NodeIterator in){
         super(id, size, leafIdx, "Leaf", in);
@@ -85,5 +86,10 @@ public class UPGMALeafNode extends NodeType implements Profile, Comparable<UPGMA
     @Override
     public String getDisplayName() {
         return p.getID();
+    }
+    
+    @Override
+    public int getSize(){
+        return size;
     }
 }

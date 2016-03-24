@@ -5,6 +5,7 @@
  */
 package net.phyloviz.upgma;
 
+import net.phyloviz.upgma.tree.NodeType;
 import net.phyloviz.upgmanjcore.AbstractClusteringMethod;
 import net.phyloviz.upgma.tree.UPGMALeafNode;
 
@@ -14,6 +15,6 @@ import net.phyloviz.upgma.tree.UPGMALeafNode;
  */
 public interface HierarchicalClusteringMethod extends AbstractClusteringMethod<UPGMALeafNode> {
 
-    public float getLinkageCriteria(float d1, float d2);
+    public float getLinkageCriteria(NodeType c1, NodeType c2, float d1, float d2);
 
 }
