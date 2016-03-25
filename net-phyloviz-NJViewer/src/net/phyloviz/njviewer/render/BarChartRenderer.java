@@ -119,12 +119,9 @@ public class BarChartRenderer extends AbstractShapeRenderer {
 
         g.setPaint(Color.BLACK);
 
-        AffineTransform orig = g.getTransform();
         g.rotate(theta, x, y);
-
         g.drawString(text, (float) (x - (width / 2)), (float) (y + (height / 4)));
-        g.setTransform(orig);
-
+        g.rotate(-theta, x, y);
     }
 
     @Override

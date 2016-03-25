@@ -8,15 +8,12 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import net.phyloviz.core.data.Profile;
-import net.phyloviz.nj.tree.NJUnionNode;
 import net.phyloviz.njviewer.action.control.JRadialViewControlPanel;
 import net.phyloviz.njviewer.ui.GraphView;
 import net.phyloviz.upgmanjcore.visualization.GView;
 import static prefuse.render.Renderer.DEFAULT_GRAPHICS;
 import prefuse.util.ColorLib;
 import prefuse.util.FontLib;
-import prefuse.util.GraphicsLib;
 import prefuse.util.StringLib;
 import prefuse.visual.VisualItem;
 
@@ -173,11 +170,9 @@ public class RadialNodeLabelRenderer extends NodeLabelRenderer {
 
             g.setPaint(Color.BLACK);
 
-            AffineTransform orig = g.getTransform();
             g.rotate(theta, x, y);
-
             g.drawString(text, (float) (x - (w / 2)), (float) (y + (h / 4)));
-            g.setTransform(orig);
+            g.rotate(-theta, x, y);
 
         }
     }
