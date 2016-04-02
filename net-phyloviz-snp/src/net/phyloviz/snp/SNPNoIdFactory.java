@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.snp;
 
 import java.io.BufferedReader;
@@ -49,118 +48,144 @@ import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
+import net.phyloviz.project.ProjectTypingDataFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.lookup.ServiceProviders;
 
-@ServiceProvider(service = TypingFactory.class)
-public class SNPNoIdFactory implements TypingFactory {
-	
-	private static final String customName = "Single-Nucleotide Polymorphism (SNP) (without explicit ID)";
-	private final HashMap<String, String> sameAs = new HashMap<String, String>();
+@ServiceProviders(value = {
+    @ServiceProvider(service = TypingFactory.class),
+    @ServiceProvider(service = ProjectTypingDataFactory.class)})
+public class SNPNoIdFactory implements TypingFactory, ProjectTypingDataFactory {
 
-	@Override
-	public String toString() {
-		return customName;
-	}
+    private static final String customName = "Single-Nucleotide Polymorphism (SNP) (without explicit ID)";
+    private final HashMap<String, String> sameAs = new HashMap<String, String>();
 
-	@Override
-	public TypingData<? extends AbstractProfile> loadData(Reader r)  throws IOException {
+    @Override
+    public String toString() {
+        return customName;
+    }
 
-		BufferedReader in = new BufferedReader(r);
-		int uid = 0;
-		boolean error = false;
-		StringBuilder msg = new StringBuilder();
+    @Override
+    public TypingData<? extends AbstractProfile> loadData(Reader r) throws IOException {
 
-		TypingData<SNP> td = null;
+        BufferedReader in = new BufferedReader(r);
+        int uid = 0;
+        boolean error = false;
+        StringBuilder msg = new StringBuilder();
 
-		while (in.ready()) {
-			String s = in.readLine();
-			if (s == null)
-				break;
+        TypingData<SNP> td = null;
 
-			String[] lineFields = s.split("[ ,\t]+", 0);
+        while (in.ready()) {
+            String s = in.readLine();
+            if (s == null) {
+                break;
+            }
 
-			// Get headers and initialize this instance.
-			if (td == null) {
-				String[] headers = new String[lineFields.length + 1];
-				System.arraycopy(lineFields, 0, headers, 1, lineFields.length);
-				headers[0] = "ID";
-				td = new TypingData<SNP>(headers);
-				continue;
-			}
+            String[] lineFields = s.split("[ ,\t]+", 0);
 
-			String[] STvec = new String[lineFields.length + 1];
-			System.arraycopy(lineFields, 0, STvec, 1, lineFields.length);
-			STvec[0] = String.valueOf(uid + 1);
+            // Get headers and initialize this instance.
+            if (td == null) {
+                String[] headers = new String[lineFields.length + 1];
+                System.arraycopy(lineFields, 0, headers, 1, lineFields.length);
+                headers[0] = "ID";
+                td = new SNPoldData(headers);//new TypingData<SNP>(headers);
+                continue;
+            }
 
-			SNP profile = new SNP(uid++, STvec);
+            String[] STvec = new String[lineFields.length + 1];
+            System.arraycopy(lineFields, 0, STvec, 1, lineFields.length);
+            STvec[0] = String.valueOf(uid + 1);
 
-			SNP oldProfile = td.getEqual(profile);
-			if (oldProfile != null) {
-				oldProfile.incFreq();
-				if (!profile.getID().equals(oldProfile.getID())) {
-					Logger.getLogger(SNPNoIdFactory.class.getName()).log(Level.WARNING,
-						"Duplicated profile: {0} aka {1} (frequency updated)", new Object[]{profile.getID(), oldProfile.getID()});
-					msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
-					error = true;
+            SNP profile = new SNP(uid, STvec);
 
-					sameAs.put(profile.getID(), oldProfile.getID());
-				}
-			} else {
-				try {
-					td.addData(profile);
-				} catch(Exception e) {
-					Logger.getLogger(SNPNoIdFactory.class.getName()).log(Level.WARNING,
-						e.getLocalizedMessage());
-					msg.append("   ").append(profile.getID()).append("\n");
-					error = true;
-				}
-			}
-		}
-		in.close();
+            SNP oldProfile = td.getEqual(profile);
+            if (oldProfile != null) {
+                oldProfile.incFreq();
+                if (!profile.getID().equals(oldProfile.getID())) {
+                    Logger.getLogger(SNPNoIdFactory.class.getName()).log(Level.WARNING,
+                            "Duplicated profile: {0} aka {1} (frequency updated)", new Object[]{profile.getID(), oldProfile.getID()});
+                    msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
+                    error = true;
 
-		if (error) {
-			String failMsg = "Some profiles may have been discarded:\n"+
-				msg.toString() + "Check the log (View->Log) for more details.";
-			DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
-		}
+                    sameAs.put(profile.getID(), oldProfile.getID());
+                }
+            } else {
+                try {
+                    td.addData(profile);
+                    uid++;
+                } catch (Exception e) {
+                    Logger.getLogger(SNPNoIdFactory.class.getName()).log(Level.WARNING,
+                            e.getLocalizedMessage());
+                    msg.append("   ").append(profile.getID()).append("\n");
+                    error = true;
+                }
+            }
+        }
+        in.close();
 
-		return td;
-	}
+        if (error) {
+            String failMsg = "Some profiles may have been discarded:\n"
+                    + msg.toString() + "Check the log (View->Log) for more details.";
+            DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+        }
 
-	@Override
-	public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key) {
+        return td;
+    }
 
-		TreeMap<String, Integer> st2freq = new TreeMap<String, Integer>();
+    @Override
+    public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key) {
 
-		Iterator<Isolate> ii = pop.iterator();
-		while (ii.hasNext()) {
-			Isolate i = ii.next();
-			if (sameAs.containsKey(i.get(key)))
-				i.set(key, sameAs.get(i.get(key)));
-			String sid = i.get(key);
-			Integer freq = st2freq.get(sid);
-			st2freq.put(sid, (freq == null) ? 1 : (freq.intValue() + 1));
-		}
+        TreeMap<String, Integer> st2freq = new TreeMap<String, Integer>();
 
-		Iterator<? extends AbstractProfile> ip = td.iterator();
-		while(ip.hasNext()) {
-			AbstractProfile ap = ip.next();
-			Integer freq = st2freq.get(ap.getID());
-			ap.setFreq((freq == null) ? 0 : freq.intValue());
-		}
+        Iterator<Isolate> ii = pop.iterator();
+        while (ii.hasNext()) {
+            Isolate i = ii.next();
+            if (sameAs.containsKey(i.get(key))) {
+                i.set(key, sameAs.get(i.get(key)));
+            }
+            String sid = i.get(key);
+            Integer freq = st2freq.get(sid);
+            st2freq.put(sid, (freq == null) ? 1 : (freq.intValue() + 1));
+        }
 
-		return td;
-	}
+        Iterator<? extends AbstractProfile> ip = td.iterator();
+        while (ip.hasNext()) {
+            AbstractProfile ap = ip.next();
+            Integer freq = st2freq.get(ap.getID());
+            ap.setFreq((freq == null) ? 0 : freq.intValue());
+        }
 
-	@Override
-	public URL getDescription() {
-		return SNPNoIdFactory.class.getResource("NoIdDescription.html");
-	}
+        return td;
+    }
 
-	@Override
-	public URL getFormatDescription() {
-		return SNPNoIdFactory.class.getResource("NoIdFormatDescription.html");
-	}
+    @Override
+    public URL getDescription() {
+        return SNPNoIdFactory.class.getResource("NoIdDescription.html");
+    }
+
+    @Override
+    public URL getFormatDescription() {
+        return SNPNoIdFactory.class.getResource("NoIdFormatDescription.html");
+    }
+
+    @Override
+    public String onSave(TypingData<? extends AbstractProfile> td) {
+
+        String toSave = td.getSaver().toSave();
+
+        return toSave;
+    }
+
+    @Override
+    public TypingData<? extends AbstractProfile> onLoad(Reader r) {
+        try {
+            return loadData(r);
+        } catch (IOException e) {
+            Exceptions.printStackTrace(e);
+        }
+        return null;
+    }
 }
