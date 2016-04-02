@@ -92,13 +92,17 @@ public abstract class JsonSchemaValidator {
                 JsonProp jp = validatorMap.get(key);
                 if (jp.type.equalsIgnoreCase("array")) {
                     JSONArray ja = (JSONArray) json.get(key);
-                    if (!validateJsonArray(ja, validatorMap.get(key), filename)) {
-                        return false;
+                    if (ja != null) {
+                        if (!validateJsonArray(ja, validatorMap.get(key), filename)) {
+                            return false;
+                        }
                     }
                 } else if (jp.type.equalsIgnoreCase("object")) {
                     JSONObject jo = (JSONObject) json.get(key);
-                    if (!validateJsonObject(jo, validatorMap.get(key), filename)) {
-                        return false;
+                    if (jo != null) {
+                        if (!validateJsonObject(jo, validatorMap.get(key), filename)) {
+                            return false;
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Invalid file " + filename);
@@ -171,7 +175,7 @@ public abstract class JsonSchemaValidator {
                 case ("boolean"):
                     boolean value = (boolean) s;
                     return true;
-                case("array"):
+                case ("array"):
                     return (s.getClass().getName().equals(JSONArray.class.getName()));
                 default:
                     JOptionPane.showMessageDialog(WindowManager.getDefault().getMainWindow(), "Invalid type in " + file);
