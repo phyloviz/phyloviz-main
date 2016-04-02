@@ -78,7 +78,9 @@ public class GoeBurstItemFactory implements ProjectItemFactory {
 
             Map<Integer, GOeBurstNodeExtended> nodes = getNodes(profiles, nodesArray);
 
-            Map<Integer, EdgeInfo> edges = createEdges(edgesArray, nodes);
+            Map<Integer, EdgeInfo> edges = null;
+            if(edgesArray != null)
+                edges = createEdges(edgesArray, nodes);
 
             Map<Integer, GOeBurstClusterWithStats> groups = createGroups(groupsArray, edges, nodes, ad);
 
