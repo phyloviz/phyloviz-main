@@ -19,4 +19,5 @@ public class PersistentVisualization implements Serializable{
     public boolean linearSize;
     public Map<String, Point> nodesPositions;
     public String filter;
+    public boolean isRadialLayout;
 }

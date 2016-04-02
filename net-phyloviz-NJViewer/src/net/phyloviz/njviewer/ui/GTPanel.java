@@ -45,12 +45,17 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         this.njr = njr;
         float distanceFilter = -1;
         Visualization viz = njr.getVisualization();
-        if (viz != null && viz.pv != null) {
-            distanceFilter = viz.pv.distanceFilterValue;
-            gv = new GraphView(name, njr, viz.pv.linearSize, viz.pv.nodesPositions);
-            loadVisualization(viz);
+        if (viz != null) {
+            PersistentVisualization pv = viz.pv;
+            if(pv != null){
+                distanceFilter = pv.distanceFilterValue;
+                gv = new GraphView(name, njr, pv.linearSize, pv.nodesPositions, pv.isRadialLayout);
+                loadVisualization(viz);
+            } else {
+                gv = new GraphView(name, njr, false, null, true);
+            }
         } else {
-            gv = new GraphView(name, njr, false, null);
+            gv = new GraphView(name, njr, false, null, true);
         }
         this.add(gv);
         gv.enableViewControl(gv.isRadial());
@@ -177,6 +182,7 @@ public final class GTPanel extends TopComponent implements IGTPanel {
         pv.distanceFilterValue = gv.getDistanceFilterValue();
         pv.linearSize = gv.getLinearSize();
         pv.nodesPositions = ((GraphView) gv).getNodesPositions();
+        pv.isRadialLayout = gv.isRadial();
         v.pv = pv;
 
         return v;
@@ -184,20 +190,19 @@ public final class GTPanel extends TopComponent implements IGTPanel {
 
     @Override
     public void loadVisualization(Visualization viz) {
-
         if (viz.category != null) {
             catProvider = viz.category;
 
-            gv.setDefaultRenderer(new BarChartRenderer(catProvider, gv));
+//            gv.setDefaultRenderer(new BarChartRenderer(catProvider, gv));
             gv.setCategoryProvider(catProvider);
         }
 
-        if (viz.pv.distanceFilterValue != -1) {
-            gv.setDistanceFilterValue(viz.pv.distanceFilterValue);
-        }
-        if (viz.pv.linearSize) {
-            gv.setLinearSize(viz.pv.linearSize);
-        }
+//        if (viz.pv.distanceFilterValue != -1) {
+//            gv.setDistanceFilterValue(viz.pv.distanceFilterValue);
+//        }
+//        if (viz.pv.linearSize) {
+//            gv.setLinearSize(viz.pv.linearSize);
+//        }
         gv.repaint();
 
     }

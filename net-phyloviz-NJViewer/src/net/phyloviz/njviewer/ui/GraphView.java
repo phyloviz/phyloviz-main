@@ -166,13 +166,14 @@ public class GraphView extends GView {
     private final JValueSlider animCtl;
     private JRadialViewControlPanel radialViewControlPanel;
 
-    public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions) {
+    public GraphView(String name, NeighborJoiningItem _er, boolean linear, Map<String, Point> nodesPositions, final boolean isRadial) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
         this.setOpaque(true);
         this.name = name;
         this.nodesPositions = nodesPositions;
         this.root = _er.getRoot();
+        this.isRadial = isRadial;
 //        this.linear = linear;
         // Create an empty visualization.
         view = new Visualization();
@@ -671,15 +672,14 @@ public class GraphView extends GView {
                     if (progress == 100) {
 
                         //fdl = new RadialLayout("graph", root.distance, 8194);
-                        setForceDirectedLayout(false);
+                        setForceDirectedLayout(!isRadial);
 
                         distance = (float) (distanceFilter == -1 ? maxDistance : distanceFilter);
                         distance = Math.round((distance+cutIncDev)*1000.0f) / 1000.0f;
-//                        maxDistance += cutIncDev;
-
+                        maxDistance = Math.round((maxDistance+cutIncDev)*1000.0f) / 1000.0f;
 //                        sp.setValue(maxDistance);
 
-                        final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, distance+cutIncDev, cutIncDev);
+                        final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, cutIncDev);
                         model.addChangeListener(new ChangeListener() {
                             @Override
                             public void stateChanged(ChangeEvent e) {
