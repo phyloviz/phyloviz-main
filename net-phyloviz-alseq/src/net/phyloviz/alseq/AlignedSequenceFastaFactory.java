@@ -32,7 +32,6 @@
  * of the library, but you are not obligated to do so.  If you do not wish
  * to do so, delete this exception statement from your version.
  */
-
 package net.phyloviz.alseq;
 
 import java.io.BufferedReader;
@@ -51,142 +50,169 @@ import net.phyloviz.core.data.Isolate;
 import net.phyloviz.core.data.Population;
 import net.phyloviz.core.data.TypingData;
 import net.phyloviz.core.util.TypingFactory;
+import net.phyloviz.project.ProjectTypingDataFactory;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.lookup.ServiceProviders;
 
-@ServiceProvider(service = TypingFactory.class)
-public class AlignedSequenceFastaFactory implements TypingFactory {
-	
-	private static final String customName = "Aligned Sequences (FASTA)";
-	private final HashMap<String, String> sameAs = new HashMap<String, String>();
+@ServiceProviders(value = {
+    @ServiceProvider(service = TypingFactory.class),
+    @ServiceProvider(service = ProjectTypingDataFactory.class)})
+public class AlignedSequenceFastaFactory implements TypingFactory, ProjectTypingDataFactory {
 
-	@Override
-	public String toString() {
-		return customName;
-	}
+    private static final String customName = "Aligned Sequences (FASTA)";
+    private final HashMap<String, String> sameAs = new HashMap<String, String>();
 
-	@Override
-	public TypingData<? extends AbstractProfile> loadData(Reader r)  throws IOException {
+    @Override
+    public String toString() {
+        return customName;
+    }
 
-		BufferedReader in = new BufferedReader(r);
-		int uid = 0;
-		boolean error = false;
-		StringBuilder msg = new StringBuilder();
+    @Override
+    public TypingData<? extends AbstractProfile> loadData(Reader r) throws IOException {
 
-		TypingData<AlignedSequenceFasta> td = null;
+        BufferedReader in = new BufferedReader(r);
+        int uid = 0;
+        boolean error = false;
+        StringBuilder msg = new StringBuilder();
 
-		String s = in.readLine();
-		while (s != null && s.charAt(0) == '>') {
+        TypingData<AlignedSequenceFasta> td = null;
 
-			String[] STvec = new String[2];
-			String header = s;
-			Pattern pat = Pattern.compile("id[|=].+?[|;]");
-			Matcher m = pat.matcher(s);
-			Pattern pat2 = Pattern.compile("> ?.{1,15}");
-			Matcher m2 = pat2.matcher(s);
-			if (m.find()) {
-				STvec[0] = s.substring(m.start()+3, m.end()-1);
-			} else if (m2.matches()) {
-				if (s.charAt(1) == ' ')
-					STvec[0] = s.substring(2).trim();
-				else
-					STvec[0] = s.substring(1).trim();
-			} else {
-				STvec[0] = "#" + String.valueOf(uid + 1);
-			}	
-			STvec[1] = "";
-			s = in.readLine();
-			StringBuilder sb = new StringBuilder();
-			while (s != null && (s.equals("") || s.charAt(0) != '>')) {
-				sb.append(s);
-				s = in.readLine();	
-			}
-			STvec[1] = sb.toString();
-		
-			if (STvec[1] == null || STvec[1].equals(""))
-				continue;
+        String s = in.readLine();
+        while (s != null && s.charAt(0) == '>') {
 
-			// Get headers and initialize this instance.
-			if (td == null) {
-				int len = STvec[1].length();
-				String headers[] = new String[len + 1];
-				headers[0] = "ID";
-				for (int i = 0; i < len; i++)
-					headers[i + 1] = "s[" + i + "]";
-				td = new TypingData<AlignedSequenceFasta>(headers);
-				//continue; // We may need to comment this given the FASTA format...
-			}
-			
-			AlignedSequenceFasta profile = new AlignedSequenceFasta(uid++, STvec);
-			profile.setHeader(header);
+            String[] STvec = new String[2];
+            String header = s;
+            Pattern pat = Pattern.compile("id[|=].+?[|;]");
+            Matcher m = pat.matcher(s);
+            Pattern pat2 = Pattern.compile("> ?.{1,15}");
+            Matcher m2 = pat2.matcher(s);
+            if (m.find()) {
+                STvec[0] = s.substring(m.start() + 3, m.end() - 1);
+            } else if (m2.matches()) {
+                if (s.charAt(1) == ' ') {
+                    STvec[0] = s.substring(2).trim();
+                } else {
+                    STvec[0] = s.substring(1).trim();
+                }
+            } else {
+                STvec[0] = "#" + String.valueOf(uid + 1);
+            }
+            STvec[1] = "";
+            s = in.readLine();
+            StringBuilder sb = new StringBuilder();
+            while (s != null && (s.equals("") || s.charAt(0) != '>')) {
+                sb.append(s);
+                s = in.readLine();
+            }
+            STvec[1] = sb.toString();
 
-			AlignedSequenceFasta oldProfile = td.getEqual(profile);
-			if (oldProfile != null) {
-				oldProfile.incFreq();
-				if (!profile.getID().equals(oldProfile.getID())) {
-					Logger.getLogger(AlignedSequenceFastaFactory.class.getName()).log(Level.WARNING,
-						"Duplicated profile: {0} aka {1} (frequency updated)", 
-						new Object[]{profile.getID(), oldProfile.getID()});
-					msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
-					error = true;
+            if (STvec[1] == null || STvec[1].equals("")) {
+                continue;
+            }
 
-					sameAs.put(profile.getID(), oldProfile.getID());
-				}
-			} else {
-				try {
-					td.addData(profile);
-				} catch(Exception e) {
-					Logger.getLogger(AlignedSequenceFastaFactory.class.getName()).log(Level.WARNING,
-						e.getLocalizedMessage());
-					msg.append("   ").append(profile.getID()).append("\n");
-					error = true;
-				}
-			}
-		} 
-		in.close();
+            // Get headers and initialize this instance.
+            if (td == null) {
+                int len = STvec[1].length();
+                String headers[] = new String[len + 1];
+                headers[0] = "ID";
+                for (int i = 0; i < len; i++) {
+                    headers[i + 1] = "s[" + i + "]";
+                }
+                td = new AlignedSequenceFastaData(headers);//new TypingData<AlignedSequenceFasta>(headers);
+                //continue; // We may need to comment this given the FASTA format...
+            }
 
-		if (error) {
-			String failMsg = "Some profiles may have been discarded:\n"+
-				msg.toString() + "Check the log (View->Log) for more details.";
-			DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
-		}
-		
-		return td;
-	}
+            AlignedSequenceFasta profile = new AlignedSequenceFasta(uid++, STvec);
+            profile.setHeader(header);
 
-	@Override
-	public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key) {
+            AlignedSequenceFasta oldProfile = td.getEqual(profile);
+            if (oldProfile != null) {
+                oldProfile.incFreq();
+                if (!profile.getID().equals(oldProfile.getID())) {
+                    Logger.getLogger(AlignedSequenceFastaFactory.class.getName()).log(Level.WARNING,
+                            "Duplicated profile: {0} aka {1} (frequency updated)",
+                            new Object[]{profile.getID(), oldProfile.getID()});
+                    msg.append("   ").append(profile.getID()).append(" (aka ").append(oldProfile.getID()).append(")\n");
+                    error = true;
 
-		TreeMap<String, Integer> st2freq = new TreeMap<String, Integer>();
+                    sameAs.put(profile.getID(), oldProfile.getID());
+                }
+            } else {
+                try {
+                    td.addData(profile);
+                } catch (Exception e) {
+                    Logger.getLogger(AlignedSequenceFastaFactory.class.getName()).log(Level.WARNING,
+                            e.getLocalizedMessage());
+                    msg.append("   ").append(profile.getID()).append("\n");
+                    error = true;
+                }
+            }
+        }
+        in.close();
 
-		Iterator<Isolate> ii = pop.iterator();
-		while (ii.hasNext()) {
-			Isolate i = ii.next();
-			if (sameAs.containsKey(i.get(key)))
-				i.set(key, sameAs.get(i.get(key)));
-			String sid = i.get(key);
-			Integer freq = st2freq.get(sid);
-			st2freq.put(sid, (freq == null) ? 1 : (freq.intValue() + 1));
-		}
+        if (error) {
+            String failMsg = "Some profiles may have been discarded:\n"
+                    + msg.toString() + "Check the log (View->Log) for more details.";
+            DialogDisplayer.getDefault().notify(new NotifyDescriptor.Message(failMsg));
+        }
 
-		Iterator<? extends AbstractProfile> ip = td.iterator();
-		while(ip.hasNext()) {
-			AbstractProfile ap = ip.next();
-			Integer freq = st2freq.get(ap.getID());
-			ap.setFreq((freq == null) ? 0 : freq.intValue());
-		}
+        return td;
+    }
 
-		return td;
-	}
+    @Override
+    public TypingData<? extends AbstractProfile> integrateData(TypingData<? extends AbstractProfile> td, Population pop, int key) {
 
-	@Override
-	public URL getDescription() {
-		return AlignedSequenceFastaFactory.class.getResource("FastaDescription.html");
-	}
+        TreeMap<String, Integer> st2freq = new TreeMap<String, Integer>();
 
-	@Override
-	public URL getFormatDescription() {
-		return AlignedSequenceFastaFactory.class.getResource("FastaFormatDescription.html");
-	}
+        Iterator<Isolate> ii = pop.iterator();
+        while (ii.hasNext()) {
+            Isolate i = ii.next();
+            if (sameAs.containsKey(i.get(key))) {
+                i.set(key, sameAs.get(i.get(key)));
+            }
+            String sid = i.get(key);
+            Integer freq = st2freq.get(sid);
+            st2freq.put(sid, (freq == null) ? 1 : (freq.intValue() + 1));
+        }
+
+        Iterator<? extends AbstractProfile> ip = td.iterator();
+        while (ip.hasNext()) {
+            AbstractProfile ap = ip.next();
+            Integer freq = st2freq.get(ap.getID());
+            ap.setFreq((freq == null) ? 0 : freq.intValue());
+        }
+
+        return td;
+    }
+
+    @Override
+    public URL getDescription() {
+        return AlignedSequenceFastaFactory.class.getResource("FastaDescription.html");
+    }
+
+    @Override
+    public URL getFormatDescription() {
+        return AlignedSequenceFastaFactory.class.getResource("FastaFormatDescription.html");
+    }
+
+    @Override
+    public String onSave(TypingData<? extends AbstractProfile> td) {
+        
+        String toSave = td.getSaver().toSave();
+        
+        return toSave;
+    }
+
+    @Override
+    public TypingData<? extends AbstractProfile> onLoad(Reader r) {
+        try {
+            return loadData(r);
+        } catch (IOException e) {
+            Exceptions.printStackTrace(e);
+        }
+        return null;
+    }
 }
