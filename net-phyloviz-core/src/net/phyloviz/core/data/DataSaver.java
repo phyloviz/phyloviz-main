@@ -46,7 +46,7 @@ import org.openide.filesystems.FileChooserBuilder;
 
 public class DataSaver implements SaveCookie {
 
-    private DataModel dm;
+    protected DataModel dm;
 
     public DataSaver(DataModel dm) {
         this.dm = dm;

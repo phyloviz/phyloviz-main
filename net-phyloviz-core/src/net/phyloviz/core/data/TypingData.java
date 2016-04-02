@@ -100,7 +100,7 @@ public class TypingData<T extends AbstractProfile> implements DataModel, Lookup.
 	 * A tabular model of this population.
 	 * */
 	private TableModel model;
-	private DataSaver saver;
+	protected DataSaver saver;
 	private boolean weightOk;
 	private int weight;
 

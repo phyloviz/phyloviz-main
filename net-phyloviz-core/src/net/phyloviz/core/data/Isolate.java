@@ -59,7 +59,7 @@ public class Isolate implements DataItem {
 	/**
 	 * Constructs an isolate with no ancillary data.
 	 */
-	protected Isolate() {
+	public Isolate() {
 		values = new ArrayList<String>();
 	}
 
@@ -71,7 +71,7 @@ public class Isolate implements DataItem {
 	 * @param val the ancillary data of the isolate.
 	 * @throws NullPointerException if the specified array is null.
 	 */
-	protected Isolate(String[] val) {
+	public Isolate(String[] val) {
 		values = new ArrayList<String>(Arrays.asList(val));
 	}
 
