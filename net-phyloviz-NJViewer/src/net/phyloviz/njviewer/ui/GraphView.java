@@ -402,7 +402,6 @@ public class GraphView extends GView {
         popupMenu.add(roundDistancesAction);
         popupMenu.add(showDistancesChartAction);
 
-
         JButton optionsButton = new JButton("Options");
         optionsButton.setMargin(new Insets(1, 1, 1, 1));
         optionsButton.addMouseListener(new MouseAdapter() {
@@ -674,9 +673,13 @@ public class GraphView extends GView {
                         //fdl = new RadialLayout("graph", root.distance, 8194);
                         setForceDirectedLayout(!isRadial);
 
-                        distance = (float) (distanceFilter == -1 ? maxDistance : distanceFilter);
-                        distance = Math.round((distance+cutIncDev)*1000.0f) / 1000.0f;
-                        maxDistance = Math.round((maxDistance+cutIncDev)*1000.0f) / 1000.0f;
+                        if (distanceFilter == -1) {
+                            distance = (float) maxDistance;
+                            distance = Math.round((distance + cutIncDev) * 1000.0f) / 1000.0f;
+                        } else {
+                            distance = (float) distanceFilter;
+                        }
+                        maxDistance = Math.round((maxDistance + cutIncDev) * 1000.0f) / 1000.0f;
 //                        sp.setValue(maxDistance);
 
                         final SpinnerNumberModel model = new SpinnerNumberModel(distance, minDistance, maxDistance, cutIncDev);
