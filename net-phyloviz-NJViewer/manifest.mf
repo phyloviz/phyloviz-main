@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 AutoUpdate-Show-In-Client: true
-OpenIDE-Module: net.phyloviz.njviewer
+OpenIDE-Module: net.phyloviz.njviewer/2
+OpenIDE-Module-Implementation-Version: 0
 OpenIDE-Module-Localizing-Bundle: net/phyloviz/njviewer/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.1
 
