@@ -1,23 +1,3 @@
-/*-
- * Copyright (c) 2016, PHYLOViZ Team <phyloviz@gmail.com>
- * All rights reserved.
- * 
- * This file is part of PHYLOViZ <http://www.phyloviz.net/>.
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- * 
- * You should have received a copy of the GNU General Public License along
- * with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -75,10 +55,8 @@ import net.phyloviz.welcome.content.BundleSupport;
 import net.phyloviz.welcome.content.Constants;
 import net.phyloviz.welcome.content.LinkButton;
 import net.phyloviz.welcome.content.Utils;
+import org.openide.awt.Actions;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
-import org.openide.util.actions.CallableSystemAction;
-import org.openide.util.actions.SystemAction;
 
 /**
  *
@@ -143,10 +121,7 @@ class PluginsPanel extends JPanel implements Constants {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                ClassLoader cl = Lookup.getDefault ().lookup (ClassLoader.class);
-                CallableSystemAction a = SystemAction.get(cl.loadClass("org.netbeans.modules.autoupdate.ui.actions.PluginManagerAction").asSubclass(CallableSystemAction.class));
-                a.putValue("InitialTab", initialTab); // NOI18N
-                a.performAction ();
+                Actions.forID("System", "org.netbeans.modules.autoupdate.ui.actions.PluginManagerAction").actionPerformed(new ActionEvent(e.getSource(), 100, initialTab));
             } catch (Exception ex) {
                 Exceptions.printStackTrace(ex);
             }
