@@ -6,7 +6,7 @@
 Welcome to PHYLOViZ's documentation!
 ====================================
 
-[PHYLOViZ](http://www.phyloviz.net) is a platform independent JAVA software that allows the analysis of sequence-based typing methods that generate allelic profiles and their associated epidemiological data.
+`PHYLOViZ <http://www.phyloviz.net>`_ is a platform independent JAVA software that allows the analysis of sequence-based typing methods that generate allelic profiles and their associated epidemiological data.
 
 .. toctree::
    :maxdepth: 2
