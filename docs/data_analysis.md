@@ -52,3 +52,63 @@ At level 2 , 6 groups appear with 4 or more STs each.
 
 And finally at level 1, the equivalent of the most commonly used Clonal Complex definition by goeBURST, 17 groups with 2 or more STs are formed and there are 25 singletons on the dataset.
 
+## Hierarchical Clustering
+
+Selecting the Hierarchical Clustering opens the dialog where you can select what method you want to apply.
+The first step is choosing the _Distance_ to be used. Currently the hamming distance is the only one available, but others could be implemented.
+
+![distance]()
+
+The second step is to select the _Method_. You can choose between complete-linkage, single-linkage, UPGMA (Unweighted Pair Group Method with Arithmetic mean) and WPGMA (Weighted Pair Group Method with Arithmetic mean).
+
+![method]()
+
+A Hierarchical Clustering _Output Tab_ will appear and display the results of the application of the chosen method. A _Leaf_ represents a Sequence Type and a _Union_ represents a group that results of joining Leafs or Unions with Leafs. 
+This process of joining is displayed step by step by the algorithm in the _Output's Tab_.
+Finally we have the number of ties occured. The tie break applied is to always choose the first one found.
+
+![output]()
+
+Double clicking on the Hierarchical Clustering item will show the display. This type of clustering is represented in the format of a dendogram.
+The following screenshot summarizes the output for the previous dataset.
+
+![display]()
+
+Some features were added to the visualization to improve and facilitate the analysis. 
+These features are the following:
+1. Height scale
+2. Width scale
+3. Options Panel
+4. Search ST
+5. Filter by distance
+6. Export image
+
+![display features](./images/)
+
+## Neighbor Joinning
+
+Selecting the Neighbor Joinning algorithm opens the dialog where you can select what method you want to apply.
+The first step is choosing the _Distance_ to be used.
+
+![distance](./images/)
+
+The second step is to select the _Criteria_. You can choose between Saitou-Nei and Studier-Keppler criterion.
+
+![method](./images/)
+
+A Neighbor Joinning _Output Tab_ will appear and display the results of the application of the chosen method. The information displayed represents the same as the Hierarchical Clustering _Output Tab_.
+
+![output](./images/)
+
+Double clicking on the Neighbor Joinning item will show the display. By default it is represented in the format of a radial tree. The following screenshot summarizes the output for the previous dataset.
+
+![display](./images/)
+
+Some features were added to the visualization to improve and facilitate the analysis. 
+These features are the following:
+1. Options Panel that includes changing the tree layout
+2. Search ST
+3. Filter by distance
+4. Export image
+
+![display features](./images/)
