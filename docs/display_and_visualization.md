@@ -8,12 +8,12 @@ The Display tab offers the user the ability to search for an isolate, Highlight 
 
 Click to see how to use the features:
 
- 1. ***Common** features*
+ 1. ***Common*** *features*
    * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
    * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
    * *Exporting Image*
    
- 2. *GoEburst features*
+ 2. ***GoEburst*** *features*
    * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
    * [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
    * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
