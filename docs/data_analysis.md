@@ -28,31 +28,31 @@ Double clicking on the goeBURST item that is now on the Dataset tree menu will s
 
 Multiple groups can be displayed simultaneously by selecting them, using the CTRL /CMD and/or SHIFT keys.
 
-![multiple groups](http://www.phyloviz.net/wiki/dataanalysis/goeBURSTmultipleselection.png)
+![multiple groups](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB4.png)
 
 ## goeBURST Full MST algorithm
 
 Using an extension of the goeBURST rules up to \\(n\\)LV level (where \\(n\\) equals to the number of loci your dataset uses), a Minimum Spanning Tree-like structure can be drawn. Select _goeBURST Full MST_ in the _Compute_ options to draw it. Contrary to the standard goeBURST, the link statistics are not presented. After computation, double click on the _goeBURST Full MST_ that appears under the dataset heading to visualize the result.
 
-![mst result](http://www.phyloviz.net/wiki/dataanalysis/MST6.png)
+![mst result](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB5.png)
 
 New options appear on the display: The _Level_ selector and two new buttons _Get Groups_ and _Save Groups_. The _Level_ represents the _Locus Variant_ level and allows the removal of all the links greater than the number represented. The user can use the up and down arrows or directly edit the number by clicking on it. The _Get Groups_ button allows separate the display of groups that are not connected at the level chosen in order to simplify the analysis of larger datasets. This will generate a display very similar to that of goeBURST, but at a higher link level. The Save Groups creates an extra column in the isolate data with the title label _goeBURST MST[\\(x\\)]_ with \\(x\\) being equal to the level used to create the groups. 
 
 Decreasing the _Level_ selector, allows the user to see how clonal complexes would relate to each other at a certain level. Level 1, 2 and 3 are equivalent to calculating goeBURST at those levels (SLV,DLV and TLV respectively). The following images shows what happens to the dataset when you decrease the level. Level 4 is not displayed since no new groups are formed at that level.
 
-![new groups](http://www.phyloviz.net/wiki/dataanalysis/MST5.png)
+![new groups](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB6.png)
 
 At level 5 only two groups are formed in the sample dataset.
 
-![more grouping](http://www.phyloviz.net/wiki/dataanalysis/MST3.png)
+![more grouping](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB7.png)
 
 At level 3 (TLV level) some singletons appear. Level 4 is not shown since no changes were observed in the graph. This means that there are no two STs in the dataset that differ in 4 of the loci of their profiles.
 
-![another example](http://www.phyloviz.net/wiki/dataanalysis/MST2.png)
+![another example](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB8.png)
 
 At level 2 , 6 groups appear with 4 or more STs each.
 
-![one more](http://www.phyloviz.net/wiki/dataanalysis/MST1_2.png)
+![one more](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB9.png)
 
 And finally at level 1, the equivalent of the most commonly used Clonal Complex definition by goeBURST, 17 groups with 2 or more STs are formed and there are 25 singletons on the dataset.
 
