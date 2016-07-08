@@ -67,7 +67,7 @@ A Hierarchical Clustering _Output Tab_ will appear and display the results of th
 This process of joining is displayed step by step by the algorithm in the _Output's Tab_.
 Finally we have the number of ties occured. The tie break applied is to always choose the first one found.
 
-![output]()
+![output](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC3.png)
 
 Double clicking on the Hierarchical Clustering item will show the display. This type of clustering is represented in the format of a dendogram.
 The following screenshot summarizes the output for the previous dataset.
