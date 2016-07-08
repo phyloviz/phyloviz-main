@@ -2,7 +2,7 @@
 
 In the current version of PHYLOViZ, you can analyze your data using the goeBURST algorithm and an extension of the goeBURST rules to draw a full Minimum Spanning Tree (MST). Press the _Right Mouse Button_ on the _Typing Data_ (now named with the method) and choose compute to access the available analysis algorithms.
 
-![choose algorithm](http://www.phyloviz.net/wiki/dataanalysis/runningAlgorithms.png)
+![choose algorithm](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB1.png)
 
 ## goeBURST algorithm
 
@@ -16,7 +16,11 @@ The second step is the choice of the level to which clonal complexes will be for
 
 A goeBURST _Output_ tab will appear and display the goeBURST algorithm results. It will contain information about the Clonal Complexes (CCs), namely the Sequence Types that compose them and what edges (the links between STs) were drawn in each CC.
 
-![output](http://www.phyloviz.net/wiki/dataanalysis/goeBURSToutputlog.png)
+![output](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB2.png)
+
+In order to display the goEburst tree view, it is necessary to expand the typing data on the DataSets' tab, if it os not already expanded.
+
+![display](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/GEB3.png)
 
 Double clicking on the goeBURST item that is now on the Dataset tree menu will show the display. The clonal complexes will be arbitrarily numbered starting from 0 (for the CC with most STs) and contains all the data relevant to the goeBURST analysis (STs in each group and the drawn SLVs edges). The following screenshot summarizes the output for a single clonal complex with the test dataset used.
 
