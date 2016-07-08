@@ -89,13 +89,17 @@ The following screenshot summarizes the output for the previous dataset. Sometim
 Some features were added to the visualization to improve and facilitate the analysis. 
 These features are the following:
   1. Height scale
+  ![heightscale](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC7.png)
   2. Width scale
+  ![widthscale](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC8.png)
   3. Options Panel
   4. Search ST
+  ![search](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC9.png)
   5. Filter by distance (cut off threshold)
+  ![filter](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC10.png)
   6. Export image
 
-![display features](./images/)
+
 
 ## Neighbor Joinning
 
