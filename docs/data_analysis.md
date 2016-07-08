@@ -82,7 +82,7 @@ It shoud appear an icon corresponding to the hierarchical clustering computation
 ![expanded](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC5.png)
 
 Double clicking on the Hierarchical Clustering item will show the display. This type of clustering is represented in the format of a dendogram.
-The following screenshot summarizes the output for the previous dataset.
+The following screenshot summarizes the output for the previous dataset. Sometimes it is necessary to fit the image to see all  the display at once. To do this, please right click on the mouse over the display. 
 
 ![display](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC6.png)
 
