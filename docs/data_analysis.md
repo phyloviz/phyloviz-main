@@ -59,9 +59,9 @@ The first step is choosing the _Distance_ to be used. Currently the hamming dist
 
 ![distance](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC1.png)
 
-The second step is to select the _Method_. You can choose between complete-linkage, single-linkage, UPGMA (Unweighted Pair Group Method with Arithmetic mean) and WPGMA (Weighted Pair Group Method with Arithmetic mean).
+The second step is to select the _Method_. You can choose between complete-linkage, single-linkage, UPGMA (Unweighted Pair Group Method with Arithmetic mean) and WPGMA (Weighted Pair Group Method with Arithmetic mean). Selecting the method corresponds to selecting the  criterion of minimal dissimilarity. 
 
-![method]()
+![method](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC2.png)
 
 A Hierarchical Clustering _Output Tab_ will appear and display the results of the application of the chosen method. A _Leaf_ represents a Sequence Type and a _Union_ represents a group that results of joining Leafs or Unions with Leafs. 
 This process of joining is displayed step by step by the algorithm in the _Output's Tab_.
