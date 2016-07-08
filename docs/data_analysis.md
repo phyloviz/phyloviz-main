@@ -73,7 +73,7 @@ Finally we have the number of ties occured. The tie break applied is to always c
 
 ![output](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC3.png)
 
-In order to display the dendogram view, it is necessaru to expand the typing data on the Datasets' tab, if it is not already expanded.
+In order to display the dendogram view, it is necessary to expand the typing data on the Datasets' tab, if it is not already expanded.
 
 ![expanding](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC4.png)
 
@@ -102,7 +102,17 @@ These features are the following:
   
   3. Options Panel
   
+  As it can be seen in the next figure, several options can be applied to the display.
 
+  ![options](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC11.png)
+
+ For instance, the _Info_ option will add an output tab such that each time we click on an ST over the display, it will add to that output tab the information about the profile and about the anciliary data. As an example, in the next figure, the ST 20 was selected.
+
+ 
+   ![info_options](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC12.png)
+
+The _Distance labels_ option will display the value of the distance between each taxa pair. The other options, _Linear Nodes_ and _Re-scale Edges_ changes the size of ST nodes and edges, respectively. By default, the size of each ST node in the display is logarithmic in the number of the isolates that have that ST. By changing to linear, the size in the display will become linearly proportional. With respect to the edges, the default size is lineary proportional to the original size and thus, applying the _Re-scale Edges_ option, it will because logarithmically.
+ 
   4. Search ST
   
   Using the text panel that is in evidence in the next figure, it is possible to search for a given ST.
