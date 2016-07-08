@@ -73,7 +73,7 @@ Finally we have the number of ties occured. The tie break applied is to always c
 
 ![output](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC3.png)
 
-In order to display the dendogram view, it is necessaru to expand the typing data on the Datasets' tab, if it is not alread expanded.
+In order to display the dendogram view, it is necessaru to expand the typing data on the Datasets' tab, if it is not already expanded.
 
 ![expanding](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC4.png)
 
@@ -88,12 +88,12 @@ The following screenshot summarizes the output for the previous dataset. Sometim
 
 Some features were added to the visualization to improve and facilitate the analysis. 
 These features are the following:
-1. Height scale
-2. Width scale
-3. Options Panel
-4. Search ST
-5. Filter by distance
-6. Export image
+  1. Height scale
+  2. Width scale
+  3. Options Panel
+  4. Search ST
+  5. Filter by distance (cut off threshold)
+  6. Export image
 
 ![display features](./images/)
 
