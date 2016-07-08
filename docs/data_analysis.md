@@ -69,10 +69,18 @@ Finally we have the number of ties occured. The tie break applied is to always c
 
 ![output](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC3.png)
 
+In order to display the dendogram view, it is necessaru to expand the typing data on the Datasets' tab, if it is not alread expanded.
+
+![expanding](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC4.png)
+
+It shoud appear an icon corresponding to the hierarchical clustering computation
+
+![expanded](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC5.png)
+
 Double clicking on the Hierarchical Clustering item will show the display. This type of clustering is represented in the format of a dendogram.
 The following screenshot summarizes the output for the previous dataset.
 
-![display]()
+![display](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC6.png)
 
 Some features were added to the visualization to improve and facilitate the analysis. 
 These features are the following:
