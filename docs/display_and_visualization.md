@@ -7,14 +7,30 @@ After running the selected algorithm, you will notice that the program then trie
 The Display tab offers the user the ability to search for an isolate, Highlight the SLVs and DLVs, control the animation speed, select diferent diferent or multiple groups. You can fit any displayed graphs to the window by right-clicking any open space (i.e. with no link or ST node) on the window.
 
 Click to see how to use the features:
-* [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
-* [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
-* [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
-* [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
-* [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
-* [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
-* [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
-* [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png).
+
+ 1. ***Common*** *features*
+   * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
+   * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
+   * *Exporting Image*
+   
+ 2. ***GoEburst*** *and* ***Full GoEburst*** *features*
+   * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
+   * [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
+   * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
+   * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
+   * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png).
+   
+ 3. ***GoEburst***, ***Full GoEburst*** *and* ***Neighbor Joinning*** *features*
+   * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
+ 
+ 4. ***Neighbor Joinning*** *features*
+   * Changing the tree layout
+ 
+ 5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
+   * [height scale](_images/HC7.png),
+   * width scale
+   * filter by distance (cut off threshold)
+ 
 
 ## Color conventions
 
