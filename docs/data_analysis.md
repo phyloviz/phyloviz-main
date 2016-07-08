@@ -57,7 +57,7 @@ And finally at level 1, the equivalent of the most commonly used Clonal Complex 
 Selecting the Hierarchical Clustering opens the dialog where you can select what method you want to apply.
 The first step is choosing the _Distance_ to be used. Currently the hamming distance is the only one available, but others could be implemented.
 
-![distance]()
+![distance](https://github.com/phyloviz/phyloviz-main/blob/master/docs/_images/HC1.png)
 
 The second step is to select the _Method_. You can choose between complete-linkage, single-linkage, UPGMA (Unweighted Pair Group Method with Arithmetic mean) and WPGMA (Weighted Pair Group Method with Arithmetic mean).
 
