@@ -13,20 +13,20 @@ Click to see how to use the features:
    * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
    * *Exporting Image*
    
- 2. ***GoEburst*** *features*
+ 2. ***GoEburst*** *and* ***Full GoEburst*** *features*
    * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
    * [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
    * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
    * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
    * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png).
    
- 3. *GoEburst and Neighbor Joinning features*
+ 3. ***GoEburst***, ***Full GoEburst*** *and* ***Neighbor Joinning features***
    * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
- 4. *Neighbor Joinning features*
+ 4. ***Neighbor Joinning*** *features*
    * Changing the tree layout
  
- 5. ***Hierarchical Clustering** and **Neighbor Joinning features***
+ 5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
    * height scale
    * width scale
    * filter by distance (cut off threshold)
