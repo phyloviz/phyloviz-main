@@ -20,7 +20,7 @@ Click to see how to use the features:
    * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
    * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png).
    
- 3. ***GoEburst***, ***Full GoEburst*** *and* ***Neighbor Joinning features***
+ 3. ***GoEburst***, ***Full GoEburst*** *and* ***Neighbor Joinning*** *features*
    * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
  4. ***Neighbor Joinning*** *features*
