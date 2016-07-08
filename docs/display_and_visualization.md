@@ -8,7 +8,7 @@ The Display tab offers the user the ability to search for an isolate, Highlight 
 
 Click to see how to use the features:
 
- 1. *Common features*
+ 1. ***Common** features*
    * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
    * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
    * *Exporting Image*
@@ -23,9 +23,14 @@ Click to see how to use the features:
  3. *GoEburst and Neighbor Joinning features*
    * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
- 4. *Neighbor Joinning features** 
+ 4. *Neighbor Joinning features*
+   * Changing the tree layout
  
- 5. *Hierarchical Clustering and Neighbor Joinning features*
+ 5. ***Hierarchical Clustering** and **Neighbor Joinning features***
+   * height scale
+   * width scale
+   * filter by distance (cut off threshold)
+ 
 
 ## Color conventions
 
