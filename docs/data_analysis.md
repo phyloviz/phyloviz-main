@@ -94,7 +94,8 @@ These features are the following:
 4. Search ST
 5. Filter by distance (cut off threshold)
 6. Export image
-See section ![display and visualization](http://phyloviz.readthedocs.io/en/latest/display_and_visualization.html) for more information on these features.
+
+See section <a href="http://phyloviz.readthedocs.io/en/latest/display_and_visualization.html">display and visualization</a> for more information on these features.
 
 
 ## Neighbor Joinning
