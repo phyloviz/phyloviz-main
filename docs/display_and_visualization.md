@@ -27,7 +27,7 @@ Click to see how to use the features:
    * Changing the tree layout
  
  5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
-   * ![height scale](_images/HC7.png),
+   * [height scale](_images/HC7.png),
    * width scale
    * filter by distance (cut off threshold)
  
