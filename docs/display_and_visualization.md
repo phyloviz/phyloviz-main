@@ -8,21 +8,25 @@ The Display tab offers the user the ability to search for an isolate, Highlight 
 
 Click to see how to use the features:
 
- 1. **Common features**
- * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
- * *Exporting Image*
- 2. **GoEburst features**
- * *Basics* [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
- * *Highlighting* [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
- * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
- * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
- * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
- * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png).
- 3. **GoEburst and Neighbor Joinning features**
- * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
- 4. **Neighbor Joinning features**
+ 1. *Common features*
+   * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
+   * *Exporting Image*
+   
+ 2. *GoEburst features*
+   * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
+   * [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
+   * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
+   * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
+   * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
+   * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png).
+   
+ 3. *GoEburst and Neighbor Joinning features*
  
- 5. **Hierarchical Clustering and Neighbor Joinning features** 
+ * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
+ 
+ 4. *Neighbor Joinning features** 
+ 
+ 5. *Hierarchical Clustering and Neighbor Joinning features*
 
 ## Color conventions
 
