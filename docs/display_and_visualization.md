@@ -28,7 +28,7 @@ Click to see how to use the features:
  
  5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
    * [height scale](_images/HC71.png),
-   * [width scale] (_images/HC81.png),
+   * [width scale](_images/HC81.png),
    * filter by distance (cut off threshold)
  
 
