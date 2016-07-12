@@ -11,25 +11,27 @@ Click to see how to use the features:
  1. ***Common*** *features*
    * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
    * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
-   * *Exporting Image*
+   * [Exporting Image](_images/export.png),
+   * [Re_scale nodes](_images/rescaleNodes.png),
    
  2. ***GoEburst*** *and* ***Full GoEburst*** *features*
    * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
    * [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
    * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
    * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
-   * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png).
+   * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png),
    
  3. ***GoEburst***, ***Full GoEburst*** *and* ***Neighbor Joinning*** *features*
    * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
  4. ***Neighbor Joinning*** *features*
-   * Changing the tree layout
+   * [Changing the tree layout] (_images/ChangingLayout.png),
  
  5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
    * [height scale](_images/HC71.png),
    * [width scale](_images/HC81.png),
-   * filter by distance (cut off threshold)
+   * [filter by distance (cut off threshold)](_images/HC81.png),
+   * [Re_scale edges](_images/rescaleEdges.png).
  
 
 ## Color conventions
