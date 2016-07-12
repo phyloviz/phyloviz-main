@@ -11,8 +11,8 @@ Click to see how to use the features:
  1. ***Common*** *features*
    * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
    * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
-   * [Exporting Image](_images/export.png),
-   * [Re_scale nodes](_images/rescaleNodes.png),
+   * [Exporting Image](_static/images/export.png),
+   * [Re_scale nodes](_static/images/rescaleNodes.png),
    
  2. ***GoEburst*** *and* ***Full GoEburst*** *features*
    * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
@@ -25,13 +25,13 @@ Click to see how to use the features:
    * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
  4. ***Neighbor Joinning*** *features*
-   * [Changing the tree layout] (_images/ChangingLayout.png),
+   * [Changing the tree layout] (_static/images/ChangingLayout.png),
  
  5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
-   * [height scale](_images/HC71.png),
-   * [width scale](_images/HC81.png),
-   * [filter by distance (cut off threshold)](_images/HC81.png),
-   * [Re_scale edges](_images/rescaleEdges.png).
+   * [height scale](_static/images/HC71.png),
+   * [width scale](_static/images/HC81.png),
+   * [filter by distance (cut off threshold)](_static/images/HC81.png),
+   * [Re_scale edges](_static/images/rescaleEdges.png).
  
 
 ## Color conventions
