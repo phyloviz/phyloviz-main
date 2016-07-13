@@ -6,13 +6,13 @@ The main goal of PHYLOViZ is to provide a data visualization tool for the users 
 
 The _Isolate Data_ tab is displayed by double clicking on the _Isolate Data_ on the _Dataset_ tree. The following screenshot resumes the basic functionality of the display on the table view.
 
-![Isolate Data tab](http://www.phyloviz.net/wiki/queryvisualization/IsolateDataTable.png)
+![Isolate Data tab](_images/IsolateDataTable.png)
 
 ## The typing data tab
 
 The _Typing Data_ tab contains the allelic profiles loaded in the dataset. The name of displayed on the tab, and on the _Dataset_ tree, is the name of the selected method during the _Load Dataset_ procedure. The user can also query, select and visualize the data of the allelic profiles, similarly to operations describe in the Isolate Data tab. 
 
-![Typing Data tab](http://www.phyloviz.net/wiki/queryvisualization/TypingDataTable.png)
+![Typing Data tab](_images/TypingDataTable.png)
 
 ## Regular expression primer
 
@@ -29,7 +29,7 @@ Some basic regular expressions that can be used in PHYLOViZ. For more complex ex
 
 All these operators can be combined to create complex search expressions. For example : `^st[G|C].*6$` would find any field that starts with `st` followed by a `C` or a `G` then as 0 or more characters and ends with a `6`. The following screenshot shows the result on the test dataset:
 
-![REGEX example](http://www.phyloviz.net/wiki/queryvisualization/RegexExample.png)
+![REGEX example](_images/RegexExample.png)
 
 ## Queries using the table view
 
@@ -40,22 +40,22 @@ You can also automatically select multiple columns by clicking with the right mo
 Finally to plot the data on the Display tab, press the View button, after all the desired selections are performed.
 
 Click to see an example of querying:
-* [_Table_ view with selections](http://www.phyloviz.net/wiki/queryvisualization/TableViewRegex.png),
-* [query results Chart](http://www.phyloviz.net/wiki/queryvisualization/TableViewPie.png)
-* [results on _Display_ tab](http://www.phyloviz.net/wiki/queryvisualization/TVRdisplay.png)
+* [_Table_ view with selections](_images/TableViewRegex.png),
+* [query results Chart](_images/TableViewPie.png)
+* [results on _Display_ tab](_images/TVRdisplay.png)
 
 ## Queries using the tree view
 
 The _Tree_ view offers a faster way to create simple queries. The user can also use the regex filter to search the dataset but all the possibilities for each dataset column are automatically indexed in a tree like manner. By pressing the _Select_ button and switching to _Table_ view the user can see the resulting selection. The users can alternate both views (Table and Tree) at will for creating the selection.
 
-![Tree view with selections](http://www.phyloviz.net/wiki/queryvisualization/TreeViewSelections.png)
+![Tree view with selections](_images/TreeViewSelections.png)
 
-![Results on Display Tab](http://www.phyloviz.net/wiki/queryvisualization/TreeViewDisplay.png)
+![Results on Display Tab](_images/TreeViewDisplay.png)
 
 ## Exporting the results to an image file
 
 To export the resulting graphs to an image file. Click on the _Options_ button and choose _Export_. Select the adequate file format for the intended purpose. We recommend the use of png images for presentation quality and eps for publication quality.
 
-![Export](http://www.phyloviz.net/wiki/queryvisualization/Export.png)
+![Export](_images/Export.png)
 
 

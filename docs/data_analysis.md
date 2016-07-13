@@ -8,11 +8,11 @@ In the current version of PHYLOViZ, you can analyze your data using the goeBURST
 
 Selecting the goeBURST algorithms opens the dialog for the goeBURST algorithm. The algorithm was originally described in the article [Global optimal eBURST analysis of multilocus typing data using a graphic matroid approach](http://www.biomedcentral.com/1471-2105/10/152). The first step is choosing the _Distance_ to be used. Currently eBURST Distance is the only one available, but others could be implemented. The eBURST distances follows the tiebreak rules discussed in the article. 
 
-![distance](http://www.phyloviz.net/wiki/dataanalysis/goeBURST1.png)
+![distance](_images/goeBURST1.png)
 
 The second step is the choice of the level to which clonal complexes will be formed. The usual default for MLST analysis is SLV Level. Choosing DLV or TLV level will take longer calculation times, but could provide some insight to the relationships between clonal complexes formed at SLV and DLV level respectively.
 
-![level](http://www.phyloviz.net/wiki/dataanalysis/goeBURST2.png)
+![level](_images/goeBURST2.png)
 
 A goeBURST _Output_ tab will appear and display the goeBURST algorithm results. It will contain information about the Clonal Complexes (CCs), namely the Sequence Types that compose them and what edges (the links between STs) were drawn in each CC.
 
@@ -24,7 +24,7 @@ In order to display the goEburst tree view, it is necessary to expand the typing
 
 Double clicking on the goeBURST item that is now on the Dataset tree menu will show the display. The clonal complexes will be arbitrarily numbered starting from 0 (for the CC with most STs) and contains all the data relevant to the goeBURST analysis (STs in each group and the drawn SLVs edges). The following screenshot summarizes the output for a single clonal complex with the test dataset used.
 
-![largest cc](http://www.phyloviz.net/wiki/dataanalysis/goeBURSTcc0display.png)
+![largest cc](_images/goeBURSTcc0display.png)
 
 Multiple groups can be displayed simultaneously by selecting them, using the CTRL /CMD and/or SHIFT keys.
 
@@ -103,19 +103,19 @@ See section <a href="http://phyloviz.readthedocs.io/en/latest/display_and_visual
 Selecting the Neighbor Joinning algorithm opens the dialog where you can select what method you want to apply.
 The first step is choosing the _Distance_ to be used.
 
-![distance](./images/)
+![distance](_images/NJ1.png)
 
 The second step is to select the _Criteria_. You can choose between Saitou-Nei and Studier-Keppler criterion.
 
-![method](./images/)
+![method](_images/NJ2.png)
 
 A Neighbor Joinning _Output Tab_ will appear and display the results of the application of the chosen method. The information displayed represents the same as the Hierarchical Clustering _Output Tab_.
 
-![output](./images/)
+![output](_images/NJ3.png)
 
 Double clicking on the Neighbor Joinning item will show the display. By default it is represented in the format of a radial tree. The following screenshot summarizes the output for the previous dataset.
 
-![display](./images/)
+![display](_images/NJ4.png)
 
 Some features were added to the visualization to improve and facilitate the analysis. 
 These features are the following:
@@ -124,4 +124,5 @@ These features are the following:
 3. Filter by distance
 4. Export image
 
-![display features](./images/)
+![display features](_images/NJ5.png)
+
