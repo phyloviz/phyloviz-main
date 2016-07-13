@@ -105,7 +105,7 @@ The first step is choosing the _Distance_ to be used.
 
 ![distance](_images/NJ1.png)
 
-The second step is to select the _Criteria_. You can choose between Saitou-Nei and Studier-Keppler criterion.
+The second step is to select the _Criteria_ of the tree branch-length minimization. You can choose between Saitou-Nei and Studier-Keppler criterion.
 
 ![method](_images/NJ2.png)
 
@@ -113,9 +113,13 @@ A Neighbor Joinning _Output Tab_ will appear and display the results of the appl
 
 ![output](_images/NJ3.png)
 
+In order to display the view, it is necessary to expand the typing data on the Dataset's tab, if it is not already expanded.
+
+![expand](_images/NJ4.png)
+
 Double clicking on the Neighbor Joinning item will show the display. By default it is represented in the format of a radial tree. The following screenshot summarizes the output for the previous dataset.
 
-![display](_images/NJ4.png)
+![display](_images/NJ5.png)
 
 Some features were added to the visualization to improve and facilitate the analysis. 
 These features are the following:
@@ -124,5 +128,5 @@ These features are the following:
 3. Filter by distance
 4. Export image
 
-![display features](_images/NJ5.png)
+
 
