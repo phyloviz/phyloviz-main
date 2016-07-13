@@ -50,7 +50,7 @@ The _Tree_ view offers a faster way to create simple queries. The user can also 
 
 ![Tree view with selections](_images/TreeViewSelections.png)
 
-**Queries on the results produced by the goEburst algorithm**
+**Queries on the results produced by the goeBURST and goeBURST Full MST algorithm**
 
 ![Results on Display Tab](_images/TreeViewDisplay.png)
 
