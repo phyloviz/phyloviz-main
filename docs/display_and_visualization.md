@@ -25,7 +25,7 @@ Click to see how to use the features:
    * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
  4. ***Neighbor Joinning*** *features*
-   * [Changing the tree layout] (_static/images/ChangingLayout.png),
+   * [Changing the tree layout](_static/images/ChangingLayout.png),
  
  5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
    * [height scale](_static/images/HC71.png),
