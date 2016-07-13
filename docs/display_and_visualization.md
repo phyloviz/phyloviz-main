@@ -14,14 +14,14 @@ Click to see how to use the features:
    * [Exporting Image](_static/images/export.png),
    * [Re_scale nodes](_static/images/rescaleNodes.png),
    
- 2. ***GoEburst*** *and* ***Full GoEburst*** *features*
+ 2. ***GoeBURST*** *and* ***GoeBURST Full MST*** *features*
    * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
    * [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
    * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
    * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
    * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png),
    
- 3. ***GoEburst***, ***Full GoEburst*** *and* ***Neighbor Joinning*** *features*
+ 3. ***GoeBURST***, ***GoeBURST Full MST*** *and* ***Neighbor Joinning*** *features*
    * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
  4. ***Neighbor Joinning*** *features*
