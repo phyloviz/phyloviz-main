@@ -9,29 +9,44 @@ The Display tab offers the user the ability to search for an isolate, Highlight 
 Click to see how to use the features:
 
  1. ***Common*** *features*
-   * [ST search](http://www.phyloviz.net/wiki/displayinterface/search.png),
-   * [information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
-   * [Exporting Image](_static/images/export.png),
-   * [Re_scale nodes](_static/images/rescaleNodes.png),
+ 
+   * ST search
+   ![ST search](http://www.phyloviz.net/wiki/displayinterface/search.png)
+   * Information Area 
+   ![information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png),
+   * Exporting Image 
+   ![Exporting Image](_static/images/export.png),
+   * Re-scale nodes 
+   ![Re_scale nodes](_static/images/rescaleNodes.png),
    
  2. ***GoeBURST*** *and* ***GoeBURST Full MST*** *features*
-   * [basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
-   * [SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
-   * [high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
-   * [changing group founder](http://www.phyloviz.net/wiki/displayinterface/ChangingGroupFounder.png),
-   * [saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png),
+   * Basic Interface
+   ![basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png),
+   * SLV/DLV highlighting
+   ![SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png),
+   * High Level Edges
+   ![high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png),
+   * Saving Results 
+   ![saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png),
    
  3. ***GoeBURST***, ***GoeBURST Full MST*** *and* ***Neighbor Joinning*** *features*
-   * [force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
+   * Force Control menu 
+   ![force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png),
  
  4. ***Neighbor Joinning*** *features*
-   * [Changing the tree layout](_static/images/ChangingLayout.png),
+   * Changing the tree layout
+   ![Changing the tree layout](_static/images/ChangingLayout.png),
  
  5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
-   * [height scale](_static/images/HC71.png),
-   * [width scale](_static/images/HC81.png),
-   * [filter by distance (cut off threshold)](_static/images/HC81.png),
-   * [Re_scale edges](_static/images/rescaleEdges.png).
+   * Height scale 
+   ![height scale](_static/images/HC71.png),
+   * Width scale 
+   ![width scale](_static/images/HC81.png),
+   * Filter by distance (cut off threshold) 
+   ![filter by distance (cut off threshold)](_static/images/HC81.png),
+
+   * Re-scale edges
+  ![Re_scale edges](_static/images/rescaleEdges.png).
  
 
 ## Color conventions
