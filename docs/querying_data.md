@@ -1,6 +1,7 @@
 # Querying and visualizing the data
 
-The main goal of PHYLOViZ is to provide a data visualization tool for the users overlay accessory data on the data analysis algorithms result, in order to validate it, or to allow the proposal of new hypothesis. This section will explain the basics on how this can be achieved in our software. To query the data the user has the choice of using regular expressions, or simply manually selecting the desired fields from the table or even just use the checkboxes in the tree view. Using your dataset and this instructions you should be able to create visualizations similar to the ones found in the [PHYLOViZ website](http://www.phyloviz.net/).
+The main goal of PHYLOViZ is to provide a data visualization tool for overlaying accessory data on the data analysis algorithms result. This allows to test the method's adequacy to the data, or the proposal of novel hypothesis. This section will explain the basics on how this can be achieved in our software. 
+The user can query the data using regular expressions, or simply manually selecting the desired fields from the table or, even just use the checkboxes in the tree view. Using your dataset and this instructions you should be able to create visualizations similar to the ones found in the [PHYLOViZ website](http://www.phyloviz.net/).
 
 ## The isolate data tab
 
@@ -39,10 +40,13 @@ You can also automatically select multiple columns by clicking with the right mo
 
 Finally to plot the data on the Display tab, press the View button, after all the desired selections are performed.
 
-Click to see an example of querying:
-* [_Table_ view with selections](_images/TableViewRegex.png),
-* [query results Chart](_images/TableViewPie.png)
-* [results on _Display_ tab](_images/TVRdisplay.png)
+Query examples:
+* Table view with selections
+![_Table_ view with selections](_images/TableViewRegex.png)
+* Query results Chart
+![query results Chart](_images/TableViewPie.png)
+* Results on Display Tab 
+![results on _Display_ tab](_images/TVRdisplay.png)
 
 ## Queries using the tree view
 

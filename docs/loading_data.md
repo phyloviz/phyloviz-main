@@ -2,13 +2,15 @@
 
 ## File formats
 
-To be able to analize and visualize your data, PHYLOViZ needs two separate files: One file contains the allelic profile data of the method you are using (Typing Data), while the other will contain accessory data (Isolate Data).
+To be able to analize and visualize your data, PHYLOViZ needs two separate files: One file contains the allelic profile data of the method you are using (Typing Data), while the other will contain accessory data (Isolate Data). In the example image below they are _sampleAPfile.txt_ and sampleADfile.txt_respectively.
 
 ![sample files](_images/samplefiles.png)
 
-The Typing data should be a tab separated file containing the allelic profiles, formatted as follows: the first line should contain the column headers (usually markers or MLST locus identifiers). The first column should be the allelic profile identifier (Sequence Type number). The following columns are the loci used in the analysis.
+The Typing data should be a tab separated file containing the allelic profiles, formatted as follows: the first line should contain the column headers (usually locus identifiers be it either SNP, MLST or cg/wgMLST locus). The first column should be the allelic profile identifier (for MLST this would be the Sequence Type number, for any other method could be an unique strain ID. however if two strains have the same profile they should be given the same ID). The following columns are the loci used in the analysis.
 
-If the Isolate data file is not used, the Typing data file should also represent the number of repeated profiles in a collection, that is to say that if a given profile appears in a collection n times it should be repeated in the Typing data file n times. In case of an Isolate data file is used the frequency of each type will be represented by the number of entries with a given Sequence type, in the Isolate file only and the frequency represented by repeated profiles in the Typing data file will not be used
+If the Isolate data file is not used, the Typing data file should also represent the number of repeated profiles in a collection, that is to say that if a given profile appears in a collection n times it should be repeated in the Typing data file n times. 
+
+In case of an Isolate data file is used the frequency of each type will be represented by the number of entries with a given Sequence type, in the Isolate file only and the frequency represented by repeated profiles in the Typing data file will not be used.
 
 You can find an example of MLST data correctly formatted [here](_images/sampleAPfile.txt). Note that in this file several STs are represented by more than one isolate (e.g. ST3 was found in 6 isolates).
 
@@ -40,13 +42,13 @@ Then the dataset is loaded and double clicking on the dataset name opens the ava
 
 ![open dataset](_images/DataSetloaded.png)
 
-Double clicking on Isolate Data and Typing Data in the tree menu under the dataset name opens the respective tabs.
+Double clicking on _Isolate Data_ and _Typing Data_ in the tree menu under the dataset name opens the respective tabs.
 
 ![open isolates](_images/IsolateData.png)
 
 ![open data](_images/TypingData.png)
 
-The default view is the _table_ view. Also available is the tree view, where it is easier to visualize what information is available in the different fields and to select combinations of fields with specific values.
+The default view is the _table_ view. Also available is the _tree_ view, where it is easier to visualize what information is available in the different fields and to select combinations of fields with specific values.
 
 ![table view](_images/treeView.png)
 

@@ -1,6 +1,6 @@
 # Project management
 
-A PHYLOViZ Project allows users to save their ongoing studies and dynamically update them. It is a time-saving feature when working with large data sets and essential for efficiently sharing results.
+A PHYLOViZ Project allows users to save their ongoing studies and update them as needed. It is a time-saving feature when working with large data sets and essential for efficiently sharing results, since the saved projects can then be shared.
 Each project includes the data under analysis, results of inference algorithms, visualization serializations and related customizations.
 
 ## Saving
