@@ -11,9 +11,9 @@ Click to see how to use the features:
  1. ***Common*** *features*
  
    * ST search
-   ![ST search](http://www.phyloviz.net/wiki/displayinterface/search.png)
+   ![ST search](_images/search.png)
    * Information Area 
-   ![information area](http://www.phyloviz.net/wiki/displayinterface/InfoArea.png)
+   ![information area](_images/InfoArea.png)
    * Exporting Image 
    ![Exporting Image](_static/images/export.png)
    * Re-scale nodes 
@@ -21,17 +21,17 @@ Click to see how to use the features:
    
  2. ***GoeBURST*** *and* ***GoeBURST Full MST*** *features*
    * Basic Interface
-   ![basic interface](http://www.phyloviz.net/wiki/displayinterface/BasicInterface.png)
+   ![basic interface](_images/BasicInterface.png)
    * SLV/DLV highlighting
-   ![SLV/DLV highlighting](http://www.phyloviz.net/wiki/displayinterface/highlighting.png)
+   ![SLV/DLV highlighting](_images/highlighting.png)
    * High Level Edges
-   ![high level edges](http://www.phyloviz.net/wiki/displayinterface/HighLevelEdges.png)
+   ![high level edges](_images/HighLevelEdges.png)
    * Saving Results 
-   ![saving results](http://www.phyloviz.net/wiki/displayinterface/SavingResults.png)
+   ![saving results](_images/SavingResults.png)
    
  3. ***GoeBURST***, ***GoeBURST Full MST*** *and* ***Neighbor Joinning*** *features*
    * Force Control menu 
-   ![force control menu](http://www.phyloviz.net/wiki/displayinterface/ControlMenu.png)
+   ![force control menu](_images/ControlMenu.png)
  
  4. ***Neighbor Joinning*** *features*
    * Changing the tree layout
