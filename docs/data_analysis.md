@@ -1,12 +1,12 @@
 # Data analysis
 
-In the current version of PHYLOViZ, you can analyze your data using the goeBURST algorithm and an extension of the goeBURST rules to draw a full Minimum Spanning Tree (MST). Press the _Right Mouse Button_ on the _Typing Data_ (now named with the method) and choose compute to access the available analysis algorithms.
+In the current version of PHYLOViZ, you can analyze your data using the several algorithms described below. Press the _Right Mouse Button_ on the _Typing Data_ (now named with the method) and choose compute to access the available analysis algorithms.
 
 ![choose algorithm](_images/GEB1.png)
 
 ## goeBURST algorithm
 
-Selecting the goeBURST algorithms opens the dialog for the goeBURST algorithm. The algorithm was originally described in the article [Global optimal eBURST analysis of multilocus typing data using a graphic matroid approach](http://www.biomedcentral.com/1471-2105/10/152). The first step is choosing the _Distance_ to be used. Currently eBURST Distance is the only one available, but others could be implemented. The eBURST distances follows the tiebreak rules discussed in the article. 
+Selecting the goeBURST algorithms opens the dialog for the goeBURST algorithm. This algorithm was typically used for MLST data analysis and was originally described in the article [Global optimal eBURST analysis of multilocus typing data using a graphic matroid approach](http://www.biomedcentral.com/1471-2105/10/152). The first step is choosing the _Distance_ to be used. Currently eBURST Distance is the only one available, but others could be implemented. The eBURST distances follows the tiebreak rules discussed in the article. 
 
 ![distance](_images/goeBURST1.png)
 
@@ -32,7 +32,9 @@ Multiple groups can be displayed simultaneously by selecting them, using the CTR
 
 ## goeBURST Full MST algorithm
 
-Using an extension of the goeBURST rules up to \\(n\\)LV level (where \\(n\\) equals to the number of loci your dataset uses), a Minimum Spanning Tree-like structure can be drawn. Select _goeBURST Full MST_ in the _Compute_ options to draw it. Contrary to the standard goeBURST, the link statistics are not presented. After computation, double click on the _goeBURST Full MST_ that appears under the dataset heading to visualize the result.
+Using an extension of the goeBURST rules up to \\(n\\)LV level (where \\(n\\) equals to the number of loci your dataset uses), a Minimum Spanning Tree-like structure can be drawn. This is typicially used for SNP or cg/wgMLST datasets with dozens to thousand of loci. 
+
+Select _goeBURST Full MST_ in the _Compute_ options to draw it. Contrary to the standard goeBURST, the link statistics are not presented. After computation, double click on the _goeBURST Full MST_ that appears under the dataset heading to visualize the result.
 
 ![mst result](_images/GEB5.png)
 
