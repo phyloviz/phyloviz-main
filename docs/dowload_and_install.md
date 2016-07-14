@@ -35,9 +35,9 @@ See details about available plugins and the licenses under which they are covere
 
 A cross-platform zip distribution package is [available](https://bitbucket.org/phyloviz/phyloviz-main/downloads).
 
-Just unzip the package, enter the created directory and in the sub-directory 'bin/' run 'phyloviz.exe' or 'phyloviz64.exe' (Windows) or 'phyloviz' (Linux/MacOS) accordingly to your operating system.
+Just unzip the package, enter the created directory and in the sub-directory `bin/` run `phyloviz.exe` or `phyloviz64.exe` (Windows) or 'phyloviz' (Linux/MacOS) accordingly to your operating system.
 
-*NOTE*: You may need to adjust some parameters in 'etc/phyloviz.conf' with respect to memory usage. These settings have a strong impact on visualization features. For instance, in Windows, you may achieve better results with:
+*NOTE*: You may need to adjust some parameters in `etc/phyloviz.conf` with respect to memory usage. These settings have a strong impact on visualization features. For instance, in Windows, you may achieve better results with:
 
 ```text
 default_options="--branding phyloviz -J-Xss8M -J-Xms32m -J-Xmx1024M --laf javax.swing.plaf.metal.MetalLookAndFeel"
