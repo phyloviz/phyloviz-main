@@ -40,29 +40,37 @@ You can also automatically select multiple columns by clicking with the right mo
 
 Finally to plot the data on the Display tab, press the View button, after all the desired selections are performed.
 
-Query examples:
+### Query examples
 * Table view with selections
+
 ![_Table_ view with selections](_images/TableViewRegex.png)
-* Query results Chart
+
+* Query results _Chart_
+
 ![query results Chart](_images/TableViewPie.png)
-* Results on Display Tab 
+
+* Results on _Display Tab_
+
 ![results on _Display_ tab](_images/TVRdisplay.png)
 
 ## Queries using the tree view
 
 The _Tree_ view offers a faster way to create simple queries. The user can also use the regex filter to search the dataset but all the possibilities for each dataset column are automatically indexed in a tree like manner. By pressing the _Select_ button and switching to _Table_ view the user can see the resulting selection. The users can alternate both views (Table and Tree) at will for creating the selection.
 
+### Query examples
+* Tree view with selections
+
 ![Tree view with selections](_images/TreeViewSelections.png)
 
-**Queries on the results produced by the goeBURST and goeBURST Full MST algorithm**
+* Queries on the results produced by the _goeBURST_ and _goeBURST Full MST algorithm_
 
 ![Results on Display Tab](_images/TreeViewDisplay.png)
 
-**Queries on the results produced by the Hierarchical Clustering algorithm**
+* Queries on the results produced by the _Hierarchical Clustering_ algorithm
 
 ![Results HC on Display Tab](_images/HCFiltered.png)
 
-**Queries on the results produced by the Neighbor Joinning algorithm**
+* Queries on the results produced by the _Neighbor Joinning_ algorithm
 
 ![Results NJ on Display Tab](_images/NJFiltered.png)
 

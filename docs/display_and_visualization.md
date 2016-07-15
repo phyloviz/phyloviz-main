@@ -6,47 +6,66 @@ After running the selected algorithm, you will notice that the program then trie
 
 The Display tab offers the user the ability to search for an isolate, Highlight the SLVs and DLVs, control the animation speed, select diferent diferent or multiple groups. You can fit any displayed graphs to the window by right-clicking any open space (i.e. with no link or ST node) on the window.
 
-Click to see how to use the features:
-
- 1. ***Common*** *features*
- 
+### Common features
    * ST search
+
    ![ST search](_images/search.png)
+   
    * Information Area 
+   
    ![information area](_images/InfoArea.png)
+   
    * Exporting Image 
+   
    ![Exporting Image](_static/images/export.png)
+   
    * Re-scale nodes 
+   
    ![Re_scale nodes](_static/images/rescaleNodes.png)
    
- 2. ***GoeBURST*** *and* ***GoeBURST Full MST*** *features*
+### GoeBURST and GoeBURST Full MST features
    * Basic Interface
+
    ![basic interface](_images/BasicInterface.png)
+
    * SLV/DLV highlighting
+
    ![SLV/DLV highlighting](_images/highlighting.png)
+
    * High Level Edges
+
    ![high level edges](_images/HighLevelEdges.png)
+
    * Saving Results 
+
    ![saving results](_images/SavingResults.png)
    
- 3. ***GoeBURST***, ***GoeBURST Full MST*** *and* ***Neighbor Joinning*** *features*
+### GoeBURS, GoeBURST Full MST and Neighbor Joinning features
    * Force Control menu 
+
    ![force control menu](_images/ControlMenu.png)
  
- 4. ***Neighbor Joinning*** *features*
+### Neighbor Joinning features
    * Changing the tree layout
+
    ![Changing the tree layout](_static/images/ChangingLayout.png)
  
- 5. ***Hierarchical Clustering*** *and* ***Neighbor Joinning*** *features*
+### Hierarchical Clustering and Neighbor Joinning features
    * Height scale 
-   ![height scale](_static/images/HC71.png),
-   * Width scale 
-   ![width scale](_static/images/HC81.png),
+
+   ![height scale](_static/images/HC71.png)
+
+   * Width scale
+
+   ![width scale](_static/images/HC81.png)
+
    * Filter by distance (cut off threshold) 
+
    ![filter by distance (cut off threshold)](_static/images/HC81.png)
 
    * Re-scale edges
-  ![Re_scale edges](_static/images/rescaleEdges.png).
+
+   ![Re_scale edges](_static/images/rescaleEdges.png)
  
 
 ## Color conventions
