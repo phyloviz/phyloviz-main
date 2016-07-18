@@ -52,3 +52,34 @@ The default view is the _table_ view. Also available is the _tree_ view, where i
 
 ![table view](_images/treeView.png)
 
+## Loading a remote Dataset
+
+We can also load datasets from remote databases and services.
+PHYLOViZ contains already a list of available databases.
+We can choose _Load Dataset from MLST DBs_.
+
+![load remote dataset 1](_images/LRD1.png)
+
+There are several datasets available from several providers.
+In the following example we select the _Streptococcus pneumoniae_ dataset from [PubMLST.org](http://pubmlst.org).
+
+![load remote dataset 2](_images/LRD2.png)
+
+The next step is to download the dataset.
+
+![load remote dataset 3](_images/LRD3.png)
+
+In the next window we can load ancillary data on isolates.
+In this example we choose to not load any data.
+
+![load remote dataset 4](_images/LRD4.png)
+
+We can also load sequence data for each allele.
+They are downloaded individually and loaded as typing data.
+
+![load remote dataset 5](_images/LRD5.png)
+
+At the end we have seven typing data items to explore and analyze.
+
+![load remote dataset 6](_images/LRD6.png)
+
