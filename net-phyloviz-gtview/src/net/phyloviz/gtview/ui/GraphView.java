@@ -326,7 +326,7 @@ public class GraphView extends net.phyloviz.upgmanjcore.visualization.GView {
                     edgeTable.setInt(rowNb, "viz", er.getDistance().level(e));
                     if (er.getEdgestats().size() != 0) {
                         String edgestats = e.getU().getID() + e.getV().getID();
-                        double freq = Double.valueOf(er.getEdgestats().get(Integer.valueOf(edgestats)));
+                        double freq = Double.valueOf(er.getEdgestats().get(edgestats));
                         edgeTable.setDouble(rowNb, "edgep", (double) Math.round((Math.pow(10, freq) * 100.0) * 10) / 10);
                     }
                     //} else {
