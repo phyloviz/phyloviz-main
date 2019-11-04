@@ -59,7 +59,7 @@ public class EdgeMST implements Comparable<EdgeMST> {
         _source = source;
         _dest = dest;
         _level = level;
-        _rationmsts = 0;
+        _rationmsts = Double.NEGATIVE_INFINITY;
         _visible = visible;
     }
 
@@ -79,7 +79,7 @@ public class EdgeMST implements Comparable<EdgeMST> {
         int d = map[v];
 
         if (s == d) {
-            _rationmsts = 0;
+            _rationmsts = Double.NEGATIVE_INFINITY;
             return;
         }
 
